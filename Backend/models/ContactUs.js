@@ -16,12 +16,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         //create ReasonEnum
         reason: {
-            type: DataTypes.ENUM('General', 'Support', 'Feedback', 'Other'),
+            type: DataTypes.ENUM('GENERAL', 'SUPPORT', 'FEEDBACK', 'OTHERS'),
             allowNull: false,
         },
         //create StatusEnum
         status: {
-            type: DataTypes.ENUM('Open', 'Closed', 'Pending'),
+            type: DataTypes.ENUM('OPEN', 'CLOSED', 'PENDING'),
             allowNull: false,
         },
         timeStamp: {
