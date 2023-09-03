@@ -39,6 +39,11 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.DATEONLY,
           allowNull: false,
         },
+        isActive: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: true,
+          allowNull: false,
+        },
         rating: {
           type: DataTypes.DOUBLE,
           allowNull: false,
