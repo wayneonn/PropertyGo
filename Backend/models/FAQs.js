@@ -1,14 +1,14 @@
 module.exports = (sequelize, DataTypes) => {
-    const ForumTopics = sequelize.define("ForumTopics", {
-        topicName: {
+    const FAQs = sequelize.define("FAQs", {
+        question: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        isInappropriate: {
-            type: DataTypes.BOOLEAN,
+        answer: {
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
     })
 
-    return ForumTopics;
+    return FAQs;
 }
