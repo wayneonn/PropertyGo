@@ -53,11 +53,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         propertyType: {
-            type: DataTypes.ENUM('type1', 'type2', 'type3'), // replace with your types
+            type: DataTypes.ENUM('RESALE', 'NEW_LAUNCH'), 
             allowNull: false,
         },
         propertyStatus: {
-            type: DataTypes.ENUM('status1', 'status2', 'status3'), // replace with your statuses
+            type: DataTypes.ENUM('ACTIVE', 'ON_HOLD', 'COMPLETED'), 
             allowNull: false,
         },
     });
