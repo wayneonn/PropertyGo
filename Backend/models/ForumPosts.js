@@ -1,5 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
     const ForumPosts = sequelize.define("ForumPosts", {
+        forumPostId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+            autoIncrement: true,
+            primaryKey: true,
+        },
         title: {
             type: DataTypes.STRING,
             allowNull: false,

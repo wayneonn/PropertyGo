@@ -1,5 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
     const ForumComments = sequelize.define("ForumComments", {
+        forumCommentId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+            autoIncrement: true,
+            primaryKey: true,
+        },
         message: {
             type: DataTypes.STRING,
             allowNull: false,
