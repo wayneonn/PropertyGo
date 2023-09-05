@@ -45,7 +45,15 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'userId',
             as: 'user',
         });
-    //     Review.belongsTo(models.Property, { foreignKey: 'propertyId' });
+        Review.belongsToMany(models.ForumComments, {
+          through: "ReviewForumComments", // Specify the intermediary model
+          foreignKey: "reviewId", // Foreign key in ScheduleUser
+          otherKey: "forumCommentId", // Foreign key in Users
+        });
+        Review.belongsTo(models.Property, {
+          foreignKey: 'propertyId',
+          as: 'property',
+        });
     }
 
     return Review;

@@ -84,97 +84,104 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false
       },
       as: 'requests'
-    }),
+    });
     User.hasMany(models.Notification, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'notifications'
-    }),
+    });
     User.hasMany(models.ContactUs, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'contactUss'
-    }),
+    });
     User.hasMany(models.ForumTopics, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'forumTopics'
-    }),
+    });
     User.hasMany(models.ForumComments, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'forumComments'
-    }),
+    });
     User.hasMany(models.Document, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'documents'
-    }),
+    });
     User.hasMany(models.Review, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'reviews'
-    }),
+    });
     User.hasMany(models.Chat, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'receiverChats'
-    }),
+    });
     User.hasMany(models.Chat, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'senderChats'
-    }),
+    });
     User.hasMany(models.Property, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'favourites'
-    }),
+    });
     User.hasMany(models.Property, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'buyerListings'
-    }),
+    });
     User.hasMany(models.Property, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'sellerListings'
-    }),
+    });
     User.hasMany(models.Property, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false
       },
       as: 'agentListings'
-    }),
+     });
     User.belongsToMany(models.Schedule, {
       through: "ScheduleUser", // Specify the intermediary model
       foreignKey: "userId", // Foreign key in ScheduleUser
       otherKey: "scheduleId", // Foreign key in Schedule
-    })
-  }
+     });
+    User.hasMany(models.Folder, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        allowNull: false
+      },
+      as: 'folders'
+    });
+  };
 
   return User;
 };

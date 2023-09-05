@@ -29,13 +29,17 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     Document.associate = function(models) {
-        Document.belongsTo(models.User, { 
-            foreignKey: 'userId', 
-            as: "Users", 
-        });
+        // Document.belongsTo(models.User, { 
+        //     foreignKey: 'userId', 
+        //     as: "Users", 
+        // });
         Document.belongsTo(models.Transaction, { 
             foreignKey: 'transactionId', 
-            as: "Transactions", 
+            as: "transaction", 
+        });
+        Document.belongsTo(models.Folder, {
+            foreignKey: 'folderId',
+            as: "folder",
         });
     }
 
