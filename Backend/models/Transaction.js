@@ -18,10 +18,10 @@ module.exports = (sequelize, DataTypes) => {
 
     Transaction.associate = function(models) {
         Transaction.hasMany(models.Document, { foreignKey: 'transactionId' });
-        Transaction.belongsTo(models.User, { as: 'Buyer', foreignKey: 'buyerId' });
+        Transaction.belongsTo(models.User, { as: 'Buyer', foreignKey: 'userId' });
         Transaction.belongsTo(models.Property, { foreignKey: 'propertyId' });
         Transaction.belongsTo(models.Invoice, { foreignKey: 'invoiceId' });
-        Transaction.belongsTo(models.User, { as: 'Seller', foreignKey: 'sellerId' });
+        Transaction.belongsTo(models.User, { as: 'Seller', foreignKey: 'userId' });
     }
 
     return Transaction;
