@@ -38,6 +38,11 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'userId',
             as: 'user',
         });
+        ForumComments.belongsToMany(models.Review, {
+          through: "ReviewForumComments", // Specify the intermediary model
+          foreignKey: "forumCommentId", // Foreign key in ScheduleUser
+          otherKey: "reviewId", // Foreign key in Users
+        });
     };
 
     return ForumComments;
