@@ -1,5 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
     const ForumComments = sequelize.define("ForumComments", {
+        forumCommentId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+            autoIncrement: true,
+            primaryKey: true,
+        },
         message: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -17,10 +23,23 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         images: {
-            type: DataTypes.BLOB, // there is no array for BLOB. so either we use postgresql as sequelize offer arrays datatype for postgresql or we create an Images entity referencing to those entities require image and then the single image is in BLOB
+            type: DataTypes.BLOB, 
             allowNull: false,
         },
-    })
+    });
+
+    ForumComments.associate = (models) => {
+        ForumComments.belongsTo(models.ForumPosts, { 
+            foreignKey: {
+                name: 'forumPostId'
+            } 
+        });
+         ForumComments.belongsTo(models.User, { 
+            foreignKey: {
+                name: 'userId'
+            } 
+        });
+    };
 
     return ForumComments;
 }

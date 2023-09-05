@@ -1,28 +1,29 @@
 module.exports = (sequelize, DataTypes) => {
-    const FAQs = sequelize.define("FAQs", {
-        faqId: {
+    const Admins = sequelize.define("Admins", {
+        adminId: {
             type: DataTypes.BIGINT,
             allowNull: false,
             autoIncrement: true,
             primaryKey: true,
         },
-        question: {
+        userName: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        answer: {
-            type: DataTypes.INTEGER,
+        password: {
+            type: DataTypes.STRING,
             allowNull: false,
         },
     });
 
-    FAQs.associate = (models) => {
-        FAQs.belongsTo(models.Admins, {
+    Admins.associate = (models) => {
+        Admins.hasMany(models.FAQs, {
+            onDelete: "CASCADE",
             foreignKey: {
-                name: 'adminId'
+                allowNull: false
             }
         });
     };
 
-    return FAQs;
+    return Admins;
 }
