@@ -100,18 +100,27 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'userId',
             as: 'buyer',
         });
+        Property.belongsTo(models.User, {
+          foreignKey: 'userId',
+          as: 'propertyAgent',
+        });
+        Property.belongsTo(models.User, {
+          foreignKey: 'userId',
+          as: 'seller',
+        });
+        Property.hasMany(models.Chat, {
+          foreignKey: 'propertyId',
+          as: 'chats',
+        });
+        Property.hasMany(models.Review, {
+            foreignKey: 'propertyId',
+            as: 'reviews',
+        });
+        Property.hasOne(models.Transaction, {
+          foreignKey: 'propertyId', // This will be the foreign key in the Transaction model
+          onDelete: 'CASCADE', // If an invoice is deleted, delete the associated transaction
+        });
     };
-
-    //     Property.hasMany(models.Chat, {
-    //         foreignKey: 'propertyId',
-    //         as: 'chats',
-    //     });
-
-    //     Property.hasMany(models.Review, {
-    //         foreignKey: 'propertyId',
-    //         as: 'reviews',
-    //     });
-    // };
 
     return Property;
 }

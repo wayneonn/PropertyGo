@@ -16,5 +16,23 @@ module.exports = (sequelize, DataTypes) => {
     }
     )
 
+    Chat.associate = (models) => {
+        Chat.belongsTo(models.User, { as: 'sender' }); // Many-to-one for sender
+        Chat.belongsTo(models.User, { as: 'receiver' }); // Many-to-one for receiver
+        Chat.belongsTo(models.Property, { as: 'propertyListing'});
+        Chat.hasMany(models.Message, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: false
+            }
+        });
+        Chat.hasMany(models.Request, {
+          onDelete: "CASCADE",
+          foreignKey: {
+              allowNull: false
+          }
+       });
+      };
+
     return Chat;
 }

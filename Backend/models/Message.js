@@ -18,5 +18,9 @@ module.exports = (sequelize, DataTypes) => {
         freezeTableName: true
     });
 
+    Message.associate = (models) => {
+        Message.belongsTo(models.Chat);
+    };
+
     return Message;
 };

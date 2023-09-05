@@ -40,6 +40,18 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'transactionId', 
             as: "Transaction", 
         });
+        // Document.belongsTo(models.User, { 
+        //     foreignKey: 'userId', 
+        //     as: "Users", 
+        // });
+        Document.belongsTo(models.Transaction, { 
+            foreignKey: 'transactionId', 
+            as: "transaction", 
+        });
+        Document.belongsTo(models.Folder, {
+            foreignKey: 'folderId',
+            as: "folder",
+        });
     }
 
     return Document;

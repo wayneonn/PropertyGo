@@ -24,6 +24,35 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false, // A request must have a user associated with it
             },
             onDelete: 'CASCADE', // If a user is deleted, delete their associated requests
+            as: 'contractor',
+        });
+        Request.belongsTo(models.User, {
+          foreignKey: {
+              name: 'userId', // This will be the foreign key in the Request table
+              allowNull: false, // A request must have a user associated with it
+          },
+          onDelete: 'CASCADE', // If a user is deleted, delete their associated requests
+          as: 'lawyer',
+       });
+       Request.belongsTo(models.User, {
+          foreignKey: {
+              name: 'userId', // This will be the foreign key in the Request table
+              allowNull: false, // A request must have a user associated with it
+          },
+          onDelete: 'CASCADE', // If a user is deleted, delete their associated requests
+          as: 'propertyAgent',
+        });
+        Request.belongsTo(models.Chat, {
+          foreignKey: {
+              name: 'chatId', // This will be the foreign key in the Request table
+              allowNull: false, // A request must have a user associated with it
+          },
+          onDelete: 'CASCADE', // If a user is deleted, delete their associated requests
+          as: 'chat',
+        });
+        Request.hasMany(models.Transaction, {
+          foreignKey: 'requestId',
+          as: 'transactions',
         });
     };
 

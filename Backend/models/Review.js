@@ -42,10 +42,21 @@ module.exports = (sequelize, DataTypes) => {
         this.title = newTitle;
     }
 
-    // Review.associate = function(models) {
-    //     Review.belongsTo(models.User, { foreignKey: 'userId' });
-    //     Review.belongsTo(models.Property, { foreignKey: 'propertyId' });
-    // }
+    Review.associate = function(models) {
+        Review.belongsTo(models.User, {
+            foreignKey: 'userId',
+            as: 'user',
+        });
+        Review.belongsToMany(models.ForumComments, {
+          through: "ReviewForumComments", // Specify the intermediary model
+          foreignKey: "reviewId", // Foreign key in ScheduleUser
+          otherKey: "forumCommentId", // Foreign key in Users
+        });
+        Review.belongsTo(models.Property, {
+          foreignKey: 'propertyId',
+          as: 'property',
+        });
+    }
 
     return Review;
 }

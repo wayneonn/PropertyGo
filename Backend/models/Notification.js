@@ -30,5 +30,12 @@ module.exports = (sequelize, DataTypes) => {
         freezeTableName: true
     })
 
+    Notification.associate = (models) => {
+        Notification.belongsTo(models.User, {
+            foreignKey: 'userId',
+            as: 'user',
+        });
+    };
+
     return Notification;
 }
