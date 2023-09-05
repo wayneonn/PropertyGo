@@ -97,6 +97,14 @@ module.exports = (sequelize, DataTypes) => {
         Property.belongsTo(models.User, {
             foreignKey: 'userId',
             as: 'buyer',
+        }),
+        Property.belongsTo(models.User, {
+          foreignKey: 'userId',
+          as: 'propertyAgent',
+        }),
+        Property.belongsTo(models.User, {
+          foreignKey: 'userId',
+          as: 'seller',
         });
     };
 

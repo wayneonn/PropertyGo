@@ -78,6 +78,13 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   User.associate = (models) => {
+    User.hasMany(models.Request, {
+      onDelete: "CASCADE",
+      foreignKey: {
+          allowNull: false
+      },
+      as: 'requests'
+    }),
     User.hasMany(models.Notification, {
       onDelete: "CASCADE",
       foreignKey: {
@@ -98,6 +105,13 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false
       },
       as: 'forumTopics'
+    }),
+    User.hasMany(models.ForumComments, {
+      onDelete: "CASCADE",
+      foreignKey: {
+          allowNull: false
+      },
+      as: 'forumComments'
     }),
     User.hasMany(models.Document, {
       onDelete: "CASCADE",
@@ -154,6 +168,11 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false
       },
       as: 'agentListings'
+    }),
+    User.belongsToMany(models.Schedule, {
+      through: "ScheduleUser", // Specify the intermediary model
+      foreignKey: "userId", // Foreign key in ScheduleUser
+      otherKey: "scheduleId", // Foreign key in Schedule
     })
   }
 

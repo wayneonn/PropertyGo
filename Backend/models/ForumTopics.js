@@ -27,7 +27,8 @@ module.exports = (sequelize, DataTypes) => {
         ForumTopics.belongsTo(models.User, { 
             foreignKey: {
                 name: 'userId'
-            }
+            },
+            as: 'user',
         });
     };
 
