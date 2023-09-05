@@ -15,5 +15,13 @@ module.exports = (sequelize, DataTypes) => {
         },
     });
 
+    Schedule.associate = (models) => {
+        Schedule.belongsToMany(models.Users, {
+            through: "ScheduleUser", // Specify the intermediary model
+            foreignKey: "scheduleId", // Foreign key in ScheduleUser
+            otherKey: "userId", // Foreign key in Users
+        });
+    };
+
     return Schedule;
 };
