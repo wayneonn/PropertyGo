@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const FAQs = sequelize.define("FAQs", {
+    const FAQ = sequelize.define("FAQ", {
         question: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -8,7 +8,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-    })
+    }, {
+        freezeTableName: true
+    }
+    )
 
-    return FAQs;
+    return FAQ;
 }

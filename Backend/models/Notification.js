@@ -26,6 +26,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },
+    }, {
+        freezeTableName: true
     })
 
     return Notification;

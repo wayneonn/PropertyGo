@@ -11,7 +11,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
 
-    })
+    }, {
+        freezeTableName: true
+    }
+    )
 
     return Chat;
 }

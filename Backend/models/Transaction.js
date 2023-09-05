@@ -14,6 +14,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DOUBLE,
             allowNull: false,
         },
+    }, {
+        freezeTableName: true
     })
 
     Transaction.associate = function (models) {

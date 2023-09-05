@@ -18,7 +18,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
-    })
+    }, {
+        freezeTableName: true
+    }
+    )
 
     Document.prototype.changeDescription = function(newDescription) {
         this.description = newDescription;
@@ -31,11 +34,11 @@ module.exports = (sequelize, DataTypes) => {
     Document.associate = function(models) {
         Document.belongsTo(models.User, { 
             foreignKey: 'userId', 
-            as: "Users", 
+            as: "User", 
         });
         Document.belongsTo(models.Transaction, { 
             foreignKey: 'transactionId', 
-            as: "Transactions", 
+            as: "Transaction", 
         });
     }
 

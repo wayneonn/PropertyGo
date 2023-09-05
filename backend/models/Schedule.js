@@ -13,13 +13,15 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             allowNull: false,
         },
+    }, {
+        freezeTableName: true
     });
 
     Schedule.associate = (models) => {
         Schedule.belongsToMany(models.User, {
             through: "ScheduleUser", // Specify the intermediary model
             foreignKey: "scheduleId", // Foreign key in ScheduleUser
-            otherKey: "userId", // Foreign key in Users
+            otherKey: "userId", // Foreign key in User
         });
     };
 

@@ -75,7 +75,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM('LAWYER', 'PROPERTY AGENT', 'CONTRACTOR', 'BUYER', 'SELLER'),
         allowNull: false,
       },
-  });
+  }, {
+    freezeTableName: true
+});
 
   User.associate = (models) => {
     User.hasMany(models.Notification, {
@@ -92,7 +94,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: 'contactUss'
     }),
-    User.hasMany(models.ForumTopics, {
+    User.hasMany(models.ForumTopic, {
       onDelete: "CASCADE",
       foreignKey: {
           allowNull: false

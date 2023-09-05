@@ -60,6 +60,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM('ACTIVE', 'ON_HOLD', 'COMPLETED'), 
             allowNull: false,
         },
+    }, {
+        freezeTableName: true
     });
 
     Property.prototype.changePrice = function(newPrice) {

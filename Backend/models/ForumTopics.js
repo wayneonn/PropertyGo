@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const ForumTopics = sequelize.define("ForumTopics", {
+    const ForumTopic = sequelize.define("ForumTopic", {
         topicName: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -8,7 +8,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },
+    }, {
+        freezeTableName: true
     })
 
-    return ForumTopics;
+    return ForumTopic;
 }

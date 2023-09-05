@@ -26,6 +26,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
+    }, {
+        freezeTableName: true
     })
 
     Review.prototype.changeDescription = function(newDescription) {

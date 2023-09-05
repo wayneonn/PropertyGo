@@ -28,6 +28,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             allowNull: false,
         },
+    }, {
+        freezeTableName: true
     })
 
     return ContactUs;

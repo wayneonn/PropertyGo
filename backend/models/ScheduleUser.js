@@ -5,6 +5,8 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
+    }, {
+        freezeTableName: true
     });
 
     return ScheduleUser;

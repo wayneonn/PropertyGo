@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const ForumComments = sequelize.define("ForumComments", {
+    const ForumComment = sequelize.define("ForumComment", {
         message: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -20,7 +20,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BLOB, // there is no array for BLOB. so either we use postgresql as sequelize offer arrays datatype for postgresql or we create an Images entity referencing to those entities require image and then the single image is in BLOB
             allowNull: false,
         },
-    })
+    }, {
+        freezeTableName: true
+    }
+    )
 
-    return ForumComments;
+    return ForumComment;
 }
