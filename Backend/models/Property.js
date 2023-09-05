@@ -82,27 +82,34 @@ module.exports = (sequelize, DataTypes) => {
         return this.save();
     };
 
-    Property.associate = function(models) {
-        Property.hasOne(models.Transaction, {
-            foreignKey: 'propertyId',
-            as: 'transaction',
-        });
+    // Property.associate = function(models) {
+    //     Property.hasOne(models.Transaction, {
+    //         foreignKey: 'propertyId',
+    //         as: 'transaction',
+    //     });
 
+    //     Property.belongsTo(models.Buyer, {
+    //         foreignKey: 'buyerId',
+    //         as: 'buyer',
+    //     });
+
+    Property.associate = (models) => {
         Property.belongsTo(models.User, {
             foreignKey: 'userId',
             as: 'buyer',
         });
-
-        Property.hasMany(models.Chat, {
-            foreignKey: 'propertyId',
-            as: 'chats',
-        });
-
-        Property.hasMany(models.Review, {
-            foreignKey: 'propertyId',
-            as: 'reviews',
-        });
     };
+
+    //     Property.hasMany(models.Chat, {
+    //         foreignKey: 'propertyId',
+    //         as: 'chats',
+    //     });
+
+    //     Property.hasMany(models.Review, {
+    //         foreignKey: 'propertyId',
+    //         as: 'reviews',
+    //     });
+    // };
 
     return Property;
 }

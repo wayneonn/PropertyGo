@@ -40,10 +40,10 @@ module.exports = (sequelize, DataTypes) => {
         this.title = newTitle;
     }
 
-    Review.associate = function(models) {
-        Review.belongsTo(models.User, { foreignKey: 'userId' });
-        Review.belongsTo(models.Property, { foreignKey: 'propertyId' });
-    }
+    // Review.associate = function(models) {
+    //     Review.belongsTo(models.User, { foreignKey: 'userId' });
+    //     Review.belongsTo(models.Property, { foreignKey: 'propertyId' });
+    // }
 
     return Review;
 }
