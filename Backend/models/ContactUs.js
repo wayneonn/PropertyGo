@@ -30,5 +30,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     })
 
+    ContactUs.associate = (models) => {
+        ContactUs.belongsTo(models.User);
+    };
+
     return ContactUs;
 }

@@ -28,5 +28,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     })
 
+    Notification.associate = (models) => {
+        Notification.belongsTo(models.User);
+    };
+
     return Notification;
 }

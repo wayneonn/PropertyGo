@@ -16,5 +16,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     });
 
+    Message.associate = (models) => {
+        Message.belongsTo(models.Chat);
+      };
+
     return Message;
 };
