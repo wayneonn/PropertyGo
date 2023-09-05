@@ -88,8 +88,8 @@ module.exports = (sequelize, DataTypes) => {
             as: 'transaction',
         });
 
-        Property.belongsTo(models.Buyer, {
-            foreignKey: 'buyerId',
+        Property.belongsTo(models.User, {
+            foreignKey: 'userId',
             as: 'buyer',
         });
 
