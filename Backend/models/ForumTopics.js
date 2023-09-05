@@ -14,7 +14,22 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },
-    })
+    });
+
+    ForumTopics.associate = (models) => {
+        ForumTopics.hasMany(models.ForumPosts, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: false,
+                name: 'forumPostId'
+            }
+        });
+        ForumTopics.belongsTo(models.User, { 
+            foreignKey: {
+                name: 'userId'
+            }
+        });
+    };
 
     return ForumTopics;
 }
