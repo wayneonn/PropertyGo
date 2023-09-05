@@ -28,10 +28,10 @@ module.exports = (sequelize, DataTypes) => {
         this.title = newTitle;
     }
 
-    // Document.associate = function(models) {
-    //     Document.belongsTo(models.User, { foreignKey: 'userId' });
-    //     Document.belongsTo(models.Transaction, { foreignKey: 'transactionId' });
-    // }
+    Document.associate = function(models) {
+        Document.belongsTo(models.User, { foreignKey: 'userId', as: "Users", });
+        Document.belongsTo(models.Transaction, { foreignKey: 'transactionId', as: "Transactions", });
+    }
 
     return Document;
 }
