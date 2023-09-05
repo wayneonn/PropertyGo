@@ -6,10 +6,10 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true,
         },
-        images: {
-            type: DataTypes.ARRAY(DataTypes.BLOB),
-            allowNull: true,
-        },
+        // images: {
+        //     type: DataTypes.ARRAY(DataTypes.BLOB),
+        //     allowNull: true,
+        // },
         description: {
             type: DataTypes.STRING,
             allowNull: true,
