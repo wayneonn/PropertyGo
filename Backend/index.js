@@ -6,8 +6,8 @@ app.use(express.json())
 const db = require('./models')
 
 // Routers
-const postRouter = require('./routes/Users')
-app.use("/users", postRouter)
+const postRouter = require('./routes/User')
+app.use("/user", postRouter)
 
 db.sequelize.sync()
     .then(() => {

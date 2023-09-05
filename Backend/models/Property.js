@@ -92,10 +92,13 @@ module.exports = (sequelize, DataTypes) => {
     //         foreignKey: 'buyerId',
     //         as: 'buyer',
     //     });
+
+    Property.associate = (models) => {
         Property.belongsTo(models.User, {
             foreignKey: 'userId',
             as: 'buyer',
         });
+    };
 
     //     Property.hasMany(models.Chat, {
     //         foreignKey: 'propertyId',

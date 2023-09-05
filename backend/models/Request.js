@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Request.associate = models => {
-        Request.belongsTo(models.Users, {
+        Request.belongsTo(models.User, {
             foreignKey: {
                 name: 'userId', // This will be the foreign key in the Request table
                 allowNull: false, // A request must have a user associated with it
