@@ -1,10 +1,16 @@
+
+
 module.exports = (sequelize, DataTypes) => {
-    const ForumComments = sequelize.define("ForumComments", {
-        forumCommentId: {
+    const ForumPost = sequelize.define("ForumPost", {
+        forumPostId: {
             type: DataTypes.BIGINT,
             allowNull: false,
             autoIncrement: true,
             primaryKey: true,
+        },
+        title: {
+            type: DataTypes.STRING,
+            allowNull: false,
         },
         message: {
             type: DataTypes.STRING,
@@ -23,27 +29,33 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         images: {
-            type: DataTypes.BLOB, 
+            type: DataTypes.BLOB,
             allowNull: false,
         },
-    });
+    }
+        , {
+            freezeTableName: true
+        }
+    )
 
-    ForumComments.associate = (models) => {
-        ForumComments.belongsTo(models.ForumPosts, { 
+    ForumPost.associate = (models) => {
+        ForumPost.hasMany(models.ForumComment, {
+            onDelete: "CASCADE",
             foreignKey: {
-                name: 'forumPostId'
+                allowNull: false,
+                name: 'forumCommentId'
+            }
+        });
+        ForumPost.belongsTo(models.ForumTopic, { 
+            foreignKey: {
+                name: 'forumTopicId'
             } 
         });
-         ForumComments.belongsTo(models.User, { 
+        ForumPost.belongsTo(models.User, { 
             foreignKey: 'userId',
             as: 'user',
         });
-        ForumComments.belongsToMany(models.Review, {
-          through: "ReviewForumComments", // Specify the intermediary model
-          foreignKey: "forumCommentId", // Foreign key in ScheduleUser
-          otherKey: "reviewId", // Foreign key in Users
-        });
     };
 
-    return ForumComments;
+    return ForumPost;
 }

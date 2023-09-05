@@ -14,7 +14,9 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.DATE,
           allowNull: false,
       },
-  });
+  }, {
+    freezeTableName: true
+});
 
   Folder.associate = function(models) {
       Folder.hasMany(models.Document, {

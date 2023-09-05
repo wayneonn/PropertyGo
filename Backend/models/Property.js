@@ -2,6 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const Property = sequelize.define("Property", {
         propertyListingId: {
             type: DataTypes.BIGINT,
+            primaryKey: true,
             allowNull: false,
         },
         images: {

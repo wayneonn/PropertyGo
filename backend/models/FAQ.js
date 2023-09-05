@@ -1,31 +1,31 @@
 module.exports = (sequelize, DataTypes) => {
-    const Admin = sequelize.define("Admin", {
-        adminId: {
+    const FAQ = sequelize.define("FAQ", {
+        faqId: {
             type: DataTypes.BIGINT,
             allowNull: false,
             autoIncrement: true,
             primaryKey: true,
         },
-        userName: {
+        question: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        password: {
-            type: DataTypes.STRING,
+        answer: {
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
     }, {
         freezeTableName: true
-    });
+    }
+    )
 
-    Admin.associate = (models) => {
-        Admin.hasMany(models.FAQ, {
-            onDelete: "CASCADE",
+    FAQ.associate = (models) => {
+        FAQ.belongsTo(models.Admin, {
             foreignKey: {
-                allowNull: false
+                name: 'adminId'
             }
         });
     };
 
-    return Admin;
+    return FAQ;
 }
