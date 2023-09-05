@@ -29,8 +29,14 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     Document.associate = function(models) {
-        Document.belongsTo(models.User, { foreignKey: 'userId' });
-        Document.belongsTo(models.Transaction, { foreignKey: 'transactionId' });
+        Document.belongsTo(models.User, { 
+            foreignKey: 'userId', 
+            as: "Users", 
+        });
+        Document.belongsTo(models.Transaction, { 
+            foreignKey: 'transactionId', 
+            as: "Transactions", 
+        });
     }
 
     return Document;
