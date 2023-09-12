@@ -44,16 +44,17 @@ module.exports = (sequelize, DataTypes) => {
 
     Review.associate = function (models) {
         Review.belongsTo(models.User, {
-            foreignKey: 'userId',
+            foreignKey: {
+                name: 'userId',
+                allowNull: false,
+              },
             as: 'user',
         });
-        Review.belongsToMany(models.ForumComment, {
-            through: "ReviewForumComment", // Specify the intermediary model
-            foreignKey: "reviewId", // Foreign key in ScheduleUser
-            otherKey: "forumCommentId", // Foreign key in Users
-        });
         Review.belongsTo(models.Property, {
-            foreignKey: 'propertyId',
+            foreignKey: {
+                name: 'propertyId',
+                allowNull: false,
+              },
             as: 'property',
         });
         Review.belongsTo(models.Image, {
