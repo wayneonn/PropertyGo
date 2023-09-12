@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         Admin.hasMany(models.FAQ, {
           onDelete: "CASCADE",
           foreignKey: {
+            name: 'adminId',
             allowNull: false,
           },
           as: 'faqs',
@@ -32,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         Admin.hasMany(models.PartnerApplication, {
           onDelete: "CASCADE",
           foreignKey: {
+            name: 'adminId',
             allowNull: false,
           },
           as: 'partnerApplications', // Define an alias for the association
@@ -41,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
         Admin.hasMany(models.ForumTopic, {
           onDelete: "CASCADE",
           foreignKey: {
+            name: 'adminId',
             allowNull: false,
           },
           as: 'forumTopics', // Define an alias for the association
