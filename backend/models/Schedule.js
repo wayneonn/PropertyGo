@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
             through: "ScheduleUser", // Specify the intermediary model
             foreignKey: "scheduleId", // Foreign key in ScheduleUser
             otherKey: "userId", // Foreign key in User
+            allowNull: false,
         });
     };
 
