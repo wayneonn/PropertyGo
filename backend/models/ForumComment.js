@@ -25,5 +25,12 @@ module.exports = (sequelize, DataTypes) => {
     }
     )
 
+    ForumComment.associate = (models) => {
+        // Define a unidirectional relationship from ForumComment to Image (0..*)
+        ForumComment.belongsTo(models.Image, {
+            foreignKey: 'imageId',
+        });
+    };
+
     return ForumComment;
 }

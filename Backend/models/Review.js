@@ -30,31 +30,34 @@ module.exports = (sequelize, DataTypes) => {
         freezeTableName: true
     })
 
-    Review.prototype.changeDescription = function(newDescription) {
+    Review.prototype.changeDescription = function (newDescription) {
         this.description = newDescription;
     }
 
-    Review.prototype.changeImages = function(newImages) {
+    Review.prototype.changeImages = function (newImages) {
         this.images = newImages;
     }
 
-    Review.prototype.changeTitle = function(newTitle) {
+    Review.prototype.changeTitle = function (newTitle) {
         this.title = newTitle;
     }
 
-    Review.associate = function(models) {
+    Review.associate = function (models) {
         Review.belongsTo(models.User, {
             foreignKey: 'userId',
             as: 'user',
         });
         Review.belongsToMany(models.ForumComment, {
-          through: "ReviewForumComment", // Specify the intermediary model
-          foreignKey: "reviewId", // Foreign key in ScheduleUser
-          otherKey: "forumCommentId", // Foreign key in Users
+            through: "ReviewForumComment", // Specify the intermediary model
+            foreignKey: "reviewId", // Foreign key in ScheduleUser
+            otherKey: "forumCommentId", // Foreign key in Users
         });
         Review.belongsTo(models.Property, {
-          foreignKey: 'propertyId',
-          as: 'property',
+            foreignKey: 'propertyId',
+            as: 'property',
+        });
+        Review.belongsTo(models.Image, {
+            foreignKey: 'imageId',
         });
     }
 

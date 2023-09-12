@@ -46,14 +46,17 @@ module.exports = (sequelize, DataTypes) => {
                 name: 'forumCommentId'
             }
         });
-        ForumPost.belongsTo(models.ForumTopic, { 
+        ForumPost.belongsTo(models.ForumTopic, {
             foreignKey: {
                 name: 'forumTopicId'
-            } 
+            }
         });
-        ForumPost.belongsTo(models.User, { 
+        ForumPost.belongsTo(models.User, {
             foreignKey: 'userId',
             as: 'user',
+        });
+        ForumPost.belongsTo(models.Image, {
+            foreignKey: 'imageId',
         });
     };
 

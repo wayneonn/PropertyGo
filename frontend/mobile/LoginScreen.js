@@ -29,7 +29,7 @@ function LoginScreen({ navigation }) {
         showMessage('Login successful');
         setTimeout(() => {
           navigation.navigate('Home', { user: data });
-        }, 3000);
+        }, 2000);
       } else {
         showMessage(data.message);
       }
