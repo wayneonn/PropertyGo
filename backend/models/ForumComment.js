@@ -1,5 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
     const ForumComment = sequelize.define("ForumComment", {
+        forumCommentId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+            autoIncrement: true,
+            primaryKey: true,
+        },
         message: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -29,6 +35,10 @@ module.exports = (sequelize, DataTypes) => {
         // Define a unidirectional relationship from ForumComment to Image (0..*)
         ForumComment.belongsTo(models.Image, {
             foreignKey: 'imageId',
+        });
+        ForumComment.belongsTo(models.ForumPost, {
+            foreignKey: 'forumPostId', 
+            as: 'forumPost', 
         });
     };
 
