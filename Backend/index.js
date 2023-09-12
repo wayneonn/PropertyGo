@@ -29,7 +29,7 @@ db.sequelize.sync()
             console.log('Test data already exists in the database.');
         }
 
-        db.sequelize.sync()
+        db.sequelize.sync({ force: true })
             .then(() => {
                 app.listen(3000, () => {
                     console.log('Server running on port 3000');
