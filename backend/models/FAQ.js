@@ -16,14 +16,15 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         freezeTableName: true
-    }
-    )
+    });
 
     FAQ.associate = (models) => {
         FAQ.belongsTo(models.Admin, {
             foreignKey: {
-                name: 'adminId'
-            }
+                name: 'adminId',
+                allowNull: false, 
+            },
+            as: 'admin',
         });
     };
 
