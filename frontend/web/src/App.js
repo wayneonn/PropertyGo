@@ -3,6 +3,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Login from "./components/general/login.js";
 
+import "bootstrap/dist/css/bootstrap.min.css";
+
 function App() {
   const [listOfPosts, setListOfPosts] = useState([]);
 
