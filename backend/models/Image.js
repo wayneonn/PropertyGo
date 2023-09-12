@@ -18,5 +18,15 @@ module.exports = (sequelize, DataTypes) => {
         freezeTableName: true
     });
 
+    Image.associate = (models) => {
+        Image.belongsTo(models.Property, {
+            foreignKey: {
+                name: 'propertyId',
+                allowNull: false,
+              },
+            as: 'propertyListing',
+        });
+    };
+
     return Image;
 };
