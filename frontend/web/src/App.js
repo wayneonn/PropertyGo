@@ -1,18 +1,19 @@
 import "./App.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Login from "./components/general/login.js";
 
 function App() {
   const [listOfPosts, setListOfPosts] = useState([]);
 
-  useEffect(() => {
-    axios.get("http://localhost:3000/users").then((response) => {
-      setListOfPosts(response.data);
-    });
-  }, []);
+  // useEffect(() => {
+  //   axios.get("http://localhost:3000/users").then((response) => {
+  //     setListOfPosts(response.data);
+  //   });
+  // }, []);
   return (
     <div className="App">
-      {listOfPosts.map((value, key) => {
+      {/* {listOfPosts.map((value, key) => {
         return (
           <div className="user">
             <div className="title"> {value.title} </div>
@@ -20,7 +21,8 @@ function App() {
             <div className="footer">{value.username}</div>
           </div>
         );
-      })}
+      })} */}
+      <Login></Login>
     </div>
   );
 }
