@@ -84,7 +84,6 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKey: {
         name: 'userId', 
-        allowNull: false
       },
       as: 'requests'
     });
@@ -92,7 +91,6 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKey: {
         name: 'userId', 
-        allowNull: false
       },
       as: 'notifications'
     });
@@ -100,15 +98,13 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKey: {
         name: 'userId', 
-        allowNull: false
       },
-      as: 'contactUss'
+      as: 'contactUs-es'
     }),
       User.hasMany(models.ForumTopic, {
         onDelete: "CASCADE",
         foreignKey: {
           name: 'userId', 
-          allowNull: false
         },
         as: 'forumTopics'
       });
@@ -116,7 +112,6 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKey: {
         name: 'userId', 
-        allowNull: false
       },
       as: 'forumComments'
     });
@@ -132,7 +127,6 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKey: {
         name: 'userId', 
-        allowNull: false
       },
       as: 'reviews'
     });
@@ -140,7 +134,6 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKey: {
         name: 'userId', 
-        allowNull: false
       },
       as: 'receiverChats'
     });
@@ -148,14 +141,13 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKey: {
         name: 'userId', 
-        allowNull: false
       },
       as: 'senderChats'
     });
     User.hasMany(models.Property, {
       onDelete: "CASCADE",
       foreignKey: {
-        allowNull: false
+        name: 'userId',
       },
       as: 'favourites'
     });
@@ -163,7 +155,6 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKey: {
         name: 'userId', 
-        allowNull: false
       },
       as: 'buyerListings'
     });
@@ -179,7 +170,6 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKey: {
         name: 'userId', 
-        allowNull: false
       },
       as: 'agentListings'
     });
@@ -187,14 +177,35 @@ module.exports = (sequelize, DataTypes) => {
       through: "ScheduleUser", // Specify the intermediary model
       foreignKey: "userId", // Foreign key in ScheduleUser
       otherKey: "scheduleId", // Foreign key in Schedule
+      as: "schedules",
     });
     User.hasMany(models.Folder, {
       onDelete: "CASCADE",
       foreignKey: {
         name: 'userId', 
-        allowNull: false
       },
       as: 'folders'
+    });
+    User.hasMany(models.ForumPost, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'userId', 
+      },
+      as: 'forumPosts'
+    });
+    User.hasMany(models.Transaction, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'userId', 
+      },
+      as: 'transactions'
+    });
+    User.hasOne(models.PartnerApplication, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'userId', 
+      },
+      as: 'partnerApplication'
     });
   };
 

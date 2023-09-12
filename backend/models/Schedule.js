@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: "scheduleId", // Foreign key in ScheduleUser
             otherKey: "userId", // Foreign key in User
             allowNull: false,
+            as: "users",
         });
     };
 
