@@ -44,32 +44,32 @@ module.exports = (sequelize, DataTypes) => {
       },
       rating: {
         type: DataTypes.DOUBLE,
-        allowNull: false,
+        allowNull: true,
         defaultValue: 0,
       },
       experience: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       projectsCompleted: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       companyName: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+        type: DataTypes.STRING,
+        allowNull: true,
       },
       startTime: {
         type: DataTypes.TIME,
-        allowNull: false,
+        allowNull: true,
       },
       endTime: {
         type: DataTypes.TIME,
-        allowNull: false,
+        allowNull: true,
       },
-      specialization: {
+      contractorSpecialization: {
         type: DataTypes.ENUM('MOVER', 'INTERIOR DESIGNER', 'PLUMBER', 'CARPENTER'),
-        allowNull: false,
+        allowNull: true,
       },
       userType: {
         type: DataTypes.ENUM('LAWYER', 'PROPERTY AGENT', 'CONTRACTOR', 'BUYER', 'SELLER'),
