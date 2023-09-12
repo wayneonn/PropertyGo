@@ -21,15 +21,23 @@ module.exports = (sequelize, DataTypes) => {
         ForumTopic.hasMany(models.ForumPost, {
             onDelete: "CASCADE",
             foreignKey: {
-                allowNull: false,
                 name: 'forumPostId'
-            }
+            },
+            as: 'forumPosts',
         });
         ForumTopic.belongsTo(models.User, { 
             foreignKey: {
+                allowNull: false,
                 name: 'userId'
             },
             as: 'user',
+        });
+        ForumTopic.belongsTo(models.Admin, { 
+            foreignKey: {
+                allowNull: false,
+                name: 'adminId'
+            },
+            as: 'admin',
         });
     };
 
