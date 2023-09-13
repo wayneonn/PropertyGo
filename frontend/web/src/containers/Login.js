@@ -29,12 +29,10 @@ const Login = () => {
 
       if (response.status === 200) {
         alert("Login successful");
-      } else {
-        alert("Login unsuccessful");
-      }
+      } 
 
     } catch (error) {
-      alert("Invalid credentials");
+      alert("Login unsuccessful");
     }
   };
 
