@@ -1,20 +1,41 @@
+// components
 import React, { useState, useContext } from "react";
-import { Card, Container, Row, Col, Button, Form } from "react-bootstrap";
+import { Card, Row, Col, Button, Form } from "react-bootstrap";
 import { BiRightArrowAlt } from "react-icons/bi";
 
+// utils
+import API from "../services/API";
+
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  // const navigate = useNavigate();
 
-  // const { loginAdmin } = useContext(AuthContext);
-
-  const handleUsernameChange = (e) => {
-    setUsername(e.target.value);
+  const handleUserNameChange = (e) => {
+    setUserName(e.target.value);
   };
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await API.post('/admin/auth/login', {
+        userName,
+        password
+      });
+
+      if (response.status === 200) {
+        alert("Login successful");
+      } else {
+        alert("Login unsuccessful");
+      }
+
+    } catch (error) {
+      alert("Invalid credentials");
+    }
   };
 
   return (
@@ -70,7 +91,7 @@ const Login = () => {
               <Card.Title style={{ fontWeight: "bold", fontSize: "24px" }}>
                 Login to your account
               </Card.Title>
-              <div>
+              <Form onSubmit={handleSubmit}>
                 <div>
                   <Form.Label htmlFor="inputUsername">Username</Form.Label>
                   <br />
@@ -82,6 +103,7 @@ const Login = () => {
                       height: "2.5em",
                       borderRadius: "0.5em",
                     }}
+                    onChange={handleUserNameChange}
                   />
                 </div>
                 <br />
@@ -97,6 +119,7 @@ const Login = () => {
                       height: "2.5em",
                       borderRadius: "0.5em",
                     }}
+                    onChange={handlePasswordChange}
                   />
                 </div>
                 <br />
@@ -104,6 +127,7 @@ const Login = () => {
                   <Button
                     variant="warning"
                     size="md"
+                    type="submit"
                     style={{
                       borderRadius: "160px",
                       backgroundColor: "#FDE933",
@@ -114,7 +138,7 @@ const Login = () => {
                     <BiRightArrowAlt />
                   </Button>
                 </div>
-              </div>
+              </Form>
             </Card.Body>
           </Col>
         </Row>

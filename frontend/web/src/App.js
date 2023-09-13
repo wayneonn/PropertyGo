@@ -1,7 +1,7 @@
 import "./App.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Login from "../containers/login.js";
+import Login from "./containers/Login";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 

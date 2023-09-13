@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {User, Lawyer} = require("../models")
+const {User, Lawyer} = require("../../models")
 
 router.get("/", async (req, res)=>{
     const listOfUser = await User.findAll();
