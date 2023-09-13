@@ -98,15 +98,24 @@ module.exports = (sequelize, DataTypes) => {
 
     Property.associate = (models) => {
         Property.belongsTo(models.User, {
-            foreignKey: 'userId',
+            foreignKey: {
+                name: 'userId',
+                allowNull: false,
+              },
             as: 'buyer',
         });
         Property.belongsTo(models.User, {
-          foreignKey: 'userId',
+            foreignKey: {
+                name: 'userId',
+                allowNull: false,
+              },
           as: 'propertyAgent',
         });
         Property.belongsTo(models.User, {
-          foreignKey: 'userId',
+            foreignKey: {
+                name: 'userId',
+                allowNull: false,
+              },
           as: 'seller',
         });
         Property.hasMany(models.Chat, {
@@ -118,8 +127,15 @@ module.exports = (sequelize, DataTypes) => {
             as: 'reviews',
         });
         Property.hasOne(models.Transaction, {
-          foreignKey: 'propertyId', // This will be the foreign key in the Transaction model
+            foreignKey: {
+                name: 'transactionId',
+                allowNull: false,
+              }, // This will be the foreign key in the Transaction model
           onDelete: 'CASCADE', // If an invoice is deleted, delete the associated transaction
+        });
+        Property.hasMany(models.Image, {
+            foreignKey: 'imageId',
+            as: 'propertyImages',
         });
     };
 

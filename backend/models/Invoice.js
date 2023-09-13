@@ -19,7 +19,10 @@ module.exports = (sequelize, DataTypes) => {
 
     Invoice.associate = (models) => {
         Invoice.hasOne(models.Transaction, {
-            foreignKey: 'invoiceId', // This will be the foreign key in the Transaction model
+            foreignKey: {
+                name: 'invoiceId',
+                allowNull: false, 
+            }, 
             onDelete: 'CASCADE', // If an invoice is deleted, delete the associated transaction
         });
     };

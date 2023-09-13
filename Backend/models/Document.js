@@ -32,25 +32,28 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     Document.associate = function(models) {
-        Document.belongsTo(models.User, { 
-            foreignKey: 'userId', 
-            as: "User", 
+        Document.belongsTo(models.User, {
+            foreignKey: {
+                name: 'userId',
+                allowNull: false, 
+            },
+            as: "User",
         });
-        Document.belongsTo(models.Transaction, { 
-            foreignKey: 'transactionId', 
-            as: "Transaction", 
+
+        Document.belongsTo(models.Transaction, {
+            foreignKey: {
+                name: 'transactionId',
+                allowNull: false, 
+            },
+            as: "Transaction",
         });
-        // Document.belongsTo(models.User, { 
-        //     foreignKey: 'userId', 
-        //     as: "Users", 
-        // });
-        Document.belongsTo(models.Transaction, { 
-            foreignKey: 'transactionId', 
-            as: "transaction", 
-        });
+
         Document.belongsTo(models.Folder, {
-            foreignKey: 'folderId',
-            as: "folder",
+            foreignKey: {
+                name: 'folderId',
+                allowNull: false, 
+            },
+            as: "Folder",
         });
     }
 

@@ -19,8 +19,13 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Message.associate = (models) => {
-        Message.belongsTo(models.Chat);
-    };
+        Message.belongsTo(models.Chat, {
+          foreignKey: {
+            name: 'chatId',
+            allowNull: false,
+          },
+        });
+      };      
 
     return Message;
 };

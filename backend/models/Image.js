@@ -1,32 +1,32 @@
 module.exports = (sequelize, DataTypes) => {
-    const FAQ = sequelize.define("FAQ", {
-        faqId: {
+    const Image = sequelize.define("Image", {
+        imageId: {
             type: DataTypes.BIGINT,
             allowNull: false,
             autoIncrement: true,
             primaryKey: true,
         },
-        question: {
+        title: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        answer: {
-            type: DataTypes.INTEGER,
+        image: {
+            type: DataTypes.BLOB,
             allowNull: false,
         },
     }, {
         freezeTableName: true
     });
 
-    FAQ.associate = (models) => {
-        FAQ.belongsTo(models.Admin, {
+    Image.associate = (models) => {
+        Image.belongsTo(models.Property, {
             foreignKey: {
-                name: 'adminId',
-                allowNull: false, 
-            },
-            as: 'admin',
+                name: 'propertyId',
+                allowNull: false,
+              },
+            as: 'propertyListing',
         });
     };
 
-    return FAQ;
-}
+    return Image;
+};

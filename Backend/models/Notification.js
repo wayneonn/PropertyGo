@@ -32,7 +32,10 @@ module.exports = (sequelize, DataTypes) => {
 
     Notification.associate = (models) => {
         Notification.belongsTo(models.User, {
-            foreignKey: 'userId',
+            foreignKey: {
+                name: 'userId',
+                allowNull: false,
+              },
             as: 'user',
         });
     };
