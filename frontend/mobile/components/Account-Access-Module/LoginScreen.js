@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
+import { loginUser } from '../../utils/api';
 
 function LoginScreen({ navigation }) {
   const [userName, setUserName] = useState('');
@@ -14,27 +15,15 @@ function LoginScreen({ navigation }) {
   };
 
   const handleLogin = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/user/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userName, password }),
-      });
+    const { success, data, message } = await loginUser(userName, password);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        showMessage('Login successful');
-        setTimeout(() => {
-          navigation.navigate('Home', { user: data });
-        }, 2000);
-      } else {
-        showMessage(data.message);
-      }
-    } catch (error) {
-      showMessage(error.message);
+    if (success) {
+      showMessage('Login successful');
+      setTimeout(() => {
+        navigation.navigate('Home Screen', { user: data });
+      }, 2000);
+    } else {
+      showMessage(message);
     }
   };
 
