@@ -14,11 +14,12 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-      <Stack.Screen name="Home Page" component={HomePage} />
+        {/* <Stack.Screen name="Home Page" component={HomePage} /> */}
         <Stack.Screen name="Get Started" component={GetStarted} />
         <Stack.Screen name="Login Portal" component={LoginPortal} />
         <Stack.Screen name="Home Screen" component={HomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Home Page" component={HomePage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

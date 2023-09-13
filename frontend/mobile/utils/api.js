@@ -4,7 +4,7 @@ const USER_ENDPOINT = 'user';
 
 export const loginUser = async (userName, password) => {
     try {
-      const response = await fetch(`${BASE_URL_WAYNE}/${USER_ENDPOINT}/login`, {
+      const response = await fetch(`${BASE_URL}/${USER_ENDPOINT}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
