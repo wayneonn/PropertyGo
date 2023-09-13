@@ -44,7 +44,7 @@ const GetStarted = () => {
             <TouchableOpacity key={index} onPress={() => handleSwipe(index)} style={[styles.bubble, currentIndex === index && styles.activeBubble]} />
           ))}
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home Screen')}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login Portal')}>
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
       </View>
