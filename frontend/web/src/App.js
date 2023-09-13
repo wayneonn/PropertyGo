@@ -1,7 +1,9 @@
 import "./App.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Login from "../containers/login.js";
+// import Login from "./containers/login";
+import Sidebar from "./components/Common/Sidebar";
+import Topbar from "./components/Common/Topbar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -24,7 +26,9 @@ function App() {
           </div>
         );
       })} */}
-      <Login></Login>
+      {/* <Login></Login> */}
+      <Sidebar></Sidebar>
+      <Topbar></Topbar>
     </div>
   );
 }
