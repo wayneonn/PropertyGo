@@ -2,6 +2,7 @@
 import React, { useState, useContext } from "react";
 import { Card, Row, Col, Button, Form } from "react-bootstrap";
 import { BiRightArrowAlt } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 // utils
 import API from "../services/API";
@@ -9,6 +10,8 @@ import API from "../services/API";
 const Login = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+
+  const navgiate = useNavigate();
 
   const handleUserNameChange = (e) => {
     setUserName(e.target.value);
@@ -28,7 +31,7 @@ const Login = () => {
       });
 
       if (response.status === 200) {
-        alert("Login successful");
+        navgiate("/login");
       } 
 
     } catch (error) {
