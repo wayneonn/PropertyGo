@@ -1,5 +1,5 @@
 const BASE_URL = 'http://localhost:3000';
-const BASE_URL_WAYNE = 'http://10.0.0.17:3000';
+const BASE_URL_WAYNE = 'http://172.25.106.189:3000';
 const USER_ENDPOINT = 'user';
 
 export const loginUser = async (userName, password) => {
