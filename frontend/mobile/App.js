@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './LoginScreen';
 import HomeScreen from './HomeScreen';
+import UploadScreen from './DocumentScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +14,7 @@ function App() {
       <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Document" component={UploadScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

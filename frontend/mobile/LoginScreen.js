@@ -59,6 +59,10 @@ function LoginScreen({ navigation }) {
           <Text>{message}</Text>
         </View>
       )}
+      <Button
+        title="Go to Upload Document"
+        onPress={() => navigation.navigate('Document')}
+      />
     </View>
   );
 }
