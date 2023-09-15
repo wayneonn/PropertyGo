@@ -1,12 +1,23 @@
-// This is the route for the documents.
-// Using multer to handle filedata -> may switch to using body-parser if this does not work well.
 const express = require("express");
+const bodyParser = require("body-parser");
 const multer = require("multer");
+const cors = require("cors");
 
 const app = express();
-const upload = multer({ dest: "uploads/" });
+app.use(cors());
 
-app.post("/documents/upload", upload.array("documents"), (req, res) => {
+// Set up multer to handle file uploads
+const storage = multer.diskStorage({
+  destination: "uploads/",
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage });
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.post("/documents/upload", upload.array("documents[]"), (req, res) => {
   // Handle the uploaded files
   const files = req.files;
 
@@ -14,6 +25,7 @@ app.post("/documents/upload", upload.array("documents"), (req, res) => {
   // For example, you can move the files to a different directory, save their metadata to a database, etc.
 
   // Sending a response back
+  console.log(req.files);
   res.json({ message: "File upload successful" });
 });
 

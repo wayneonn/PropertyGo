@@ -11,6 +11,8 @@ import * as DocumentPicker from "expo-document-picker";
 // Using Axios to handle API request
 import axios from "axios";
 
+const url = "127.0.0.1:3000/documents/upload";
+
 // TODO: Add the API backend to consume the documents added.
 // Got to figure out what the API spits back.
 function UploadScreen({ navigation }) {
@@ -20,29 +22,40 @@ function UploadScreen({ navigation }) {
     try {
       const results = await DocumentPicker.getDocumentAsync({ multiple: true });
       if (results.canceled === false) {
-        console.log(results.assets);
         const newSelectedDocuments = results.assets;
         setSelectedDocuments([...selectedDocuments, ...newSelectedDocuments]);
 
         //Begin logic to send data to API
+        // Is FormData the appropriate one?
         const fileData = new FormData();
         // Append each selected document to the FormData object
         newSelectedDocuments.forEach((document) => {
-          formData.append("documents", {
+          fileData.append("documents[]", {
             uri: document.uri,
+            type: document.type,
             name: document.name,
-            type: document.mimeType,
           });
+          console.log(document);
         });
+        // Display the key/value pairs for FormData
+        // This is kinda finnicky because it is not sending the file properly.
+        console.log(fileData.get("documents"));
 
         // Send data to the endpoint.
-        const response = axios.post("/documents/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+        // HTTP needs to be added on...
+        // Send the fileData to the endpoint using fetch
+        const response = await fetch("http://127.0.0.1:3000/documents/upload", {
+          method: "POST",
+          body: fileData,
         });
 
-        console.log("Upload response:", response.data);
+        // Check the response status and log the result
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Upload response:", data);
+        } else {
+          throw new Error("File upload failed");
+        }
       }
     } catch (error) {
       console.log("Error selecting documents:", error);
