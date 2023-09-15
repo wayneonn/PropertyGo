@@ -2,31 +2,84 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const cors = require("cors");
+const admin = require("firebase-admin");
 
+//Setup for the server + Firebase connection.
+var serviceAccount = require("../config/service-account.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "gs://propertygo-b6e58.appspot.com",
+});
 const app = express();
 app.use(cors());
 
-// Set up multer to handle file uploads
+// Temporary Disk Storage for Testing.
 const storage = multer.diskStorage({
   destination: "uploads/",
   filename: (req, file, cb) => {
     cb(null, file.originalname);
   },
 });
-const upload = multer({ storage });
+const upload = multer({ storage, limits: { fieldSize: 25 * 1024 * 1024 } });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post("/documents/upload", upload.array("documents[]"), (req, res) => {
+// API works when tested with Insomnia.
+// Works with one more more then one.
+// TODO: Append UserID to the file so we can grab it by UserID in the giant bucket.
+// TODO: Or add more folders to it so each user gets a unique folder.
+app.post("/documents/upload", upload.array("documents"), async (req, res) => {
   // Handle the uploaded files
   const files = req.files;
+  console.log(`-----START--------\
+  ${files}\
+  --------END--------`);
 
   // Perform necessary operations with the uploaded files
   // For example, you can move the files to a different directory, save their metadata to a database, etc.
 
+  try {
+    // Upload each file to Firebase Storage
+    // This works now, nowwe just need to get the pull function down.
+    for (const file of files) {
+      const defaultBucket = admin.storage().bucket(); // Get the default Firebase Storage bucket
+      const fileUpload = defaultBucket.file(file.originalname);
+
+      await fileUpload.save(file.buffer, {
+        metadata: {
+          contentType: file.mimetype,
+          metadata: {
+            customMetadata: {
+              originalname: file.originalname,
+              // Add more custom metadata if needed
+            },
+          },
+        },
+      });
+    }
+  } catch (error) {
+    // Handle any errors
+    console.error(error);
+    res.status(500).json({ message: "File upload to Firebase failed" });
+  }
+
   // Sending a response back
-  console.log(req.files);
+  console.log(files);
   res.json({ message: "File upload successful" });
+});
+
+// Give us the whole list of the documents.
+app.get("/documents/list", async (req, res) => {
+  try {
+    const bucket = admin.storage().bucket(); // Get the default Firebase Storage bucket
+    const [files] = await bucket.getFiles();
+    const documentList = files.map((file) => file.name);
+    res.json(documentList);
+  } catch (error) {
+    // Handle any errors
+    console.error(error);
+    res.status(500).json({ message: "Failed to retrieve the document list" });
+  }
 });
 
 app.listen(3000, () => {
