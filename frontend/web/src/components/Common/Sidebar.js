@@ -12,7 +12,7 @@ import {
 import { PiPuzzlePiece, PiHouseLine } from "react-icons/pi";
 import { GoPerson } from "react-icons/go";
 
-const Sidebar = () => {
+const SideBar = () => {
   return (
     <div className="navibar">
       <Nav defaultActiveKey="/" className="flex-column">
@@ -123,4 +123,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SideBar;
