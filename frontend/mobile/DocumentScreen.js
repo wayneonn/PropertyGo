@@ -1,7 +1,18 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, Button, FlatList, TouchableOpacity } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Button,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
+import * as DocumentPicker from "expo-document-picker";
+// Using Axios to handle API request
+import axios from "axios";
 
+// TODO: Add the API backend to consume the documents added.
+// Got to figure out what the API spits back.
 function UploadScreen({ navigation }) {
   const [selectedDocuments, setSelectedDocuments] = useState([]);
 
@@ -12,9 +23,29 @@ function UploadScreen({ navigation }) {
         console.log(results.assets);
         const newSelectedDocuments = results.assets;
         setSelectedDocuments([...selectedDocuments, ...newSelectedDocuments]);
+
+        //Begin logic to send data to API
+        const fileData = new FormData();
+        // Append each selected document to the FormData object
+        newSelectedDocuments.forEach((document) => {
+          formData.append("documents", {
+            uri: document.uri,
+            name: document.name,
+            type: document.mimeType,
+          });
+        });
+
+        // Send data to the endpoint.
+        const response = axios.post("/documents/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        console.log("Upload response:", response.data);
       }
     } catch (error) {
-      console.log('Error selecting documents:', error);
+      console.log("Error selecting documents:", error);
     }
   };
 
@@ -41,7 +72,9 @@ function UploadScreen({ navigation }) {
         <Text style={styles.detailText}>List of Documents:</Text>
         <FlatList
           data={selectedDocuments.length > 0 ? selectedDocuments : documents}
-          keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+          keyExtractor={(item, index) =>
+            item.id ? item.id.toString() : index.toString()
+          }
           renderItem={renderDocumentItem}
         />
       </View>
@@ -53,34 +86,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   headerText: {
     fontSize: 24,
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   detailText: {
     fontSize: 16,
     marginBottom: 8,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   documentListContainer: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
     padding: 12,
-    paddingTop: 14
+    paddingTop: 14,
   },
   documentItem: {
     padding: 12,
     marginBottom: 8,
-    backgroundColor: '#F8F8F8',
+    backgroundColor: "#F8F8F8",
     borderRadius: 8,
   },
   documentText: {
     fontSize: 14,
-    color: '#333',
+    color: "#333",
   },
 });
 
