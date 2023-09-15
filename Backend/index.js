@@ -8,7 +8,8 @@ const userTestData = require('./test_data/userTestData');
 const adminTestData = require('./test_data/adminTestData');
 
 // admin routes
-const adminAuthentication = require('./routes/admin/authentication');
+const authRouter = require('./routes/admin/authRoutes');
+const adminRouter = require('./routes/admin/adminRoutes');
 
 // user routes
 const postRouter = require('./routes/user/User')
@@ -17,7 +18,8 @@ const loginRoute = require('./routes/user/loginRoute');
 app.use(cors());
 app.use(express.json());
 
-app.use('/admin/auth', adminAuthentication);
+app.use('/admin', adminRouter);
+app.use('/admin/auth', authRouter);
 
 app.use("/user", postRouter, loginRoute);
 
@@ -55,15 +57,6 @@ db.sequelize.sync()
             console.log('Admin test data already exists in the database.');
         }
 
-        // db.sequelize.sync({ force: true })
-        //     .then(() => {
-        //         app.listen(3000, () => {
-        //             console.log('Server running on port 3000');
-        //         });
-        //     })
-        //     .catch((error) => {
-        //         console.error('Sequelize sync error:', error);
-        //     });
         app.listen(3000, () => {
             console.log('Server running on port 3000');
         });
