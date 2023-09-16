@@ -12,4 +12,3 @@ router.patch('/updateUserName', updateAdminUsername);
 router.patch('/updatePassword', updateAdminPassword);
 
 module.exports = router;
-console.log("test");

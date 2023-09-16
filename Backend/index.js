@@ -13,6 +13,7 @@ const faqTestData = require('./test_data/faqTestData');
 // admin routes
 const authRouter = require('./routes/admin/authRoutes');
 const adminRouter = require('./routes/admin/adminRoutes');
+const faqRouter = require('./routes/admin/faqRoutes');
 
 // user routes
 const postRouter = require('./routes/user/User')
@@ -23,6 +24,7 @@ app.use(express.json());
 
 app.use('/admin', adminRouter);
 app.use('/admin/auth', authRouter);
+app.use('/admin/faqs', faqRouter);
 
 app.use("/user", postRouter, loginRoute);
 
