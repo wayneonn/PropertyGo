@@ -57,7 +57,10 @@ const Login = () => {
         });
 
         if (response.status === 200) {
-          // TODO: Add localStorage
+          const { adminId, userName } = response.data;
+
+          localStorage.setItem("adminId", adminId)
+          localStorage.setItem("userName", userName);
           navigate("/admin/profile");
         }
 
@@ -72,7 +75,7 @@ const Login = () => {
       <div className="loginToast">
         <Row>
           <Col xs={6}>
-            <Toast bg="warning" onClose={() => setShow(false)} show={show} delay={4000} autohide >
+            <Toast bg="warning" onClose={() => setShow(false)} show={show} delay={4000} autohide>
               <Toast.Header>
                 <strong className="me-auto">Login Unsuccessful</strong>
               </Toast.Header>
@@ -128,7 +131,6 @@ const Login = () => {
                         style={{
                           width: "25em",
                           height: "2.5em",
-                          // borderRadius: "0.5em",
                         }}
                         onChange={handlePasswordChange}
                       />
@@ -155,7 +157,6 @@ const Login = () => {
                         style={{
                           width: "25em",
                           height: "2.5em",
-                          // borderRadius: "0.5em",
                         }}
                         onChange={handlePasswordChange}
                       />

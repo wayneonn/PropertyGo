@@ -1,9 +1,19 @@
 import { React, useState } from "react";
 import "./styles/Topbar.css";
 import { IoMdNotificationsOutline, IoIosLogOut } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminId");
+    localStorage.removeItem("userName");
+
+    navigate("/");
+  }
 
   return (
     <div className="topbar">
@@ -37,21 +47,7 @@ const TopBar = () => {
       </div>
       <div className="icons-container">
         <IoMdNotificationsOutline className="notif"></IoMdNotificationsOutline>
-        <div className="admin">
-          <img
-            src="admin.png"
-            alt="admin"
-            // onClick={() => }
-            style={{
-              width: "32px",
-              height: "32px",
-              cursor: "pointer",
-              marginTop: "4px",
-              marginLeft: "4px",
-            }}
-          />
-        </div>
-        <IoIosLogOut className="notif"></IoIosLogOut>
+        <IoIosLogOut className="notif" onClick={handleLogout}></IoIosLogOut>
       </div>
     </div>
   );
