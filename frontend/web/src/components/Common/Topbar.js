@@ -1,15 +1,27 @@
 import { React, useState } from "react";
 import "./styles/Topbar.css";
 import { IoMdNotificationsOutline, IoIosLogOut } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
+
+  const navigate = useNavigate();
+
+  const imageBasePath =
+    window.location.protocol + "//" + window.location.host + "/images/";
+
+  const handleLogout = () => {
+    localStorage.removeItem("loggedInAdmin");
+
+    navigate("/login");
+  };
 
   return (
     <div className="topbar">
       <div className="searchbar">
         <img
-          src="search.webp"
+          src={imageBasePath + "search.webp"}
           alt="search"
           // onClick={() => search(searchQuery)}
           style={{
@@ -37,7 +49,7 @@ const TopBar = () => {
       </div>
       <div className="icons-container">
         <IoMdNotificationsOutline className="notif"></IoMdNotificationsOutline>
-        <IoIosLogOut className="notif"></IoIosLogOut>
+        <IoIosLogOut className="notif" onClick={handleLogout}></IoIosLogOut>
       </div>
     </div>
   );
