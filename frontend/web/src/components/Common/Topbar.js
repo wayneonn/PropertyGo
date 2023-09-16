@@ -7,19 +7,20 @@ const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
+  
+  const imageBasePath = window.location.protocol + "//" + window.location.host + "/images/";
 
   const handleLogout = () => {
-    localStorage.removeItem("adminId");
-    localStorage.removeItem("userName");
+    localStorage.removeItem("loggedInAdmin");
 
-    navigate("/");
+    navigate("/login");
   }
 
   return (
     <div className="topbar">
       <div className="searchbar">
         <img
-          src="search.webp"
+          src={imageBasePath + "search.webp"}
           alt="search"
           // onClick={() => search(searchQuery)}
           style={{

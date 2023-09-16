@@ -1,12 +1,15 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Button, Form, InputGroup, Modal } from "react-bootstrap";
 import "./Adminprofile.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { BsFillKeyFill } from "react-icons/bs";
 import { VscEyeClosed, VscEye } from "react-icons/vsc";
 
+// utils
+import API from "../services/API";
+
 const AdminProfile = () => {
-  const [userName, setUserName] = useState("username"); //set static username first, later fetch from backend
+  const [userName, setUserName] = useState("");
   const [newUserName, setNewUserName] = useState("");
   const [password, setPassword] = useState(""); //set static password first, later fetch from backend
   const [newPassword, setNewPassword] = useState("");
@@ -17,6 +20,8 @@ const AdminProfile = () => {
   const [showEditUsername, setShowEditUsername] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
+  const adminId = localStorage.getItem("loggedInAdmin");
+
   const toggleEditUsernameModal = () => {
     setShowEditUsername(!showEditUsername);
   };
@@ -25,12 +30,19 @@ const AdminProfile = () => {
     setShowChangePassword(!showChangePassword);
   };
 
-  const handleUsernameSave = (e) => {
-    setUserName(newUserName);
-    setNewUserName("");
-    setShowEditUsername(false);
-
+  const handleUsernameSave = async () => {
     //save to database
+    const response = await API.patch('/admins/updateUserName', {
+      oldUserName: userName,
+      updatedUserName: newUserName
+    });
+
+    if (response.status === 200) {
+      alert("You have updated your userName successfully!");
+      setUserName(newUserName);
+      setNewUserName("");
+      setShowEditUsername(false);
+    }
   };
 
   const handlePasswordSave = (e) => {
@@ -53,6 +65,21 @@ const AdminProfile = () => {
     setShowChangePassword(false);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const test = await API.get(`/admins/${localStorage.getItem("loggedInAdmin")}`);
+        const { userName } = test.data;
+
+        setUserName(userName);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
   return (
     <div className="admin-profile">
       <div style={{ marginTop: "40px", marginLeft: "60px" }}>
@@ -73,7 +100,7 @@ const AdminProfile = () => {
                 User Name
               </Form.Label>
               <InputGroup>
-                <Form.Control type="text" name="username" value={userName} />
+                <Form.Control type="text" name="username" value={userName} readOnly />
                 <Button
                   // variant="primary"
                   id="editUsername"
@@ -120,7 +147,7 @@ const AdminProfile = () => {
             position: "initial",
           }}
         >
-          <Modal.Dialog show={showEditUsername}>
+          <Modal.Dialog show="true">
             <Modal.Header>
               <Modal.Title
                 style={{
@@ -186,7 +213,7 @@ const AdminProfile = () => {
           </Modal.Dialog>
         </div>
       )}
-      {showChangePassword && (
+      {/* {showChangePassword && (
         <div
           className="modal show"
           style={{
@@ -459,7 +486,7 @@ const AdminProfile = () => {
             </Modal.Footer>
           </Modal.Dialog>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

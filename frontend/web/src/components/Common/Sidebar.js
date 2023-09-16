@@ -13,12 +13,15 @@ import { PiPuzzlePiece, PiHouseLine } from "react-icons/pi";
 import { GoPerson } from "react-icons/go";
 
 const SideBar = () => {
+
+  const imageBasePath = window.location.protocol + "//" + window.location.host + "/images/";
+
   return (
     <div className="navibar">
       <Nav defaultActiveKey="/" className="flex-column">
         <Nav.Item>
           <Image
-            src="Logo.png"
+            src={imageBasePath + "Logo.png"}
             alt=".."
             style={{
               width: "30px",

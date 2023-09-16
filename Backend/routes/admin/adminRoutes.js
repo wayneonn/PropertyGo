@@ -7,7 +7,7 @@ const {
     updateAdminPassword
 } = require('../../controllers/admin/adminController');
 
-router.get('/', getSingleAdmin);
+router.get('/:id', getSingleAdmin);
 router.patch('/updateUserName', updateAdminUsername);
 router.patch('/updatePassword', updateAdminPassword);
 

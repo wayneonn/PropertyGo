@@ -48,19 +48,17 @@ const Login = () => {
 
     const form = e.currentTarget;
 
-    // Check if both userName and password fields have values
     if (form.checkValidity() === true && userName && password) {
       try {
         const response = await API.post('/admin/auth/login', {
           userName,
           password
         });
-
+        
         if (response.status === 200) {
-          const { adminId, userName } = response.data;
+          const { adminId } = response.data;
 
-          localStorage.setItem("adminId", adminId)
-          localStorage.setItem("userName", userName);
+          localStorage.setItem("loggedInAdmin", adminId);
           navigate("/admin/profile");
         }
 
@@ -122,7 +120,7 @@ const Login = () => {
                 <div>
                   <Form.Label htmlFor="inputPassword">Password</Form.Label>
                   <br />
-                  {openEye == false ? (
+                  {openEye === false ? (
                     <InputGroup>
                       <Form.Control
                         type="password"
