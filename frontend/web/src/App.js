@@ -31,6 +31,7 @@ function App() {
         <Route path="/login" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Login />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/admin/profile" element={<AdminProfile />} />
+        <Route path="/admin/faq" element={<Faq/>} />
       </Routes>
       {/* <Faq/> */}
     </BrowserRouter>
