@@ -5,18 +5,16 @@ import "./Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdPageview, MdDelete } from "react-icons/md";
 
+import API from "../services/API";
+
 const Faq = () => {
   const [faqs, setFaqs] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const response = await axios.get(`http://localhost:3000/admin/faqs`);
-        // setFaqs(response.data);
-        // console.log(response.data.size);
-        // const test = await API.get(`/admins/faqs`);
-        // const { faqs } = test.data;
-        // setFaqs(faqs);
+        const response = await API.get(`http://localhost:3000/admin/faqs`);
+        setFaqs(response.data.faqs);
       } catch (error) {
         console.error(error);
       }
@@ -78,7 +76,7 @@ const Faq = () => {
               {Array.isArray(faqs) && faqs.length > 0 ? (
                 <tbody>
                   {faqs.map((faq) => (
-                    <tr key={faq.id}>
+                    <tr key={faq.faqId}>
                       <td>{faq.question}</td>
                       <td>{faq.answer}</td>
                       <td>{faq.createdAt}</td>
