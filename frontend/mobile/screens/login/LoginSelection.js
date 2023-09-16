@@ -5,18 +5,25 @@ import { RFValue } from 'react-native-responsive-fontsize';
 
 const { width, height } = Dimensions.get('window');
 
-const LoginPortal = () => {
+const LoginSelection = () => {
     const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
             <Text style={styles.welcomeText}>Welcome to PropertyGo!</Text>
             <Image source={require('../../assets/PropertyGo-HighRes-Logo.png')} style={styles.icon} />
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login Options')}>
-                <Text style={styles.buttonText}>Sign In</Text>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.buttonText}>Sign In with Email</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign Up Options')}>
-                <Text style={styles.buttonText}>Sign Up</Text>
+            {/* Add the following buttons */}
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleSignUpWithGoogle()}>
+                <Text style={styles.socialButtonText}>Sign In with Google</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleSignUpWithFacebook()}>
+                <Text style={styles.socialButtonText}>Sign In with Facebook</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialButton} onPress={() => handleSignUpWithApple()}>
+                <Text style={styles.socialButtonText}>Sign In with Apple</Text>
             </TouchableOpacity>
         </View>
     );
@@ -34,13 +41,12 @@ const styles = StyleSheet.create({
         fontSize: RFValue(24, 680),
         color: 'black',
         marginBottom: 60,
-      },
+    },
     icon: {
         width: width * 0.5,
         height: height * 0.2,
         resizeMode: 'contain',
         marginBottom: 80,
-
     },
     button: {
         alignItems: 'center',
@@ -55,6 +61,20 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: RFValue(16, 680),
     },
+    // Style for social sign-up buttons
+    socialButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 15,
+        borderRadius: 25,
+        backgroundColor: '#4267B2', // Example: Facebook Blue
+        width: width * 0.8,
+        marginVertical: 10,
+    },
+    socialButtonText: {
+        color: '#fff',
+        fontSize: RFValue(16, 680),
+    },
 });
 
-export default LoginPortal;
+export default LoginSelection;
