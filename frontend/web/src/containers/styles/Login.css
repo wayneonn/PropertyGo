@@ -1,0 +1,76 @@
+.loginContainer {
+    background-color: #F5F6F7;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginToast {
+    position: fixed;
+    top: 10%;
+    left: 55%;
+    transform: translateX(-50%);
+}
+
+.loginCardRow {
+    display: flex;
+}
+
+.loginCardImage {
+    width: 508px;
+    height: 432px;
+}
+
+.loginRightSideCard {
+    background: #FFFFFF;
+    width: 508px;
+    height: 432px;
+    display: flex;
+    justify-content: center;
+}
+
+.loginRightSideCardContent {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loginPropertyGoIcon {
+    width: 100.78px;
+    height: 100.78px;
+    margin-top: 1em;
+}
+
+.loginTitle {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.loginUsernameInput,
+.loginPasswordInput {
+    width: 30em;
+}
+
+.loginButton {
+    border-radius: 160px;
+    background-color: #FDE933;
+    border-color: #FDE933;
+}
+
+.loginButton .loginTextButton {
+    margin-right: 0.3em;
+}
+
+.loginSpaceBetweeonPasswordInputButton {
+    margin-top: 1em;
+}
+
+.loginSpacesBetweenInputs {
+    margin-top: 0.7em;
+}
