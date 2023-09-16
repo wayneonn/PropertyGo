@@ -3,10 +3,19 @@ const router = express.Router();
 
 const {
     getAllFaqs,
-    getSingleFaq
+    getSingleFaq,
+    createFaq,
+    updateFaq,
+    deleteFaq
 } = require('../../controllers/admin/faqController');
 
-router.get('/', getAllFaqs);
-router.get('/:id', getSingleFaq);
+router.route('/')
+    .get(getAllFaqs)
+    .post(createFaq);
+    
+router.route('/:id')
+    .get(getSingleFaq)
+    .patch(updateFaq)
+    .delete(deleteFaq);
 
 module.exports = router;
