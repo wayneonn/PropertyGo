@@ -77,8 +77,9 @@ const AdminProfile = () => {
                 <Button
                   // variant="primary"
                   id="editUsername"
+                  variant="warning"
                   style={{
-                    backgroundColor: "skyblue",
+                    // backgroundColor: "#FFF066",
                     border: "0",
                     color: "#384D6C",
                     font: "Montserrat",
@@ -94,11 +95,11 @@ const AdminProfile = () => {
           </div>
           <div>
             <Button
-              variant="primary"
+              variant="warning"
               style={{
                 marginLeft: "60px",
                 marginTop: "20px",
-                backgroundColor: "skyblue",
+                // backgroundColor: "#FFF066",
                 border: "0",
                 color: "#384D6C",
                 font: "Montserrat",
@@ -170,8 +171,9 @@ const AdminProfile = () => {
                 Close
               </Button>
               <Button
+                variant="warning"
                 style={{
-                  backgroundColor: "skyblue",
+                  // backgroundColor: "#FFF066",
                   border: "0",
                   color: "#384D6C",
                   font: "Montserrat",
@@ -209,7 +211,7 @@ const AdminProfile = () => {
             </Modal.Header>
             <Modal.Body>
               <div className="password">
-                {currentOpenEye == false ? (
+                {currentOpenEye === false ? (
                   <div className="currentPassword">
                     <Form.Label
                       style={{
@@ -234,10 +236,10 @@ const AdminProfile = () => {
                         onChange={(e) => setPassword(e.target.value)}
                       />
                       <Button
-                        variant="info"
+                        variant="warning"
                         id="eyeIcon"
                         onClick={() => setCurrentOpenEye(true)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0" }}
                       >
                         <VscEyeClosed
                           style={{ width: "24px", height: "24px" }}
@@ -269,10 +271,10 @@ const AdminProfile = () => {
                         value={password}
                       />
                       <Button
-                        variant="info"
+                        variant="warning"
                         id="currentEyeOpenIcon"
                         onClick={() => setCurrentOpenEye(false)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0" }}
                       >
                         <VscEye
                           style={{ width: "24px", height: "24px" }}
@@ -281,7 +283,7 @@ const AdminProfile = () => {
                     </InputGroup>
                   </div>
                 )}
-                {newOpenEye == false ? (
+                {newOpenEye === false ? (
                   <div className="newPassword">
                     <Form.Label
                       style={{
@@ -306,10 +308,10 @@ const AdminProfile = () => {
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
                       <Button
-                        variant="info"
+                        variant="warning"
                         id="newEyeIconClose"
                         onClick={() => setNewOpenEye(true)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0" }}
                       >
                         <VscEyeClosed
                           style={{ width: "24px", height: "24px" }}
@@ -342,10 +344,10 @@ const AdminProfile = () => {
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
                       <Button
-                        variant="info"
+                        variant="warning"
                         id="newEyeIconOpen"
                         onClick={() => setNewOpenEye(false)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0" }}
                       >
                         <VscEye
                           style={{ width: "24px", height: "24px" }}
@@ -354,7 +356,7 @@ const AdminProfile = () => {
                     </InputGroup>
                   </div>
                 )}
-                {confirmOpenEye == false ? (
+                {confirmOpenEye === false ? (
                   <div className="confirmPassword">
                     <Form.Label
                       style={{
@@ -379,10 +381,10 @@ const AdminProfile = () => {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
                       <Button
-                        variant="info"
+                        variant="warning"
                         id="confirmEyeOpenIcon"
                         onClick={() => setConfirmOpenEye(true)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0" }}
                       >
                         <VscEyeClosed
                           style={{ width: "24px", height: "24px" }}
@@ -415,10 +417,10 @@ const AdminProfile = () => {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
                       <Button
-                        variant="info"
+                        variant="warning"
                         id="confirmEyeCloseIcon"
                         onClick={() => setConfirmOpenEye(false)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0" }}
                       >
                         <VscEye
                           style={{ width: "24px", height: "24px" }}
@@ -444,8 +446,9 @@ const AdminProfile = () => {
                 Close
               </Button>
               <Button
+                variant="warning"
                 style={{
-                  backgroundColor: "skyblue",
+                  // backgroundColor: "#FFF066",
                   border: "0",
                   color: "#384D6C",
                   font: "Montserrat",

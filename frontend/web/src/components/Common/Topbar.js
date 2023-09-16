@@ -37,20 +37,6 @@ const TopBar = () => {
       </div>
       <div className="icons-container">
         <IoMdNotificationsOutline className="notif"></IoMdNotificationsOutline>
-        <div className="admin">
-          <img
-            src="admin.png"
-            alt="admin"
-            // onClick={() => }
-            style={{
-              width: "32px",
-              height: "32px",
-              cursor: "pointer",
-              marginTop: "4px",
-              marginLeft: "4px",
-            }}
-          />
-        </div>
         <IoIosLogOut className="notif"></IoIosLogOut>
       </div>
     </div>
