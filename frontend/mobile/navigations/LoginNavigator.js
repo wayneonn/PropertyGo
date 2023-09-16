@@ -4,6 +4,7 @@ import GetStarted from '../screens/login/GetStarted';
 import LoginPortal from '../screens/login/LoginPortal';
 import HomeScreen from '../screens/login/HomeScreen';
 import LoginScreen from '../screens/login/LoginScreen.js';
+import SignUpScreen from '../screens/login/SignUpScreen';
 import SideNavigator from './SideNavigator'
 import UserBottomNavigator from './UserBottomNavigator';
 
@@ -15,6 +16,7 @@ const LoginNavigator = () => {
             {/* <Stack.Screen name="Home Page" component={HomePage} /> */}
             <Stack.Screen name="Get Started" component={GetStarted} />
             <Stack.Screen name="Login Portal" component={LoginPortal} />
+            <Stack.Screen name="Sign Up Screen" component={SignUpScreen} />
             <Stack.Screen name="Home Screen" component={HomeScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             {/* <Stack.Screen name="Home Page" component={HomePage} /> */}

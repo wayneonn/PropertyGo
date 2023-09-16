@@ -1,7 +1,10 @@
 const express = require('express');
+// const cors = require("cors"); // Import the cors middleware
 const router = express.Router();
 const {User, Lawyer} = require("../models")
 
+
+// router.use(cors());
 router.get("/", async (req, res)=>{
     const listOfUser = await User.findAll();
     res.json(listOfUser);
