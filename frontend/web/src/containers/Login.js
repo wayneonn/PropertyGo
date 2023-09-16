@@ -31,6 +31,7 @@ const Login = () => {
   const [show, setShow] = useState(false);
 
   const navigate = useNavigate();
+  const imageBasePath = window.location.protocol + "//" + window.location.host + "/images/";
 
   const handleUserNameChange = (e) => {
     setUserName(e.target.value);
@@ -86,14 +87,14 @@ const Login = () => {
         <Row nogutters="true" className="loginCardRow">
           <Col>
             <Card.Img
-              src="login.jpeg"
+              src={imageBasePath + "login.jpeg"}
               className="loginCardImage"
             />
           </Col>
           <Col className="loginRightSideCard">
             <Card.Body className="loginRightSideCardContent">
               <Card.Img
-                src="Logo.png"
+                src={imageBasePath + "Logo.png"}
                 className="loginPropertyGoIcon"
               />
               <div className="loginSpacesBetweenInputs"></div>

@@ -26,13 +26,13 @@ function App() {
     <BrowserRouter>
       <SideBar />
       <TopBar />
-      {/* <Routes>
-        <Route path="/admin/profile" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Navigate to="/login" />} />
-          <Route path="/login" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Login />}/>
+      <Routes>
+        {/* <Route path="/admin/profile" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Navigate to="/login" />} />
+        <Route path="/login" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Login />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/admin/profile" element={<AdminProfile />} />
-      </Routes> */}
-      <Faq/>
+      </Routes>
+      {/* <Faq/> */}
     </BrowserRouter>
     // <div className="App">
     //   {/* <Login></Login> */}
