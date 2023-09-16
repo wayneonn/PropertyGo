@@ -1,8 +1,6 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput } from 'react-native';
-import TopBar from '../Common/TopNavBar'; // Adjust the import path as needed
-import BottomBar from '../Common/BottomNavBar'; // Adjust the import path as needed
+import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
+
 
 // Search bar component
 const SearchBar = () => {
@@ -33,9 +31,10 @@ const PropertyListing = ({ image, description, price, area, roomFeatures }) => {
 
 // Main home page component
 const HomePage = () => {
+
   return (
-    <View style={styles.container}>
-      <TopBar />
+    <SafeAreaView style={{ flex: 1 }}>
+      {/* <TopBar /> */}
       <SearchBar />
 
       {/* Main content image */}
@@ -53,8 +52,8 @@ const HomePage = () => {
         />
       </View>
 
-      <BottomBar />
-    </View>
+      {/* <BottomBar /> */}
+    </SafeAreaView>
   );
 };
 
@@ -73,8 +72,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#fff',
-    borderWidth: 1,               
-    borderColor: 'grey', 
+    borderWidth: 1,
+    borderColor: 'grey',
   },
   searchInput: {
     flex: 1,

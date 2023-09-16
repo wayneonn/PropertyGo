@@ -20,7 +20,7 @@ function LoginScreen({ navigation }) {
     if (success) {
       showMessage('Login successful');
       setTimeout(() => {
-        navigation.navigate('Home Page', { user: data });
+        navigation.navigate('Side Navigator', { user: data });
       }, 2000);
     } else {
       showMessage(message);

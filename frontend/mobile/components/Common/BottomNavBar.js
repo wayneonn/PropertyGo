@@ -1,27 +1,35 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomePage from '../Home/HomePage';
+
+const Tab = createBottomTabNavigator();
 
 const BottomBar = () => {
-    const navigation = useNavigation();
   
-    const bottomBarItems = [
-      { label: 'Home', icon: require('../../assets/Bottom-Navbar-Icons/home-icon.png'), screen: 'HomeScreen' },
-      { label: 'Favorite', icon: require('../../assets/Bottom-Navbar-Icons/favourite-icon.png'), screen: 'FavoriteScreen' },
-      { label: 'Sell', icon: require('../../assets/Bottom-Navbar-Icons/sell-icon.png'), screen: 'SellScreen' },
-      { label: 'Forum', icon: require('../../assets/Bottom-Navbar-Icons/forum-icon.png'), screen: 'ForumScreen' },
-      { label: 'Activity', icon: require('../../assets/Bottom-Navbar-Icons/activity-icon.png'), screen: 'ActivityScreen' },
-    ];
+    // const bottomBarItems = [
+    //   { label: 'Home', icon: require('../../assets/Bottom-Navbar-Icons/home-icon.png'), screen: 'HomeScreen' },
+    //   { label: 'Favorite', icon: require('../../assets/Bottom-Navbar-Icons/favourite-icon.png'), screen: 'FavoriteScreen' },
+    //   { label: 'Sell', icon: require('../../assets/Bottom-Navbar-Icons/sell-icon.png'), screen: 'SellScreen' },
+    //   { label: 'Forum', icon: require('../../assets/Bottom-Navbar-Icons/forum-icon.png'), screen: 'ForumScreen' },
+    //   { label: 'Activity', icon: require('../../assets/Bottom-Navbar-Icons/activity-icon.png'), screen: 'ActivityScreen' },
+    // ];
   
     return (
-      <View style={styles.bottomBar}>
-        {bottomBarItems.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.bottomBarItem} onPress={() => navigation.navigate(item.screen)}>
-            <Image source={item.icon} style={styles.bottomBarIcon} />
-            <Text style={styles.bottomBarText}>{item.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      // <View style={styles.bottomBar}>
+      //   {bottomBarItems.map((item, index) => (
+      //     <TouchableOpacity key={index} style={styles.bottomBarItem} onPress={() => navigation.navigate(item.screen)}>
+      //       <Image source={item.icon} style={styles.bottomBarIcon} />
+      //       <Text style={styles.bottomBarText}>{item.label}</Text>
+      //     </TouchableOpacity>
+      //   ))}
+      // </View>
+
+      <Tab.Navigator>
+        <Tab.Screen name="Home" component={HomePage} />
+      </Tab.Navigator>
+
     );
   };
 
