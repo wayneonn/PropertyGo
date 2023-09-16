@@ -1,15 +1,12 @@
-import { React, useEffect, useState } from "react";
+import { React, useState } from "react";
 import { Button, Form, InputGroup, Modal } from "react-bootstrap";
 import "./Adminprofile.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { BsFillKeyFill } from "react-icons/bs";
 import { VscEyeClosed, VscEye } from "react-icons/vsc";
 
-// utils
-import API from "../services/API";
-
 const AdminProfile = () => {
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState("username"); //set static username first, later fetch from backend
   const [newUserName, setNewUserName] = useState("");
   const [password, setPassword] = useState(""); //set static password first, later fetch from backend
   const [newPassword, setNewPassword] = useState("");
@@ -20,8 +17,6 @@ const AdminProfile = () => {
   const [showEditUsername, setShowEditUsername] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
-  const adminId = localStorage.getItem("loggedInAdmin");
-
   const toggleEditUsernameModal = () => {
     setShowEditUsername(!showEditUsername);
   };
@@ -30,19 +25,12 @@ const AdminProfile = () => {
     setShowChangePassword(!showChangePassword);
   };
 
-  const handleUsernameSave = async () => {
-    //save to database
-    const response = await API.patch('/admins/updateUserName', {
-      oldUserName: userName,
-      updatedUserName: newUserName
-    });
+  const handleUsernameSave = (e) => {
+    setUserName(newUserName);
+    setNewUserName("");
+    setShowEditUsername(false);
 
-    if (response.status === 200) {
-      alert("You have updated your userName successfully!");
-      setUserName(newUserName);
-      setNewUserName("");
-      setShowEditUsername(false);
-    }
+    //save to database
   };
 
   const handlePasswordSave = (e) => {
@@ -65,21 +53,6 @@ const AdminProfile = () => {
     setShowChangePassword(false);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const test = await API.get(`/admins/${localStorage.getItem("loggedInAdmin")}`);
-        const { userName } = test.data;
-
-        setUserName(userName);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    fetchData();
-  }, []);
-
   return (
     <div className="admin-profile">
       <div style={{ marginTop: "40px", marginLeft: "60px" }}>
@@ -100,12 +73,11 @@ const AdminProfile = () => {
                 User Name
               </Form.Label>
               <InputGroup>
-                <Form.Control type="text" name="username" value={userName} readOnly />
+                <Form.Control type="text" name="username" value={userName} />
                 <Button
-                  // variant="primary"
                   id="editUsername"
                   style={{
-                    backgroundColor: "skyblue",
+                    backgroundColor: "#FFD700",
                     border: "0",
                     color: "#384D6C",
                     font: "Montserrat",
@@ -121,11 +93,10 @@ const AdminProfile = () => {
           </div>
           <div>
             <Button
-              variant="primary"
               style={{
                 marginLeft: "60px",
                 marginTop: "20px",
-                backgroundColor: "skyblue",
+                backgroundColor: "#FFD700",
                 border: "0",
                 color: "#384D6C",
                 font: "Montserrat",
@@ -147,7 +118,7 @@ const AdminProfile = () => {
             position: "initial",
           }}
         >
-          <Modal.Dialog show="true">
+          <Modal.Dialog show={showEditUsername}>
             <Modal.Header>
               <Modal.Title
                 style={{
@@ -198,7 +169,7 @@ const AdminProfile = () => {
               </Button>
               <Button
                 style={{
-                  backgroundColor: "skyblue",
+                  backgroundColor: "#FFD700",
                   border: "0",
                   color: "#384D6C",
                   font: "Montserrat",
@@ -213,7 +184,7 @@ const AdminProfile = () => {
           </Modal.Dialog>
         </div>
       )}
-      {/* {showChangePassword && (
+      {showChangePassword && (
         <div
           className="modal show"
           style={{
@@ -236,7 +207,7 @@ const AdminProfile = () => {
             </Modal.Header>
             <Modal.Body>
               <div className="password">
-                {currentOpenEye == false ? (
+                {currentOpenEye === false ? (
                   <div className="currentPassword">
                     <Form.Label
                       style={{
@@ -261,13 +232,16 @@ const AdminProfile = () => {
                         onChange={(e) => setPassword(e.target.value)}
                       />
                       <Button
-                        variant="info"
                         id="eyeIcon"
                         onClick={() => setCurrentOpenEye(true)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0", backgroundColor: "#FFD700" }}
                       >
                         <VscEyeClosed
-                          style={{ width: "24px", height: "24px" }}
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            color: "#384D6C",
+                          }}
                         ></VscEyeClosed>
                       </Button>
                     </InputGroup>
@@ -296,19 +270,22 @@ const AdminProfile = () => {
                         value={password}
                       />
                       <Button
-                        variant="info"
                         id="currentEyeOpenIcon"
                         onClick={() => setCurrentOpenEye(false)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0", backgroundColor: "#FFD700" }}
                       >
                         <VscEye
-                          style={{ width: "24px", height: "24px" }}
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            color: "#384D6C",
+                          }}
                         ></VscEye>
                       </Button>
                     </InputGroup>
                   </div>
                 )}
-                {newOpenEye == false ? (
+                {newOpenEye === false ? (
                   <div className="newPassword">
                     <Form.Label
                       style={{
@@ -333,13 +310,16 @@ const AdminProfile = () => {
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
                       <Button
-                        variant="info"
                         id="newEyeIconClose"
                         onClick={() => setNewOpenEye(true)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0", backgroundColor: "#FFD700" }}
                       >
                         <VscEyeClosed
-                          style={{ width: "24px", height: "24px" }}
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            color: "#384D6C",
+                          }}
                         ></VscEyeClosed>
                       </Button>
                     </InputGroup>
@@ -369,19 +349,22 @@ const AdminProfile = () => {
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
                       <Button
-                        variant="info"
                         id="newEyeIconOpen"
                         onClick={() => setNewOpenEye(false)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0", backgroundColor: "#FFD700" }}
                       >
                         <VscEye
-                          style={{ width: "24px", height: "24px" }}
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            color: "#384D6C",
+                          }}
                         ></VscEye>
                       </Button>
                     </InputGroup>
                   </div>
                 )}
-                {confirmOpenEye == false ? (
+                {confirmOpenEye === false ? (
                   <div className="confirmPassword">
                     <Form.Label
                       style={{
@@ -406,13 +389,16 @@ const AdminProfile = () => {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
                       <Button
-                        variant="info"
                         id="confirmEyeOpenIcon"
                         onClick={() => setConfirmOpenEye(true)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0", backgroundColor: "#FFD700" }}
                       >
                         <VscEyeClosed
-                          style={{ width: "24px", height: "24px" }}
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            color: "#384D6C",
+                          }}
                         ></VscEyeClosed>
                       </Button>
                     </InputGroup>
@@ -442,13 +428,16 @@ const AdminProfile = () => {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
                       <Button
-                        variant="info"
                         id="confirmEyeCloseIcon"
                         onClick={() => setConfirmOpenEye(false)}
-                        style={{ backgroundColor: "skyblue" }}
+                        style={{ border: "0", backgroundColor: "#FFD700" }}
                       >
                         <VscEye
-                          style={{ width: "24px", height: "24px" }}
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            color: "#384D6C",
+                          }}
                         ></VscEye>
                       </Button>
                     </InputGroup>
@@ -472,7 +461,7 @@ const AdminProfile = () => {
               </Button>
               <Button
                 style={{
-                  backgroundColor: "skyblue",
+                  backgroundColor: "#FFD700",
                   border: "0",
                   color: "#384D6C",
                   font: "Montserrat",
@@ -486,7 +475,7 @@ const AdminProfile = () => {
             </Modal.Footer>
           </Modal.Dialog>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

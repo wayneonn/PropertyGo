@@ -7,14 +7,15 @@ const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
-  
-  const imageBasePath = window.location.protocol + "//" + window.location.host + "/images/";
+
+  const imageBasePath =
+    window.location.protocol + "//" + window.location.host + "/images/";
 
   const handleLogout = () => {
     localStorage.removeItem("loggedInAdmin");
 
     navigate("/login");
-  }
+  };
 
   return (
     <div className="topbar">
