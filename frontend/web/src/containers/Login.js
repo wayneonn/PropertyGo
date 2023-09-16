@@ -9,6 +9,7 @@ import {
   InputGroup,
   Toast
 } from "react-bootstrap";
+import { VscEyeClosed, VscEye } from "react-icons/vsc";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +22,7 @@ import API from "../services/API";
 const Login = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [openEye, setOpenEye] = useState(false);
 
   // validation
   const [validated, setValidated] = useState(false);
@@ -116,17 +118,62 @@ const Login = () => {
                 <div className="loginSpacesBetweenInputs"></div>
                 <div>
                   <Form.Label htmlFor="inputPassword">Password</Form.Label>
-                  <Form.Control
-                    required
-                    type="password"
-                    id="inputPassword"
-                    placeholder="Password"
-                    className="loginPasswordInput"
-                    onChange={handlePasswordChange}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    Please key in a password.
-                  </Form.Control.Feedback>
+                  <br />
+                  {openEye == false ? (
+                    <InputGroup>
+                      <Form.Control
+                        type="password"
+                        id="inputPassword"
+                        placeholder="Password"
+                        style={{
+                          width: "25em",
+                          height: "2.5em",
+                          // borderRadius: "0.5em",
+                        }}
+                        onChange={handlePasswordChange}
+                      />
+                      <Button
+                        variant="info"
+                        id="eyeIcon"
+                        onClick={() => setOpenEye(true)}
+                        style={{ backgroundColor: "#FFF066", border: "0" }}
+                      >
+                        <VscEyeClosed
+                          style={{
+                            width: "2em",
+                            height: "1.5em",
+                          }}
+                        ></VscEyeClosed>
+                      </Button>
+                    </InputGroup>
+                  ) : (
+                    <InputGroup>
+                      <Form.Control
+                        type="text"
+                        id="inputPassword"
+                        placeholder="Password"
+                        style={{
+                          width: "25em",
+                          height: "2.5em",
+                          // borderRadius: "0.5em",
+                        }}
+                        onChange={handlePasswordChange}
+                      />
+                      <Button
+                        variant="info"
+                        id="eyeIcon"
+                        onClick={() => setOpenEye(false)}
+                        style={{ backgroundColor: "#FFF066", border: "0" }}
+                      >
+                        <VscEye
+                          style={{
+                            width: "2em",
+                            height: "1.5em",
+                          }}
+                        ></VscEye>
+                      </Button>
+                    </InputGroup>
+                  )}
                 </div>
                 <div className="loginSpaceBetweeonPasswordInputButton"></div>
                 <div className="d-grid gap-2">
