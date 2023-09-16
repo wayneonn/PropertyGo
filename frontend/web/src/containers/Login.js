@@ -1,6 +1,7 @@
 // components
 import React, { useState, useContext } from "react";
-import { Card, Row, Col, Button, Form } from "react-bootstrap";
+import { Card, Row, Col, Button, Form, InputGroup } from "react-bootstrap";
+import { VscEyeClosed, VscEye } from "react-icons/vsc";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +11,7 @@ import API from "../services/API";
 const Login = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [openEye, setOpenEye] = useState(false);
 
   const navgiate = useNavigate();
 
@@ -25,16 +27,15 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await API.post('/admin/auth/login', {
+      const response = await API.post("/admin/auth/login", {
         userName,
-        password
+        password,
       });
 
       if (response.status === 200) {
         // TODO: add localstorage
         navgiate("/login");
-      } 
-
+      }
     } catch (error) {
       alert("Login unsuccessful");
     }
@@ -112,17 +113,61 @@ const Login = () => {
                 <div>
                   <Form.Label htmlFor="inputPassword">Password</Form.Label>
                   <br />
-                  <Form.Control
-                    type="password"
-                    id="inputPassword"
-                    placeholder="Password"
-                    style={{
-                      width: "30em",
-                      height: "2.5em",
-                      borderRadius: "0.5em",
-                    }}
-                    onChange={handlePasswordChange}
-                  />
+                  {openEye == false ? (
+                    <InputGroup>
+                      <Form.Control
+                        type="password"
+                        id="inputPassword"
+                        placeholder="Password"
+                        style={{
+                          width: "25em",
+                          height: "2.5em",
+                          // borderRadius: "0.5em",
+                        }}
+                        onChange={handlePasswordChange}
+                      />
+                      <Button
+                        variant="info"
+                        id="eyeIcon"
+                        onClick={() => setOpenEye(true)}
+                        style={{ backgroundColor: "#FFF066", border: "0" }}
+                      >
+                        <VscEyeClosed
+                          style={{
+                            width: "2em",
+                            height: "1.5em",
+                          }}
+                        ></VscEyeClosed>
+                      </Button>
+                    </InputGroup>
+                  ) : (
+                    <InputGroup>
+                      <Form.Control
+                        type="text"
+                        id="inputPassword"
+                        placeholder="Password"
+                        style={{
+                          width: "25em",
+                          height: "2.5em",
+                          // borderRadius: "0.5em",
+                        }}
+                        onChange={handlePasswordChange}
+                      />
+                      <Button
+                        variant="info"
+                        id="eyeIcon"
+                        onClick={() => setOpenEye(false)}
+                        style={{ backgroundColor: "#FFF066", border: "0" }}
+                      >
+                        <VscEye
+                          style={{
+                            width: "2em",
+                            height: "1.5em",
+                          }}
+                        ></VscEye>
+                      </Button>
+                    </InputGroup>
+                  )}
                 </div>
                 <br />
                 <div className="d-grid gap-2">
