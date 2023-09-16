@@ -25,11 +25,11 @@ const updateAdminUsername = async (req, res) => {
     try {
         const { oldUserName, updatedUserName } = req.body;
 
-        // const admin = await getAdmin(updatedUserName);
+        const admin = await getAdmin(updatedUserName);
 
-        // if (admin) {
-        //     return res.status(409).json({ message: "Admin UserName found. Change to another userName" });
-        // }
+        if (admin) {
+            return res.status(409).json({ message: "Admin UserName found. Change to another userName" });
+        }
         const currentAdmin = await getAdmin(oldUserName);
 
         currentAdmin.userName = updatedUserName;

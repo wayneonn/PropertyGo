@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // import Login from "./containers/login";
 import SideBar from "./components/Common/SideBar";
@@ -23,23 +23,25 @@ function App() {
   // }
 
   return (
-    <div className="App">
-      {/* <Login></Login> */}
-      <SideBar></SideBar>
-      <TopBar></TopBar>
-      {/* <AdminProfile></AdminProfile> */}
-      <Faq></Faq>
-    </div>
-    // <BrowserRouter>
-    //   <SideBar />
-    //   <TopBar />
-    //   <Routes>
-    //     {/* <Route path="/admin/profile" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Navigate to="/login" />} />
-    //       <Route path="/login" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Login />}/> */}
-    //     <Route path="/login" element={<Login />} />
-    //     <Route path="/admin/profile" element={<AdminProfile />} />
-    //   </Routes>
-    // </BrowserRouter>
+    <BrowserRouter>
+      <SideBar />
+      <TopBar />
+      {/* <Routes>
+        <Route path="/admin/profile" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Navigate to="/login" />} />
+          <Route path="/login" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Login />}/>
+        <Route path="/login" element={<Login />} />
+        <Route path="/admin/profile" element={<AdminProfile />} />
+      </Routes> */}
+      <Faq/>
+    </BrowserRouter>
+    // <div className="App">
+    //   {/* <Login></Login> */}
+    //   <SideBar></SideBar>
+    //   <TopBar></TopBar>
+    //   {/* <AdminProfile></AdminProfile> */}
+    //   <Faq></Faq>
+    // </div>
+
   );
 }
 
