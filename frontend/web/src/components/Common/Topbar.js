@@ -1,12 +1,60 @@
-import React from "react";
-import "./Topbar.css";
+import { React, useState } from "react";
+import "./styles/Topbar.css";
+import { IoMdNotificationsOutline, IoIosLogOut } from "react-icons/io";
 
-const Topbar = () => {
+const TopBar = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
     <div className="topbar">
-      <div className="searchbar"></div>
+      <div className="searchbar">
+        <img
+          src="search.webp"
+          alt="search"
+          // onClick={() => search(searchQuery)}
+          style={{
+            width: "18px",
+            height: "18px",
+            cursor: "pointer",
+            marginLeft: "5px",
+            marginRight: "5px",
+          }}
+        />
+        <input
+          placeholder="Search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{
+            border: "0",
+            backgroundColor: "#F2F3F480",
+            fontSize: "14px",
+            color: "#959FA3",
+            marginLeft: "0.2em",
+            height: "38px",
+            width: "169px",
+          }}
+        />
+      </div>
+      <div className="icons-container">
+        <IoMdNotificationsOutline className="notif"></IoMdNotificationsOutline>
+        <div className="admin">
+          <img
+            src="admin.png"
+            alt="admin"
+            // onClick={() => }
+            style={{
+              width: "32px",
+              height: "32px",
+              cursor: "pointer",
+              marginTop: "4px",
+              marginLeft: "4px",
+            }}
+          />
+        </div>
+        <IoIosLogOut className="notif"></IoIosLogOut>
+      </div>
     </div>
   );
 };
 
-export default Topbar;
+export default TopBar;
