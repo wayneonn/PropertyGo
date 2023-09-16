@@ -1,6 +1,6 @@
 // components
-import React, { useState, useContext } from "react";
-import { Card, Row, Col, Button, Form } from "react-bootstrap";
+import React, { useState } from "react";
+import { Card, Row, Col, Button, Form, InputGroup } from "react-bootstrap";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +11,10 @@ const Login = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
-  const navgiate = useNavigate();
+  // validation
+  const [validated, setValidated] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleUserNameChange = (e) => {
     setUserName(e.target.value);
@@ -23,21 +26,29 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    setValidated(true);
 
-    try {
-      const response = await API.post('/admin/auth/login', {
-        userName,
-        password
-      });
+    const form = e.currentTarget;
+    
+    // Check if both userName and password fields have values
+    if (form.checkValidity() === true && userName && password) {
+      try {
+        const response = await API.post('/admin/auth/login', {
+          userName,
+          password
+        });
 
-      if (response.status === 200) {
-        // TODO: add localstorage
-        navgiate("/login");
-      } 
+        if (response.status === 200) {
+          // TODO: Add localStorage
+          navigate("/login");
+        } 
 
-    } catch (error) {
-      alert("Login unsuccessful");
-    }
+      } catch (error) {
+        alert("Login unsuccessful");
+      }
+  }
   };
 
   return (
@@ -93,26 +104,31 @@ const Login = () => {
               <Card.Title style={{ fontWeight: "bold", fontSize: "24px" }}>
                 Login to your account
               </Card.Title>
-              <Form onSubmit={handleSubmit}>
+              <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <div>
                   <Form.Label htmlFor="inputUsername">Username</Form.Label>
-                  <br />
-                  <Form.Control
-                    id="inputUsername"
-                    placeholder="Username"
-                    style={{
-                      width: "30em",
-                      height: "2.5em",
-                      borderRadius: "0.5em",
-                    }}
-                    onChange={handleUserNameChange}
-                  />
+                  <InputGroup hasValidation>
+                    <Form.Control
+                      required
+                      id="inputUsername"
+                      placeholder="Username"
+                      style={{
+                        width: "30em",
+                        height: "2.5em",
+                        borderRadius: "0.5em",
+                      }}
+                      onChange={handleUserNameChange}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Please key in a username.
+                    </Form.Control.Feedback>
+                  </InputGroup>
                 </div>
-                <br />
+                <div style={{marginTop: '0.3em'}}></div>
                 <div>
                   <Form.Label htmlFor="inputPassword">Password</Form.Label>
-                  <br />
                   <Form.Control
+                    required
                     type="password"
                     id="inputPassword"
                     placeholder="Password"
@@ -123,8 +139,11 @@ const Login = () => {
                     }}
                     onChange={handlePasswordChange}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    Please key in a password.
+                  </Form.Control.Feedback>
                 </div>
-                <br />
+                <div style={{marginTop: '1em'}}></div>
                 <div className="d-grid gap-2">
                   <Button
                     variant="warning"

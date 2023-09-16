@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // import Login from "./containers/login";
-import Sidebar from "./components/Common/Sidebar";
-import Topbar from "./components/Common/Topbar";
+import SideBar from "./components/Common/SideBar";
+import TopBar from "./components/Common/TopBar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./containers/Login";
