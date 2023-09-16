@@ -1,0 +1,38 @@
+.admin-profile {
+  background-color: #0000000D;
+  /* width: 100px; */
+  width: calc(100% - 220px);
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  height: 815px;
+}
+
+.currentUsername {
+  padding: 20px 20px 20px 20px;
+  margin-top: 50px;
+  margin-left: 40px;
+  width: 900px;
+}
+
+.dialogUsername {
+  padding: 10px 10px 10px 10px;
+  /* margin-top: 150px; */
+  width: 460px;
+}
+
+.confirmPassword {
+  padding: 10px 10px 10px 10px;
+  width: 460px;
+}
+
+
+.currentPassword {
+  padding: 10px 10px 10px 10px;
+  width: 460px;
+}
+
+.newPassword {
+  padding: 10px 10px 10px 10px;
+  width: 460px;
+}

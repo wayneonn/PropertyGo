@@ -1,7 +1,7 @@
 import React from "react";
 import { Nav } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
-import "./Sidebar.css";
+import "./styles/Sidebar.css";
 import { LiaClipboardListSolid, LiaStickyNote } from "react-icons/lia";
 import {
   AiOutlineFolderOpen,

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import Login from "./containers/login";
 import SideBar from "./components/Common/SideBar";
 import TopBar from "./components/Common/TopBar";
+import AdminProfile from "./containers/AdminProfile";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./containers/Login";
@@ -19,18 +20,10 @@ function App() {
   // }, []);
   return (
     <div className="App">
-      {/* {listOfPosts.map((value, key) => {
-        return (
-          <div className="user">
-            <div className="title"> {value.title} </div>
-            <div className="body">{value.postText}</div>
-            <div className="footer">{value.username}</div>
-          </div>
-        );
-      })} */}
       {/* <Login></Login> */}
       <SideBar></SideBar>
       <TopBar></TopBar>
+      <AdminProfile></AdminProfile>
     </div>
     // <BrowserRouter>
     //   <Routes>

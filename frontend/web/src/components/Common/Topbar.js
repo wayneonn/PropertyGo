@@ -1,6 +1,6 @@
 import { React, useState } from "react";
-import "./Topbar.css";
-import { IoMdNotificationsOutline } from "react-icons/io";
+import "./styles/Topbar.css";
+import { IoMdNotificationsOutline, IoIosLogOut } from "react-icons/io";
 
 const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,8 +16,8 @@ const TopBar = () => {
             width: "18px",
             height: "18px",
             cursor: "pointer",
-            marginLeft: "10px",
-            marginRight: "10px",
+            marginLeft: "5px",
+            marginRight: "5px",
           }}
         />
         <input
@@ -30,13 +30,28 @@ const TopBar = () => {
             fontSize: "14px",
             color: "#959FA3",
             marginLeft: "0.2em",
-            height: "40px",
-            width: "150px",
+            height: "38px",
+            width: "169px",
           }}
         />
       </div>
-      <div>
+      <div className="icons-container">
         <IoMdNotificationsOutline className="notif"></IoMdNotificationsOutline>
+        <div className="admin">
+          <img
+            src="admin.png"
+            alt="admin"
+            // onClick={() => }
+            style={{
+              width: "32px",
+              height: "32px",
+              cursor: "pointer",
+              marginTop: "4px",
+              marginLeft: "4px",
+            }}
+          />
+        </div>
+        <IoIosLogOut className="notif"></IoIosLogOut>
       </div>
     </div>
   );
