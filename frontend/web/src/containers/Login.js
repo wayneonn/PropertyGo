@@ -56,7 +56,7 @@ const Login = () => {
 
         if (response.status === 200) {
           // TODO: Add localStorage
-          navigate("/login");
+          navigate("/admin/profile");
         }
 
       } catch (error) {
