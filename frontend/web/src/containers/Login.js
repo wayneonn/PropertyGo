@@ -1,6 +1,13 @@
 // components
 import React, { useState } from "react";
-import { Card, Row, Col, Button, Form, InputGroup } from "react-bootstrap";
+import { 
+  Card,
+  Row, 
+  Col, 
+  Button,
+  Form,
+  InputGroup,
+  Toast } from "react-bootstrap";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 
@@ -13,6 +20,9 @@ const Login = () => {
 
   // validation
   const [validated, setValidated] = useState(false);
+
+  // toast message
+  const [show, setShow] = useState(false);
 
   const navigate = useNavigate();
 
@@ -46,7 +56,7 @@ const Login = () => {
         } 
 
       } catch (error) {
-        alert("Login unsuccessful");
+        setShow(true);
       }
   }
   };
@@ -65,105 +75,125 @@ const Login = () => {
         alignItems: "center",
       }}
     >
-      <Card>
-        <Row nogutters="true" style={{ display: "flex" }}>
-          <Col>
-            <Card.Img
-              src="login.jpeg"
-              style={{ width: "508px", height: "432px" }}
-              alt="..."
-            />
-          </Col>
-          <Col
-            style={{
-              background: "#FFFFFF",
-              width: "508px",
-              height: "432px",
-              display: "flex",
-              justifyContent: "center", // Center horizontally
+      <div>
+        <div
+          style={{
+            position: "fixed",
+            top: "10%", // Adjust this value to control the vertical position
+            left: "55%", // Center horizontally
+            transform: "translateX(-50%)", // Center horizontally
             }}
           >
-            <Card.Body
+          <Row>
+              <Col xs={6}>
+                <Toast bg="warning" onClose={() => setShow(false)} show={show} delay={4000} autohide >
+                  <Toast.Header>
+                    <strong className="me-auto">Login Unsuccessful</strong>
+                  </Toast.Header>
+                  <Toast.Body>Please key in the valid credentials!</Toast.Body>
+                </Toast>
+              </Col>
+          </Row>
+        </div>
+        <Card>
+          <Row nogutters="true" style={{ display: "flex" }}>
+            <Col>
+              <Card.Img
+                src="login.jpeg"
+                style={{ width: "508px", height: "432px" }}
+              />
+            </Col>
+            <Col
               style={{
-                padding: 0,
+                background: "#FFFFFF",
+                width: "508px",
+                height: "432px",
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
+                justifyContent: "center", // Center horizontally
               }}
             >
-              <Card.Img
-                src="Logo.png"
+              <Card.Body
                 style={{
-                  width: "100.78px",
-                  height: "100.78px",
-                  marginTop: "1em",
+                  padding: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
                 }}
-                alt="..."
-              />
-              <div style={{ padding: "0.7em" }}></div>
-              <Card.Title style={{ fontWeight: "bold", fontSize: "24px" }}>
-                Login to your account
-              </Card.Title>
-              <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                <div>
-                  <Form.Label htmlFor="inputUsername">Username</Form.Label>
-                  <InputGroup hasValidation>
+              >
+                <Card.Img
+                  src="Logo.png"
+                  style={{
+                    width: "100.78px",
+                    height: "100.78px",
+                    marginTop: "1em",
+                  }}
+                  alt="..."
+                />
+                <div style={{ padding: "0.7em" }}></div>
+                <Card.Title style={{ fontWeight: "bold", fontSize: "24px" }}>
+                  Login to your account
+                </Card.Title>
+                <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                  <div>
+                    <Form.Label htmlFor="inputUsername">Username</Form.Label>
+                    <InputGroup hasValidation>
+                      <Form.Control
+                        required
+                        id="inputUsername"
+                        placeholder="Username"
+                        style={{
+                          width: "30em",
+                          height: "2.5em",
+                          borderRadius: "0.5em",
+                        }}
+                        onChange={handleUserNameChange}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        Please key in a username.
+                      </Form.Control.Feedback>
+                    </InputGroup>
+                  </div>
+                  <div style={{marginTop: '0.3em'}}></div>
+                  <div>
+                    <Form.Label htmlFor="inputPassword">Password</Form.Label>
                     <Form.Control
                       required
-                      id="inputUsername"
-                      placeholder="Username"
+                      type="password"
+                      id="inputPassword"
+                      placeholder="Password"
                       style={{
                         width: "30em",
                         height: "2.5em",
                         borderRadius: "0.5em",
                       }}
-                      onChange={handleUserNameChange}
+                      onChange={handlePasswordChange}
                     />
                     <Form.Control.Feedback type="invalid">
-                      Please key in a username.
+                      Please key in a password.
                     </Form.Control.Feedback>
-                  </InputGroup>
-                </div>
-                <div style={{marginTop: '0.3em'}}></div>
-                <div>
-                  <Form.Label htmlFor="inputPassword">Password</Form.Label>
-                  <Form.Control
-                    required
-                    type="password"
-                    id="inputPassword"
-                    placeholder="Password"
-                    style={{
-                      width: "30em",
-                      height: "2.5em",
-                      borderRadius: "0.5em",
-                    }}
-                    onChange={handlePasswordChange}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    Please key in a password.
-                  </Form.Control.Feedback>
-                </div>
-                <div style={{marginTop: '1em'}}></div>
-                <div className="d-grid gap-2">
-                  <Button
-                    variant="warning"
-                    size="md"
-                    type="submit"
-                    style={{
-                      borderRadius: "160px",
-                      backgroundColor: "#FDE933",
-                      borderColor: "#FDE933",
-                    }}
-                  >
-                    <span style={{ marginRight: "0.3em" }}>Login</span>
-                    <BiRightArrowAlt />
-                  </Button>
-                </div>
-              </Form>
-            </Card.Body>
-          </Col>
-        </Row>
-      </Card>
+                  </div>
+                  <div style={{marginTop: '1em'}}></div>
+                  <div className="d-grid gap-2">
+                    <Button
+                      variant="warning"
+                      size="md"
+                      type="submit"
+                      style={{
+                        borderRadius: "160px",
+                        backgroundColor: "#FDE933",
+                        borderColor: "#FDE933",
+                      }}
+                    >
+                      <span style={{ marginRight: "0.3em" }}>Login</span>
+                      <BiRightArrowAlt />
+                    </Button>
+                  </div>
+                </Form>
+              </Card.Body>
+            </Col>
+          </Row>
+        </Card>
+      </div>
     </div>
   );
 };
