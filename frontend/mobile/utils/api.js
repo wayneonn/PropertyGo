@@ -34,15 +34,15 @@ export const loginUser = async (userName, password) => {
         body: JSON.stringify(userData),
       });
   
+      const data = await response.json();
+  
       if (response.ok) {
-        const data = await response.json();
         return { success: true, data };
       } else {
-        const errorData = await response.json();
-        return { success: false, message: errorData.message };
+        return { success: false, error: data.error };
       }
     } catch (error) {
-      return { success: false, message: error.message };
+      return { success: false, error: error.message };
     }
   };
   

@@ -6,11 +6,14 @@ import {
   Text,
   TouchableOpacity,
   Modal,
+  Alert,
+  Image
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { signUpUser } from '../../utils/api';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icon library
 
 const countries = [
   { label: 'Select Country', value: '' },
@@ -22,6 +25,7 @@ const countries = [
 const SignUpScreen = () => {
   const navigation = useNavigation();
   const [userName, setUserName] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -32,12 +36,12 @@ const SignUpScreen = () => {
 
   const handleSignUp = async () => {
     if (!userName || !password || !confirmPassword || !email || !selectedCountry || !dateOfBirth) {
-      alert('Please fill in all fields.');
+      Alert.alert('Sign Up Failed', 'Please fill in all fields.');
       return;
     }
 
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      Alert.alert('Sign Up Failed', 'Passwords do not match');
       return;
     }
 
@@ -45,7 +49,7 @@ const SignUpScreen = () => {
       const userData = {
         userName,
         password,
-        name: 'Emily Brown',
+        name,
         email,
         countryOfOrigin: selectedCountry.toUpperCase(),
         dateOfBirth: dateOfBirth.toISOString().split('T')[0],
@@ -63,20 +67,45 @@ const SignUpScreen = () => {
       const signUpResult = await signUpUser(userData);
 
       if (signUpResult.success) {
-        alert('Signup successful');
-        // Navigate to the Home Screen on successful signup
-        navigation.navigate('Home');
+        Alert.alert('Sign Up Successful', 'Signup successful');
+        navigation.navigate('Side Navigator');
+      } else if (signUpResult.message) {
+        if (signUpResult.message.includes('Username')) {
+          Alert.alert('Sign Up Failed', 'Username is already taken. Please choose another.');
+        } else if (signUpResult.message.includes('Email')) {
+          Alert.alert('Sign Up Failed', 'Email is already used. Please use another email address.');
+        } else {
+          Alert.alert('Sign Up Failed', signUpResult.message);
+        }
       } else {
-        alert(signUpResult.message);
+        if (signUpResult.error.includes('Username')) {
+          Alert.alert('Sign Up Failed', 'Username is already taken. Please choose another.');
+        } else if (signUpResult.error.includes('Email')) {
+          Alert.alert('Sign Up Failed', 'Email is already used. Please use another email address.');
+        }
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Signup failed');
+      Alert.alert('Sign Up Failed', 'Signup failed');
     }
   };
 
   return (
     <View style={styles.container}>
+      <View style={styles.iconContainer}>
+        {/* Icon at the top center */}
+        <Image
+          source={require('../../assets/PropertyGo-HighRes-Logo.png')} // Replace with the actual path to your image
+          style={styles.iconImage}
+        />
+      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Full Name"
+        placeholderTextColor="black"
+        value={name}
+        onChangeText={setName}
+      />
       <TextInput
         style={styles.input}
         placeholder="User Name"
@@ -172,9 +201,12 @@ const SignUpScreen = () => {
           </View>
         </Modal>
       </View>
-      <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-        <Text style={styles.signUpButtonText}>Sign Up</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        {/* Shifted "Sign Up" button below */}
+        <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+          <Text style={styles.signUpButtonText}>Sign Up</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -183,6 +215,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  iconContainer: {
+    alignItems: 'center', // Center the icon horizontally
+    marginTop: 10, // Add some top margin
+    marginBottom: 20, // Add some bottom margin
   },
   input: {
     height: 50,
@@ -222,16 +259,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
   },
+  buttonContainer: {
+    flex: 1, // Ensure the button container takes remaining space
+    justifyContent: 'flex-end', // Push the button to the bottom
+  },
   signUpButton: {
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'blue',
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
+    borderRadius: 25,
+    backgroundColor: '#1E90FF',
+    marginVertical: 10,
   },
   signUpButtonText: {
     fontSize: 18,
     color: 'white',
+  },
+  iconImage: {
+    width: 60, // Adjust the width and height as needed
+    height: 60,
   },
 });
 
