@@ -3,7 +3,7 @@ const { Admin } = require("../../models");
 // helper function
 const getAdmin = (userName) => {
     return Admin.findOne({ where: { userName } });
-}
+};
 
 const getSingleAdmin = async (req, res) => {
     try {
@@ -82,7 +82,7 @@ const updateAdminPassword = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
-}
+};
 
 module.exports = {
     getSingleAdmin,

@@ -1,6 +1,5 @@
 import "./App.css";
-import axios from "axios";
-import { useEffect, useState } from "react";
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // import Login from "./containers/login";
@@ -10,27 +9,17 @@ import AdminProfile from "./containers/AdminProfile";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./containers/Login";
-import HomeContainer from "./containers/HomeContainer";
 
 function App() {
-  // useEffect(() => {
-  //   axios.get("http://localhost:3000/users").then((response) => {
-  //     setListOfPosts(response.data);
-  //   });
-  // }, []);
   return (
-    <div className="App">
-      {/* <Login></Login> */}
-      <SideBar></SideBar>
-      <TopBar></TopBar>
-      <AdminProfile></AdminProfile>
-    </div>
-    // <BrowserRouter>
-    //   <Routes>
-    //     <Route path="/login" element={<HomeContainer/>}/>
-    //     <Route path="/" element={<Login/>}/>
-    //   </Routes>
-    // </BrowserRouter>
+    <BrowserRouter>
+      <SideBar />
+      <TopBar />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/admin/profile" element={<AdminProfile />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
