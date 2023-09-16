@@ -22,7 +22,7 @@ const loginRoute = require('./routes/user/loginRoute');
 app.use(cors());
 app.use(express.json());
 
-app.use('/admin', adminRouter);
+app.use('/admins', adminRouter);
 app.use('/admin/auth', authRouter);
 app.use('/admin/faqs', faqRouter);
 

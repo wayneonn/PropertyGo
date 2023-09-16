@@ -7,9 +7,9 @@ const getAdmin = (userName) => {
 
 const getSingleAdmin = async (req, res) => {
     try {
-        const { userName } = req.query;
+        const { id: adminId } = req.params;
 
-        const admin = await getAdmin(userName);
+        const admin = await Admin.findByPk(adminId);
 
         if (!admin) {
             return res.status(404).json({ message: "Admin not found" });
@@ -25,21 +25,12 @@ const updateAdminUsername = async (req, res) => {
     try {
         const { oldUserName, updatedUserName } = req.body;
 
-        if (oldUserName === updatedUserName) {
-            return res.status(200).json({ message: "No change in userName" });
-        }
+        // const admin = await getAdmin(updatedUserName);
 
-        const admin = await getAdmin(updatedUserName);
-
-        if (admin) {
-            return res.status(200).json({ message: "Admin UserName found. Change to another userName" });
-        }
-
+        // if (admin) {
+        //     return res.status(409).json({ message: "Admin UserName found. Change to another userName" });
+        // }
         const currentAdmin = await getAdmin(oldUserName);
-
-        if (!currentAdmin) {
-            return res.status(404).json({ message: "Admin not found" });
-        }
 
         currentAdmin.userName = updatedUserName;
 

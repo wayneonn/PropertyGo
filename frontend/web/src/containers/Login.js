@@ -48,16 +48,17 @@ const Login = () => {
 
     const form = e.currentTarget;
 
-    // Check if both userName and password fields have values
     if (form.checkValidity() === true && userName && password) {
       try {
         const response = await API.post('/admin/auth/login', {
           userName,
           password
         });
-
+        
         if (response.status === 200) {
-          // TODO: Add localStorage
+          const { adminId } = response.data;
+
+          localStorage.setItem("loggedInAdmin", adminId);
           navigate("/admin/profile");
         }
 
@@ -72,7 +73,7 @@ const Login = () => {
       <div className="loginToast">
         <Row>
           <Col xs={6}>
-            <Toast bg="warning" onClose={() => setShow(false)} show={show} delay={4000} autohide >
+            <Toast bg="warning" onClose={() => setShow(false)} show={show} delay={4000} autohide>
               <Toast.Header>
                 <strong className="me-auto">Login Unsuccessful</strong>
               </Toast.Header>
@@ -119,7 +120,7 @@ const Login = () => {
                 <div>
                   <Form.Label htmlFor="inputPassword">Password</Form.Label>
                   <br />
-                  {openEye == false ? (
+                  {openEye === false ? (
                     <InputGroup>
                       <Form.Control
                         type="password"
@@ -128,7 +129,6 @@ const Login = () => {
                         style={{
                           width: "25em",
                           height: "2.5em",
-                          // borderRadius: "0.5em",
                         }}
                         onChange={handlePasswordChange}
                       />
@@ -155,7 +155,6 @@ const Login = () => {
                         style={{
                           width: "25em",
                           height: "2.5em",
-                          // borderRadius: "0.5em",
                         }}
                         onChange={handlePasswordChange}
                       />
