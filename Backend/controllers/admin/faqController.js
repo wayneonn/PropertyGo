@@ -27,10 +27,11 @@ const getSingleFaq = async(req, res) => {
 };
 
 const createFaq = async (req, res) => {
-    
+
 };
 
 module.exports = {
     getAllFaqs,
-    getSingleFaq
+    getSingleFaq,
+    createFaq
 };
