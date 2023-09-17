@@ -121,67 +121,44 @@ const Login = () => {
                 <div>
                   <Form.Label htmlFor="inputPassword">Password</Form.Label>
                   <br />
-                  {openEye === false ? (
-                    <InputGroup>
-                      <Form.Control
-                        required
-                        type="password"
-                        id="inputPassword"
-                        placeholder="Password"
-                        style={{
-                          width: "25em",
-                          height: "2.5em",
-                        }}
-                        onChange={handlePasswordChange}
-                      />
-                      <Button
-                        variant="info"
-                        id="eyeIcon"
-                        onClick={() => setOpenEye(true)}
-                        style={{ backgroundColor: "#FFF066", border: "0" }}
-                      >
-                        <VscEyeClosed
-                          style={{
-                            width: "2em",
-                            height: "1.5em",
-                          }}
-                        ></VscEyeClosed>
-                      </Button>
-                      <Form.Control.Feedback type="invalid">
-                        Password is required.
-                      </Form.Control.Feedback>
-                    </InputGroup>
-                  ) : (
-                    <InputGroup>
-                      <Form.Control
-                        required
-                        type="text"
-                        id="inputPassword"
-                        placeholder="Password"
-                        style={{
-                          width: "25em",
-                          height: "2.5em",
-                        }}
-                        onChange={handlePasswordChange}
-                      />
-                      <Button
-                        variant="info"
-                        id="eyeIcon"
-                        onClick={() => setOpenEye(false)}
-                        style={{ backgroundColor: "#FFF066", border: "0" }}
-                      >
+                  <InputGroup>
+                    <Form.Control
+                      required
+                      type={openEye ? "text" : "password"}
+                      id="inputPassword"
+                      placeholder="Password"
+                      style={{
+                        width: "25em",
+                        height: "2.5em",
+                      }}
+                      onChange={handlePasswordChange}
+                    />
+                    <Button
+                      variant="info"
+                      id="eyeIcon"
+                      onClick={() => setOpenEye(!openEye)}
+                      style={{ backgroundColor: "#FFF066", border: "0" }}
+                    >
+                      {openEye ? (
                         <VscEye
                           style={{
                             width: "2em",
                             height: "1.5em",
                           }}
                         ></VscEye>
-                      </Button>
-                      <Form.Control.Feedback type="invalid">
-                        Password is required.
-                      </Form.Control.Feedback>
-                    </InputGroup>
-                  )}
+                      ) : (
+                        <VscEyeClosed
+                          style={{
+                            width: "2em",
+                            height: "1.5em",
+                          }}
+                        ></VscEyeClosed>
+                      )}
+                    </Button>
+                    <Form.Control.Feedback type="invalid">
+                      Password is required.
+                    </Form.Control.Feedback>
+                  </InputGroup>
                 </div>
                 <div className="loginSpaceBetweeonPasswordInputButton"></div>
                 <div className="d-grid gap-2">
