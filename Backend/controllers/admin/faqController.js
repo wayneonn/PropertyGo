@@ -1,5 +1,15 @@
 const { FAQ } = require("../../models");
 
+// helper function
+const getFaqForUniqueness = ({question, faqType}) => {
+    return FAQ.findOne({ 
+        where: { 
+            question,
+            faqType
+        }
+    });
+};
+
 const getAllFaqs = async (req, res) => {
     const faqs = await FAQ.findAll();
 
@@ -25,7 +35,16 @@ const getSingleFaq = async (req, res) => {
 const createFaq = async (req, res) => {
     const { adminId } = req.query;
 
+    const { question, faqType } = req.body;
+
+    const questionFound = await getFaqForUniqueness({question, faqType});
+
+    if (questionFound) {
+        return res.status(409).json({ message: `Question already exist in ${faqType}.` });
+    }
+
     req.body.adminId = adminId;
+
     const faq = await FAQ.create(req.body);
     res.status(201).json({ faq });
 };

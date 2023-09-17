@@ -21,13 +21,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       // Create StatusEnum
       status: {
-        type: DataTypes.ENUM('OPEN', 'CLOSED', 'PENDING'),
+        type: DataTypes.ENUM('REPLIED', 'CLOSED', 'PENDING'),
         allowNull: false,
       },
-      timeStamp: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
+      // timeStamp: {
+      //   type: DataTypes.DATE,
+      //   allowNull: false,
+      // },
     }, {
       freezeTableName: true,
     });
