@@ -23,6 +23,13 @@ function App() {
   // }
 
   return (
+    // <div className="App">
+    //   <Login></Login>
+    //   <SideBar></SideBar>
+    //   <TopBar></TopBar>
+    //   <AdminProfile></AdminProfile>
+    //   <Faq></Faq>
+    // </div>
     <BrowserRouter>
       <SideBar />
       <TopBar />
@@ -31,7 +38,7 @@ function App() {
         <Route path="/login" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Login />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/admin/profile" element={<AdminProfile />} />
-        <Route path="/admin/faq" element={<Faq/>} />
+        <Route path="/admin/faq" element={<Faq />} />
       </Routes>
       {/* <Faq/> */}
     </BrowserRouter>
@@ -42,7 +49,6 @@ function App() {
     //   {/* <AdminProfile></AdminProfile> */}
     //   <Faq></Faq>
     // </div>
-
   );
 }
 

@@ -1,5 +1,4 @@
 import { React, useState, useEffect } from "react";
-import axios from "axios";
 import { Button, Card, Table } from "react-bootstrap";
 import "./Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
@@ -7,14 +6,23 @@ import { MdPageview, MdDelete } from "react-icons/md";
 
 import API from "../services/API";
 
+import Pagination from "react-bootstrap/Pagination";
+
 const Faq = () => {
   const [faqs, setFaqs] = useState([]);
+  const [buyerfaqs, setBuyerfaqs] = useState([]);
+  const [sellerfaqs, setSellerfaqs] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await API.get(`http://localhost:3000/admin/faqs`);
-        setFaqs(response.data.faqs);
+        const faqs = response.data.faqs;
+        setFaqs(faqs);
+        const buyerFaqs = faqs.filter((faq) => faq.faqType === "BUYER");
+        setBuyerfaqs(buyerFaqs);
+        const sellerFaqs = faqs.filter((faq) => faq.faqType === "SELLER");
+        setSellerfaqs(sellerFaqs);
       } catch (error) {
         console.error(error);
       }
@@ -45,7 +53,7 @@ const Faq = () => {
               <thead
                 style={{
                   textAlign: "center",
-                  fontFamily: "Gill Sans",
+                  fontFamily: "Arial",
                 }}
               >
                 <tr>
@@ -56,37 +64,50 @@ const Faq = () => {
                   <th>ACTION</th>
                 </tr>
               </thead>
-              {/* <tbody>
-                {faqs.map((faq) => (
-                  <tr>
-                    <td>{faq.question}</td>
-                    <td>{faq.answer}</td>
-                    <td>{faq.createdAt}</td>
-                    <td>
-                      <Button size="sm" color="#FFD700" title="Edit">
-                        <MdPageview></MdPageview>
-                      </Button>
-                      <Button size="sm" color="#FFD700" title="Delete">
-                        <MdDelete></MdDelete>
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody> */}
-              {Array.isArray(faqs) && faqs.length > 0 ? (
+              {Array.isArray(sellerfaqs) && sellerfaqs.length > 0 ? (
                 <tbody>
-                  {faqs.map((faq) => (
-                    <tr key={faq.faqId}>
+                  {sellerfaqs.map((faq) => (
+                    <tr
+                      key={faq.faqId}
+                      style={{
+                        textAlign: "center",
+                        fontFamily: "Arial",
+                      }}
+                    >
                       <td>{faq.question}</td>
                       <td>{faq.answer}</td>
                       <td>{faq.createdAt}</td>
                       <td>{faq.updatedAt}</td>
                       <td>
-                        <Button size="sm" color="#FFD700" title="Edit">
-                          <MdPageview></MdPageview>
+                        <Button
+                          size="sm"
+                          title="Edit"
+                          style={{
+                            backgroundColor: "#FFD700",
+                            border: "0",
+                            marginRight: "10px",
+                          }}
+                        >
+                          <MdPageview
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              color: "black",
+                            }}
+                          ></MdPageview>
                         </Button>
-                        <Button size="sm" color="#FFD700" title="Delete">
-                          <MdDelete></MdDelete>
+                        <Button
+                          size="sm"
+                          title="Delete"
+                          style={{ backgroundColor: "#FFD700", border: "0" }}
+                        >
+                          <MdDelete
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              color: "black",
+                            }}
+                          ></MdDelete>
                         </Button>
                       </td>
                     </tr>
@@ -102,6 +123,23 @@ const Faq = () => {
                 </tbody>
               )}
             </Table>
+            <Pagination>
+              <Pagination.First />
+              <Pagination.Prev />
+              <Pagination.Item>{1}</Pagination.Item>
+              <Pagination.Ellipsis />
+
+              <Pagination.Item>{10}</Pagination.Item>
+              <Pagination.Item>{11}</Pagination.Item>
+              <Pagination.Item active>{12}</Pagination.Item>
+              <Pagination.Item>{13}</Pagination.Item>
+              <Pagination.Item disabled>{14}</Pagination.Item>
+
+              <Pagination.Ellipsis />
+              <Pagination.Item>{20}</Pagination.Item>
+              <Pagination.Next />
+              <Pagination.Last />
+            </Pagination>
           </div>
           <div className="buyerfaq">
             <h3
@@ -116,7 +154,7 @@ const Faq = () => {
               BUYER FAQ
             </h3>
             <Table hover responsive size="sm">
-              <thead style={{ textAlign: "center", fontFamily: "Gill Sans" }}>
+              <thead style={{ textAlign: "center", fontFamily: "Arial" }}>
                 <tr>
                   <th>QUESTION</th>
                   <th>ANSWER</th>
@@ -125,9 +163,82 @@ const Faq = () => {
                   <th>ACTION</th>
                 </tr>
               </thead>
-              {/* <tbody>
-              </tbody> */}
+              {Array.isArray(buyerfaqs) && buyerfaqs.length > 0 ? (
+                <tbody>
+                  {buyerfaqs.map((faq) => (
+                    <tr
+                      key={faq.faqId}
+                      style={{
+                        textAlign: "center",
+                        fontFamily: "Arial",
+                      }}
+                    >
+                      <td>{faq.question}</td>
+                      <td>{faq.answer}</td>
+                      <td>{faq.createdAt}</td>
+                      <td>{faq.updatedAt}</td>
+                      <td>
+                        <Button
+                          size="sm"
+                          title="Edit"
+                          style={{
+                            backgroundColor: "#FFD700",
+                            border: "0",
+                            marginRight: "10px",
+                          }}
+                        >
+                          <MdPageview
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              color: "black",
+                            }}
+                          ></MdPageview>
+                        </Button>
+                        <Button
+                          size="sm"
+                          title="Delete"
+                          style={{ backgroundColor: "#FFD700", border: "0" }}
+                        >
+                          <MdDelete
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              color: "black",
+                            }}
+                          ></MdDelete>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td colSpan="5" style={{ textAlign: "center" }}>
+                      No FAQs available
+                    </td>
+                  </tr>
+                </tbody>
+              )}
             </Table>
+            <Pagination>
+              <Pagination.First />
+              <Pagination.Prev />
+              <Pagination.Item>{1}</Pagination.Item>
+              <Pagination.Ellipsis />
+
+              <Pagination.Item>{10}</Pagination.Item>
+              <Pagination.Item>{11}</Pagination.Item>
+              <Pagination.Item active>{12}</Pagination.Item>
+              <Pagination.Item>{13}</Pagination.Item>
+              <Pagination.Item disabled>{14}</Pagination.Item>
+
+              <Pagination.Ellipsis />
+              <Pagination.Item>{20}</Pagination.Item>
+              <Pagination.Next />
+              <Pagination.Last />
+            </Pagination>
           </div>
         </div>
         {/* <div className="answerfaq"></div> */}
