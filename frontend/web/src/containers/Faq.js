@@ -8,16 +8,6 @@ import API from "../services/API";
 
 import Pagination from "react-bootstrap/Pagination";
 
-let active = 1;
-let items = [];
-for (let number = 1; number <= 5; number++) {
-  items.push(
-    <Pagination.Item key={number} active={number === active}>
-      {number}
-    </Pagination.Item>
-  );
-}
-
 const Faq = () => {
   const [faqs, setFaqs] = useState([]);
   const [buyerfaqs, setBuyerfaqs] = useState([]);
@@ -63,7 +53,7 @@ const Faq = () => {
               <thead
                 style={{
                   textAlign: "center",
-                  fontFamily: "Gill Sans",
+                  fontFamily: "Arial",
                 }}
               >
                 <tr>
@@ -81,7 +71,7 @@ const Faq = () => {
                       key={faq.faqId}
                       style={{
                         textAlign: "center",
-                        fontFamily: "Gill Sans",
+                        fontFamily: "Arial",
                       }}
                     >
                       <td>{faq.question}</td>
@@ -133,6 +123,23 @@ const Faq = () => {
                 </tbody>
               )}
             </Table>
+            <Pagination>
+              <Pagination.First />
+              <Pagination.Prev />
+              <Pagination.Item>{1}</Pagination.Item>
+              <Pagination.Ellipsis />
+
+              <Pagination.Item>{10}</Pagination.Item>
+              <Pagination.Item>{11}</Pagination.Item>
+              <Pagination.Item active>{12}</Pagination.Item>
+              <Pagination.Item>{13}</Pagination.Item>
+              <Pagination.Item disabled>{14}</Pagination.Item>
+
+              <Pagination.Ellipsis />
+              <Pagination.Item>{20}</Pagination.Item>
+              <Pagination.Next />
+              <Pagination.Last />
+            </Pagination>
           </div>
           <div className="buyerfaq">
             <h3
@@ -147,7 +154,7 @@ const Faq = () => {
               BUYER FAQ
             </h3>
             <Table hover responsive size="sm">
-              <thead style={{ textAlign: "center", fontFamily: "Gill Sans" }}>
+              <thead style={{ textAlign: "center", fontFamily: "Arial" }}>
                 <tr>
                   <th>QUESTION</th>
                   <th>ANSWER</th>
@@ -163,7 +170,7 @@ const Faq = () => {
                       key={faq.faqId}
                       style={{
                         textAlign: "center",
-                        fontFamily: "Gill Sans",
+                        fontFamily: "Arial",
                       }}
                     >
                       <td>{faq.question}</td>
@@ -215,6 +222,23 @@ const Faq = () => {
                 </tbody>
               )}
             </Table>
+            <Pagination>
+              <Pagination.First />
+              <Pagination.Prev />
+              <Pagination.Item>{1}</Pagination.Item>
+              <Pagination.Ellipsis />
+
+              <Pagination.Item>{10}</Pagination.Item>
+              <Pagination.Item>{11}</Pagination.Item>
+              <Pagination.Item active>{12}</Pagination.Item>
+              <Pagination.Item>{13}</Pagination.Item>
+              <Pagination.Item disabled>{14}</Pagination.Item>
+
+              <Pagination.Ellipsis />
+              <Pagination.Item>{20}</Pagination.Item>
+              <Pagination.Next />
+              <Pagination.Last />
+            </Pagination>
           </div>
         </div>
         {/* <div className="answerfaq"></div> */}
