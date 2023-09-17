@@ -22,7 +22,7 @@ import WorkWithUs from '../screens/sideNavigatorBar/WorkWithUs'
 import ContactUsStackGroup from './ContactUsStackGroup';
 
 const CustomDrawerContent = (props) => {
-    const { profilePictureUrl } = props; // Replace with the actual prop name you use
+    const { navigation, profilePictureUrl } = props; // Replace with the actual prop name you use
 
     const handleLogout = () => {
         navigation.navigate("Login Portal");
