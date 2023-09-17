@@ -12,7 +12,9 @@ import * as DocumentPicker from "expo-document-picker";
 
 function UploadScreen({ navigation }) {
   const [selectedDocuments, setSelectedDocuments] = useState([]);
-  const [descriptions, setDescriptions] = useState({});
+  const [descriptions, setDescriptions] = useState("");
+  const [length, setLength] = useState(200);
+  const [prevDocuments, setPrevDocuments] = useState([]); // This is suppose to be the list of documents that you have uploaded previously.
 
   // This is suppose to show all the documents that you selected.
   const selectDocuments = async () => {
@@ -50,7 +52,6 @@ function UploadScreen({ navigation }) {
         const fileuri = document.uri;
         const filetype = "application/pdf";
         const filename = document.name;
-        console.log(document.uri);
 
         const file = {
           uri: fileuri,
@@ -71,8 +72,11 @@ function UploadScreen({ navigation }) {
         // Create a Blob object from the decoded data
         const fileBlob = new Blob([bytes], { type: file.type });
         console.log(fileBlob);
-
+        console.log(descriptions);
+        console.log(fileData.get("description"));
+        console.log(...selectedDocuments);
         fileData.append("documents", fileBlob, filename);
+        fileData.append("description", descriptions);
       });
 
       // Send the data to the API
@@ -123,16 +127,54 @@ function UploadScreen({ navigation }) {
           renderItem={renderDocumentItem}
         />
       </View>
+      <View style={styles.descriptionContainer}>
+        <Text style={styles.detailText}>
+          {" "}
+          Write your description for the files selected:{" "}
+        </Text>
+        <TextInput
+          style={styles.descriptionInput}
+          placeholder="Add a description"
+          value={descriptions}
+          maxLength={200} // max length of the text
+          onChangeText={(text) => {
+            setDescriptions(text);
+            setLength(200 - text.length);
+          }}
+        />
+        <Text> Remaining: {length}</Text>
+      </View>
       <View style={styles.buttonContainer}>
         <Button
           style={styles.downloadButton}
           title="Select Documents"
           onPress={selectDocuments}
         />
+        <Text> &nbsp;&nbsp;&nbsp; </Text>
         <Button
           style={styles.downloadButton}
           title="Upload Documents"
           onPress={handleUpload}
+        />
+      </View>
+
+      <View>
+        <TextInput />
+
+        <View
+          style={{
+            borderBottomColor: "black",
+            borderBottomWidth: 1,
+            marginVertical: 10,
+          }}
+        />
+
+        <Text style={styles.detailText}>Previously Uploaded Documents: </Text>
+
+        <FlatList
+          data={prevDocuments}
+          renderItem={({ item }) => <Text>{item.name}</Text>}
+          keyExtractor={(item) => item.id}
         />
       </View>
     </View>
@@ -155,12 +197,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 16,
   },
+  descriptionContainer: {
+    marginVertical: 16,
+  },
+  descriptionInput: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 8,
+    marginVertical: 8,
+    padding: 8,
+  },
   downloadButton: {
     backgroundColor: "#007AFF",
     color: "#fff",
     padding: 16,
     borderRadius: 8,
-    paddingRight: 8,
   },
   detailText: {
     fontSize: 16,
