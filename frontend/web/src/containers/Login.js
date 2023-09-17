@@ -1,8 +1,20 @@
 // components
-import React, { useState, useContext } from "react";
-import { Card, Row, Col, Button, Form } from "react-bootstrap";
+import React, { useState } from "react";
+import {
+  Card,
+  Row,
+  Col,
+  Button,
+  Form,
+  InputGroup,
+  Toast
+} from "react-bootstrap";
+import { VscEyeClosed, VscEye } from "react-icons/vsc";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
+
+// css
+import "./styles/Login.css";
 
 // utils
 import API from "../services/API";
@@ -10,8 +22,16 @@ import API from "../services/API";
 const Login = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [openEye, setOpenEye] = useState(false);
 
-  const navgiate = useNavigate();
+  // validation
+  const [validated, setValidated] = useState(false);
+
+  // toast message
+  const [show, setShow] = useState(false);
+
+  const navigate = useNavigate();
+  const imageBasePath = window.location.protocol + "//" + window.location.host + "/images/";
 
   const handleUserNameChange = (e) => {
     setUserName(e.target.value);
@@ -23,120 +43,132 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
 
-    try {
-      const response = await API.post('/admin/auth/login', {
-        userName,
-        password
-      });
+    setValidated(true);
 
-      if (response.status === 200) {
-        // TODO: add localstorage
-        navgiate("/login");
-      } 
+    const form = e.currentTarget;
 
-    } catch (error) {
-      alert("Login unsuccessful");
+    if (form.checkValidity() === true && userName && password) {
+      try {
+        const response = await API.post('/admin/auth/login', {
+          userName,
+          password
+        });
+
+        if (response.status === 200) {
+          const { adminId } = response.data;
+
+          localStorage.setItem("loggedInAdmin", adminId);
+          navigate("/admin/profile");
+        }
+
+      } catch (error) {
+        setShow(true);
+      }
     }
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: "#F5F6F7",
-        position: "fixed",
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <div className="loginContainer">
+      <div className="loginToast">
+        <Row>
+          <Col xs={6}>
+            <Toast bg="warning" onClose={() => setShow(false)} show={show} delay={4000} autohide>
+              <Toast.Header>
+                <strong className="me-auto">Login Unsuccessful</strong>
+              </Toast.Header>
+              <Toast.Body>Please key in the valid credentials!</Toast.Body>
+            </Toast>
+          </Col>
+        </Row>
+      </div>
       <Card>
-        <Row nogutters="true" style={{ display: "flex" }}>
+        <Row nogutters="true" className="loginCardRow">
           <Col>
             <Card.Img
-              src="login.jpeg"
-              style={{ width: "508px", height: "432px" }}
-              alt="..."
+              src={imageBasePath + "login.jpeg"}
+              className="loginCardImage"
             />
           </Col>
-          <Col
-            style={{
-              background: "#FFFFFF",
-              width: "508px",
-              height: "432px",
-              display: "flex",
-              justifyContent: "center", // Center horizontally
-            }}
-          >
-            <Card.Body
-              style={{
-                padding: 0,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
+          <Col className="loginRightSideCard">
+            <Card.Body className="loginRightSideCardContent">
               <Card.Img
-                src="Logo.png"
-                style={{
-                  width: "100.78px",
-                  height: "100.78px",
-                  marginTop: "1em",
-                }}
-                alt="..."
+                src={imageBasePath + "Logo.png"}
+                className="loginPropertyGoIcon"
               />
-              <div style={{ padding: "0.7em" }}></div>
-              <Card.Title style={{ fontWeight: "bold", fontSize: "24px" }}>
+              <div className="loginSpacesBetweenInputs"></div>
+              <Card.Title className="loginTitle">
                 Login to your account
               </Card.Title>
-              <Form onSubmit={handleSubmit}>
+              <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <div>
                   <Form.Label htmlFor="inputUsername">Username</Form.Label>
-                  <br />
-                  <Form.Control
-                    id="inputUsername"
-                    placeholder="Username"
-                    style={{
-                      width: "30em",
-                      height: "2.5em",
-                      borderRadius: "0.5em",
-                    }}
-                    onChange={handleUserNameChange}
-                  />
+                  <InputGroup hasValidation>
+                    <Form.Control
+                      required
+                      id="inputUsername"
+                      placeholder="Username"
+                      className="loginUsernameInput"
+                      onChange={handleUserNameChange}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Username is required.
+                    </Form.Control.Feedback>
+                  </InputGroup>
                 </div>
-                <br />
+                <div className="loginSpacesBetweenInputs"></div>
                 <div>
                   <Form.Label htmlFor="inputPassword">Password</Form.Label>
                   <br />
-                  <Form.Control
-                    type="password"
-                    id="inputPassword"
-                    placeholder="Password"
-                    style={{
-                      width: "30em",
-                      height: "2.5em",
-                      borderRadius: "0.5em",
-                    }}
-                    onChange={handlePasswordChange}
-                  />
+                  <InputGroup>
+                    <Form.Control
+                      required
+                      type={openEye ? "text" : "password"}
+                      id="inputPassword"
+                      placeholder="Password"
+                      style={{
+                        width: "25em",
+                        height: "2.5em",
+                      }}
+                      onChange={handlePasswordChange}
+                    />
+                    <Button
+                      variant="info"
+                      id="eyeIcon"
+                      onClick={() => setOpenEye(!openEye)}
+                      style={{ backgroundColor: "#FFF066", border: "0" }}
+                    >
+                      {openEye ? (
+                        <VscEye
+                          style={{
+                            width: "2em",
+                            height: "1.5em",
+                          }}
+                        ></VscEye>
+                      ) : (
+                        <VscEyeClosed
+                          style={{
+                            width: "2em",
+                            height: "1.5em",
+                          }}
+                        ></VscEyeClosed>
+                      )}
+                    </Button>
+                    <Form.Control.Feedback type="invalid">
+                      Password is required.
+                    </Form.Control.Feedback>
+                  </InputGroup>
                 </div>
-                <br />
+                <div className="loginSpaceBetweeonPasswordInputButton"></div>
                 <div className="d-grid gap-2">
                   <Button
                     variant="warning"
                     size="md"
                     type="submit"
-                    style={{
-                      borderRadius: "160px",
-                      backgroundColor: "#FDE933",
-                      borderColor: "#FDE933",
-                    }}
+                    className="loginButton"
                   >
-                    <span style={{ marginRight: "0.3em" }}>Login</span>
+                    <span className="loginTextButton">Login</span>
                     <BiRightArrowAlt />
                   </Button>
                 </div>

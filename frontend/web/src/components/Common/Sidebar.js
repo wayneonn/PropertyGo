@@ -1,7 +1,7 @@
 import React from "react";
 import { Nav } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
-import "./Sidebar.css";
+import "./styles/Sidebar.css";
 import { LiaClipboardListSolid, LiaStickyNote } from "react-icons/lia";
 import {
   AiOutlineFolderOpen,
@@ -12,13 +12,16 @@ import {
 import { PiPuzzlePiece, PiHouseLine } from "react-icons/pi";
 import { GoPerson } from "react-icons/go";
 
-const Sidebar = () => {
+const SideBar = () => {
+
+  const imageBasePath = window.location.protocol + "//" + window.location.host + "/images/";
+
   return (
     <div className="navibar">
       <Nav defaultActiveKey="/" className="flex-column">
         <Nav.Item>
           <Image
-            src="Logo.png"
+            src={imageBasePath + "Logo.png"}
             alt=".."
             style={{
               width: "30px",
@@ -123,4 +126,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SideBar;

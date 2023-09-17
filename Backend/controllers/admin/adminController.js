@@ -3,13 +3,13 @@ const { Admin } = require("../../models");
 // helper function
 const getAdmin = (userName) => {
     return Admin.findOne({ where: { userName } });
-}
+};
 
 const getSingleAdmin = async (req, res) => {
     try {
-        const { userName } = req.query;
+        const { id: adminId } = req.params;
 
-        const admin = await getAdmin(userName);
+        const admin = await Admin.findByPk(adminId);
 
         if (!admin) {
             return res.status(404).json({ message: "Admin not found" });
@@ -25,21 +25,12 @@ const updateAdminUsername = async (req, res) => {
     try {
         const { oldUserName, updatedUserName } = req.body;
 
-        if (oldUserName === updatedUserName) {
-            return res.status(200).json({ message: "No change in userName" });
-        }
-
         const admin = await getAdmin(updatedUserName);
 
         if (admin) {
-            return res.status(200).json({ message: "Admin UserName found. Change to another userName" });
+            return res.status(409).json({ message: "Admin UserName found. Change to another userName" });
         }
-
         const currentAdmin = await getAdmin(oldUserName);
-
-        if (!currentAdmin) {
-            return res.status(404).json({ message: "Admin not found" });
-        }
 
         currentAdmin.userName = updatedUserName;
 
@@ -71,10 +62,6 @@ const updateAdminPassword = async (req, res) => {
             return res.status(400).json({ message: "New password and confirmed passwords are different"});
         }
 
-        if (oldPassword === newPassword) {
-            return res.status(200).json({ message: "No change in password" });
-        }
-
         admin.password = newPassword;
         await admin.save();
 
@@ -82,7 +69,7 @@ const updateAdminPassword = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
-}
+};
 
 module.exports = {
     getSingleAdmin,

@@ -11,9 +11,13 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         answer: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             allowNull: false,
         },
+        faqType: {
+            type: DataTypes.ENUM('BUYER', 'SELLER'),
+            allowNull: false
+        }
     }, {
         freezeTableName: true
     });

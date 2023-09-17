@@ -1,0 +1,86 @@
+module.exports = [
+  {
+    question: "question1",
+    answer: "answer1",
+    faqType: "BUYER",
+    adminId: 1,
+  },
+  {
+    question: "question2",
+    answer: "answer2",
+    faqType: "BUYER",
+    adminId: 1,
+  },
+  {
+    question: "question3",
+    answer: "answer3",
+    faqType: "SELLER",
+    adminId: 1,
+  },
+  {
+    question: "question4",
+    answer: "answer4",
+    faqType: "SELLER",
+    adminId: 1,
+  },
+  {
+    question: "question5",
+    answer: "answer5",
+    faqType: "BUYER",
+    adminId: 1,
+  },
+  {
+    question: "question6",
+    answer: "answer6",
+    faqType: "BUYER",
+    adminId: 1,
+  },
+  {
+    question: "question7",
+    answer: "answer7",
+    faqType: "BUYER",
+    adminId: 1,
+  },
+  {
+    question: "question8",
+    answer: "answer8",
+    faqType: "BUYER",
+    adminId: 1,
+  },
+  {
+    question: "question9",
+    answer: "answer9",
+    faqType: "BUYER",
+    adminId: 1,
+  },
+  {
+    question: "question10",
+    answer: "answer10",
+    faqType: "SELLER",
+    adminId: 1,
+  },
+  {
+    question: "question11",
+    answer: "answer11",
+    faqType: "SELLER",
+    adminId: 1,
+  },
+  {
+    question: "question12",
+    answer: "answer12",
+    faqType: "SELLER",
+    adminId: 1,
+  },
+  {
+    question: "question13",
+    answer: "answer13",
+    faqType: "SELLER",
+    adminId: 1,
+  },
+  {
+    question: "question14",
+    answer: "answer14",
+    faqType: "SELLER",
+    adminId: 1,
+  },
+];

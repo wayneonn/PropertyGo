@@ -1,0 +1,43 @@
+.topbar {
+  width: calc(100% - 220px);
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #FFFFFF;
+  /* background-color: grey; */
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.searchbar {
+  width: 200px;
+  background-color: #F2F3F480;
+  align-items: center;
+  /* margin-top: 20px; */
+  margin-left: 50px;
+  border-radius: 4px;
+}
+
+.notif {
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.admin {
+  width: 40px;
+  height: 40px;
+  border-radius: 100px;
+  background-color: #FFD599;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.icons-container {
+  display: flex;
+  align-items: center;
+  /* margin-top: 20px; */
+}
