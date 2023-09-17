@@ -5,6 +5,7 @@ import "./Faq.css";
 const FaqCreate = () => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  const [faqType, setFaqType] = useState("SELLER");
 
   const handleCreate = () => {
     //add faq into database
@@ -17,11 +18,21 @@ const FaqCreate = () => {
           <div className="title">
             <Card.Title>Create a FAQ</Card.Title>
           </div>
+          <Card.Subtitle className="subtitle">FAQ Type</Card.Subtitle>
+          <Form.Select aria-label="Default select example">
+            <option>Select a FAQ Type</option>
+            <option value="1" onClick={() => setFaqType("SELLER")}>
+              SELLER
+            </option>
+            <option value="2" onClick={() => setFaqType("BUYER")}>
+              BUYER
+            </option>
+          </Form.Select>
           <Card.Subtitle className="subtitle">Question</Card.Subtitle>
           <Form.Control
             as="textarea"
             id="question"
-            rows={6}
+            rows={5}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
           />
@@ -29,7 +40,7 @@ const FaqCreate = () => {
           <Form.Control
             as="textarea"
             id="answer"
-            rows={6}
+            rows={5}
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
           />
