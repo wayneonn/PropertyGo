@@ -1,11 +1,13 @@
 import { React, useEffect, useState } from "react";
-import { Button, 
+import {
+  Button,
   Form,
   InputGroup,
   Modal,
   Row,
   Col,
-  Toast } from "react-bootstrap";
+  Toast,
+} from "react-bootstrap";
 import "./Adminprofile.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { BsFillKeyFill } from "react-icons/bs";
@@ -38,13 +40,27 @@ const AdminProfile = () => {
   const showToast = (action) => {
     setToastAction(action);
     setShow(true);
-  }
+  };
 
   const toggleEditUsernameModal = () => {
     setShowChangePassword(false);
     setShowEditUsername(!showEditUsername);
     setNewUserName("");
     setValidationMessages({ empty: false, notUnique: false });
+  };
+
+  const handleCloseEditModal = () => {
+    setNewUserName("");
+    setShowEditUsername(false);
+  };
+
+  const handleClosePasswordModal = () => {
+    setNewPassword("");
+    setConfirmPassword("");
+    setCurrentOpenEye(false);
+    setNewOpenEye(false);
+    setConfirmOpenEye(false);
+    setShowChangePassword(false);
   };
 
   const toggleChangePasswordModal = () => {
@@ -62,7 +78,7 @@ const AdminProfile = () => {
       notUnique: false,
     };
 
-    const newUserNameTrimmed = newUserName.trim()
+    const newUserNameTrimmed = newUserName.trim();
 
     if (newUserNameTrimmed === "") {
       newMessage.empty = true;
@@ -83,7 +99,7 @@ const AdminProfile = () => {
         setNewUserName("");
         setShowEditUsername(false);
 
-        showToast('username');
+        showToast("username");
       }
     } catch (error) {
       const status = error.response.status;
@@ -119,7 +135,11 @@ const AdminProfile = () => {
       newMessage.emptyConfirmNewPassword = true;
     }
 
-    if (newMessage.emptyCurrentPassword || newMessage.emptyNewPassword || newMessage.emptyConfirmNewPassword) {
+    if (
+      newMessage.emptyCurrentPassword ||
+      newMessage.emptyNewPassword ||
+      newMessage.emptyConfirmNewPassword
+    ) {
       setValidationMessages(newMessage);
       return;
     }
@@ -136,7 +156,7 @@ const AdminProfile = () => {
         userName: userName,
         oldPassword: password,
         newPassword: newPassword,
-        newConfirmedPassword: confirmPassword
+        newConfirmedPassword: confirmPassword,
       });
 
       if (response.status === 200) {
@@ -146,7 +166,7 @@ const AdminProfile = () => {
         setConfirmPassword("");
         setShowChangePassword(false);
 
-        showToast('password');
+        showToast("password");
       }
     } catch (error) {
       const status = error.response.status;
@@ -158,17 +178,6 @@ const AdminProfile = () => {
 
       setValidationMessages(newMessage);
     }
-  };
-
-  const handleCloseUsername = (e) => {
-    setNewUserName("");
-    setShowEditUsername(false);
-  };
-
-  const handleClosePassword = (e) => {
-    setNewPassword("");
-    setConfirmPassword("");
-    setShowChangePassword(false);
   };
 
   useEffect(() => {
@@ -197,7 +206,13 @@ const AdminProfile = () => {
         <div className="loginToast">
           <Row>
             <Col xs={6}>
-              <Toast bg="warning" onClose={() => setShow(false)} show={show} delay={4000} autohide>
+              <Toast
+                bg="warning"
+                onClose={() => setShow(false)}
+                show={show}
+                delay={4000}
+                autohide
+              >
                 <Toast.Header>
                   <strong className="me-auto">Successful</strong>
                 </Toast.Header>
@@ -211,7 +226,7 @@ const AdminProfile = () => {
             <Form.Group controlId="formGroupUserName">
               <Form.Label
                 style={{
-                  color: "#384D6C",
+                  color: "black",
                   font: "Montserrat",
                   fontWeight: "700",
                   fontSize: "16px",
@@ -231,7 +246,7 @@ const AdminProfile = () => {
                   style={{
                     backgroundColor: "#FFD700",
                     border: "0",
-                    color: "#384D6C",
+                    color: "black",
                     font: "Montserrat",
                     fontWeight: "700",
                     fontSize: "16px",
@@ -247,10 +262,10 @@ const AdminProfile = () => {
             <Button
               style={{
                 marginLeft: "60px",
-                marginTop: "20px",
+                marginTop: "30px",
                 backgroundColor: "#FFD700",
                 border: "0",
-                color: "#384D6C",
+                color: "black",
                 font: "Montserrat",
                 fontWeight: "700",
                 fontSize: "16px",
@@ -262,304 +277,320 @@ const AdminProfile = () => {
           </div>
         </Form>
       </div>
-      {showEditUsername && (
-        <div
-          className="modal show"
-          style={{
-            display: "block",
-            position: "initial",
-          }}
+      <div>
+        <Modal
+          show={showEditUsername}
+          onHide={handleCloseEditModal}
+          backdrop="static"
+          keyboard={false}
         >
-          <Modal.Dialog show="true">
-            <Modal.Header>
-              <Modal.Title
-                style={{
-                  color: "#384D6C",
-                  font: "Montserrat",
-                  fontWeight: "700",
-                  fontSize: "16px",
-                }}
-              >
-                Edit Username
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <div className="dialogUsername">
-                <Form.Group controlId="formGroupUserName">
-                  <Form.Label
-                    style={{
-                      color: "#384D6C",
-                      font: "Montserrat",
-                      fontWeight: "700",
-                      fontSize: "16px",
-                    }}
-                  >
-                    New User Name
-                  </Form.Label>
+          <Modal.Header closeButton>
+            <Modal.Title
+              style={{
+                color: "black",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+              }}
+            >
+              Edit Username
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="dialogUsername">
+              <Form.Group controlId="formGroupUserName">
+                <Form.Label
+                  style={{
+                    color: "black",
+                    font: "Montserrat",
+                    fontWeight: "700",
+                    fontSize: "16px",
+                  }}
+                >
+                  New User Name
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  name="newUsername"
+                  value={newUserName}
+                  onChange={(e) => setNewUserName(e.target.value)}
+                  isInvalid={
+                    validationMessages.empty || validationMessages.notUnique
+                  }
+                />
+                {validationMessages.empty && (
+                  <Form.Control.Feedback type="invalid">
+                    Username is required.
+                  </Form.Control.Feedback>
+                )}
+                {validationMessages.notUnique && (
+                  <Form.Control.Feedback type="invalid">
+                    Username already exists. Please choose another username.
+                  </Form.Control.Feedback>
+                )}
+              </Form.Group>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#0000000D",
+                border: "0",
+                color: "black",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+              }}
+              onClick={handleCloseEditModal}
+            >
+              Close
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                color: "black",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+              }}
+              onClick={handleUsernameSave}
+            >
+              Save changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+      <div>
+        <Modal
+          show={showChangePassword}
+          onHide={handleClosePasswordModal}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title
+              style={{
+                color: "black",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+              }}
+            >
+              Change password
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="password">
+              <div className="currentPassword">
+                <Form.Label
+                  style={{
+                    color: "black",
+                    font: "Montserrat",
+                    fontWeight: "700",
+                    fontSize: "16px",
+                  }}
+                >
+                  Current Password
+                </Form.Label>
+                <InputGroup>
+                  <InputGroup.Text id="keyIcon">
+                    <BsFillKeyFill style={{ width: "24px", height: "24px" }} />
+                  </InputGroup.Text>
                   <Form.Control
-                    type="text"
-                    name="newUsername"
-                    value={newUserName}
-                    onChange={(e) => setNewUserName(e.target.value)}
+                    type={currentOpenEye ? "text" : "password"}
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     isInvalid={
-                      validationMessages.empty || validationMessages.notUnique
+                      validationMessages.emptyCurrentPassword ||
+                      validationMessages.currentPasswordIncorrect
                     }
                   />
-                  {validationMessages.empty && (
+                  <Button
+                    variant="info"
+                    id="currentEyeOpenIcon"
+                    onClick={() => setCurrentOpenEye(!currentOpenEye)}
+                    style={{ border: "0", backgroundColor: "#FFD700" }}
+                  >
+                    {currentOpenEye ? (
+                      <VscEye
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          color: "black",
+                        }}
+                      ></VscEye>
+                    ) : (
+                      <VscEyeClosed
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          color: "black",
+                        }}
+                      ></VscEyeClosed>
+                    )}
+                  </Button>
+                  {validationMessages.emptyCurrentPassword && (
                     <Form.Control.Feedback type="invalid">
-                      Username is required.
+                      Current password is required.
                     </Form.Control.Feedback>
                   )}
-                  {validationMessages.notUnique && (
+                  {validationMessages.currentPasswordIncorrect && (
                     <Form.Control.Feedback type="invalid">
-                      Username already exists. Please choose another username.
+                      Current password is incorrect.
                     </Form.Control.Feedback>
                   )}
-                </Form.Group>
+                </InputGroup>
               </div>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                style={{
-                  backgroundColor: "#0000000D",
-                  border: "0",
-                  color: "#384D6C",
-                  font: "Montserrat",
-                  fontWeight: "700",
-                  fontSize: "16px",
-                }}
-                onClick={handleCloseUsername}
-              >
-                Close
-              </Button>
-              <Button
-                style={{
-                  backgroundColor: "#FFD700",
-                  border: "0",
-                  color: "#384D6C",
-                  font: "Montserrat",
-                  fontWeight: "700",
-                  fontSize: "16px",
-                }}
-                onClick={handleUsernameSave}
-              >
-                Save changes
-              </Button>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </div>
-      )}
-      {showChangePassword && (
-        <div
-          className="modal show"
-          style={{
-            display: "block",
-            position: "initial",
-          }}
-        >
-          <Modal.Dialog show="true">
-            <Modal.Header>
-              <Modal.Title
-                style={{
-                  color: "#384D6C",
-                  font: "Montserrat",
-                  fontWeight: "700",
-                  fontSize: "16px",
-                }}
-              >
-                Change password
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <div className="password">
-                <div className="currentPassword">
-                  <Form.Label style={{
-                    color: "#384D6C",
+              <div className="newPassword">
+                <Form.Label
+                  style={{
+                    color: "black",
                     font: "Montserrat",
                     fontWeight: "700",
                     fontSize: "16px",
-                  }}>Current Password</Form.Label>
-                  <InputGroup>
-                    <InputGroup.Text id="keyIcon">
-                      <BsFillKeyFill style={{ width: "24px", height: "24px" }} />
-                    </InputGroup.Text>
-                    <Form.Control
-                      type={currentOpenEye ? "text" : "password"}
-                      name="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      isInvalid={validationMessages.emptyCurrentPassword || validationMessages.currentPasswordIncorrect}
-                    />
-                    <Button
-                      variant="info"
-                      id="currentEyeOpenIcon"
-                      onClick={() => setCurrentOpenEye(!currentOpenEye)}
-                      style={{ border: "0", backgroundColor: "#FFD700" }}
-                    >
-                      {currentOpenEye ? (
-                        <VscEye
-                          style={{
-                            width: "24px",
-                            height: "24px",
-                            color: "#384D6C",
-                          }}
-                        ></VscEye>
-                      ) : (
-                        <VscEyeClosed
-                          style={{
-                            width: "24px",
-                            height: "24px",
-                            color: "#384D6C",
-                          }}
-                        ></VscEyeClosed>
-                      )}
-                    </Button>
-                    {validationMessages.emptyCurrentPassword && (
-                      <Form.Control.Feedback type="invalid">
-                        Current password is required.
-                      </Form.Control.Feedback>
+                  }}
+                >
+                  New Password
+                </Form.Label>
+                <InputGroup>
+                  <InputGroup.Text id="keyIcon">
+                    <BsFillKeyFill style={{ width: "24px", height: "24px" }} />
+                  </InputGroup.Text>
+                  <Form.Control
+                    type={newOpenEye ? "text" : "password"}
+                    name="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    isInvalid={validationMessages.emptyNewPassword}
+                  />
+                  <Button
+                    id={newOpenEye ? "newEyeIconOpen" : "newEyeIconClose"}
+                    onClick={() => setNewOpenEye(!newOpenEye)}
+                    style={{ border: "0", backgroundColor: "#FFD700" }}
+                  >
+                    {newOpenEye ? (
+                      <VscEye
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          color: "black",
+                        }}
+                      ></VscEye>
+                    ) : (
+                      <VscEyeClosed
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          color: "black",
+                        }}
+                      ></VscEyeClosed>
                     )}
-                    {validationMessages.currentPasswordIncorrect && (
-                      <Form.Control.Feedback type="invalid">
-                        Current password is incorrect.
-                      </Form.Control.Feedback>
-                    )}
-                  </InputGroup>
-                </div>
-                <div className="newPassword">
-                  <Form.Label style={{
-                    color: "#384D6C",
-                    font: "Montserrat",
-                    fontWeight: "700",
-                    fontSize: "16px",
-                  }}>New Password</Form.Label>
-                  <InputGroup>
-                    <InputGroup.Text id="keyIcon">
-                      <BsFillKeyFill style={{ width: "24px", height: "24px" }} />
-                    </InputGroup.Text>
-                    <Form.Control
-                      type={newOpenEye ? "text" : "password"}
-                      name="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      isInvalid={validationMessages.emptyNewPassword}
-                    />
-                    <Button
-                      id={newOpenEye ? "newEyeIconOpen" : "newEyeIconClose"}
-                      onClick={() => setNewOpenEye(!newOpenEye)}
-                      style={{ border: "0", backgroundColor: "#FFD700" }}
-                    >
-                      {newOpenEye ? (
-                        <VscEye
-                          style={{
-                            width: "24px",
-                            height: "24px",
-                            color: "#384D6C",
-                          }}
-                        ></VscEye>
-                      ) : (
-                        <VscEyeClosed
-                          style={{
-                            width: "24px",
-                            height: "24px",
-                            color: "#384D6C",
-                          }}
-                        ></VscEyeClosed>
-                      )}
-                    </Button>
-                    {validationMessages.emptyNewPassword && (
-                      <Form.Control.Feedback type="invalid">
-                        New Password is required.
-                      </Form.Control.Feedback>
-                    )}
-                  </InputGroup>
-                </div>
-                <div className="confirmPassword">
-                  <Form.Label style={{
-                    color: "#384D6C",
-                    font: "Montserrat",
-                    fontWeight: "700",
-                    fontSize: "16px",
-                  }}>Confirm New Password</Form.Label>
-                  <InputGroup>
-                    <InputGroup.Text id="keyIcon">
-                      <BsFillKeyFill style={{ width: "24px", height: "24px" }} />
-                    </InputGroup.Text>
-                    <Form.Control
-                      type={confirmOpenEye ? "text" : "password"}
-                      name="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      isInvalid={validationMessages.emptyConfirmNewPassword || validationMessages.newPasswordDifferentConfirmPassword}
-                    />
-                    <Button
-                      id={confirmOpenEye ? "confirmEyeIconOpen" : "confirmEyeIconClose"}
-                      onClick={() => setConfirmOpenEye(!confirmOpenEye)}
-                      style={{ border: "0", backgroundColor: "#FFD700" }}
-                    >
-                      {confirmOpenEye ? (
-                        <VscEye
-                          style={{
-                            width: "24px",
-                            height: "24px",
-                            color: "#384D6C",
-                          }}
-                        ></VscEye>
-                      ) : (
-                        <VscEyeClosed
-                          style={{
-                            width: "24px",
-                            height: "24px",
-                            color: "#384D6C",
-                          }}
-                        ></VscEyeClosed>
-                      )}
-                    </Button>
-                    {validationMessages.emptyConfirmNewPassword && (
-                      <Form.Control.Feedback type="invalid">
-                        Confirm new password is required.
-                      </Form.Control.Feedback>
-                    )}
-                    {validationMessages.newPasswordDifferentConfirmPassword && (
-                      <Form.Control.Feedback type="invalid">
-                        Confirm new password is different from new password.
-                      </Form.Control.Feedback>
-                    )}
-                  </InputGroup>
-                </div>
+                  </Button>
+                  {validationMessages.emptyNewPassword && (
+                    <Form.Control.Feedback type="invalid">
+                      New Password is required.
+                    </Form.Control.Feedback>
+                  )}
+                </InputGroup>
               </div>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                style={{
-                  backgroundColor: "#0000000D",
-                  border: "0",
-                  color: "#384D6C",
-                  font: "Montserrat",
-                  fontWeight: "700",
-                  fontSize: "16px",
-                }}
-                onClick={handleClosePassword}
-              >
-                Close
-              </Button>
-              <Button
-                style={{
-                  backgroundColor: "#FFD700",
-                  border: "0",
-                  color: "#384D6C",
-                  font: "Montserrat",
-                  fontWeight: "700",
-                  fontSize: "16px",
-                }}
-                onClick={handlePasswordSave}
-              >
-                Save changes
-              </Button>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </div>
-      )}
+              <div className="confirmPassword">
+                <Form.Label
+                  style={{
+                    color: "black",
+                    font: "Montserrat",
+                    fontWeight: "700",
+                    fontSize: "16px",
+                  }}
+                >
+                  Confirm New Password
+                </Form.Label>
+                <InputGroup>
+                  <InputGroup.Text id="keyIcon">
+                    <BsFillKeyFill style={{ width: "24px", height: "24px" }} />
+                  </InputGroup.Text>
+                  <Form.Control
+                    type={confirmOpenEye ? "text" : "password"}
+                    name="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    isInvalid={
+                      validationMessages.emptyConfirmNewPassword ||
+                      validationMessages.newPasswordDifferentConfirmPassword
+                    }
+                  />
+                  <Button
+                    id={
+                      confirmOpenEye
+                        ? "confirmEyeIconOpen"
+                        : "confirmEyeIconClose"
+                    }
+                    onClick={() => setConfirmOpenEye(!confirmOpenEye)}
+                    style={{ border: "0", backgroundColor: "#FFD700" }}
+                  >
+                    {confirmOpenEye ? (
+                      <VscEye
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          color: "black",
+                        }}
+                      ></VscEye>
+                    ) : (
+                      <VscEyeClosed
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          color: "black",
+                        }}
+                      ></VscEyeClosed>
+                    )}
+                  </Button>
+                  {validationMessages.emptyConfirmNewPassword && (
+                    <Form.Control.Feedback type="invalid">
+                      Confirm new password is required.
+                    </Form.Control.Feedback>
+                  )}
+                  {validationMessages.newPasswordDifferentConfirmPassword && (
+                    <Form.Control.Feedback type="invalid">
+                      Confirm new password is different from new password.
+                    </Form.Control.Feedback>
+                  )}
+                </InputGroup>
+              </div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#0000000D",
+                border: "0",
+                color: "black",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+              }}
+              onClick={handleClosePasswordModal}
+            >
+              Close
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                color: "black",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+              }}
+              onClick={handlePasswordSave}
+            >
+              Save changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
     </div>
   );
 };
