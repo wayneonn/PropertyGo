@@ -31,6 +31,7 @@ const Login = () => {
   const [show, setShow] = useState(false);
 
   const navigate = useNavigate();
+  const imageBasePath = window.location.protocol + "//" + window.location.host + "/images/";
 
   const handleUserNameChange = (e) => {
     setUserName(e.target.value);
@@ -54,7 +55,7 @@ const Login = () => {
           userName,
           password
         });
-        
+
         if (response.status === 200) {
           const { adminId } = response.data;
 
@@ -86,14 +87,14 @@ const Login = () => {
         <Row nogutters="true" className="loginCardRow">
           <Col>
             <Card.Img
-              src="login.jpeg"
+              src={imageBasePath + "login.jpeg"}
               className="loginCardImage"
             />
           </Col>
           <Col className="loginRightSideCard">
             <Card.Body className="loginRightSideCardContent">
               <Card.Img
-                src="Logo.png"
+                src={imageBasePath + "Logo.png"}
                 className="loginPropertyGoIcon"
               />
               <div className="loginSpacesBetweenInputs"></div>
@@ -112,7 +113,7 @@ const Login = () => {
                       onChange={handleUserNameChange}
                     />
                     <Form.Control.Feedback type="invalid">
-                      Please key in a username.
+                      Username is required.
                     </Form.Control.Feedback>
                   </InputGroup>
                 </div>
@@ -123,6 +124,7 @@ const Login = () => {
                   {openEye === false ? (
                     <InputGroup>
                       <Form.Control
+                        required
                         type="password"
                         id="inputPassword"
                         placeholder="Password"
@@ -145,10 +147,14 @@ const Login = () => {
                           }}
                         ></VscEyeClosed>
                       </Button>
+                      <Form.Control.Feedback type="invalid">
+                        Password is required.
+                      </Form.Control.Feedback>
                     </InputGroup>
                   ) : (
                     <InputGroup>
                       <Form.Control
+                        required
                         type="text"
                         id="inputPassword"
                         placeholder="Password"
@@ -171,6 +177,9 @@ const Login = () => {
                           }}
                         ></VscEye>
                       </Button>
+                      <Form.Control.Feedback type="invalid">
+                        Password is required.
+                      </Form.Control.Feedback>
                     </InputGroup>
                   )}
                 </div>
