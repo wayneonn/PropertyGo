@@ -62,10 +62,6 @@ const updateAdminPassword = async (req, res) => {
             return res.status(400).json({ message: "New password and confirmed passwords are different"});
         }
 
-        if (oldPassword === newPassword) {
-            return res.status(200).json({ message: "No change in password" });
-        }
-
         admin.password = newPassword;
         await admin.save();
 
