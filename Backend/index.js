@@ -11,6 +11,10 @@ const postRouter = require('./routes/User')
 const loginRoute = require('./routes/loginRoute')
 app.use("/user", postRouter, loginRoute)
 
+const googleSignInRoute = require('./routes/googleSignInRoute');  // Adjust path as needed
+app.use("/auth", googleSignInRoute);
+
+
 
 db.sequelize.sync()
     .then(async () => {
