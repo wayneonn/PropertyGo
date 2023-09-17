@@ -8,58 +8,16 @@ import Activity from '../screens/userBottomNavBar/Activity';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from "@react-navigation/native";
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
-// import { Ionicons } from '@expo/vector-icons';
+
 
 const Tab = createBottomTabNavigator();
 
 const UserBottomNavigator = () => {
-    const navigation = useNavigation();
-
-    // Screen-specific header options
-    React.useLayoutEffect(() => {
-      navigation.setOptions({
-        headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.openDrawer()}>
-              <AntDesign name="menu-unfold" size={24} color="black" />
-          </TouchableOpacity>
-        ),
-        headerTitle: () => (
-            <Image
-              source={require('../assets/PropertyGo-Logo.png')}
-              style={{ width: 40, height: 40, marginBottom: 20 }}
-            />
-        ),
-        headerRight: () => (
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TouchableOpacity
-              onPress={() => {
-                /*side nav bar*/
-              }}
-              style={{ marginRight: 10 }}
-            >
-              <FontAwesome5 name="coins" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                /*side nav bar*/
-              }}
-            >
-              <Ionicons name="chatbubble-ellipses-outline" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
-        ),
-      });
-    }, [navigation]);
-
 
     return (
         <Tab.Navigator 
         screenOptions={({route, navigation}) => ({
-            headerShown:false,
+            // headerShown:false,
             tabBarIcon: ({color, focused, size}) => {
                 let iconName;
                 if (route.name === "Home") {

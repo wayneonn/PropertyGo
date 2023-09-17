@@ -5,7 +5,6 @@ import LoginPortal from '../screens/login/LoginPortal';
 import HomeScreen from '../screens/login/HomeScreen';
 import LoginScreen from '../screens/login/LoginScreen.js';
 import SideNavigator from './SideNavigator'
-import UserBottomNavigator from './UserBottomNavigator';
 
 const Stack = createNativeStackNavigator();
 

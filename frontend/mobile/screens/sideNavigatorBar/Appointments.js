@@ -3,15 +3,14 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, SafeAreaVie
 import TopBar from '../../components/Common/TopNavBar';
 
 
-const Activity = () => {
-
+const Appointments = () => {
 
     return (
       <SafeAreaView >
         <TopBar/>
-        <Text>ActivityScreen</Text>
+        <Text>AppointmentsScreen</Text>
       </SafeAreaView>
     );
   };
 
-  export default Activity;
+  export default Appointments;

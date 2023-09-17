@@ -8,7 +8,7 @@ const HomeStackGroup = () => {
 
     return (
 
-        <HomeStack.Navigator>
+        <HomeStack.Navigator screenOptions={{ headerShown: false }}>
             <HomeStack.Screen name="User Bottom Navigator" component={UserBottomNavigator}/>
         </HomeStack.Navigator>
     );

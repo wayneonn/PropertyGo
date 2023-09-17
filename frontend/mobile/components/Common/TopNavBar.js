@@ -6,7 +6,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 
 
-const TopBar = ({ title, leftIconAction, coinAction, RightIcon }) => {
+const TopBar = () => {
 
   const navigation = useNavigation();
 
@@ -14,38 +14,35 @@ const TopBar = ({ title, leftIconAction, coinAction, RightIcon }) => {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => leftIconAction}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <AntDesign name="menu-unfold" size={24} color="black" />
-          </View>
+        <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ marginLeft: 10, marginBottom: 5 }}>
+          <AntDesign name="menu-unfold" size={24} color="black" />
         </TouchableOpacity>
       ),
       headerTitle: () => (
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          {title ?
-            <Text>title</Text>
-            :
-            <Image
-              source={require('../assets/PropertyGo-Logo.png')}
-              style={{ width: 40, height: 40, marginBottom: 20 }} // Adjust the width and height as needed
-            />
-          }
-        </View>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Home')}
+        >
+          <Image
+            source={require('../../assets/PropertyGo-Logo.png')}
+            style={{ width: 45, height: 45, marginBottom: 5 }}
+          />
+        </TouchableOpacity>
       ),
       headerRight: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
             onPress={() => {
-              coinAction
+              /*side nav bar*/
             }}
-            style={{ marginRight: 10 }} // Add right margin to create spacing
+            style={{ marginRight: 15, marginBottom: 5 }}
           >
             <FontAwesome5 name="coins" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              RightIcon
+              /*side nav bar*/
             }}
+            style={{ marginRight: 10, marginBottom: 5 }}
           >
             <Ionicons name="chatbubble-ellipses-outline" size={24} color="black" />
           </TouchableOpacity>

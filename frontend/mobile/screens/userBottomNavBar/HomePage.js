@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
-
+import TopBar from '../../components/Common/TopNavBar';
 
 // Search bar component
 const SearchBar = () => {
@@ -32,9 +32,10 @@ const PropertyListing = ({ image, description, price, area, roomFeatures }) => {
 // Main home page component
 const HomePage = () => {
 
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      {/* <TopBar /> */}
+    <SafeAreaView >
+      <TopBar />
       <SearchBar />
 
       {/* Main content image */}
@@ -72,8 +73,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: 'grey',
+    borderWidth: 1,               
+    borderColor: 'grey', 
   },
   searchInput: {
     flex: 1,
