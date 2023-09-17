@@ -108,7 +108,7 @@ const AdminProfile = () => {
 
   return (
     <div className="admin-profile">
-      <div style={{ marginTop: "40px", marginLeft: "60px" }}>
+      <div style={{ marginTop: "20px", marginLeft: "60px" }}>
         <BreadCrumb name="Profile"></BreadCrumb>
       </div>
       <div>

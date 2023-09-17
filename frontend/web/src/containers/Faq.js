@@ -2,7 +2,8 @@ import { React, useState, useEffect } from "react";
 import { Button, Card, Table } from "react-bootstrap";
 import "./Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
-import { MdPageview, MdDelete } from "react-icons/md";
+import { MdEditSquare, MdDelete } from "react-icons/md";
+import FaqEdit from "../containers/FaqEdit.js";
 
 import API from "../services/API";
 
@@ -12,6 +13,45 @@ const Faq = () => {
   const [faqs, setFaqs] = useState([]);
   const [buyerfaqs, setBuyerfaqs] = useState([]);
   const [sellerfaqs, setSellerfaqs] = useState([]);
+  const [showEditCard, setShowEditCard] = useState(false);
+  const [faqId, setFaqId] = useState(0);
+  const [faqQuestion, setFaqQuestion] = useState("");
+  const [faqAnswer, setFaqAnswer] = useState("");
+  const [faqType, setFaqType] = useState("");
+
+  const itemsPerPage = 4;
+
+  const [currentPageSeller, setCurrentPageSeller] = useState(1);
+  const [totalPageSeller, setTotalPageSeller] = useState(0);
+
+  const indexOfLastItemSeller = currentPageSeller * itemsPerPage;
+  const indexOfFirstItemSeller = indexOfLastItemSeller - itemsPerPage;
+
+  const [currentPageBuyer, setCurrentPageBuyer] = useState(1);
+  const [totalPageBuyer, setTotalPageBuyer] = useState(0);
+
+  const indexOfLastItemBuyer = currentPageBuyer * itemsPerPage;
+  const indexOfFirstItemBuyer = indexOfLastItemBuyer - itemsPerPage;
+
+  const handlePageChangeSeller = (pageNumber) => {
+    setCurrentPageSeller(pageNumber);
+  };
+
+  const handlePageChangeBuyer = (pageNumber) => {
+    setCurrentPageBuyer(pageNumber);
+  };
+
+  const toggleEditCard = (faqId, faqQuestion, faqAnswer, faqType) => {
+    setShowEditCard(!showEditCard);
+    setFaqId(faqId);
+    setFaqQuestion(faqQuestion);
+    setFaqAnswer(faqAnswer);
+    setFaqType(faqType);
+  };
+
+  const handleCloseCard = () => {
+    setShowEditCard(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,6 +63,8 @@ const Faq = () => {
         setBuyerfaqs(buyerFaqs);
         const sellerFaqs = faqs.filter((faq) => faq.faqType === "SELLER");
         setSellerfaqs(sellerFaqs);
+        setTotalPageSeller(Math.ceil(sellerFaqs.length / itemsPerPage));
+        setTotalPageBuyer(Math.ceil(buyerFaqs.length / itemsPerPage));
       } catch (error) {
         console.error(error);
       }
@@ -32,8 +74,31 @@ const Faq = () => {
 
   return (
     <div className="faq">
-      <div style={{ marginTop: "40px", marginLeft: "60px" }}>
+      <div
+        style={{
+          marginTop: "20px",
+          marginLeft: "30px",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <BreadCrumb name="FAQ"></BreadCrumb>
+        <Button
+          style={{
+            backgroundColor: "#FFD700",
+            border: "0",
+            width: "125px",
+            height: "40px",
+            borderRadius: "160px",
+            color: "black",
+            font: "Public Sans",
+            fontWeight: "600",
+            fontSize: "14px",
+            marginRight: "460px",
+          }}
+        >
+          Add New FAQ
+        </Button>
       </div>
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayfaq">
@@ -44,102 +109,111 @@ const Faq = () => {
                 font: "Montserrat",
                 fontWeight: "700",
                 fontSize: "16px",
-                padding: "10px 15px 10px 15px",
+                padding: "5px 10px 5px 10px",
               }}
             >
               SELLER FAQ
             </h3>
-            <Table hover responsive size="sm">
-              <thead
-                style={{
-                  textAlign: "center",
-                  fontFamily: "Arial",
-                }}
-              >
-                <tr>
-                  <th>QUESTION</th>
-                  <th>ANSWER</th>
-                  <th>DATE CREATED</th>
-                  <th>UPDATED AT</th>
-                  <th>ACTION</th>
-                </tr>
-              </thead>
-              {Array.isArray(sellerfaqs) && sellerfaqs.length > 0 ? (
-                <tbody>
-                  {sellerfaqs.map((faq) => (
-                    <tr
-                      key={faq.faqId}
-                      style={{
-                        textAlign: "center",
-                        fontFamily: "Arial",
-                      }}
-                    >
-                      <td>{faq.question}</td>
-                      <td>{faq.answer}</td>
-                      <td>{faq.createdAt}</td>
-                      <td>{faq.updatedAt}</td>
-                      <td>
-                        <Button
-                          size="sm"
-                          title="Edit"
+            <div>
+              <Table hover responsive size="sm">
+                <thead
+                  style={{
+                    textAlign: "center",
+                  }}
+                >
+                  <tr>
+                    <th>QUESTION</th>
+                    <th>ANSWER</th>
+                    <th>DATE CREATED</th>
+                    <th>UPDATED AT</th>
+                    <th>ACTION</th>
+                  </tr>
+                </thead>
+                {Array.isArray(sellerfaqs) && sellerfaqs.length > 0 ? (
+                  <tbody>
+                    {sellerfaqs
+                      .slice(indexOfFirstItemSeller, indexOfLastItemSeller)
+                      .map((faq) => (
+                        <tr
+                          key={faq.faqId}
                           style={{
-                            backgroundColor: "#FFD700",
-                            border: "0",
-                            marginRight: "10px",
+                            textAlign: "center",
                           }}
                         >
-                          <MdPageview
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                              color: "black",
-                            }}
-                          ></MdPageview>
-                        </Button>
-                        <Button
-                          size="sm"
-                          title="Delete"
-                          style={{ backgroundColor: "#FFD700", border: "0" }}
-                        >
-                          <MdDelete
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                              color: "black",
-                            }}
-                          ></MdDelete>
-                        </Button>
+                          <td>{faq.question}</td>
+                          <td>{faq.answer}</td>
+                          <td>{faq.createdAt}</td>
+                          <td>{faq.updatedAt}</td>
+                          <td>
+                            <Button
+                              size="sm"
+                              title="Edit"
+                              style={{
+                                backgroundColor: "#FFD700",
+                                border: "0",
+                                marginRight: "10px",
+                              }}
+                              onClick={() =>
+                                toggleEditCard(
+                                  faq.faqId,
+                                  faq.question,
+                                  faq.answer,
+                                  faq.faqType
+                                )
+                              }
+                            >
+                              <MdEditSquare
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  color: "black",
+                                }}
+                              ></MdEditSquare>
+                            </Button>
+                            <Button
+                              size="sm"
+                              title="Delete"
+                              style={{
+                                backgroundColor: "#FFD700",
+                                border: "0",
+                              }}
+                            >
+                              <MdDelete
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  color: "black",
+                                }}
+                              ></MdDelete>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                ) : (
+                  <tbody>
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: "center" }}>
+                        No FAQs available
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              ) : (
-                <tbody>
-                  <tr>
-                    <td colSpan="5" style={{ textAlign: "center" }}>
-                      No FAQs available
-                    </td>
-                  </tr>
-                </tbody>
-              )}
-            </Table>
-            <Pagination>
-              <Pagination.First />
-              <Pagination.Prev />
-              <Pagination.Item>{1}</Pagination.Item>
-              <Pagination.Ellipsis />
-
-              <Pagination.Item>{10}</Pagination.Item>
-              <Pagination.Item>{11}</Pagination.Item>
-              <Pagination.Item active>{12}</Pagination.Item>
-              <Pagination.Item>{13}</Pagination.Item>
-              <Pagination.Item disabled>{14}</Pagination.Item>
-
-              <Pagination.Ellipsis />
-              <Pagination.Item>{20}</Pagination.Item>
-              <Pagination.Next />
-              <Pagination.Last />
-            </Pagination>
+                  </tbody>
+                )}
+              </Table>
+            </div>
+            <div>
+              <Pagination className="faq-paginate">
+                {Array.from({ length: totalPageSeller }).map((_, index) => (
+                  <Pagination.Item
+                    key={index}
+                    active={index + 1 === currentPageSeller}
+                    onClick={() => handlePageChangeSeller(index + 1)}
+                  >
+                    {index + 1}
+                  </Pagination.Item>
+                ))}
+              </Pagination>
+            </div>
           </div>
           <div className="buyerfaq">
             <h3
@@ -148,100 +222,118 @@ const Faq = () => {
                 font: "Montserrat",
                 fontWeight: "700",
                 fontSize: "16px",
-                padding: "10px 15px 10px 15px",
+                padding: "5px 10px 5px 10px",
               }}
             >
               BUYER FAQ
             </h3>
-            <Table hover responsive size="sm">
-              <thead style={{ textAlign: "center", fontFamily: "Arial" }}>
-                <tr>
-                  <th>QUESTION</th>
-                  <th>ANSWER</th>
-                  <th>DATE CREATED</th>
-                  <th>UPDATED AT</th>
-                  <th>ACTION</th>
-                </tr>
-              </thead>
-              {Array.isArray(buyerfaqs) && buyerfaqs.length > 0 ? (
-                <tbody>
-                  {buyerfaqs.map((faq) => (
-                    <tr
-                      key={faq.faqId}
-                      style={{
-                        textAlign: "center",
-                        fontFamily: "Arial",
-                      }}
-                    >
-                      <td>{faq.question}</td>
-                      <td>{faq.answer}</td>
-                      <td>{faq.createdAt}</td>
-                      <td>{faq.updatedAt}</td>
-                      <td>
-                        <Button
-                          size="sm"
-                          title="Edit"
+            <div>
+              <Table hover responsive size="sm">
+                <thead style={{ textAlign: "center" }}>
+                  <tr>
+                    <th>QUESTION</th>
+                    <th>ANSWER</th>
+                    <th>DATE CREATED</th>
+                    <th>UPDATED AT</th>
+                    <th>ACTION</th>
+                  </tr>
+                </thead>
+                {Array.isArray(buyerfaqs) && buyerfaqs.length > 0 ? (
+                  <tbody>
+                    {buyerfaqs
+                      .slice(indexOfFirstItemBuyer, indexOfLastItemBuyer)
+                      .map((faq) => (
+                        <tr
+                          key={faq.faqId}
                           style={{
-                            backgroundColor: "#FFD700",
-                            border: "0",
-                            marginRight: "10px",
+                            textAlign: "center",
                           }}
                         >
-                          <MdPageview
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                              color: "black",
-                            }}
-                          ></MdPageview>
-                        </Button>
-                        <Button
-                          size="sm"
-                          title="Delete"
-                          style={{ backgroundColor: "#FFD700", border: "0" }}
-                        >
-                          <MdDelete
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                              color: "black",
-                            }}
-                          ></MdDelete>
-                        </Button>
+                          <td>{faq.question}</td>
+                          <td>{faq.answer}</td>
+                          <td>{faq.createdAt}</td>
+                          <td>{faq.updatedAt}</td>
+                          <td>
+                            <Button
+                              size="sm"
+                              title="Edit"
+                              style={{
+                                backgroundColor: "#FFD700",
+                                border: "0",
+                                marginRight: "10px",
+                              }}
+                              onClick={() =>
+                                toggleEditCard(
+                                  faq.faqId,
+                                  faq.question,
+                                  faq.answer,
+                                  faq.faqType
+                                )
+                              }
+                            >
+                              <MdEditSquare
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  color: "black",
+                                }}
+                              ></MdEditSquare>
+                            </Button>
+                            <Button
+                              size="sm"
+                              title="Delete"
+                              style={{
+                                backgroundColor: "#FFD700",
+                                border: "0",
+                              }}
+                            >
+                              <MdDelete
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  color: "black",
+                                }}
+                              ></MdDelete>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                ) : (
+                  <tbody>
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: "center" }}>
+                        No FAQs available
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              ) : (
-                <tbody>
-                  <tr>
-                    <td colSpan="5" style={{ textAlign: "center" }}>
-                      No FAQs available
-                    </td>
-                  </tr>
-                </tbody>
-              )}
-            </Table>
-            <Pagination>
-              <Pagination.First />
-              <Pagination.Prev />
-              <Pagination.Item>{1}</Pagination.Item>
-              <Pagination.Ellipsis />
-
-              <Pagination.Item>{10}</Pagination.Item>
-              <Pagination.Item>{11}</Pagination.Item>
-              <Pagination.Item active>{12}</Pagination.Item>
-              <Pagination.Item>{13}</Pagination.Item>
-              <Pagination.Item disabled>{14}</Pagination.Item>
-
-              <Pagination.Ellipsis />
-              <Pagination.Item>{20}</Pagination.Item>
-              <Pagination.Next />
-              <Pagination.Last />
-            </Pagination>
+                  </tbody>
+                )}
+              </Table>
+            </div>
+            <div>
+              <Pagination className="faq-paginate">
+                {Array.from({ length: totalPageBuyer }).map((_, index) => (
+                  <Pagination.Item
+                    key={index}
+                    active={index + 1 === currentPageBuyer}
+                    onClick={() => handlePageChangeBuyer(index + 1)}
+                  >
+                    {index + 1}
+                  </Pagination.Item>
+                ))}
+              </Pagination>
+            </div>
           </div>
         </div>
-        {/* <div className="answerfaq"></div> */}
+        {showEditCard && (
+          <FaqEdit
+            faqId={faqId}
+            faqQuestion={faqQuestion}
+            faqAnswer={faqAnswer}
+            faqType={faqType}
+            onClose={handleCloseCard}
+          ></FaqEdit>
+        )}
       </div>
     </div>
   );

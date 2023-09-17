@@ -13,8 +13,8 @@ import { PiPuzzlePiece, PiHouseLine } from "react-icons/pi";
 import { GoPerson } from "react-icons/go";
 
 const SideBar = () => {
-
-  const imageBasePath = window.location.protocol + "//" + window.location.host + "/images/";
+  const imageBasePath =
+    window.location.protocol + "//" + window.location.host + "/images/";
 
   return (
     <div className="navibar">
@@ -24,10 +24,10 @@ const SideBar = () => {
             src={imageBasePath + "Logo.png"}
             alt=".."
             style={{
-              width: "30px",
-              height: "30px",
-              marginBottom: "2em",
-              marginLeft: "0.6em",
+              width: "60px",
+              height: "60px",
+              marginBottom: "1em",
+              marginLeft: "3em",
             }}
           />
         </Nav.Item>

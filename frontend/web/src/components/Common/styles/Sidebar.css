@@ -1,12 +1,12 @@
 .navibar {
-  width: 220px;
+  width: 180px;
   position: fixed;
   height: 100%;
   top: 0;
   left: 0;
   background-color: #FFFFFF;
-  /* background-color: grey; */
-  padding: 20px;
+  /* background-color: #FFD700; */
+  padding: 10px;
 }
 
 .navibar a {
