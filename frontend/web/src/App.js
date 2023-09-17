@@ -24,11 +24,11 @@ function App() {
 
   return (
     // <div className="App">
-    //   {/* <Login></Login>
+    //   <Login></Login>
     //   <SideBar></SideBar>
     //   <TopBar></TopBar>
     //   <AdminProfile></AdminProfile>
-    //   <Faq></Faq> */}
+    //   <Faq></Faq>
     // </div>
     <BrowserRouter>
       <SideBar />

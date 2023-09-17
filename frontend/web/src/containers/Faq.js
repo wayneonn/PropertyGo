@@ -6,6 +6,18 @@ import { MdPageview, MdDelete } from "react-icons/md";
 
 import API from "../services/API";
 
+import Pagination from "react-bootstrap/Pagination";
+
+let active = 1;
+let items = [];
+for (let number = 1; number <= 5; number++) {
+  items.push(
+    <Pagination.Item key={number} active={number === active}>
+      {number}
+    </Pagination.Item>
+  );
+}
+
 const Faq = () => {
   const [faqs, setFaqs] = useState([]);
   const [buyerfaqs, setBuyerfaqs] = useState([]);

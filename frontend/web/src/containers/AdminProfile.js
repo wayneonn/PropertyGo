@@ -32,9 +32,9 @@ const AdminProfile = () => {
 
   const handleUsernameSave = async () => {
     //save to database
-    const response = await API.patch('/admins/updateUserName', {
+    const response = await API.patch("/admins/updateUserName", {
       oldUserName: userName,
-      updatedUserName: newUserName
+      updatedUserName: newUserName,
     });
 
     if (response.status === 200) {
@@ -68,14 +68,16 @@ const AdminProfile = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const test = await API.get(`/admins/${localStorage.getItem("loggedInAdmin")}`);
+        const test = await API.get(
+          `/admins/${localStorage.getItem("loggedInAdmin")}`
+        );
         const { userName } = test.data;
 
         setUserName(userName);
       } catch (error) {
         console.error(error);
       }
-    }
+    };
 
     fetchData();
   }, []);
@@ -100,7 +102,12 @@ const AdminProfile = () => {
                 User Name
               </Form.Label>
               <InputGroup>
-                <Form.Control type="text" name="username" value={userName} readOnly />
+                <Form.Control
+                  type="text"
+                  name="username"
+                  value={userName}
+                  readOnly
+                />
                 <Button
                   // variant="primary"
                   id="editUsername"
@@ -213,7 +220,7 @@ const AdminProfile = () => {
           </Modal.Dialog>
         </div>
       )}
-      {/* {showChangePassword && (
+      {showChangePassword && (
         <div
           className="modal show"
           style={{
@@ -486,7 +493,7 @@ const AdminProfile = () => {
             </Modal.Footer>
           </Modal.Dialog>
         </div>
-      )} */}
+      )}
     </div>
   );
 };
