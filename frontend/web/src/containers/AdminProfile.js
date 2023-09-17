@@ -11,7 +11,7 @@ import API from "../services/API";
 const AdminProfile = () => {
   const [userName, setUserName] = useState("");
   const [newUserName, setNewUserName] = useState("");
-  const [password, setPassword] = useState(""); //set static password first, later fetch from backend
+  const [password, setPassword] = useState(""); 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [currentOpenEye, setCurrentOpenEye] = useState(false);
@@ -60,7 +60,7 @@ const AdminProfile = () => {
         setNewUserName("");
         setShowEditUsername(false);
       }
-      
+
     } catch (error) {
       const status = error.response.status;
       if (status === 409) {
@@ -164,7 +164,7 @@ const AdminProfile = () => {
           </div>
         </Form>
       </div>
-      {showEditUsername && (
+      {/* {showEditUsername && (
         <div
           className="modal show"
           style={{
@@ -248,8 +248,8 @@ const AdminProfile = () => {
             </Modal.Footer>
           </Modal.Dialog>
         </div>
-      )}
-      {/* {showChangePassword && (
+      )} */}
+      {showChangePassword && (
         <div
           className="modal show"
           style={{
@@ -272,7 +272,7 @@ const AdminProfile = () => {
             </Modal.Header>
             <Modal.Body>
               <div className="password">
-                {currentOpenEye == false ? (
+                {currentOpenEye === false ? (
                   <div className="currentPassword">
                     <Form.Label
                       style={{
@@ -344,7 +344,7 @@ const AdminProfile = () => {
                     </InputGroup>
                   </div>
                 )}
-                {newOpenEye == false ? (
+                {newOpenEye === false ? (
                   <div className="newPassword">
                     <Form.Label
                       style={{
@@ -417,7 +417,7 @@ const AdminProfile = () => {
                     </InputGroup>
                   </div>
                 )}
-                {confirmOpenEye == false ? (
+                {confirmOpenEye === false ? (
                   <div className="confirmPassword">
                     <Form.Label
                       style={{
@@ -522,7 +522,7 @@ const AdminProfile = () => {
             </Modal.Footer>
           </Modal.Dialog>
         </div>
-      )} */}
+      )}
     </div>
   );
 };
