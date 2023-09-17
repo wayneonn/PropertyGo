@@ -1,5 +1,4 @@
 const { FAQ } = require("../../models");
-const { Op } = require("sequelize");
 
 // helper function
 const getFaqForUniqueness = ({question, faqType}) => {
