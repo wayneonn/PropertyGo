@@ -20,7 +20,10 @@ const AdminProfile = () => {
   const [showEditUsername, setShowEditUsername] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
-  const adminId = localStorage.getItem("loggedInAdmin");
+  const [validationMessages, setValidationMessages] = useState({
+    empty: false,
+    notUnique: false,
+  });
 
   const toggleEditUsernameModal = () => {
     setShowEditUsername(!showEditUsername);
@@ -31,17 +34,38 @@ const AdminProfile = () => {
   };
 
   const handleUsernameSave = async () => {
-    //save to database
-    const response = await API.patch("/admins/updateUserName", {
-      oldUserName: userName,
-      updatedUserName: newUserName,
-    });
+    const newMessage = {
+      empty: false,
+      notValid: false,
+      notUnique: false,
+    };
 
-    if (response.status === 200) {
-      alert("You have updated your userName successfully!");
-      setUserName(newUserName);
-      setNewUserName("");
-      setShowEditUsername(false);
+    if (newUserName.trim() === "") {
+      newMessage.empty = true;
+      setValidationMessages(newMessage);
+      return;
+    }
+
+    try {
+      // Save to database
+      const response = await API.patch("/admins/updateUserName", {
+        oldUserName: userName,
+        updatedUserName: newUserName,
+      });
+
+      if (response.status === 200) {
+        alert("You have updated your username successfully!");
+        setValidationMessages(newMessage);
+        setUserName(newUserName);
+        setNewUserName("");
+        setShowEditUsername(false);
+      }
+    } catch (error) {
+      const status = error.response.status;
+      if (status === 409) {
+        newMessage.notUnique = true;
+        setValidationMessages(newMessage);
+      }
     }
   };
 
@@ -185,7 +209,20 @@ const AdminProfile = () => {
                     name="newUsername"
                     value={newUserName}
                     onChange={(e) => setNewUserName(e.target.value)}
+                    isInvalid={
+                      validationMessages.empty || validationMessages.notUnique
+                    }
                   />
+                  {validationMessages.empty && (
+                    <Form.Control.Feedback type="invalid">
+                      Username is required.
+                    </Form.Control.Feedback>
+                  )}
+                  {validationMessages.notUnique && (
+                    <Form.Control.Feedback type="invalid">
+                      Username already exists. Please choose another username.
+                    </Form.Control.Feedback>
+                  )}
                 </Form.Group>
               </div>
             </Modal.Body>
