@@ -11,7 +11,7 @@ import API from "../services/API";
 const AdminProfile = () => {
   const [userName, setUserName] = useState("");
   const [newUserName, setNewUserName] = useState("");
-  const [password, setPassword] = useState(""); 
+  const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [currentOpenEye, setCurrentOpenEye] = useState(false);
@@ -44,7 +44,6 @@ const AdminProfile = () => {
   const handleUsernameSave = async () => {
     const newMessage = {
       empty: false,
-      notValid: false,
       notUnique: false,
     };
 
@@ -77,11 +76,58 @@ const AdminProfile = () => {
     }
   };
 
-  const handlePasswordSave = (e) => {
-    setPassword(newPassword);
-    setNewPassword("");
-    setConfirmPassword("");
-    setShowChangePassword("");
+  const handlePasswordSave = async (e) => {
+    const newMessage = {
+      emptyCurrentPassword: false,
+      emptyNewPassword: false,
+      emptyConfirmNewPassword: false,
+      currentPasswordIncorrect: false,
+      newPasswordDifferentConfirmPassword: false,
+    };
+
+    if (password.trim() === "") {
+      newMessage.emptyCurrentPassword = true;
+    }
+
+    if (newPassword.trim() === "") {
+      newMessage.emptyNewPassword = true;
+    }
+
+    if (confirmPassword.trim() === "") {
+      newMessage.emptyConfirmNewPassword = true;
+    }
+
+    if (newMessage.emptyCurrentPassword || newMessage.emptyNewPassword || newMessage.emptyConfirmNewPassword) {
+      setValidationMessages(newMessage);
+      return;
+    }
+
+    // try {
+    //   // Save to database
+    //   const response = await API.patch("/admins/updateUserName", {
+    //     oldUserName: userName,
+    //     updatedUserName: newUserName,
+    //   });
+
+    //   if (response.status === 200) {
+    //     alert("You have updated your username successfully!");
+    //     setValidationMessages(newMessage);
+    //     setUserName(newUserName);
+    //     setNewUserName("");
+    //     setShowEditUsername(false);
+    //   }
+    // } catch (error) {
+    //   const status = error.response.status;
+    //   if (status === 409) {
+    //     newMessage.notUnique = true;
+    //     setValidationMessages(newMessage);
+    //   }
+    // }
+
+    // setPassword(newPassword);
+    // setNewPassword("");
+    // setConfirmPassword("");
+    // setShowChangePassword("");
 
     //save to database
   };
@@ -309,6 +355,9 @@ const AdminProfile = () => {
                         name="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        isInvalid={
+                          validationMessages.emptyCurrentPassword 
+                        }
                       />
                       <Button
                         id="eyeIcon"
@@ -323,6 +372,11 @@ const AdminProfile = () => {
                           }}
                         ></VscEyeClosed>
                       </Button>
+                      {validationMessages.emptyCurrentPassword && (
+                        <Form.Control.Feedback type="invalid">
+                          Password is required.
+                        </Form.Control.Feedback>
+                      )}
                     </InputGroup>
                   </div>
                 ) : (
@@ -348,6 +402,9 @@ const AdminProfile = () => {
                         name="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        isInvalid={
+                          validationMessages.emptyCurrentPassword 
+                        }
                       />
                       <Button
                         variant="info"
@@ -363,6 +420,11 @@ const AdminProfile = () => {
                           }}
                         ></VscEye>
                       </Button>
+                      {validationMessages.emptyCurrentPassword && (
+                        <Form.Control.Feedback type="invalid">
+                          Password is required.
+                        </Form.Control.Feedback>
+                      )}
                     </InputGroup>
                   </div>
                 )}
