@@ -1,9 +1,9 @@
 import { React, useState, useEffect } from "react";
-import { Button, Card, Table } from "react-bootstrap";
+import { Button, Table, Modal, Form } from "react-bootstrap";
 import "./Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
-import FaqEdit from "../containers/FaqEdit.js";
+import FaqCreate from "./FaqCreate.js";
 
 import API from "../services/API";
 
@@ -13,7 +13,7 @@ const Faq = () => {
   const [faqs, setFaqs] = useState([]);
   const [buyerfaqs, setBuyerfaqs] = useState([]);
   const [sellerfaqs, setSellerfaqs] = useState([]);
-  const [showEditCard, setShowEditCard] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [faqId, setFaqId] = useState(0);
   const [faqQuestion, setFaqQuestion] = useState("");
   const [faqAnswer, setFaqAnswer] = useState("");
@@ -41,16 +41,20 @@ const Faq = () => {
     setCurrentPageBuyer(pageNumber);
   };
 
-  const toggleEditCard = (faqId, faqQuestion, faqAnswer, faqType) => {
-    setShowEditCard(!showEditCard);
+  const toggleEditModal = (faqId, faqQuestion, faqAnswer, faqType) => {
+    setShowEditModal(!showEditModal);
     setFaqId(faqId);
     setFaqQuestion(faqQuestion);
     setFaqAnswer(faqAnswer);
     setFaqType(faqType);
   };
 
-  const handleCloseCard = () => {
-    setShowEditCard(false);
+  const handleClose = () => {
+    setShowEditModal(false);
+  };
+
+  const handleEdit = () => {
+    //edit faq in database
   };
 
   useEffect(() => {
@@ -83,22 +87,6 @@ const Faq = () => {
         }}
       >
         <BreadCrumb name="FAQ"></BreadCrumb>
-        <Button
-          style={{
-            backgroundColor: "#FFD700",
-            border: "0",
-            width: "125px",
-            height: "40px",
-            borderRadius: "160px",
-            color: "black",
-            font: "Public Sans",
-            fontWeight: "600",
-            fontSize: "14px",
-            marginRight: "460px",
-          }}
-        >
-          Add New FAQ
-        </Button>
       </div>
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayfaq">
@@ -154,7 +142,7 @@ const Faq = () => {
                                 marginRight: "10px",
                               }}
                               onClick={() =>
-                                toggleEditCard(
+                                toggleEditModal(
                                   faq.faqId,
                                   faq.question,
                                   faq.answer,
@@ -263,7 +251,7 @@ const Faq = () => {
                                 marginRight: "10px",
                               }}
                               onClick={() =>
-                                toggleEditCard(
+                                toggleEditModal(
                                   faq.faqId,
                                   faq.question,
                                   faq.answer,
@@ -325,15 +313,87 @@ const Faq = () => {
             </div>
           </div>
         </div>
-        {showEditCard && (
-          <FaqEdit
-            faqId={faqId}
-            faqQuestion={faqQuestion}
-            faqAnswer={faqAnswer}
-            faqType={faqType}
-            onClose={handleCloseCard}
-          ></FaqEdit>
-        )}
+        <FaqCreate></FaqCreate>
+        <Modal
+          show={showEditModal}
+          onHide={handleClose}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Edit {faqType} FAQ</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Label
+              style={{
+                color: "#384D6C",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+              }}
+            >
+              Question
+            </Form.Label>
+            <Form.Control
+              as="textarea"
+              id="question"
+              rows={6}
+              value={faqQuestion}
+              onChange={(e) => setFaqQuestion(e.target.value)}
+            />
+            <Form.Label
+              style={{
+                color: "#384D6C",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+              }}
+            >
+              Answer
+            </Form.Label>
+            <Form.Control
+              as="textarea"
+              id="answer"
+              rows={6}
+              value={faqAnswer}
+              onChange={(e) => setFaqAnswer(e.target.value)}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#F5F6F7",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleClose}
+            >
+              Close
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={() => handleEdit()}
+            >
+              Confirm
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );
