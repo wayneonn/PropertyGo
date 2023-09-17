@@ -74,7 +74,7 @@ const Faq = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [faqs]);
 
   return (
     <div className="faq">
