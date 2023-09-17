@@ -1,5 +1,4 @@
 import { React, useState, useEffect } from "react";
-import axios from "axios";
 import { Button, Card, Table } from "react-bootstrap";
 import "./Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
@@ -9,12 +8,19 @@ import API from "../services/API";
 
 const Faq = () => {
   const [faqs, setFaqs] = useState([]);
+  const [buyerfaqs, setBuyerfaqs] = useState([]);
+  const [sellerfaqs, setSellerfaqs] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await API.get(`http://localhost:3000/admin/faqs`);
-        setFaqs(response.data.faqs);
+        const faqs = response.data.faqs;
+        setFaqs(faqs);
+        const buyerFaqs = faqs.filter((faq) => faq.faqType === "BUYER");
+        setBuyerfaqs(buyerFaqs);
+        const sellerFaqs = faqs.filter((faq) => faq.faqType === "SELLER");
+        setSellerfaqs(sellerFaqs);
       } catch (error) {
         console.error(error);
       }
@@ -56,37 +62,50 @@ const Faq = () => {
                   <th>ACTION</th>
                 </tr>
               </thead>
-              {/* <tbody>
-                {faqs.map((faq) => (
-                  <tr>
-                    <td>{faq.question}</td>
-                    <td>{faq.answer}</td>
-                    <td>{faq.createdAt}</td>
-                    <td>
-                      <Button size="sm" color="#FFD700" title="Edit">
-                        <MdPageview></MdPageview>
-                      </Button>
-                      <Button size="sm" color="#FFD700" title="Delete">
-                        <MdDelete></MdDelete>
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody> */}
-              {Array.isArray(faqs) && faqs.length > 0 ? (
+              {Array.isArray(sellerfaqs) && sellerfaqs.length > 0 ? (
                 <tbody>
-                  {faqs.map((faq) => (
-                    <tr key={faq.faqId}>
+                  {sellerfaqs.map((faq) => (
+                    <tr
+                      key={faq.faqId}
+                      style={{
+                        textAlign: "center",
+                        fontFamily: "Gill Sans",
+                      }}
+                    >
                       <td>{faq.question}</td>
                       <td>{faq.answer}</td>
                       <td>{faq.createdAt}</td>
                       <td>{faq.updatedAt}</td>
                       <td>
-                        <Button size="sm" color="#FFD700" title="Edit">
-                          <MdPageview></MdPageview>
+                        <Button
+                          size="sm"
+                          title="Edit"
+                          style={{
+                            backgroundColor: "#FFD700",
+                            border: "0",
+                            marginRight: "10px",
+                          }}
+                        >
+                          <MdPageview
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              color: "black",
+                            }}
+                          ></MdPageview>
                         </Button>
-                        <Button size="sm" color="#FFD700" title="Delete">
-                          <MdDelete></MdDelete>
+                        <Button
+                          size="sm"
+                          title="Delete"
+                          style={{ backgroundColor: "#FFD700", border: "0" }}
+                        >
+                          <MdDelete
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              color: "black",
+                            }}
+                          ></MdDelete>
                         </Button>
                       </td>
                     </tr>
@@ -125,8 +144,64 @@ const Faq = () => {
                   <th>ACTION</th>
                 </tr>
               </thead>
-              {/* <tbody>
-              </tbody> */}
+              {Array.isArray(buyerfaqs) && buyerfaqs.length > 0 ? (
+                <tbody>
+                  {buyerfaqs.map((faq) => (
+                    <tr
+                      key={faq.faqId}
+                      style={{
+                        textAlign: "center",
+                        fontFamily: "Gill Sans",
+                      }}
+                    >
+                      <td>{faq.question}</td>
+                      <td>{faq.answer}</td>
+                      <td>{faq.createdAt}</td>
+                      <td>{faq.updatedAt}</td>
+                      <td>
+                        <Button
+                          size="sm"
+                          title="Edit"
+                          style={{
+                            backgroundColor: "#FFD700",
+                            border: "0",
+                            marginRight: "10px",
+                          }}
+                        >
+                          <MdPageview
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              color: "black",
+                            }}
+                          ></MdPageview>
+                        </Button>
+                        <Button
+                          size="sm"
+                          title="Delete"
+                          style={{ backgroundColor: "#FFD700", border: "0" }}
+                        >
+                          <MdDelete
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              color: "black",
+                            }}
+                          ></MdDelete>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td colSpan="5" style={{ textAlign: "center" }}>
+                      No FAQs available
+                    </td>
+                  </tr>
+                </tbody>
+              )}
             </Table>
           </div>
         </div>
