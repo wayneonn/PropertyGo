@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Button, Table, Modal, Form } from "react-bootstrap";
+import { Button, Table, Modal, Form, Toast, Row, Col } from "react-bootstrap";
 import "./Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
@@ -33,6 +33,10 @@ const Faq = () => {
   const indexOfLastItemBuyer = currentPageBuyer * itemsPerPage;
   const indexOfFirstItemBuyer = indexOfLastItemBuyer - itemsPerPage;
 
+  // toast message
+  const [show, setShow] = useState(false);
+  const [toastAction, setToastAction] = useState("");
+
   const handlePageChangeSeller = (pageNumber) => {
     setCurrentPageSeller(pageNumber);
   };
@@ -55,6 +59,11 @@ const Faq = () => {
 
   const handleEdit = () => {
     //edit faq in database
+  };
+
+  const showToast = (action) => {
+    setToastAction(action);
+    setShow(true);
   };
 
   useEffect(() => {
@@ -87,6 +96,24 @@ const Faq = () => {
         }}
       >
         <BreadCrumb name="FAQ"></BreadCrumb>
+      </div>
+      <div style={{position: "fixed", top: "5%", left: "50%"}}>
+        <Row>
+          <Col xs={6}>
+            <Toast
+              bg="warning"
+              onClose={() => setShow(false)}
+              show={show}
+              delay={4000}
+              autohide
+            >
+              <Toast.Header>
+                <strong className="me-auto">Successful</strong>
+              </Toast.Header>
+              <Toast.Body>{`You have ${toastAction} the FAQ successfully!`}</Toast.Body>
+            </Toast>
+          </Col>
+        </Row>
       </div>
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayfaq">
@@ -313,7 +340,7 @@ const Faq = () => {
             </div>
           </div>
         </div>
-        <FaqCreate></FaqCreate>
+        <FaqCreate showToast={showToast}></FaqCreate>
         <Modal
           show={showEditModal}
           onHide={handleClose}

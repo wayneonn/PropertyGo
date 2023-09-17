@@ -203,7 +203,7 @@ const AdminProfile = () => {
         <BreadCrumb name="Profile"></BreadCrumb>
       </div>
       <div>
-        <div className="loginToast">
+        <div>
           <Row>
             <Col xs={6}>
               <Toast
