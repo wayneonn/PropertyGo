@@ -42,7 +42,7 @@ const TopBar = () => {
             fontSize: "14px",
             color: "#959FA3",
             marginLeft: "0.2em",
-            height: "38px",
+            height: "30px",
             width: "169px",
           }}
         />
