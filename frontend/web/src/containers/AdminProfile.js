@@ -8,7 +8,7 @@ import {
   Col,
   Toast,
 } from "react-bootstrap";
-import "./Adminprofile.css";
+import "./styles/Adminprofile.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { BsFillKeyFill } from "react-icons/bs";
 import { VscEyeClosed, VscEye } from "react-icons/vsc";

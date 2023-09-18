@@ -5,8 +5,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // import Login from "./containers/login";
 import SideBar from "./components/Common/SideBar";
 import TopBar from "./components/Common/TopBar";
+import Foot from "./components/Common/Foot";
 import AdminProfile from "./containers/AdminProfile";
 import Faq from "./containers/Faq";
+import ContactUs from "./containers/ContactUs";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./containers/Login";
