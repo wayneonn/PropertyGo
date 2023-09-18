@@ -1,5 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
-    const ContactUs = sequelize.define("ContactUs", {
+  const ContactUs = sequelize.define(
+    "ContactUs",
+    {
       contactUsId: {
         type: DataTypes.BIGINT,
         allowNull: false,
@@ -16,32 +18,37 @@ module.exports = (sequelize, DataTypes) => {
       },
       // Create ReasonEnum
       reason: {
-        type: DataTypes.ENUM('GENERAL', 'SUPPORT', 'FEEDBACK', 'OTHERS'),
+        type: DataTypes.ENUM("GENERAL", "SUPPORT", "FEEDBACK", "OTHERS"),
         allowNull: false,
       },
       // Create StatusEnum
       status: {
-        type: DataTypes.ENUM('REPLIED', 'CLOSED', 'PENDING'),
+        type: DataTypes.ENUM("REPLIED", "CLOSED", "PENDING"),
         allowNull: false,
+      },
+      response: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
       // timeStamp: {
       //   type: DataTypes.DATE,
       //   allowNull: false,
       // },
-    }, {
+    },
+    {
       freezeTableName: true,
+    }
+  );
+
+  ContactUs.associate = (models) => {
+    ContactUs.belongsTo(models.User, {
+      foreignKey: {
+        name: "userId", // Specify the foreign key name explicitly
+        allowNull: false,
+      },
+      as: "user",
     });
-  
-    ContactUs.associate = (models) => {
-      ContactUs.belongsTo(models.User, {
-        foreignKey: {
-          name: 'userId', // Specify the foreign key name explicitly
-          allowNull: false,
-        },
-        as: 'user',
-      });
-    };
-  
-    return ContactUs;
   };
-  
+
+  return ContactUs;
+};
