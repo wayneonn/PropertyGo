@@ -1,7 +1,7 @@
-import { React, useState } from "react";
-import "./styles/Foot.css";
+import { React } from "react";
+import "./styles/Footer.css";
 
-const Foot = () => {
+const Footer = () => {
   return (
     <div className="footer">
       <span
@@ -21,4 +21,4 @@ const Foot = () => {
   );
 };
 
-export default Foot;
+export default Footer;

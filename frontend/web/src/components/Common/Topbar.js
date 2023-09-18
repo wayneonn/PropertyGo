@@ -14,7 +14,8 @@ const TopBar = () => {
   const handleLogout = () => {
     localStorage.removeItem("loggedInAdmin");
 
-    navigate("/login");
+    // navigate("/login");
+    window.location.reload();
   };
 
   return (
