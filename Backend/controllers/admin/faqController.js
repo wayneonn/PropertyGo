@@ -1,9 +1,10 @@
+const moment = require('moment');
 const { FAQ } = require("../../models");
 
 // helper function
-const getFaqForUniqueness = ({question, faqType}) => {
-    return FAQ.findOne({ 
-        where: { 
+const getFaqForUniqueness = ({ question, faqType }) => {
+    return FAQ.findOne({
+        where: {
             question,
             faqType
         }
@@ -11,14 +12,31 @@ const getFaqForUniqueness = ({question, faqType}) => {
 };
 
 const getAllFaqs = async (req, res) => {
-    const faqs = await FAQ.findAll();
+    try {
+        const faqs = await FAQ.findAll({
+            attributes: ['faqId', 'question', 'answer', 'faqType', 'createdAt', 'updatedAt'],
+        });
 
-    res.status(200).json({ faqs });
+        const formattedFaqs = faqs.map(faq => {
+            return {
+                faqId: faq.faqId,
+                question: faq.question,
+                answer: faq.answer,
+                faqType: faq.faqType,
+                createdAt: moment(faq.createdAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
+                updatedAt: moment(faq.updatedAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
+            };
+        });
+
+        res.status(200).json({ faqs: formattedFaqs });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
 };
 
 const getSingleFaq = async (req, res) => {
     try {
-        const { id: faqId} = req.params;
+        const { id: faqId } = req.params;
 
         const faq = await FAQ.findByPk(faqId);
 
@@ -37,7 +55,7 @@ const createFaq = async (req, res) => {
 
     const { question, faqType } = req.body;
 
-    const questionFound = await getFaqForUniqueness({question, faqType});
+    const questionFound = await getFaqForUniqueness({ question, faqType });
 
     if (questionFound) {
         return res.status(409).json({ message: `Question already exist in ${faqType}.` });
@@ -54,7 +72,7 @@ const updateFaq = async (req, res) => {
 
     const { question, faqType } = req.body;
 
-    const questionFound = await getFaqForUniqueness({question, faqType});
+    const questionFound = await getFaqForUniqueness({ question, faqType });
 
     if (questionFound) {
         return res.status(409).json({ message: `Question already exist in ${faqType}.` });
@@ -83,7 +101,7 @@ const deleteFaq = async (req, res) => {
     const faq = await FAQ.findByPk(faqId);
 
     if (!faq) {
-        return res.status(404).json({ message: "FAQ not found" }); 
+        return res.status(404).json({ message: "FAQ not found" });
     }
 
     await faq.destroy();
