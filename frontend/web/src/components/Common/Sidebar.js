@@ -116,7 +116,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/">
+          <Nav.Link className="a" href="/contact-us">
             <LiaStickyNote style={{ marginRight: "1em" }}></LiaStickyNote>
             Contact Us
           </Nav.Link>

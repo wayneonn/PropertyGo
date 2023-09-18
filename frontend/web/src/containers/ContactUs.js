@@ -32,6 +32,7 @@ const ContactUs = () => {
   const [closedMessage, setClosedMessage] = useState("");
   const [closedReason, setClosedReason] = useState("");
   const [closedResponse, setClosedResponse] = useState("");
+  const [userNames, setUserNames] = useState({});
 
   const itemsPerPage = 4;
 
@@ -113,12 +114,28 @@ const ContactUs = () => {
     setAddedRespond("");
   };
 
+  const getUserName = async (userId) => {
+    const response = await API.get(`http://localhost:3000/admin/users/${userId}`);
+    return response.data;
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await API.get(`http://localhost:3000/admin/contactUs`);
         const contactUs = response.data.contactUs;
         setContactus(contactus);
+
+        const userNamesData = {};
+        for (const contact of contactUs) {
+          if (!userNamesData[contact.userId]) {
+            const userResponse = await getUserName(contact.userId);
+            userNamesData[contact.userId] = userResponse;
+          }
+        }
+
+        setUserNames(userNamesData);
+
         const pendingContactus = contactUs.filter(
           (contactus) => contactus.status === "PENDING"
         );
@@ -199,7 +216,7 @@ const ContactUs = () => {
                           <td>{contactus.message}</td>
                           <td>{contactus.reason}</td>
                           <td>{contactus.createdAt}</td>
-                          <td>{contactus.userId}</td>
+                          <td>{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
@@ -303,7 +320,7 @@ const ContactUs = () => {
                           <td>{contactus.response}</td>
                           <td>{contactus.createdAt}</td>
                           <td>{contactus.updatedAt}</td>
-                          <td>{contactus.userId}</td>
+                          <td>{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
@@ -408,7 +425,7 @@ const ContactUs = () => {
                           <td>{contactus.response}</td>
                           <td>{contactus.createdAt}</td>
                           <td>{contactus.updatedAt}</td>
-                          <td>{contactus.userId}</td>
+                          <td>{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
