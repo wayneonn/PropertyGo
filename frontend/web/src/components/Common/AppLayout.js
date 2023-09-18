@@ -1,7 +1,6 @@
 import React from 'react';
 import SideBar from './SideBar';
 import TopBar from './TopBar';
-import Footer from './Footer';
 
 const AppLayout = ({ children }) => {
   return (
@@ -9,7 +8,6 @@ const AppLayout = ({ children }) => {
       <SideBar />
       <TopBar />
       {children}
-      <Footer />
     </div>
   );
 };

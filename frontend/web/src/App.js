@@ -6,9 +6,9 @@ import AdminProfile from './containers/AdminProfile';
 import Faq from './containers/Faq';
 import NotFound from './containers/NotFound'; // Import the Not Found component
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Login from './containers/Login';
-import PrivateRoute from './PrivateRoute';
+import "bootstrap/dist/css/bootstrap.min.css";
+import Login from "./containers/Login";
+import PrivateRoute from "./PrivateRoute";
 
 function App() {
   return (

@@ -1,23 +1,21 @@
 .contactus {
   background-color: #0000000D;
-  /* width: 100px; */
   width: calc(100% - 180px);
-  position: fixed;
+  top: 60px;
   right: 0;
   bottom: 0;
-  height: calc(100% - 60px);
-  /* height: 815px; */
-  /* height: 900px; */
+  position: fixed;
+  overflow-y: auto;
 }
 
 .displayContactus {
-  justify-content: "center";
-  margin-left: 150px;
+  margin-left: 30px;
+  margin-right: 30px;
 }
 
 .pendingContactus {
   background-color: #FFFFFF;
-  width: 1000px;
+  width: 1230px;
   height: 320px;
   border-radius: 5px;
   margin-bottom: 10px;
@@ -25,7 +23,21 @@
 
 .repliedContactus {
   background-color: #FFFFFF;
-  width: 1000px;
+  width: 1230px;
   height: 320px;
   border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.closedContactus {
+  background-color: #FFFFFF;
+  width: 1230px;
+  height: 320px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.contactus-paginate {
+  justify-content: center;
+  align-items: center;
 }
