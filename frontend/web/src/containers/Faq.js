@@ -39,6 +39,14 @@ const Faq = () => {
   const [show, setShow] = useState(false);
   const [toastAction, setToastAction] = useState("");
 
+  // validation message
+  const [validationMessages, setValidationMessages] = useState({
+    emptyFaqType: false,
+    emptyFaqQuestion: false,
+    emptyFaqAnswer: false,
+    faqQuestionUnique: false
+  })
+
   const handlePageChangeSeller = (pageNumber) => {
     setCurrentPageSeller(pageNumber);
   };
@@ -66,10 +74,66 @@ const Faq = () => {
 
   const handleClose = () => {
     setShowEditModal(false);
+    setValidationMessages({});
   };
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     //edit faq in database
+    const newMessage = {
+      emptyFaqType: false,
+      emptyFaqQuestion: false,
+      emptyFaqAnswer: false,
+      faqQuestionUnique: false
+    };
+
+    const questionTrimmed = faqQuestion.trim();
+    const answerTrimmed = faqAnswer.trim();
+
+    if (questionTrimmed === "") {
+      newMessage.emptyFaqQuestion = true;
+    }
+
+    if (answerTrimmed === "") {
+      newMessage.emptyFaqAnswer = true;
+    }
+
+    if (faqType === "") {
+      newMessage.emptyFaqType = true;
+    }
+
+    if (
+      newMessage.emptyFaqQuestion ||
+      newMessage.emptyFaqAnswer ||
+      newMessage.emptyFaqType
+    ) {
+      setValidationMessages(newMessage);
+      return;
+    }
+
+    // try {
+    //   // Save to database
+    //   const response = await API.post(`/admin/faqs?adminId=${localStorage.getItem("loggedInAdmin")}`, {
+    //     question,
+    //     answer,
+    //     faqType
+    //   });
+
+    //   if (response.status === 201) {
+    //     showToast("created");
+    //     setValidationMessages(newMessage);
+    //     setFaqType("");
+    //     setQuestion("");
+    //     setAnswer("");
+
+    //   }
+    // } catch (error) {
+    //   const status = error.response.status;
+    //   if (status === 409) {
+    //     newMessage.faqQuestionUnique = true;
+    //   }
+
+    //   setValidationMessages(newMessage);
+    // }
   };
 
   const handleDelete = () => {
@@ -404,7 +468,18 @@ const Faq = () => {
               rows={6}
               value={faqQuestion}
               onChange={(e) => setFaqQuestion(e.target.value)}
+              isInvalid={validationMessages.emptyFaqQuestion || validationMessages.faqQuestionUnique}
             />
+            {validationMessages.emptyFaqQuestion && (
+              <Form.Control.Feedback type="invalid">
+                Question is required.
+              </Form.Control.Feedback>
+            )}
+            {validationMessages.faqQuestionUnique && (
+              <Form.Control.Feedback type="invalid">
+                Question already exists. Please type another question.
+              </Form.Control.Feedback>
+            )}
             <Form.Label
               style={{
                 color: "black",
@@ -421,7 +496,13 @@ const Faq = () => {
               rows={6}
               value={faqAnswer}
               onChange={(e) => setFaqAnswer(e.target.value)}
+              isInvalid={validationMessages.emptyFaqAnswer}
             />
+            {validationMessages.emptyFaqAnswer && (
+              <Form.Control.Feedback type="invalid">
+                Answer is required.
+              </Form.Control.Feedback>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button
