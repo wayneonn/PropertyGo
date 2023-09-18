@@ -3,7 +3,7 @@ const multer = require("multer");
 const cors = require("cors");
 const admin = require("firebase-admin");
 const { Sequelize, DataTypes } = require("sequelize");
-const fs = require('fs');
+const fs = require("fs");
 
 // Setting up a MySQL connection since we are using MySQL.
 
@@ -25,14 +25,17 @@ app.use(cors());
 //   },
 // });
 
-// Memory Storage for reading buffer. 
-const storage = multer.memoryStorage()
-const upload = multer({ storage:storage, limits: { fieldSize: 25 * 1024 * 1024 } });
+// Memory Storage for reading buffer.
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: { fieldSize: 25 * 1024 * 1024 },
+});
 
 // Imma define a testing sequelize model and a testing mySQL table connection.
 // Will intergrate it later.
 // Create connection
-const PASSWORD = "password"; 
+const PASSWORD = "3times5=15";
 const sequelize = new Sequelize("database_testing", "root", PASSWORD, {
   host: "127.0.0.1",
   dialect: "mysql",
@@ -46,7 +49,7 @@ const File = sequelize.define("File", {
     type: DataTypes.STRING,
   },
   data: {
-    type: DataTypes.BLOB('medium'), // binary data
+    type: DataTypes.BLOB("medium"), // binary data
   },
   size: {
     type: DataTypes.INTEGER,
@@ -60,8 +63,8 @@ const File = sequelize.define("File", {
   },
   deleted: {
     type: DataTypes.BOOLEAN,
-    defaultValue: false
-  }
+    defaultValue: false,
+  },
 });
 
 // Sync all models to the database
@@ -74,8 +77,8 @@ sequelize
     console.error("Error syncing database: ", err);
   });
 
-// Functions needed or not needed. 
-const uploadFirebase = async() => {
+// Functions needed or not needed.
+const uploadFirebase = async () => {
   const defaultBucket = admin.storage().bucket(); // Get the default Firebase Storage bucket
   const fileUpload = defaultBucket.file(file.originalname);
   await fileUpload.save(file.buffer, {
@@ -89,9 +92,9 @@ const uploadFirebase = async() => {
       },
     },
   });
-}
+};
 
-const downloadListFirebase = async() => {
+const downloadListFirebase = async () => {
   try {
     const bucket = admin.storage().bucket(); // Get the default Firebase Storage bucket
     const [files] = await bucket.getFiles();
@@ -102,17 +105,17 @@ const downloadListFirebase = async() => {
     console.error(error);
     res.status(500).json({ message: "Failed to retrieve the document list" });
   }
-}
+};
 
 const blobToBase64 = (blob) => {
   return new Promise((resolve, reject) => {
     const buffer = Buffer.from(blob);
     fs.readFile(buffer, (err, data) => {
       if (err) reject(err);
-      else resolve(data.toString('base64')); 
+      else resolve(data.toString("base64"));
     });
   });
-}
+};
 
 // API works when tested with Insomnia.
 // Works with one more more then one.
@@ -133,7 +136,7 @@ app.post(
     // Handle the uploaded files
     const files = req.files["documents"];
     let description = req.body.description;
-    // If description is an array, pick first element 
+    // If description is an array, pick first element
     if (Array.isArray(description)) {
       description = description[0];
     }
@@ -141,12 +144,12 @@ app.post(
     // Perform necessary operations with the uploaded files
     // For example, you can move the files to a different directory, save their metadata to a database, etc.
 
-    // I think the Blob is being saved wrongly. 
-    // It is not writing the full buffer jajajaajaja. Not suited in a NodeJS backend? 
+    // I think the Blob is being saved wrongly.
+    // It is not writing the full buffer jajajaajaja. Not suited in a NodeJS backend?
     try {
       for (const file of files) {
-        const bufferData  = Buffer.from(file.buffer)
-        console.log([bufferData])
+        const bufferData = Buffer.from(file.buffer);
+        console.log([bufferData]);
 
         await File.create({
           name: file.originalname,
@@ -175,23 +178,21 @@ app.post(
 app.get("/documents/list", async (req, res) => {
   try {
     const files = await File.findAll({
-      where: { deleted: false } 
+      where: { deleted: false },
     });
-    // This is insanity since we are literally sending all the data over. 
+    // This is insanity since we are literally sending all the data over.
     res.json(files);
-
   } catch (error) {
     console.error(error);
-    res.status(500).json({message: 'Failed to retrieve document list'});
+    res.status(500).json({ message: "Failed to retrieve document list" });
   }
-
 });
 
 // Delete route
-app.delete('/documents/:id', async (req, res) => {
-  console.log("Delete API called.")
+app.delete("/documents/:id", async (req, res) => {
+  console.log("Delete API called.");
   const document = await File.findByPk(req.params.id);
-  // Soft delete 
+  // Soft delete
   await document.update({ deleted: true });
   res.sendStatus(204);
 });
