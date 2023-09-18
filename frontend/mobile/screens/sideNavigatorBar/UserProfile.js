@@ -1,12 +1,17 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { AuthContext } from '../../AuthContext'; // Import the AuthContext from the correct path
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { AuthContext } from '../../AuthContext'; 
+import base64 from 'react-native-base64';
 
 function UserProfile({ navigation }) {
-  const { user, logout } = useContext(AuthContext); // Use the AuthContext to access user data and logout function
-  console.log('loggedInUser:', user); // Add this line
+  const { user, logout } = useContext(AuthContext); 
+  console.log('loggedInUser:', user); 
 
-  // Check if a user is logged in
+  let profileImageBase64;
+  if (user && user.user.profileImage && user.user.profileImage.data) {
+    profileImageBase64 = base64.encodeFromByteArray(user.user.profileImage.data);
+  }
+
   if (!user) {
     return (
       <View style={styles.container}>
@@ -20,12 +25,33 @@ function UserProfile({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>User Profile</Text>
+      <View style={styles.profileHeader}>
+        {profileImageBase64 ? (
+          <Image
+            source={{ uri: `data:image/jpeg;base64,${profileImageBase64}` }}
+            style={styles.profileImage}
+          />
+        ) : (
+          <View style={styles.defaultProfileImage}>
+            <Text style={styles.defaultProfileText}>Add Image</Text>
+          </View>
+        )}
+        <Text style={styles.heading}>User Profile</Text>
+      </View>
       <View style={styles.profileInfo}>
         <Text>Name: {user.user.name}</Text>
         <Text>Email: {user.user.email}</Text>
-        {/* Add more user details here */}
+        <Text>Country: {user.user.countryOfOrigin}</Text>
+        <Text>Date Of Birth: {user.user.dateOfBirth}</Text>
       </View>
+      <TouchableOpacity
+        style={styles.editProfileButton}
+        onPress={() => {
+          navigation.navigate('EditProfile');
+        }}
+      >
+        <Text style={styles.editProfileButtonText}>Edit Profile</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.logoutButton} onPress={() => logout()}>
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
@@ -40,6 +66,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  profileHeader: {
+    alignItems: 'center',
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 16,
+  },
+  defaultProfileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'lightgray',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  defaultProfileText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -52,8 +100,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
   },
-  logoutButton: {
+  editProfileButton: {
     backgroundColor: '#1E90FF',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  editProfileButtonText: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  logoutButton: {
+    backgroundColor: '#FF4500',
     padding: 12,
     borderRadius: 8,
   },
