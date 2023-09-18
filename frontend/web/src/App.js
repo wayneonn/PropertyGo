@@ -5,8 +5,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // import Login from "./containers/login";
 import SideBar from "./components/Common/SideBar";
 import TopBar from "./components/Common/TopBar";
+import Foot from "./components/Common/Foot";
 import AdminProfile from "./containers/AdminProfile";
 import Faq from "./containers/Faq";
+import ContactUs from "./containers/ContactUs";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./containers/Login";
@@ -22,13 +24,17 @@ function App() {
   //   return admin ? <Navigate to="/admin/profile" replace /> : <Login/>;
   // }
 
+  {
+    /* <Route path="/admin/profile" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Navigate to="/login" />} />
+        <Route path="/login" element={JSON.parse(localStorage.getItem("loggedInAdmin")) ? <AdminProfile /> : <Login />} /> */
+  }
+
   return (
     // <div className="App">
-    //   <Login></Login>
-    //   <SideBar></SideBar>
-    //   <TopBar></TopBar>
-    //   <AdminProfile></AdminProfile>
-    //   <Faq></Faq>
+    //   {/* <SideBar></SideBar>
+    //   <TopBar></TopBar> */}
+    //   <ContactUs></ContactUs>
+    //   <Foot></Foot>
     // </div>
     <BrowserRouter>
       <SideBar />
@@ -39,16 +45,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin/profile" element={<AdminProfile />} />
         <Route path="/admin/faq" element={<Faq />} />
+        <Route path="/admin/contact-us" element={<ContactUs />} />
       </Routes>
+      <Foot></Foot>
       {/* <Faq/> */}
     </BrowserRouter>
-    // <div className="App">
-    //   {/* <Login></Login> */}
-    //   <SideBar></SideBar>
-    //   <TopBar></TopBar>
-    //   {/* <AdminProfile></AdminProfile> */}
-    //   <Faq></Faq>
-    // </div>
   );
 }
 
