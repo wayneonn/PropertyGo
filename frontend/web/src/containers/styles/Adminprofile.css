@@ -1,11 +1,11 @@
 .admin-profile {
   background-color: #0000000D;
-  /* width: 100px; */
   width: calc(100% - 180px);
-  position: fixed;
+  top: 60px;
   right: 0;
   bottom: 0;
-  height: calc(100% - 60px);
+  position: fixed;
+  overflow-y: auto;
 }
 
 .currentUsername {

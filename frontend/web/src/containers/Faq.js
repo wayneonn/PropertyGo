@@ -1,5 +1,14 @@
 import { React, useState, useEffect } from "react";
-import { Button, Table, Modal, Form, Toast, Row, Col } from "react-bootstrap";
+import {
+  Button,
+  Table,
+  Modal,
+  Form,
+  Toast,
+  Row,
+  Col,
+  Container,
+} from "react-bootstrap";
 import "./styles/Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
@@ -44,8 +53,8 @@ const Faq = () => {
     emptyFaqType: false,
     emptyFaqQuestion: false,
     emptyFaqAnswer: false,
-    faqQuestionUnique: false
-  })
+    faqQuestionUnique: false,
+  });
 
   const handlePageChangeSeller = (pageNumber) => {
     setCurrentPageSeller(pageNumber);
@@ -83,7 +92,7 @@ const Faq = () => {
       emptyFaqType: false,
       emptyFaqQuestion: false,
       emptyFaqAnswer: false,
-      faqQuestionUnique: false
+      faqQuestionUnique: false,
     };
 
     const questionTrimmed = faqQuestion.trim();
@@ -196,20 +205,21 @@ const Faq = () => {
       </div>
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayfaq">
-          <div className="sellerfaq">
-            <h3
-              style={{
-                color: "black",
-                font: "Montserrat",
-                fontWeight: "700",
-                fontSize: "16px",
-                padding: "5px 10px 5px 10px",
-              }}
-            >
-              SELLER FAQ
-            </h3>
+          {/* <div className="sellerfaq"> */}
+          <h3
+            style={{
+              color: "black",
+              font: "Montserrat",
+              fontWeight: "700",
+              fontSize: "16px",
+              padding: "5px 5px 5px 5px",
+            }}
+          >
+            SELLER FAQ
+          </h3>
+          <div>
             <div>
-              <Table hover responsive size="sm">
+              <Table responsive style={{ width: "51em" }}>
                 <thead
                   style={{
                     textAlign: "center",
@@ -234,8 +244,8 @@ const Faq = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td>{faq.question}</td>
-                          <td>{faq.answer}</td>
+                          <td className="truncate-text">{faq.question}</td>
+                          <td className="truncate-text">{faq.answer}</td>
                           <td>{faq.createdAt}</td>
                           <td>{faq.updatedAt}</td>
                           <td>
@@ -310,102 +320,102 @@ const Faq = () => {
               </Pagination>
             </div>
           </div>
-          <div className="buyerfaq">
-            <h3
-              style={{
-                color: "black",
-                font: "Montserrat",
-                fontWeight: "700",
-                fontSize: "16px",
-                padding: "5px 10px 5px 10px",
-              }}
-            >
-              BUYER FAQ
-            </h3>
-            <div>
-              <Table hover responsive size="sm">
-                <thead style={{ textAlign: "center" }}>
+          {/* </div> */}
+          {/* <div className="buyerfaq"> */}
+          <h3
+            style={{
+              color: "black",
+              font: "Montserrat",
+              fontWeight: "700",
+              fontSize: "16px",
+              padding: "5px 5px 5px 5px",
+            }}
+          >
+            BUYER FAQ
+          </h3>
+          <div>
+            <Table hover responsive size="sm">
+              <thead style={{ textAlign: "center" }}>
+                <tr>
+                  <th>QUESTION</th>
+                  <th>ANSWER</th>
+                  <th>DATE CREATED</th>
+                  <th>UPDATED AT</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
+              {Array.isArray(buyerfaqs) && buyerfaqs.length > 0 ? (
+                <tbody>
+                  {buyerfaqs
+                    .slice(indexOfFirstItemBuyer, indexOfLastItemBuyer)
+                    .map((faq) => (
+                      <tr
+                        key={faq.faqId}
+                        style={{
+                          textAlign: "center",
+                        }}
+                      >
+                        <td>{faq.question}</td>
+                        <td>{faq.answer}</td>
+                        <td>{faq.createdAt}</td>
+                        <td>{faq.updatedAt}</td>
+                        <td>
+                          <Button
+                            size="sm"
+                            title="Edit"
+                            style={{
+                              backgroundColor: "#FFD700",
+                              border: "0",
+                              marginRight: "10px",
+                            }}
+                            onClick={() =>
+                              toggleEditModal(
+                                faq.faqId,
+                                faq.question,
+                                faq.answer,
+                                faq.faqType
+                              )
+                            }
+                          >
+                            <MdEditSquare
+                              style={{
+                                width: "18px",
+                                height: "18px",
+                                color: "black",
+                              }}
+                            ></MdEditSquare>
+                          </Button>
+                          <Button
+                            size="sm"
+                            title="Delete"
+                            style={{
+                              backgroundColor: "#FFD700",
+                              border: "0",
+                            }}
+                            onClick={() => toggleDeleteModal(faq.faqId)}
+                          >
+                            <MdDelete
+                              style={{
+                                width: "18px",
+                                height: "18px",
+                                color: "black",
+                              }}
+                            ></MdDelete>
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              ) : (
+                <tbody>
                   <tr>
-                    <th>QUESTION</th>
-                    <th>ANSWER</th>
-                    <th>DATE CREATED</th>
-                    <th>UPDATED AT</th>
-                    <th>ACTION</th>
+                    <td colSpan="5" style={{ textAlign: "center" }}>
+                      No FAQs available
+                    </td>
                   </tr>
-                </thead>
-                {Array.isArray(buyerfaqs) && buyerfaqs.length > 0 ? (
-                  <tbody>
-                    {buyerfaqs
-                      .slice(indexOfFirstItemBuyer, indexOfLastItemBuyer)
-                      .map((faq) => (
-                        <tr
-                          key={faq.faqId}
-                          style={{
-                            textAlign: "center",
-                          }}
-                        >
-                          <td>{faq.question}</td>
-                          <td>{faq.answer}</td>
-                          <td>{faq.createdAt}</td>
-                          <td>{faq.updatedAt}</td>
-                          <td>
-                            <Button
-                              size="sm"
-                              title="Edit"
-                              style={{
-                                backgroundColor: "#FFD700",
-                                border: "0",
-                                marginRight: "10px",
-                              }}
-                              onClick={() =>
-                                toggleEditModal(
-                                  faq.faqId,
-                                  faq.question,
-                                  faq.answer,
-                                  faq.faqType
-                                )
-                              }
-                            >
-                              <MdEditSquare
-                                style={{
-                                  width: "18px",
-                                  height: "18px",
-                                  color: "black",
-                                }}
-                              ></MdEditSquare>
-                            </Button>
-                            <Button
-                              size="sm"
-                              title="Delete"
-                              style={{
-                                backgroundColor: "#FFD700",
-                                border: "0",
-                              }}
-                              onClick={() => toggleDeleteModal(faq.faqId)}
-                            >
-                              <MdDelete
-                                style={{
-                                  width: "18px",
-                                  height: "18px",
-                                  color: "black",
-                                }}
-                              ></MdDelete>
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                ) : (
-                  <tbody>
-                    <tr>
-                      <td colSpan="5" style={{ textAlign: "center" }}>
-                        No FAQs available
-                      </td>
-                    </tr>
-                  </tbody>
-                )}
-              </Table>
-            </div>
+                </tbody>
+              )}
+            </Table>
             <div>
               <Pagination className="faq-paginate">
                 {Array.from({ length: totalPageBuyer }).map((_, index) => (
@@ -420,6 +430,7 @@ const Faq = () => {
               </Pagination>
             </div>
           </div>
+          {/* </div> */}
         </div>
         <FaqCreate showToast={showToast}></FaqCreate>
         <Modal
@@ -468,7 +479,10 @@ const Faq = () => {
               rows={6}
               value={faqQuestion}
               onChange={(e) => setFaqQuestion(e.target.value)}
-              isInvalid={validationMessages.emptyFaqQuestion || validationMessages.faqQuestionUnique}
+              isInvalid={
+                validationMessages.emptyFaqQuestion ||
+                validationMessages.faqQuestionUnique
+              }
             />
             {validationMessages.emptyFaqQuestion && (
               <Form.Control.Feedback type="invalid">
