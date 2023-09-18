@@ -8,6 +8,7 @@ import TopBar from "./components/Common/TopBar";
 import AdminProfile from "./containers/AdminProfile";
 import Faq from "./containers/Faq";
 import ContactUs from "./containers/ContactUs";
+import NotFound from "./components/Common/NotFound";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./containers/Login";
@@ -23,6 +24,7 @@ function App() {
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/faqs" element={<Faq />} />
           <Route path="/admin/contact-us" element={<ContactUs />} />
+          <Route path="/admin" element={<NotFound />} />
         </Route>
         <Route
           path="/login"

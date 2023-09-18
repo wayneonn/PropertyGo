@@ -30,10 +30,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      // timeStamp: {
-      //   type: DataTypes.DATE,
-      //   allowNull: false,
-      // },
     },
     {
       freezeTableName: true,
