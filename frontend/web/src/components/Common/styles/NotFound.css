@@ -1,0 +1,10 @@
+.not-found {
+  width: calc(100% - 180px);
+  top: 60px;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

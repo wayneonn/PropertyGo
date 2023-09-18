@@ -26,7 +26,7 @@ const SideBar = () => {
             style={{
               width: "60px",
               height: "60px",
-              marginBottom: "1em",
+              marginBottom: "2em",
               marginLeft: "3em",
             }}
           />

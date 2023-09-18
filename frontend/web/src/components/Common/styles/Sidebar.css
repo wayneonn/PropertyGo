@@ -6,6 +6,8 @@
   left: 0;
   background-color: #FFFFFF;
   padding: 10px;
+  border-right: solid;
+  border-color: grey;
 }
 
 .navibar a {
