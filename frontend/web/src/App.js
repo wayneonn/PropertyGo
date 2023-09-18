@@ -2,9 +2,6 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./components/Common/AppLayout";
 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
-// import Login from "./containers/login";
 import SideBar from "./components/Common/SideBar";
 import TopBar from "./components/Common/TopBar";
 import AdminProfile from "./containers/AdminProfile";
@@ -26,7 +23,6 @@ function App() {
           <Route path="/admin/contact-us" element={<ContactUs />} />
           <Route path="/admin" element={<NotFound />} />
         </Route>
-        {/* Use the layout for routes that need it */}
         <Route
           element={
             <AppLayout>
@@ -39,7 +35,6 @@ function App() {
           <Route path="/contact-us" element={<ContactUs />} />
         </Route>
 
-        {/* Route without the layout */}
         <Route
           path="/"
           element={
@@ -51,7 +46,6 @@ function App() {
           }
         />
 
-        {/* Not Found route without the layout */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
