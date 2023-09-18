@@ -7,12 +7,14 @@ const db = require("./models");
 const userTestData = require("./test_data/userTestData");
 
 // Routers
-const postRouter = require("./routes/User");
-const loginRoute = require("./routes/loginRoute");
-// Document Router.
-// const documentRoute = require('./routes/documentRoute')
-// This is temporary, going to be added in once testing finished.
-app.use("/user", postRouter, loginRoute);
+const postRouter = require('./routes/User')
+const loginRoute = require('./routes/loginRoute')
+app.use("/user", postRouter, loginRoute)
+
+const googleSignInRoute = require('./routes/googleSignInRoute');  // Adjust path as needed
+app.use("/auth", googleSignInRoute);
+
+
 
 db.sequelize.sync().then(async () => {
   const existingRecordsCount = await db.User.count();
@@ -30,14 +32,13 @@ db.sequelize.sync().then(async () => {
     console.log("Test data already exists in the database.");
   }
 
-  db.sequelize
-    .sync({ force: true })
-    .then(() => {
-      app.listen(3000, () => {
-        console.log("Server running on port 3000");
-      });
+        db.sequelize.sync()
+            .then(() => {
+                app.listen(3000,'0.0.0.0', () => {
+                    console.log('Server running on port 3000');
+                });
+            })
+            .catch((error) => {
+                console.error('Sequelize sync error:', error);
+            });
     })
-    .catch((error) => {
-      console.error("Sequelize sync error:", error);
-    });
-});
