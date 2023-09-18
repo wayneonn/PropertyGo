@@ -1,4 +1,6 @@
-import "./App.css";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import AppLayout from "./components/Common/AppLayout";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
@@ -17,8 +19,6 @@ import PrivateRoute from "./PrivateRoute";
 function App() {
   return (
     <BrowserRouter>
-      <SideBar />
-      <TopBar />
       <Routes>
         <Route element={<PrivateRoute />}>
           <Route path="/admin/profile" element={<AdminProfile />} />
@@ -26,16 +26,33 @@ function App() {
           <Route path="/admin/contact-us" element={<ContactUs />} />
           <Route path="/admin" element={<NotFound />} />
         </Route>
+        {/* Use the layout for routes that need it */}
         <Route
-          path="/login"
+          element={
+            <AppLayout>
+              <PrivateRoute />
+            </AppLayout>
+          }
+        >
+          <Route path="/profile" element={<AdminProfile />} />
+          <Route path="/faqs" element={<Faq />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+        </Route>
+
+        {/* Route without the layout */}
+        <Route
+          path="/"
           element={
             !localStorage.getItem("loggedInAdmin") ? (
               <Login />
             ) : (
-              <Navigate to="/admin/profile" />
+              <Navigate to="/profile" />
             )
           }
         />
+
+        {/* Not Found route without the layout */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

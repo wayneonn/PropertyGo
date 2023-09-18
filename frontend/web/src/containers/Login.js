@@ -60,7 +60,7 @@ const Login = () => {
           const { adminId } = response.data;
 
           localStorage.setItem("loggedInAdmin", adminId);
-          navigate("/admin/profile");
+          navigate("/profile");
         }
 
       } catch (error) {

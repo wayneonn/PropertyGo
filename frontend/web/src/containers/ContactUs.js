@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Button, Table, Modal, Form } from "react-bootstrap";
+import { Button, Table, Modal, Form, Row, Col, Toast } from "react-bootstrap";
 import "./styles/Contactus.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { BsFillReplyFill } from "react-icons/bs";
@@ -32,6 +32,7 @@ const ContactUs = () => {
   const [closedMessage, setClosedMessage] = useState("");
   const [closedReason, setClosedReason] = useState("");
   const [closedResponse, setClosedResponse] = useState("");
+  const [userNames, setUserNames] = useState({});
 
   const itemsPerPage = 4;
 
@@ -52,6 +53,14 @@ const ContactUs = () => {
 
   const indexOfLastItemClosed = currentPageClosed * itemsPerPage;
   const indexOfFirstItemClosed = indexOfLastItemClosed - itemsPerPage;
+
+  const [validationMessages, setValidationMessages] = useState({
+    emptyResponse: false
+  });
+
+  // toast message
+  const [show, setShow] = useState(false);
+  const [toastAction, setToastAction] = useState("");
 
   const handlePageChangePending = (pageNumber) => {
     setCurrentPagePending(pageNumber);
@@ -104,42 +113,118 @@ const ContactUs = () => {
     setAddedRespond("");
   };
 
-  const handleEdit = () => {
-    //edit contact us in backend, use the contactusid of the editId, response
+  const showToast = (action) => {
+    setToastAction(action);
+    setShow(true);
   };
 
-  const handleRespond = () => {
+  const handleEdit = async () => {
+    //edit contact us in backend, use the contactusid of the editId, response
+    const newMessage = {
+      emptyResponse: false
+    };
+
+    const responseTrimmed = response.trim();
+
+    if (responseTrimmed === "") {
+      newMessage.emptyResponse = true;
+      setValidationMessages(newMessage);
+      return;
+    }
+
+    try {
+      const response = await API.patch(`/admin/contactUs/${editId}`, {
+        response: responseTrimmed
+      });
+
+      if (response.status === 200) {
+        fetchData();
+        setValidationMessages(newMessage);
+        setShowEditModal(false);
+        showToast("updated");
+      }
+
+    } catch (error) {
+      console.error("error");
+    }
+  };
+
+  const handleRespond = async () => {
     //add contact us respond in the backend, use the contactusid of the respondId, addedResponse
-    setAddedRespond("");
+    // setAddedRespond("");
+    const newMessage = {
+      emptyResponse: false
+    };
+
+    const addedRespondTrimmed = addedRespond.trim();
+
+    if (addedRespondTrimmed === "") {
+      newMessage.emptyResponse = true;
+      setValidationMessages(newMessage);
+      return;
+    }
+
+    try {
+      const response = await API.patch(`/admin/contactUs/${respondId}`, {
+        response: addedRespondTrimmed
+      });
+
+      if (response.status === 200) {
+        fetchData();
+        setValidationMessages(newMessage);
+        setAddedRespond("");
+        setShowRespondModal(false);
+        showToast("responded");
+      }
+
+    } catch (error) {
+      console.error("error");
+    }
+  };
+
+  const getUserName = async (userId) => {
+    const response = await API.get(`http://localhost:3000/admin/users/${userId}`);
+    return response.data;
+  }
+
+  const fetchData = async () => {
+    try {
+      const response = await API.get(`http://localhost:3000/admin/contactUs`);
+      const contactUs = response.data.contactUs;
+
+      const userNamesData = {};
+      for (const contact of contactUs) {
+        if (!userNamesData[contact.userId]) {
+          const userResponse = await getUserName(contact.userId);
+          userNamesData[contact.userId] = userResponse;
+        }
+      }
+
+      setUserNames(userNamesData);
+
+      const pendingContactus = contactUs.filter(
+        (contactus) => contactus.status === "PENDING"
+      );
+      setPendingContactus(pendingContactus);
+      const repliedContactus = contactUs.filter(
+        (contactus) => contactus.status === "REPLIED"
+      );
+      setRepliedContactus(repliedContactus);
+      const closedContactus = contactUs.filter(
+        (contactus) => contactus.status === "CLOSED"
+      );
+      setClosedContactus(closedContactus);
+      setTotalPagePending(Math.ceil(pendingContactus.length / itemsPerPage));
+      setTotalPageReplied(Math.ceil(repliedContactus.length / itemsPerPage));
+      setTotalPageClosed(Math.ceil(closedContactus.length / itemsPerPage));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await API.get(`http://localhost:3000/admin/contactUs`);
-        const contactUs = response.data.contactUs;
-        setContactus(contactus);
-        const pendingContactus = contactUs.filter(
-          (contactus) => contactus.status === "PENDING"
-        );
-        setPendingContactus(pendingContactus);
-        const repliedContactus = contactUs.filter(
-          (contactus) => contactus.status === "REPLIED"
-        );
-        setRepliedContactus(repliedContactus);
-        const closedContactus = contactUs.filter(
-          (contactus) => contactus.status === "CLOSED"
-        );
-        setClosedContactus(closedContactus);
-        setTotalPagePending(Math.ceil(pendingContactus.length / itemsPerPage));
-        setTotalPageReplied(Math.ceil(repliedContactus.length / itemsPerPage));
-        setTotalPageClosed(Math.ceil(closedContactus.length / itemsPerPage));
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchData();
-  }, [contactus]);
+  }, []);
 
   return (
     <div className="contactus">
@@ -155,6 +240,24 @@ const ContactUs = () => {
       </div>
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayContactus">
+          <div style={{ position: "fixed", top: "5%", left: "50%" }}>
+            <Row>
+              <Col xs={6}>
+                <Toast
+                  bg="warning"
+                  onClose={() => setShow(false)}
+                  show={show}
+                  delay={4000}
+                  autohide
+                >
+                  <Toast.Header>
+                    <strong className="me-auto">Successful</strong>
+                  </Toast.Header>
+                  <Toast.Body>{`You have ${toastAction} the enquiry successfully!`}</Toast.Body>
+                </Toast>
+              </Col>
+            </Row>
+          </div>
           <div className="pendingContactus">
             <h3
               style={{
@@ -184,7 +287,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(pendingContactus) &&
-                pendingContactus.length > 0 ? (
+                  pendingContactus.length > 0 ? (
                   <tbody>
                     {pendingContactus
                       .slice(indexOfFirstItemPending, indexOfLastItemPending)
@@ -201,7 +304,7 @@ const ContactUs = () => {
                           <td className="truncate-text">
                             {contactus.createdAt}
                           </td>
-                          <td className="truncate-text">{contactus.userId}</td>
+                          <td className="truncate-text">{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
@@ -288,7 +391,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(repliedContactus) &&
-                repliedContactus.length > 0 ? (
+                  repliedContactus.length > 0 ? (
                   <tbody>
                     {repliedContactus
                       .slice(indexOfFirstItemReplied, indexOfLastItemReplied)
@@ -311,7 +414,7 @@ const ContactUs = () => {
                           <td className="truncate-text">
                             {contactus.updatedAt}
                           </td>
-                          <td className="truncate-text">{contactus.userId}</td>
+                          <td className="truncate-text">{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
@@ -399,7 +502,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(closedContactus) &&
-                closedContactus.length > 0 ? (
+                  closedContactus.length > 0 ? (
                   <tbody>
                     {closedContactus
                       .slice(indexOfFirstItemClosed, indexOfLastItemClosed)
@@ -422,7 +525,7 @@ const ContactUs = () => {
                           <td className="truncate-text">
                             {contactus.updatedAt}
                           </td>
-                          <td className="truncate-text">{contactus.userId}</td>
+                          <td className="truncate-text">{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
@@ -551,7 +654,13 @@ const ContactUs = () => {
               name="message"
               value={response}
               onChange={(e) => setResponse(e.target.value)}
+              isInvalid={validationMessages.emptyResponse}
             />
+            {validationMessages.emptyResponse && (
+              <Form.Control.Feedback type="invalid">
+                Response is required.
+              </Form.Control.Feedback>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -664,7 +773,13 @@ const ContactUs = () => {
               name="message"
               value={addedRespond}
               onChange={(e) => setAddedRespond(e.target.value)}
+              isInvalid={validationMessages.emptyResponse}
             />
+            {validationMessages.emptyResponse && (
+              <Form.Control.Feedback type="invalid">
+                Response is required.
+              </Form.Control.Feedback>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button
