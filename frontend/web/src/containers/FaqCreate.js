@@ -2,13 +2,78 @@ import { React, useState } from "react";
 import { Card, Button, Form } from "react-bootstrap";
 import "./styles/Faq.css";
 
-const FaqCreate = () => {
+import API from "../services/API";
+
+const FaqCreate = ({showToast}) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const [faqType, setFaqType] = useState("SELLER");
+  const [faqType, setFaqType] = useState("");
 
-  const handleCreate = () => {
-    //add faq into database
+  // validation
+  const [validationMessages, setValidationMessages] = useState({
+    emptyFaqType: false,
+    emptyFaqQuestion: false,
+    emptyFaqAnswer: false,
+    faqQuestionUnique: false
+  });
+
+  const handleCreate = async (e) => {
+    const newMessage = {
+      emptyFaqType: false,
+      emptyFaqQuestion: false,
+      emptyFaqAnswer: false,
+      faqQuestionUnique: false
+    };
+
+    const questionTrimmed = question.trim();
+    const answerTrimmed = answer.trim();
+
+    if (questionTrimmed === "") {
+      newMessage.emptyFaqQuestion = true;
+    }
+
+    if (answerTrimmed === "") {
+      newMessage.emptyFaqAnswer = true;
+    }
+
+    if (faqType === "") {
+      newMessage.emptyFaqType = true;
+    }
+
+    if (
+      newMessage.emptyFaqQuestion ||
+      newMessage.emptyFaqAnswer ||
+      newMessage.emptyFaqType
+    ) {
+      setValidationMessages(newMessage);
+      return;
+    }
+
+    try {
+      // Save to database
+      const response = await API.post(`/admin/faqs?adminId=${localStorage.getItem("loggedInAdmin")}`, {
+        question,
+        answer,
+        faqType
+      });
+
+      if (response.status === 201) {
+        showToast("created");
+        setValidationMessages(newMessage);
+        setFaqType("");
+        setQuestion("");
+        setAnswer("");
+
+      }
+    } catch (error) {
+      const status = error.response.status;
+      if (status === 409) {
+        newMessage.faqQuestionUnique = true;
+      }
+
+      setValidationMessages(newMessage);
+    }
+
   };
 
   return (
@@ -19,15 +84,20 @@ const FaqCreate = () => {
             <Card.Title>Create a FAQ</Card.Title>
           </div>
           <Card.Subtitle className="subtitle">FAQ Type</Card.Subtitle>
-          <Form.Select aria-label="Default select example">
-            <option>Select a FAQ Type</option>
-            <option value="1" onClick={() => setFaqType("SELLER")}>
+          <Form.Select aria-label="Default select example" isInvalid={validationMessages.emptyFaqType} onChange={(e) => setFaqType(e.target.value)} value={faqType}>
+            <option value="">Select a FAQ Type</option>
+            <option value="SELLER">
               SELLER
             </option>
-            <option value="2" onClick={() => setFaqType("BUYER")}>
+            <option value="BUYER">
               BUYER
             </option>
           </Form.Select>
+          {validationMessages.emptyFaqType && (
+            <Form.Control.Feedback type="invalid">
+              FAQ Type is required.
+            </Form.Control.Feedback>
+          )}
           <Card.Subtitle className="subtitle">Question</Card.Subtitle>
           <Form.Control
             as="textarea"
@@ -35,7 +105,18 @@ const FaqCreate = () => {
             rows={5}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
+            isInvalid={validationMessages.emptyFaqQuestion || validationMessages.faqQuestionUnique}
           />
+          {validationMessages.emptyFaqQuestion && (
+            <Form.Control.Feedback type="invalid">
+              Question is required.
+            </Form.Control.Feedback>
+          )}
+          {validationMessages.faqQuestionUnique && (
+            <Form.Control.Feedback type="invalid">
+              Question already exists. Please type another question.
+            </Form.Control.Feedback>
+          )}
           <Card.Subtitle className="subtitle">Answer</Card.Subtitle>
           <Form.Control
             as="textarea"
@@ -43,7 +124,13 @@ const FaqCreate = () => {
             rows={5}
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
+            isInvalid={validationMessages.emptyFaqAnswer}
           />
+          {validationMessages.emptyFaqAnswer && (
+            <Form.Control.Feedback type="invalid">
+              Answer is required.
+            </Form.Control.Feedback>
+          )}
         </Card.Body>
         <div className="button-container">
           <Button
@@ -58,7 +145,7 @@ const FaqCreate = () => {
               fontWeight: "600",
               fontSize: "14px",
             }}
-            onClick={() => handleCreate()}
+            onClick={handleCreate}
           >
             Create
           </Button>

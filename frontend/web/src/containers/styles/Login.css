@@ -12,7 +12,7 @@
 
 .loginToast {
     position: fixed;
-    top: 10%;
+    top: 5%;
     left: 55%;
     transform: translateX(-50%);
 }

@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // import Login from "./containers/login";
 import SideBar from "./components/Common/SideBar";
@@ -39,12 +39,14 @@ function App() {
     // <BrowserRouter>
     //   <SideBar />
     //   <TopBar />
-    //   <Foot />
     //   <Routes>
+    //     {/* <Route path="/admin/profile" element={localStorage.getItem("loggedInAdmin") ? <AdminProfile /> : <Navigate to="/login" />} />
+    //     <Route path="/login" element={localStorage.getItem("loggedInAdmin") ? <Navigate to="/admin/profile"/> : <Login />} /> */}
     //     <Route path="/login" element={<Login />} />
     //     <Route path="/admin/profile" element={<AdminProfile />} />
     //     <Route path="/admin/faq" element={<Faq />} />
     //   </Routes>
+    //   {/* <Faq/> */}
     // </BrowserRouter>
   );
 }
