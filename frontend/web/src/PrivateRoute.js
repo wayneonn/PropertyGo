@@ -5,7 +5,7 @@ const PrivateRoute = () => {
   // Check if the user is logged in
   const isLoggedIn = localStorage.getItem('loggedInAdmin');
 
-  return isLoggedIn ? <Outlet/> : <Navigate to="/login" />;
+  return isLoggedIn ? <Outlet/> : <Navigate to="/" />;
 };
 
 export default PrivateRoute;

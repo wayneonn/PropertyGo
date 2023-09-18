@@ -74,7 +74,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/admin/profile">
+          <Nav.Link className="a" href="/profile">
             <GoPerson style={{ marginRight: "1em" }}></GoPerson>
             Profile
           </Nav.Link>
@@ -94,7 +94,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/admin/faqs">
+          <Nav.Link className="a" href="/faqs">
             <AiOutlineQuestionCircle
               style={{ marginRight: "1em" }}
             ></AiOutlineQuestionCircle>
@@ -116,7 +116,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/">
+          <Nav.Link className="a" href="/contact-us">
             <LiaStickyNote style={{ marginRight: "1em" }}></LiaStickyNote>
             Contact Us
           </Nav.Link>
