@@ -15,7 +15,6 @@ const SignUpSelection = () => {
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign Up Screen')}>
                 <Text style={styles.buttonText}>Sign Up with Email</Text>
             </TouchableOpacity>
-            {/* Add the following buttons */}
             <TouchableOpacity style={styles.socialButton} onPress={() => handleSignUpWithGoogle()}>
                 <Text style={styles.socialButtonText}>Sign Up with Google</Text>
             </TouchableOpacity>
@@ -61,13 +60,12 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: RFValue(16, 680),
     },
-    // Style for social sign-up buttons
     socialButton: {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 15,
         borderRadius: 25,
-        backgroundColor: '#4267B2', // Example: Facebook Blue
+        backgroundColor: '#4267B2', 
         width: width * 0.8,
         marginVertical: 10,
     },
