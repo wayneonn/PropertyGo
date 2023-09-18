@@ -20,6 +20,7 @@ import UserListings from '../screens/sideNavigatorBar/UserListings'
 import UserProfile from '../screens/sideNavigatorBar/UserProfile'
 import WorkWithUs from '../screens/sideNavigatorBar/WorkWithUs'
 import ContactUsStackGroup from './ContactUsStackGroup';
+import UserProfileStackGroup from './UserProfileStackGroup';
 
 const CustomDrawerContent = (props) => {
     const { navigation, profilePictureUrl } = props; // Replace with the actual prop name you use
@@ -75,7 +76,7 @@ const createDrawerScreen = (name, component, iconName, label, hideHeader = false
 const drawerScreens = [
     createDrawerScreen('Home', HomeStackGroup, 'home', 'Home'),
     createDrawerScreen('Explore Services', ExploreServices, 'search', 'Explore Services'),
-    createDrawerScreen('User Profile', UserProfile, 'person', 'User Profile'),
+    createDrawerScreen('User Profile', UserProfileStackGroup, 'person', 'User Profile'),
     createDrawerScreen('User Listings', UserListings, 'list', 'User Listings'),
     createDrawerScreen('Appointments', Appointments, 'calendar', 'Appointments'),
     createDrawerScreen('Documents', Documents, 'document', 'Documents'),
