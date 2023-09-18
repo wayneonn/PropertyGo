@@ -75,10 +75,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('LAWYER', 'PROPERTY AGENT', 'CONTRACTOR', 'BUYER', 'SELLER'),
       allowNull: false,
     },
-    googleId: {
-      type: DataTypes.STRING,
-      allowNull: true,
-   },   
   }, {
     freezeTableName: true
   });
