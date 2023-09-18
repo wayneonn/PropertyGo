@@ -1,6 +1,6 @@
 import { React, useState } from "react";
 import { Card, Button, Form } from "react-bootstrap";
-import "./Faq.css";
+import "./styles/Faq.css";
 
 const FaqCreate = () => {
   const [question, setQuestion] = useState("");

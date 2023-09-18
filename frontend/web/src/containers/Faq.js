@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { Button, Table, Modal, Form } from "react-bootstrap";
-import "./Faq.css";
+import "./styles/Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import FaqCreate from "./FaqCreate.js";

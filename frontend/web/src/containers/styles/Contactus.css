@@ -1,0 +1,31 @@
+.contactus {
+  background-color: #0000000D;
+  /* width: 100px; */
+  width: calc(100% - 180px);
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  height: calc(100% - 60px);
+  /* height: 815px; */
+  /* height: 900px; */
+}
+
+.displayContactus {
+  justify-content: "center";
+  margin-left: 150px;
+}
+
+.pendingContactus {
+  background-color: #FFFFFF;
+  width: 1000px;
+  height: 320px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.repliedContactus {
+  background-color: #FFFFFF;
+  width: 1000px;
+  height: 320px;
+  border-radius: 5px;
+}
