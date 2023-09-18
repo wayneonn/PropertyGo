@@ -51,8 +51,10 @@ const Login = () => {
 
     if (form.checkValidity() === true && userName && password) {
       try {
+        const userNameTrimmed = userName.trim();
+
         const response = await API.post('/admin/auth/login', {
-          userName,
+          userName : userNameTrimmed,
           password
         });
 
