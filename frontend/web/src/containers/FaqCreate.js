@@ -4,7 +4,7 @@ import "./styles/Faq.css";
 
 import API from "../services/API";
 
-const FaqCreate = ({showToast}) => {
+const FaqCreate = ({ showToast }) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [faqType, setFaqType] = useState("");
@@ -14,7 +14,7 @@ const FaqCreate = ({showToast}) => {
     emptyFaqType: false,
     emptyFaqQuestion: false,
     emptyFaqAnswer: false,
-    faqQuestionUnique: false
+    faqQuestionUnique: false,
   });
 
   const handleCreate = async (e) => {
@@ -22,7 +22,7 @@ const FaqCreate = ({showToast}) => {
       emptyFaqType: false,
       emptyFaqQuestion: false,
       emptyFaqAnswer: false,
-      faqQuestionUnique: false
+      faqQuestionUnique: false,
     };
 
     const questionTrimmed = question.trim();
@@ -51,11 +51,14 @@ const FaqCreate = ({showToast}) => {
 
     try {
       // Save to database
-      const response = await API.post(`/admin/faqs?adminId=${localStorage.getItem("loggedInAdmin")}`, {
-        question,
-        answer,
-        faqType
-      });
+      const response = await API.post(
+        `/admin/faqs?adminId=${localStorage.getItem("loggedInAdmin")}`,
+        {
+          question,
+          answer,
+          faqType,
+        }
+      );
 
       if (response.status === 201) {
         showToast("created");
@@ -63,7 +66,6 @@ const FaqCreate = ({showToast}) => {
         setFaqType("");
         setQuestion("");
         setAnswer("");
-
       }
     } catch (error) {
       const status = error.response.status;
@@ -73,64 +75,69 @@ const FaqCreate = ({showToast}) => {
 
       setValidationMessages(newMessage);
     }
-
   };
 
   return (
     <div>
-      <Card style={{ width: "25rem", height: "36rem", border: "0" }}>
+      <Card style={{ width: "25rem", height: "38rem", border: "0" }}>
         <Card.Body>
           <div className="title">
             <Card.Title>Create a FAQ</Card.Title>
           </div>
           <Card.Subtitle className="subtitle">FAQ Type</Card.Subtitle>
-          <Form.Select aria-label="Default select example" isInvalid={validationMessages.emptyFaqType} onChange={(e) => setFaqType(e.target.value)} value={faqType}>
+          <Form.Select
+            aria-label="Default select example"
+            isInvalid={validationMessages.emptyFaqType}
+            onChange={(e) => setFaqType(e.target.value)}
+            value={faqType}
+          >
             <option value="">Select a FAQ Type</option>
-            <option value="SELLER">
-              SELLER
-            </option>
-            <option value="BUYER">
-              BUYER
-            </option>
+            <option value="SELLER">SELLER</option>
+            <option value="BUYER">BUYER</option>
           </Form.Select>
           {validationMessages.emptyFaqType && (
             <Form.Control.Feedback type="invalid">
               FAQ Type is required.
             </Form.Control.Feedback>
           )}
-          <Card.Subtitle className="subtitle">Question</Card.Subtitle>
-          <Form.Control
-            as="textarea"
-            id="question"
-            rows={5}
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            isInvalid={validationMessages.emptyFaqQuestion || validationMessages.faqQuestionUnique}
-          />
-          {validationMessages.emptyFaqQuestion && (
-            <Form.Control.Feedback type="invalid">
-              Question is required.
-            </Form.Control.Feedback>
-          )}
-          {validationMessages.faqQuestionUnique && (
-            <Form.Control.Feedback type="invalid">
-              Question already exists. Please type another question.
-            </Form.Control.Feedback>
-          )}
-          <Card.Subtitle className="subtitle">Answer</Card.Subtitle>
-          <Form.Control
-            as="textarea"
-            id="answer"
-            rows={5}
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            isInvalid={validationMessages.emptyFaqAnswer}
-          />
-          {validationMessages.emptyFaqAnswer && (
-            <Form.Control.Feedback type="invalid">
-              Answer is required.
-            </Form.Control.Feedback>
-          )}
+          <div className="body">
+            <Card.Subtitle className="subtitle">Question</Card.Subtitle>
+            <Form.Control
+              as="textarea"
+              id="question"
+              rows={5}
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              isInvalid={
+                validationMessages.emptyFaqQuestion ||
+                validationMessages.faqQuestionUnique
+              }
+            />
+            {validationMessages.emptyFaqQuestion && (
+              <Form.Control.Feedback type="invalid">
+                Question is required.
+              </Form.Control.Feedback>
+            )}
+            {validationMessages.faqQuestionUnique && (
+              <Form.Control.Feedback type="invalid">
+                Question already exists. Please type another question.
+              </Form.Control.Feedback>
+            )}
+            <Card.Subtitle className="subtitle">Answer</Card.Subtitle>
+            <Form.Control
+              as="textarea"
+              id="answer"
+              rows={5}
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              isInvalid={validationMessages.emptyFaqAnswer}
+            />
+            {validationMessages.emptyFaqAnswer && (
+              <Form.Control.Feedback type="invalid">
+                Answer is required.
+              </Form.Control.Feedback>
+            )}
+          </div>
         </Card.Body>
         <div className="button-container">
           <Button

@@ -30,24 +30,26 @@ function App() {
   }
 
   return (
-    <div className="App">
-      {/* <SideBar></SideBar>
-      <TopBar></TopBar> */}
-      <ContactUs></ContactUs>
+    // <div className="App">
+    //   {/* <SideBar></SideBar>
+    //   <TopBar></TopBar> */}
+    //   <ContactUs></ContactUs>
+    //   <Foot></Foot>
+    // </div>
+    <BrowserRouter>
+      <SideBar />
+      <TopBar />
+      <Routes>
+        {/* <Route path="/admin/profile" element={localStorage.getItem("loggedInAdmin") ? <AdminProfile /> : <Navigate to="/login" />} />
+        <Route path="/login" element={localStorage.getItem("loggedInAdmin") ? <Navigate to="/admin/profile"/> : <Login />} /> */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/admin/profile" element={<AdminProfile />} />
+        <Route path="/admin/faq" element={<Faq />} />
+        <Route path="/admin/contact-us" element={<ContactUs />} />
+      </Routes>
       <Foot></Foot>
-    </div>
-    // <BrowserRouter>
-    //   <SideBar />
-    //   <TopBar />
-    //   <Routes>
-    //     {/* <Route path="/admin/profile" element={localStorage.getItem("loggedInAdmin") ? <AdminProfile /> : <Navigate to="/login" />} />
-    //     <Route path="/login" element={localStorage.getItem("loggedInAdmin") ? <Navigate to="/admin/profile"/> : <Login />} /> */}
-    //     <Route path="/login" element={<Login />} />
-    //     <Route path="/admin/profile" element={<AdminProfile />} />
-    //     <Route path="/admin/faq" element={<Faq />} />
-    //   </Routes>
-    //   {/* <Faq/> */}
-    // </BrowserRouter>
+      {/* <Faq/> */}
+    </BrowserRouter>
   );
 }
 

@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { Button, Table, Modal, Form, Toast, Row, Col } from "react-bootstrap";
-import "./Faq.css";
+import "./styles/Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import FaqCreate from "./FaqCreate.js";
@@ -18,6 +18,8 @@ const Faq = () => {
   const [faqQuestion, setFaqQuestion] = useState("");
   const [faqAnswer, setFaqAnswer] = useState("");
   const [faqType, setFaqType] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteFaqId, setDeleteFaqId] = useState(0);
 
   const itemsPerPage = 4;
 
@@ -53,12 +55,25 @@ const Faq = () => {
     setFaqType(faqType);
   };
 
+  const toggleDeleteModal = (faqId) => {
+    setShowDeleteModal(!showDeleteModal);
+    setDeleteFaqId(faqId);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+  };
+
   const handleClose = () => {
     setShowEditModal(false);
   };
 
   const handleEdit = () => {
     //edit faq in database
+  };
+
+  const handleDelete = () => {
+    //delete faq from database. Use the value of the useState deleteFaqId for the faqId
   };
 
   const showToast = (action) => {
@@ -192,6 +207,7 @@ const Faq = () => {
                                 backgroundColor: "#FFD700",
                                 border: "0",
                               }}
+                              onClick={() => toggleDeleteModal(faq.faqId)}
                             >
                               <MdDelete
                                 style={{
@@ -301,6 +317,7 @@ const Faq = () => {
                                 backgroundColor: "#FFD700",
                                 border: "0",
                               }}
+                              onClick={() => toggleDeleteModal(faq.faqId)}
                             >
                               <MdDelete
                                 style={{
@@ -348,15 +365,35 @@ const Faq = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Edit {faqType} FAQ</Modal.Title>
+            <Modal.Title>Edit FAQ</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <div style={{ marginBottom: "10px" }}>
+              <Form.Label
+                style={{
+                  color: "black",
+                  font: "Public Sans",
+                  fontWeight: "700",
+                  fontSize: "15px",
+                }}
+              >
+                FAQ Type
+              </Form.Label>
+              <Form.Select
+                aria-label="Default select example"
+                onChange={(e) => setFaqType(e.target.value)}
+                value={faqType}
+              >
+                <option value="SELLER">SELLER</option>
+                <option value="BUYER">BUYER</option>
+              </Form.Select>
+            </div>
             <Form.Label
               style={{
-                color: "#384D6C",
-                font: "Montserrat",
+                color: "black",
+                font: "Public Sans",
                 fontWeight: "700",
-                fontSize: "16px",
+                fontSize: "15px",
               }}
             >
               Question
@@ -370,10 +407,10 @@ const Faq = () => {
             />
             <Form.Label
               style={{
-                color: "#384D6C",
-                font: "Montserrat",
+                color: "black",
+                font: "Public Sans",
                 fontWeight: "700",
-                fontSize: "16px",
+                fontSize: "15px",
               }}
             >
               Answer
@@ -418,6 +455,53 @@ const Faq = () => {
               onClick={() => handleEdit()}
             >
               Confirm
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal
+          show={showDeleteModal}
+          onHide={handleCloseDeleteModal}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Delete FAQ</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Are you sure you want to delete this FAQ?</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#F5F6F7",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleCloseDeleteModal}
+            >
+              No
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={() => handleDelete()}
+            >
+              Yes
             </Button>
           </Modal.Footer>
         </Modal>
