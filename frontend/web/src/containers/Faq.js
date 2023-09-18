@@ -1,14 +1,5 @@
 import { React, useState, useEffect } from "react";
-import {
-  Button,
-  Table,
-  Modal,
-  Form,
-  Toast,
-  Row,
-  Col,
-  Container,
-} from "react-bootstrap";
+import { Button, Table, Modal, Form, Toast, Row, Col } from "react-bootstrap";
 import "./styles/Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
@@ -105,21 +96,21 @@ const Faq = () => {
       newMessage.emptyFaqAnswer = true;
     }
 
-    if (
-      newMessage.emptyFaqQuestion ||
-      newMessage.emptyFaqAnswer
-    ) {
+    if (newMessage.emptyFaqQuestion || newMessage.emptyFaqAnswer) {
       setValidationMessages(newMessage);
       return;
     }
 
     try {
       // Save to database
-      const response = await API.patch(`/admin/faqs/${faqId}?adminId=${localStorage.getItem("loggedInAdmin")}`, {
-        question: faqQuestion,
-        answer: faqAnswer,
-        faqType
-      });
+      const response = await API.patch(
+        `/admin/faqs/${faqId}?adminId=${localStorage.getItem("loggedInAdmin")}`,
+        {
+          question: faqQuestion,
+          answer: faqAnswer,
+          faqType,
+        }
+      );
 
       if (response.status === 200) {
         setValidationMessages(newMessage);
@@ -203,26 +194,137 @@ const Faq = () => {
       </div>
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayfaq">
-          {/* <div className="sellerfaq"> */}
-          <h3
-            style={{
-              color: "black",
-              font: "Montserrat",
-              fontWeight: "700",
-              fontSize: "16px",
-              padding: "5px 5px 5px 5px",
-            }}
-          >
-            SELLER FAQ
-          </h3>
-          <div>
+          <div className="sellerfaq">
+            <h3
+              style={{
+                color: "black",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+                padding: "5px 5px 5px 5px",
+              }}
+            >
+              SELLER FAQ
+            </h3>
             <div>
-              <Table responsive style={{ width: "51em" }}>
-                <thead
-                  style={{
-                    textAlign: "center",
-                  }}
-                >
+              <div>
+                <Table responsive style={{ width: "51em" }}>
+                  <thead
+                    style={{
+                      textAlign: "center",
+                    }}
+                  >
+                    <tr>
+                      <th>QUESTION</th>
+                      <th>ANSWER</th>
+                      <th>DATE CREATED</th>
+                      <th>UPDATED AT</th>
+                      <th>ACTION</th>
+                    </tr>
+                  </thead>
+                  {Array.isArray(sellerfaqs) && sellerfaqs.length > 0 ? (
+                    <tbody>
+                      {sellerfaqs
+                        .slice(indexOfFirstItemSeller, indexOfLastItemSeller)
+                        .map((faq) => (
+                          <tr
+                            key={faq.faqId}
+                            style={{
+                              textAlign: "center",
+                            }}
+                          >
+                            <td className="truncate-text">{faq.question}</td>
+                            <td className="truncate-text">{faq.answer}</td>
+                            <td className="truncate-text">{faq.createdAt}</td>
+                            <td className="truncate-text">{faq.updatedAt}</td>
+                            <td>
+                              <Button
+                                size="sm"
+                                title="Edit"
+                                style={{
+                                  backgroundColor: "#FFD700",
+                                  border: "0",
+                                  marginRight: "10px",
+                                }}
+                                onClick={() =>
+                                  toggleEditModal(
+                                    faq.faqId,
+                                    faq.question,
+                                    faq.answer,
+                                    faq.faqType
+                                  )
+                                }
+                              >
+                                <MdEditSquare
+                                  style={{
+                                    width: "18px",
+                                    height: "18px",
+                                    color: "black",
+                                  }}
+                                ></MdEditSquare>
+                              </Button>
+                              <Button
+                                size="sm"
+                                title="Delete"
+                                style={{
+                                  backgroundColor: "#FFD700",
+                                  border: "0",
+                                }}
+                                onClick={() => toggleDeleteModal(faq.faqId)}
+                              >
+                                <MdDelete
+                                  style={{
+                                    width: "18px",
+                                    height: "18px",
+                                    color: "black",
+                                  }}
+                                ></MdDelete>
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  ) : (
+                    <tbody>
+                      <tr>
+                        <td colSpan="5" style={{ textAlign: "center" }}>
+                          No FAQs available
+                        </td>
+                      </tr>
+                    </tbody>
+                  )}
+                </Table>
+              </div>
+              <div>
+                <Pagination className="faq-paginate">
+                  {Array.from({ length: totalPageSeller }).map((_, index) => (
+                    <Pagination.Item
+                      key={index}
+                      active={index + 1 === currentPageSeller}
+                      onClick={() => handlePageChangeSeller(index + 1)}
+                    >
+                      {index + 1}
+                    </Pagination.Item>
+                  ))}
+                </Pagination>
+              </div>
+            </div>
+          </div>
+          <div className="buyerfaq">
+            <h3
+              style={{
+                color: "black",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+                padding: "5px 5px 5px 5px",
+              }}
+            >
+              BUYER FAQ
+            </h3>
+            <div>
+              <Table hover responsive style={{ width: "51em" }}>
+                <thead style={{ textAlign: "center" }}>
                   <tr>
                     <th>QUESTION</th>
                     <th>ANSWER</th>
@@ -231,10 +333,10 @@ const Faq = () => {
                     <th>ACTION</th>
                   </tr>
                 </thead>
-                {Array.isArray(sellerfaqs) && sellerfaqs.length > 0 ? (
+                {Array.isArray(buyerfaqs) && buyerfaqs.length > 0 ? (
                   <tbody>
-                    {sellerfaqs
-                      .slice(indexOfFirstItemSeller, indexOfLastItemSeller)
+                    {buyerfaqs
+                      .slice(indexOfFirstItemBuyer, indexOfLastItemBuyer)
                       .map((faq) => (
                         <tr
                           key={faq.faqId}
@@ -244,8 +346,8 @@ const Faq = () => {
                         >
                           <td className="truncate-text">{faq.question}</td>
                           <td className="truncate-text">{faq.answer}</td>
-                          <td>{faq.createdAt}</td>
-                          <td>{faq.updatedAt}</td>
+                          <td className="truncate-text">{faq.createdAt}</td>
+                          <td className="truncate-text">{faq.updatedAt}</td>
                           <td>
                             <Button
                               size="sm"
@@ -303,132 +405,21 @@ const Faq = () => {
                   </tbody>
                 )}
               </Table>
-            </div>
-            <div>
-              <Pagination className="faq-paginate">
-                {Array.from({ length: totalPageSeller }).map((_, index) => (
-                  <Pagination.Item
-                    key={index}
-                    active={index + 1 === currentPageSeller}
-                    onClick={() => handlePageChangeSeller(index + 1)}
-                  >
-                    {index + 1}
-                  </Pagination.Item>
-                ))}
-              </Pagination>
-            </div>
-          </div>
-          {/* </div> */}
-          {/* <div className="buyerfaq"> */}
-          <h3
-            style={{
-              color: "black",
-              font: "Montserrat",
-              fontWeight: "700",
-              fontSize: "16px",
-              padding: "5px 5px 5px 5px",
-            }}
-          >
-            BUYER FAQ
-          </h3>
-          <div>
-            <Table hover responsive size="sm">
-              <thead style={{ textAlign: "center" }}>
-                <tr>
-                  <th>QUESTION</th>
-                  <th>ANSWER</th>
-                  <th>DATE CREATED</th>
-                  <th>UPDATED AT</th>
-                  <th>ACTION</th>
-                </tr>
-              </thead>
-              {Array.isArray(buyerfaqs) && buyerfaqs.length > 0 ? (
-                <tbody>
-                  {buyerfaqs
-                    .slice(indexOfFirstItemBuyer, indexOfLastItemBuyer)
-                    .map((faq) => (
-                      <tr
-                        key={faq.faqId}
-                        style={{
-                          textAlign: "center",
-                        }}
-                      >
-                        <td>{faq.question}</td>
-                        <td>{faq.answer}</td>
-                        <td>{faq.createdAt}</td>
-                        <td>{faq.updatedAt}</td>
-                        <td>
-                          <Button
-                            size="sm"
-                            title="Edit"
-                            style={{
-                              backgroundColor: "#FFD700",
-                              border: "0",
-                              marginRight: "10px",
-                            }}
-                            onClick={() =>
-                              toggleEditModal(
-                                faq.faqId,
-                                faq.question,
-                                faq.answer,
-                                faq.faqType
-                              )
-                            }
-                          >
-                            <MdEditSquare
-                              style={{
-                                width: "18px",
-                                height: "18px",
-                                color: "black",
-                              }}
-                            ></MdEditSquare>
-                          </Button>
-                          <Button
-                            size="sm"
-                            title="Delete"
-                            style={{
-                              backgroundColor: "#FFD700",
-                              border: "0",
-                            }}
-                            onClick={() => toggleDeleteModal(faq.faqId)}
-                          >
-                            <MdDelete
-                              style={{
-                                width: "18px",
-                                height: "18px",
-                                color: "black",
-                              }}
-                            ></MdDelete>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              ) : (
-                <tbody>
-                  <tr>
-                    <td colSpan="5" style={{ textAlign: "center" }}>
-                      No FAQs available
-                    </td>
-                  </tr>
-                </tbody>
-              )}
-            </Table>
-            <div>
-              <Pagination className="faq-paginate">
-                {Array.from({ length: totalPageBuyer }).map((_, index) => (
-                  <Pagination.Item
-                    key={index}
-                    active={index + 1 === currentPageBuyer}
-                    onClick={() => handlePageChangeBuyer(index + 1)}
-                  >
-                    {index + 1}
-                  </Pagination.Item>
-                ))}
-              </Pagination>
+              <div>
+                <Pagination className="faq-paginate">
+                  {Array.from({ length: totalPageBuyer }).map((_, index) => (
+                    <Pagination.Item
+                      key={index}
+                      active={index + 1 === currentPageBuyer}
+                      onClick={() => handlePageChangeBuyer(index + 1)}
+                    >
+                      {index + 1}
+                    </Pagination.Item>
+                  ))}
+                </Pagination>
+              </div>
             </div>
           </div>
-          {/* </div> */}
         </div>
         <FaqCreate showToast={showToast}></FaqCreate>
         <Modal

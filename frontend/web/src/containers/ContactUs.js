@@ -201,7 +201,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(pendingContactus) &&
-                pendingContactus.length > 0 ? (
+                  pendingContactus.length > 0 ? (
                   <tbody>
                     {pendingContactus
                       .slice(indexOfFirstItemPending, indexOfLastItemPending)
@@ -212,11 +212,13 @@ const ContactUs = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td>{contactus.title}</td>
-                          <td>{contactus.message}</td>
-                          <td>{contactus.reason}</td>
-                          <td>{contactus.createdAt}</td>
-                          <td>{userNames[contactus.userId]}</td>
+                          <td className="truncate-text">{contactus.title}</td>
+                          <td className="truncate-text">{contactus.message}</td>
+                          <td className="truncate-text">{contactus.reason}</td>
+                          <td className="truncate-text">
+                            {contactus.createdAt}
+                          </td>
+                          <td className="truncate-text">{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
@@ -303,7 +305,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(repliedContactus) &&
-                repliedContactus.length > 0 ? (
+                  repliedContactus.length > 0 ? (
                   <tbody>
                     {repliedContactus
                       .slice(indexOfFirstItemReplied, indexOfLastItemReplied)
@@ -314,13 +316,19 @@ const ContactUs = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td>{contactus.title}</td>
-                          <td>{contactus.message}</td>
-                          <td>{contactus.reason}</td>
-                          <td>{contactus.response}</td>
-                          <td>{contactus.createdAt}</td>
-                          <td>{contactus.updatedAt}</td>
-                          <td>{userNames[contactus.userId]}</td>
+                          <td className="truncate-text">{contactus.title}</td>
+                          <td className="truncate-text">{contactus.message}</td>
+                          <td className="truncate-text">{contactus.reason}</td>
+                          <td className="truncate-text">
+                            {contactus.response}
+                          </td>
+                          <td className="truncate-text">
+                            {contactus.createdAt}
+                          </td>
+                          <td className="truncate-text">
+                            {contactus.updatedAt}
+                          </td>
+                          <td className="truncate-text">{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
@@ -408,7 +416,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(closedContactus) &&
-                closedContactus.length > 0 ? (
+                  closedContactus.length > 0 ? (
                   <tbody>
                     {closedContactus
                       .slice(indexOfFirstItemClosed, indexOfLastItemClosed)
@@ -419,13 +427,19 @@ const ContactUs = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td>{contactus.title}</td>
-                          <td>{contactus.message}</td>
-                          <td>{contactus.reason}</td>
-                          <td>{contactus.response}</td>
-                          <td>{contactus.createdAt}</td>
-                          <td>{contactus.updatedAt}</td>
-                          <td>{userNames[contactus.userId]}</td>
+                          <td className="truncate-text">{contactus.title}</td>
+                          <td className="truncate-text">{contactus.message}</td>
+                          <td className="truncate-text">{contactus.reason}</td>
+                          <td className="truncate-text">
+                            {contactus.response}
+                          </td>
+                          <td className="truncate-text">
+                            {contactus.createdAt}
+                          </td>
+                          <td className="truncate-text">
+                            {contactus.updatedAt}
+                          </td>
+                          <td className="truncate-text">{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"

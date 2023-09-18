@@ -16,28 +16,36 @@
 .pendingContactus {
   background-color: #FFFFFF;
   width: 1230px;
-  height: 320px;
+  height: 330px;
   border-radius: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .repliedContactus {
   background-color: #FFFFFF;
   width: 1230px;
-  height: 320px;
+  height: 330px;
   border-radius: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .closedContactus {
   background-color: #FFFFFF;
   width: 1230px;
-  height: 320px;
+  height: 330px;
   border-radius: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .contactus-paginate {
   justify-content: center;
   align-items: center;
+  padding: 5px 5px 5px 5px;
+}
+
+.truncate-text {
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
