@@ -34,6 +34,25 @@ const ContactUs = () => {
     setCurrentPageReplied(pageNumber);
   };
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await API.get(`http://localhost:3000/admin/faqs`);
+  //       const faqs = response.data.faqs;
+  //       setFaqs(faqs);
+  //       const buyerFaqs = faqs.filter((faq) => faq.faqType === "BUYER");
+  //       setBuyerfaqs(buyerFaqs);
+  //       const sellerFaqs = faqs.filter((faq) => faq.faqType === "SELLER");
+  //       setSellerfaqs(sellerFaqs);
+  //       setTotalPageSeller(Math.ceil(sellerFaqs.length / itemsPerPage));
+  //       setTotalPageBuyer(Math.ceil(buyerFaqs.length / itemsPerPage));
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [faqs]);
+
   return (
     <div className="contactus">
       <div
