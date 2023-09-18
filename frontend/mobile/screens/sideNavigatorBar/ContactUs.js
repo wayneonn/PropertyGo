@@ -14,7 +14,7 @@ import TopBar from '../../components/Common/TopNavBar';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 
-const ContactUs = () => {
+const ContactUs = ({navigation}) => {
     const [reason, setReason] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -48,6 +48,7 @@ const ContactUs = () => {
 
     const closeModal = () => {
         setSubmissionStatus('');
+        navigation.navigate('ContactUs Status')
         toggleModal();
     };
 

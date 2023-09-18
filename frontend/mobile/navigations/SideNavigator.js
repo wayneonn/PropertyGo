@@ -20,9 +20,9 @@ import UserListings from '../screens/sideNavigatorBar/UserListings'
 import UserProfile from '../screens/sideNavigatorBar/UserProfile'
 import WorkWithUs from '../screens/sideNavigatorBar/WorkWithUs'
 import ContactUsStackGroup from './ContactUsStackGroup';
-
+import TopBar from '../components/Common/TopNavBar';
 const CustomDrawerContent = (props) => {
-    const { profilePictureUrl } = props; // Replace with the actual prop name you use
+    const { navigation, profilePictureUrl } = props; // Replace with the actual prop name you use
 
     const handleLogout = () => {
         navigation.navigate("Login Portal");
@@ -67,7 +67,7 @@ const createDrawerScreen = (name, component, iconName, label, hideHeader = false
                     color={color}
                 />
             ),
-            headerShown: false, // Show header unless it's the "Home" screen
+            // headerShown: !hideHeader && route.name !== 'Home', // Show header unless it's the "Home" screen
         }),
     };
 };
@@ -91,10 +91,11 @@ const SideBar = () => {
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawerContent {...props} />}
-            screenOptions={() => ({
+            screenOptions={{
                 drawerActiveTintColor: "#FFD700",
-            })}
-        >
+                header: () => <TopBar/>,
+                // headerShown: false,
+            }}>
             {drawerScreens.map((screen) => (
                 <Drawer.Screen
                     key={screen.name}
