@@ -1,18 +1,23 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { StyleSheet } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { AuthProvider } from './AuthContext';
 import LoginNavigator from './navigations/LoginNavigator';
 
+const Stack = createStackNavigator();
 
 function App() {
   return (
-    <NavigationContainer>
-      <LoginNavigator/>
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <LoginNavigator />
+      </NavigationContainer>
+    </AuthProvider>
   );
 }
 
 export default App;
+
 
 // const styles = StyleSheet.create({
 //   container: {
