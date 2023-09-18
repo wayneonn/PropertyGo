@@ -1,32 +1,36 @@
-import "./App.css";
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import AppLayout from './components/Common/AppLayout'; // Import the layout component
 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import AdminProfile from './containers/AdminProfile';
+import Faq from './containers/Faq';
+import NotFound from './containers/NotFound'; // Import the Not Found component
 
-// import Login from "./containers/login";
-import SideBar from "./components/Common/SideBar";
-import TopBar from "./components/Common/TopBar";
-import Foot from "./components/Common/Footer";
-import AdminProfile from "./containers/AdminProfile";
-import Faq from "./containers/Faq";
-import ContactUs from "./containers/ContactUs";
-
-import "bootstrap/dist/css/bootstrap.min.css";
-import Login from "./containers/Login";
-import PrivateRoute from "./PrivateRoute";
-import Footer from "./components/Common/Footer";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Login from './containers/Login';
+import PrivateRoute from './PrivateRoute';
 
 function App() {
   return (
     <BrowserRouter>
-      <SideBar />
-      <TopBar />
-      <Footer/>
       <Routes>
-        <Route element={<PrivateRoute />}>
-          <Route path="/admin/profile" element={<AdminProfile />} />
-          <Route path="/admin/faqs" element={<Faq />} />
+        {/* Use the layout for routes that need it */}
+        <Route
+          element={
+            <AppLayout>
+              <PrivateRoute />
+            </AppLayout>
+          }
+        >
+          <Route path="/profile" element={<AdminProfile />} />
+          <Route path="/faqs" element={<Faq />} />
         </Route>
-        <Route path="/login" element={!localStorage.getItem('loggedInAdmin') ? <Login /> : <Navigate to="/admin/profile"/>} />
+
+        {/* Route without the layout */}
+        <Route path="/" element={!localStorage.getItem('loggedInAdmin') ? <Login /> : <Navigate to="/admin/profile" />} />
+
+        {/* Not Found route without the layout */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
