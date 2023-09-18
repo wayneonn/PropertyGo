@@ -1,9 +1,30 @@
+const moment = require('moment');
 const { ContactUs } = require("../../models");
 
 const getAllContactUs = async (req, res) => {
-    const contactUs = await ContactUs.findAll();
+    try {
+        const contactUss = await ContactUs.findAll({
+            attributes: ['contactUsId', 'title', 'message', 'reason', 'status', 'response', 'createdAt', 'updatedAt', 'userId'],
+        });
 
-    res.status(200).json({ contactUs });
+        const formmatedContactUss = contactUss.map(contactUs => {
+            return {
+                contactUsId: contactUs.contactUsId,
+                title: contactUs.title,
+                message: contactUs.message,
+                reason: contactUs.reason,
+                status: contactUs.status,
+                response: contactUs.response,
+                createdAt: moment(contactUs.createdAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
+                updatedAt: moment(contactUs.updatedAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
+                userId: contactUs.userId
+            };
+        });
+
+        res.status(200).json({ contactUs: formmatedContactUss });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
 };
 
 const getSingleContactUs = async (req, res) => {
@@ -29,6 +50,7 @@ const respondContactUs = async (req, res) => {
         const contactUs = await ContactUs.findByPk(contactUsId);
 
         req.body.status = "REPLIED";
+        req.body.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
         await contactUs.update(req.body);
 
