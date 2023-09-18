@@ -52,6 +52,14 @@ const createFaq = async (req, res) => {
 const updateFaq = async (req, res) => {
     const { id: faqId } = req.params;
 
+    const { question, faqType } = req.body;
+
+    const questionFound = await getFaqForUniqueness({question, faqType});
+
+    if (questionFound) {
+        return res.status(409).json({ message: `Question already exist in ${faqType}.` });
+    }
+
     try {
         const faq = await FAQ.findByPk(faqId);
 

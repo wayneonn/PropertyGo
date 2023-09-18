@@ -89,7 +89,6 @@ const Faq = () => {
   const handleEdit = async () => {
     //edit faq in database
     const newMessage = {
-      emptyFaqType: false,
       emptyFaqQuestion: false,
       emptyFaqAnswer: false,
       faqQuestionUnique: false,
@@ -106,47 +105,46 @@ const Faq = () => {
       newMessage.emptyFaqAnswer = true;
     }
 
-    if (faqType === "") {
-      newMessage.emptyFaqType = true;
-    }
-
     if (
       newMessage.emptyFaqQuestion ||
-      newMessage.emptyFaqAnswer ||
-      newMessage.emptyFaqType
+      newMessage.emptyFaqAnswer
     ) {
       setValidationMessages(newMessage);
       return;
     }
 
-    // try {
-    //   // Save to database
-    //   const response = await API.post(`/admin/faqs?adminId=${localStorage.getItem("loggedInAdmin")}`, {
-    //     question,
-    //     answer,
-    //     faqType
-    //   });
+    try {
+      // Save to database
+      const response = await API.patch(`/admin/faqs/${faqId}?adminId=${localStorage.getItem("loggedInAdmin")}`, {
+        question: faqQuestion,
+        answer: faqAnswer,
+        faqType
+      });
 
-    //   if (response.status === 201) {
-    //     showToast("created");
-    //     setValidationMessages(newMessage);
-    //     setFaqType("");
-    //     setQuestion("");
-    //     setAnswer("");
+      if (response.status === 200) {
+        setValidationMessages(newMessage);
+        setFaqType("");
+        setFaqQuestion("");
+        setFaqAnswer("");
+        setShowEditModal(false);
 
-    //   }
-    // } catch (error) {
-    //   const status = error.response.status;
-    //   if (status === 409) {
-    //     newMessage.faqQuestionUnique = true;
-    //   }
+        showToast("updated");
+      }
+    } catch (error) {
+      const status = error.response.status;
+      if (status === 409) {
+        newMessage.faqQuestionUnique = true;
+      }
 
-    //   setValidationMessages(newMessage);
-    // }
+      setValidationMessages(newMessage);
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     //delete faq from database. Use the value of the useState deleteFaqId for the faqId
+    await API.delete(`/admin/faqs/${deleteFaqId}`);
+    setShowDeleteModal(false);
+    showToast("deleted");
   };
 
   const showToast = (action) => {
