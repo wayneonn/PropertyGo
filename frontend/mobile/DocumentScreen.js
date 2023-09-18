@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -7,14 +7,72 @@ import {
   FlatList,
   TextInput,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from 'expo-file-system';
+import { openBrowserAsync } from 'expo-web-browser';
+import FileSaver from 'file-saver';
 
 function UploadScreen({ navigation }) {
   const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [descriptions, setDescriptions] = useState("");
   const [length, setLength] = useState(200);
   const [prevDocuments, setPrevDocuments] = useState([]); // This is suppose to be the list of documents that you have uploaded previously.
+
+  const fetchDocuments = async() => {
+    try {
+      const response = await fetch('http://localhost:3000/documents/list');
+      const documents = await response.json();
+      setPrevDocuments(documents);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const downloadPDF = async(document) => {
+    if(Platform.OS === 'web') {
+      // Web download logic
+      // Web: convert buffer to blob
+      console.log(document.data.data)
+      // Some how the blob is double writing. 
+      // Supposing that document.data.data is in base64 format
+      // Assuming document.data takes the form {type: 'Buffer', data: Array}
+      const byteArray = new Uint8Array(document.data.data);
+      // Create a blob from the typed array
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      console.log(blob)
+      const url = URL.createObjectURL(blob);
+      // Use FileSaver to download
+      openBrowserAsync(url);
+      FileSaver.saveAs(blob, document.name);
+      URL.revokeObjectURL(url);
+    } else {
+      // Native FileSystem logic
+      // Need to make sure it works.
+      const { uri } = await FileSystem.writeAsStringAsync(
+        FileSystem.documentDirectory + document.name, 
+        document.data,
+        { encoding: FileSystem.EncodingType.Base64 }
+      );
+    }
+    if(uri) {
+      alert('Downloaded to ' + uri);
+    } else {
+      alert('Failed to download PDF');
+    }
+  
+  }
+
+  // Fetch the previous documents from the server. 
+  useEffect(() => {
+    fetchDocuments()
+  }, []);
+
+  useEffect(() => { 
+    console.log(prevDocuments);
+    setPrevDocuments(prevDocuments);
+  }, [prevDocuments])
 
   // This is suppose to show all the documents that you selected.
   const selectDocuments = async () => {
@@ -41,6 +99,28 @@ function UploadScreen({ navigation }) {
     );
     setSelectedDocuments([...newSelectedDocuments]);
   };
+
+  const removeDocumentFromServer = async(document) => {
+    try {
+      const url = `http://localhost:3000/documents/${document.id}`;
+      const response = await fetch(url, {
+        method: 'DELETE' 
+      });
+      if (response.ok) {
+        console.log('Document deleted successfully');
+        // redirect or update state
+        fetchDocuments();
+      } else {
+        throw 'Error deleting document';
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const downloadDocumentFromServer = (document) => {
+    downloadPDF(document);
+  }
 
   // This then uploads the documents you selected.
   const handleUpload = async () => {
@@ -71,10 +151,10 @@ function UploadScreen({ navigation }) {
 
         // Create a Blob object from the decoded data
         const fileBlob = new Blob([bytes], { type: file.type });
-        console.log(fileBlob);
-        console.log(descriptions);
-        console.log(fileData.get("description"));
-        console.log(...selectedDocuments);
+        // console.log(fileBlob);
+        // console.log(descriptions);
+        // console.log(fileData.get("description"));
+        // console.log(...selectedDocuments);
         fileData.append("documents", fileBlob, filename);
         fileData.append("description", descriptions);
       });
@@ -89,6 +169,7 @@ function UploadScreen({ navigation }) {
       if (response.ok) {
         const data = await response.json();
         console.log("Upload response:", data);
+        fetchDocuments()
       } else {
         throw new Error("File upload failed");
       }
@@ -102,6 +183,10 @@ function UploadScreen({ navigation }) {
     { id: 1, name: "Your selected documents would appear here." },
   ];
 
+  const prevDummyDocuments = [
+    {id: 1, name: "Your previous documents would appear here."}
+  ]
+
   const renderDocumentItem = ({ item }) => (
     <TouchableOpacity style={styles.documentItem}>
       <Text style={styles.documentText}>{item.name}</Text>
@@ -112,6 +197,29 @@ function UploadScreen({ navigation }) {
       />
     </TouchableOpacity>
   );
+  
+  const renderDocumentListItem = ({ item }) => (
+    <TouchableOpacity style={styles.documentItem}>
+      <Text style={styles.documentText}>{item.name}</Text>
+      <View>
+        <Text style={styles.descriptionText}>Description: </Text>
+        <Text style={styles.documentText}>{item.description}</Text>
+      </View>
+      <View> 
+        <Button
+          style={styles.downloadButton}
+          title="Remove"
+          onPress={() => removeDocumentFromServer(item)}
+        />
+        <Text>&nbsp;</Text>
+        <Button
+          style={styles.downloadButton}
+          title="Download"
+          onPress={() => downloadDocumentFromServer(item)}
+        />
+      </View>
+    </TouchableOpacity>
+  )
 
   return (
     <View style={styles.container}>
@@ -120,7 +228,8 @@ function UploadScreen({ navigation }) {
       <View style={styles.documentListContainer}>
         <Text style={styles.detailText}>List of selected Documents:</Text>
         <FlatList
-          data={selectedDocuments.length > 0 ? selectedDocuments : documents}
+          ListEmptyComponent={() => (<Text style={styles.emptyListText}> Your selected documents would appear here.</Text>)}
+          data={selectedDocuments}
           keyExtractor={(item, index) =>
             item.id ? item.id.toString() : index.toString()
           }
@@ -170,12 +279,16 @@ function UploadScreen({ navigation }) {
         />
 
         <Text style={styles.detailText}>Previously Uploaded Documents: </Text>
-
-        <FlatList
-          data={prevDocuments}
-          renderItem={({ item }) => <Text>{item.name}</Text>}
-          keyExtractor={(item) => item.id}
-        />
+        <View style={styles.documentListContainer}> 
+          <FlatList
+            data={prevDocuments}
+            renderItem={renderDocumentListItem}
+            ListEmptyComponent={() => (<Text style={styles.emptyListText}> Your previous documents would appear here.</Text>)}
+            keyExtractor={(item, index) =>
+              item.id ? item.id.toString() : index.toString()
+            } 
+          />
+        </View>
       </View>
     </View>
   );
@@ -239,6 +352,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
+  descriptionText: {
+    fontSize: 14, 
+    fontStyle: "italic",
+    fontWeight: "bold",
+  }, 
+  descriptiontContainer: {
+    alignContent: "top-left",
+  }
 });
 
 export default UploadScreen;
