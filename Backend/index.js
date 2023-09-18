@@ -16,6 +16,7 @@ const authRouter = require('./routes/admin/authRoutes');
 const adminRouter = require('./routes/admin/adminRoutes');
 const faqRouter = require('./routes/admin/faqRoutes');
 const contactUsRouter = require('./routes/admin/contactUsRoutes');
+const adminUserRouter = require('./routes/admin/userRoutes');
 
 // user routes
 const postRouter = require('./routes/user/User')
@@ -28,6 +29,7 @@ app.use('/admins', adminRouter);
 app.use('/admin/auth', authRouter);
 app.use('/admin/faqs', faqRouter);
 app.use('/admin/contactUs', contactUsRouter);
+app.use('/admin/users', adminUserRouter);
 
 app.use("/user", postRouter, loginRoute);
 
