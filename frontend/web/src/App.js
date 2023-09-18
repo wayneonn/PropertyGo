@@ -10,45 +10,21 @@ import Faq from "./containers/Faq";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./containers/Login";
+import PrivateRoute from "./PrivateRoute";
 
 function App() {
-  // const PrivateRoute = () => {
-  //   const admin = JSON.parse(localStorage.getItem("loggedInAdmin"));
-  //   return admin ? <AdminProfile/> : <Navigate to="/login" replace />;
-  // }
-
-  // const AnonymousRoute = () => {
-  //   const admin = JSON.parse(localStorage.getItem("loggedInAdmin"));
-  //   return admin ? <Navigate to="/admin/profile" replace /> : <Login/>;
-  // }
-
   return (
-    // <div className="App">
-    //   <Login></Login>
-    //   <SideBar></SideBar>
-    //   <TopBar></TopBar>
-    //   <AdminProfile></AdminProfile>
-    //   <Faq></Faq>
-    // </div>
     <BrowserRouter>
       <SideBar />
       <TopBar />
       <Routes>
-        {/* <Route path="/admin/profile" element={localStorage.getItem("loggedInAdmin") ? <AdminProfile /> : <Navigate to="/login" />} />
-        <Route path="/login" element={localStorage.getItem("loggedInAdmin") ? <Navigate to="/admin/profile"/> : <Login />} /> */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/admin/profile" element={<AdminProfile />} />
-        <Route path="/admin/faq" element={<Faq />} />
+        <Route element={<PrivateRoute />}>
+          <Route path="/admin/profile" element={<AdminProfile />} />
+          <Route path="/admin/faqs" element={<Faq />} />
+        </Route>
+        <Route path="/login" element={!localStorage.getItem('loggedInAdmin') ? <Login /> : <Navigate to="/admin/profile"/>} />
       </Routes>
-      {/* <Faq/> */}
     </BrowserRouter>
-    // <div className="App">
-    //   {/* <Login></Login> */}
-    //   <SideBar></SideBar>
-    //   <TopBar></TopBar>
-    //   {/* <AdminProfile></AdminProfile> */}
-    //   <Faq></Faq>
-    // </div>
   );
 }
 
