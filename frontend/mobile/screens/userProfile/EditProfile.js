@@ -14,6 +14,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { updateUserProfile } from '../../utils/api';
+import { updateUserProfilePicture } from '../../utils/api';
 
 const countries = [
     { label: 'Select Country', value: '' },
@@ -82,60 +83,36 @@ function EditProfile({ navigation }) {
 
 
     const chooseImage = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (permissionResult.granted === false) {
-            Alert.alert('Permission to access photos was denied');
-            return;
-        }
-
         try {
-            const result = await ImagePicker.launchImageLibraryAsync();
-
-            if (result.cancelled) {
-                console.log('Image selection was canceled');
-            } else if (result.type === 'image') {
-                const imageUri = result.uri;
-                console.log('Selected Image URI:', imageUri);
-
-                const imageBlob = await convertImageToBlob(imageUri);
-                console.log('Image Blob:', imageBlob);
-
-                // Now you can send the imageBlob to your server using FormData
-                const formData = new FormData();
-                formData.append('profileImage', imageBlob, 'profile.jpg'); // 'profileImage' should match your server's file field name
-                console.log('Profile Image:', formData);
-                // Make a POST request to your server to upload the image
-                const { success, message } = await updateUserProfile(user.user.userId, formData); // Call your updateUserProfile function from api.js
-                if (success) {
-                    // Image uploaded successfully, you can handle the server's response here
-                    console.log('Image uploaded successfully');
-                } else {
-                    console.error('Failed to upload image:', message);
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 0.2,
+            });
+    
+            if (!result.cancelled) {
+                setProfileImage(result.uri);
+    
+                // Upload the image right after setting it
+                try {
+                    const response = await updateUserProfilePicture(user.user.userId, result.uri);
+                    
+                    if (response.success) {
+                        Alert.alert('Success', 'Image uploaded successfully!');
+                    } else {
+                        Alert.alert('Error', response.message || 'Image upload failed.');
+                    }
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    Alert.alert('Error', 'Image upload failed.');
                 }
-            } else {
-                console.log(`Unsupported media type: ${result.type}`);
             }
         } catch (error) {
-            console.error('Error selecting image:', error);
+            console.error('Error picking image:', error);
         }
     };
-
-    // Function to convert an image file to a blob
-    const convertImageToBlob = async (imageUri) => {
-        try {
-            const response = await fetch(imageUri);
-            const blob = await response.blob();
-            console.log('Converted Blob:', blob);
-            return blob;
-        } catch (error) {
-            console.error('Error converting image to Blob:', error);
-            throw error;
-        }
-    };
-
-
-
+    
     return (
         <View style={styles.container}>
             <View style={styles.profileHeader}>
