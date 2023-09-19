@@ -8,3 +8,11 @@
   align-items: center;
   justify-content: center;
 }
+
+.logout-not-found {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 80vh; /* Ensure the container takes the full viewport height */
+}
