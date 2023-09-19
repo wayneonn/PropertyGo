@@ -23,7 +23,7 @@ module.exports = [
     transactionId: 3,
     timestamp: "2023-02-11T08:42:31.027Z",
     onHoldBalance: 412.68,
-    requestId: 3,
+    requestId: 2,
     userId: 1, // buyer
     propertyId: 1,
     sellerId: 2,

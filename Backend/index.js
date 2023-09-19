@@ -53,6 +53,8 @@ db.sequelize
 
     // General order of data insertion:
     // User -> Admin -> FAQ -> Property -> Image -> Chat -> Transaction -> Invoice -> Review
+
+    // User
     if (existingUserRecordsCount === 0) {
       try {
         for (const userData of userTestData) {
@@ -67,6 +69,7 @@ db.sequelize
       console.log("User test data already exists in the database.");
     }
 
+    // Admin
     if (existingAdminRecordsCount === 0) {
       try {
         for (const adminData of adminTestData) {
@@ -81,6 +84,7 @@ db.sequelize
       console.log("Admin test data already exists in the database.");
     }
 
+    // FAQ
     if (existingFaqRecordsCount === 0) {
       try {
         for (const faqData of faqTestData) {
@@ -95,6 +99,7 @@ db.sequelize
       console.log("Admin test data already exists in the database.");
     }
 
+    // Property
     if (existingPropertyRecordsCount === 0) {
       try {
         for (const propertyData of propertyTestData) {
@@ -108,6 +113,7 @@ db.sequelize
       console.log("Property test data already exists in the database.");
     }
 
+    // Images
     if (existingImageRecordsCount === 0) {
       try {
         for (const imageData of imageTestData) {
@@ -121,6 +127,7 @@ db.sequelize
       console.log("Image test data already exists in the database.");
     }
 
+    // Chats
     if (existingChatRecordsCount === 0) {
       try {
         for (const chatData of chatTestData) {
@@ -134,6 +141,7 @@ db.sequelize
       console.log("Chat test data already exists in the database.");
     }
 
+    // Requests
     if (existingRequestRecordsCount === 0) {
       try {
         for (const requestData of requestTestData) {
@@ -147,6 +155,7 @@ db.sequelize
       console.log("Request test data already exists in the database.");
     }
 
+    // Review
     if (existingReviewRecordsCount === 0) {
       try {
         for (const reviewData of reviewTestData) {
@@ -160,6 +169,7 @@ db.sequelize
       console.log("Review test data already exists in the database.");
     }
 
+    // Invoice
     if (existingInvoiceRecordsCount === 0) {
       try {
         for (const invoiceData of invoiceTestData) {
@@ -173,6 +183,7 @@ db.sequelize
       console.log("Invoice test data already exists in the database.");
     }
 
+    // Transaction
     if (existingTransactionRecordsCount === 0) {
       try {
         for (const transactionData of transactionTestData) {
