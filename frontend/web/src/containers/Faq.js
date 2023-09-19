@@ -150,8 +150,18 @@ const Faq = () => {
         const faqs = response.data.faqs;
         setFaqs(faqs);
         const buyerFaqs = faqs.filter((faq) => faq.faqType === "BUYER");
+        buyerFaqs.sort((a, b) => {
+          const timestampA = new Date(a.updatedAt).getTime();
+          const timestampB = new Date(b.updatedAt).getTime();
+          return timestampB - timestampA;
+        });
         setBuyerfaqs(buyerFaqs);
         const sellerFaqs = faqs.filter((faq) => faq.faqType === "SELLER");
+        sellerFaqs.sort((a, b) => {
+          const timestampA = new Date(a.updatedAt).getTime();
+          const timestampB = new Date(b.updatedAt).getTime();
+          return timestampB - timestampA;
+        });
         setSellerfaqs(sellerFaqs);
         setTotalPageSeller(Math.ceil(sellerFaqs.length / itemsPerPage));
         setTotalPageBuyer(Math.ceil(buyerFaqs.length / itemsPerPage));
