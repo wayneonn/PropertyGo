@@ -2,7 +2,7 @@ module.exports = [
   // PartnerApplication 1
   {
     companyName: "Acme Inc.",
-    userRole: "AGENT",
+    userRole: "GENERAL",
     cardNumber: "1234 5678 9012 3456",
     cardHolderName: "John Doe",
     cvc: "123",
@@ -14,7 +14,7 @@ module.exports = [
   // PartnerApplication 2
   {
     companyName: "123 Industries",
-    userRole: "CONTRACTOR",
+    userRole: "SUPPORT",
     cardNumber: "9876 5432 1098 7654",
     cardHolderName: "Jane Smith",
     cvc: "456",
@@ -26,7 +26,7 @@ module.exports = [
   // PartnerApplication 3
   {
     companyName: "XYZ Enterprises",
-    userRole: "LAWYER",
+    userRole: "FEEDBACK",
     cardNumber: "5678 9012 3456 7890",
     cardHolderName: "Bob Johnson",
     cvc: "789",
