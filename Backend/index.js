@@ -26,6 +26,8 @@ const faqRouter = require("./routes/admin/faqRoutes");
 const postRouter = require("./routes/user/User");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
+const folderRoute = require("./routes/user/folderRoute");
+const transactionRoute = require("./routes/user/transactionRoute");
 const e = require("express");
 
 app.use(cors());
@@ -35,7 +37,14 @@ app.use("/admins", adminRouter);
 app.use("/admin/auth", authRouter);
 app.use("/admin/faqs", faqRouter);
 
-app.use("/user", postRouter, loginRoute, documentRoute);
+app.use(
+  "/user",
+  postRouter,
+  loginRoute,
+  documentRoute,
+  folderRoute,
+  transactionRoute
+);
 
 db.sequelize
   .sync()
