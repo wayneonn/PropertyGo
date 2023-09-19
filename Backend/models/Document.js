@@ -75,6 +75,14 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: "Folder",
     });
+
+    Document.belongsTo(models.ParterApplication, {
+      foreignKey: {
+        name: "partnerApplicationId",
+        allowNull: true,
+      },
+      as: "PartnerApplication",
+    });
   };
 
   return Document;
