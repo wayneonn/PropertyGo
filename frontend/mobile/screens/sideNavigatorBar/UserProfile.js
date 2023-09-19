@@ -34,7 +34,7 @@ function UserProfile({ navigation }) {
         ) : (
           <Image
             source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-            style={{ width: 100, height: 100, borderRadius: 50 }}
+            style={{ width: 200, height: 200, borderRadius: 50 }}
           />
         )}
         <Text style={styles.heading}>User Profile</Text>
@@ -81,14 +81,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 200,
+    height: 200,
+    borderRadius: 120,
   },
   defaultProfileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 200,
+    height: 200,
+    borderRadius: 120,
     backgroundColor: 'lightgray',
     justifyContent: 'center',
     alignItems: 'center',

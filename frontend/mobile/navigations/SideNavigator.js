@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext, useEffect, useState } from 'react'; // Import useState
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import {
@@ -29,12 +29,24 @@ const CustomDrawerContent = (props) => {
 
     let profileImageBase64;
     if (user && user.user.profileImage && user.user.profileImage.data) {
-      profileImageBase64 = base64.encodeFromByteArray(user.user.profileImage.data);
+        profileImageBase64 = base64.encodeFromByteArray(user.user.profileImage.data);
     }
 
     const handleLogout = () => {
         navigation.navigate("Login Portal");
     };
+
+    const [profileImage, setProfileImage] = useState(null);
+
+    useEffect(() => {
+        // Update profileImage whenever user changes
+        if (user && user.user.profileImage) {
+            setProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
+        } else {
+            // Set a default image source if user or profileImage is missing
+            setProfileImage(require('../assets/Default-Profile-Picture-Icon.png'));
+        }
+    }, [user]);
 
     return (
         <DrawerContentScrollView {...props}>
@@ -64,9 +76,6 @@ const CustomDrawerContent = (props) => {
         </DrawerContentScrollView>
     );
 };
-
-
-
 
 const Drawer = createDrawerNavigator();
 
@@ -102,13 +111,29 @@ const drawerScreens = [
     createDrawerScreen('Work With Us', WorkWithUs, 'briefcase', 'Work With Us'),
 ];
 
-
 const SideBar = () => {
-    const { user } = useContext(AuthContext); 
+    const { user } = useContext(AuthContext);
+
+    let profileImageBase64;
+    if (user && user.user.profileImage && user.user.profileImage.data) {
+        profileImageBase64 = base64.encodeFromByteArray(user.user.profileImage.data);
+    }
+
+    const [profileImage, setProfileImage] = useState(null);
+
+    useEffect(() => {
+        // Update profileImage whenever user changes
+        if (user && user.user.profileImage) {
+            setProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
+        } else {
+            // Set a default image source if user or profileImage is missing
+            setProfileImage(require('../assets/Default-Profile-Picture-Icon.png'));
+        }
+    }, [user]);
 
     return (
         <Drawer.Navigator
-            drawerContent={(props) => <CustomDrawerContent {...props} user={user} />} 
+            drawerContent={(props) => <CustomDrawerContent {...props} user={user} />}
             screenOptions={() => ({
                 drawerActiveTintColor: "#FFD700",
             })}

@@ -103,11 +103,11 @@ function EditProfile({ navigation, route }) {
             formData.append('countryOfOrigin', editedUser.countryOfOrigin);
             formData.append('dateOfBirth', editedUser.dateOfBirth);
 
-            if (profileImage) {
-                const response = await fetch(profileImage);
-                const blob = await response.blob();
-                formData.append('profileImage', blob, 'profile.jpg');
-            }
+            // if (profileImage) {
+            //     const response = await fetch(profileImage);
+            //     const blob = await response.blob();
+            //     formData.append('profileImage', blob, 'profile.jpg');
+            // }
 
             console.log('Profile Image:', formData);
             const { success, data, message } = await updateUserProfile(user.user.userId, formData);
@@ -252,13 +252,13 @@ const styles = StyleSheet.create({
         marginTop: 50, // Add top margin to push it down from the top
     },
     profileImage: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
+        width: 200,
+        height: 200,
+        borderRadius: 120,
     },
     defaultProfileImage: {
-        width: 120,
-        height: 120,
+        width: 200,
+        height: 200,
         borderRadius: 60,
         backgroundColor: 'lightgray',
         justifyContent: 'center',
