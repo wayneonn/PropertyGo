@@ -71,13 +71,27 @@ function EditProfile({ navigation, route }) {
         setCountryPickerVisibility(false);
     };
 
+    const fetchUpdatedUserDetailsImage = async () => {
+        try {
+            const { success, data, message } = await loginUser(user.user.userName, user.user.password);
+
+            if (success) {
+                login(data);
+            } else {
+                Alert.alert('Error', message);
+            }
+        } catch (error) {
+            console.error('Error fetching updated user details:', error);
+        }
+    };
+
     const fetchUpdatedUserDetails = async () => {
         try {
             const { success, data, message } = await loginUser(user.user.userName, user.user.password);
 
             if (success) {
                 login(data);
-                Alert.alert('Successful', 'User details updated');
+                // Alert.alert('Successful', 'User details updated');
             } else {
                 Alert.alert('Error', message);
             }
@@ -103,6 +117,7 @@ function EditProfile({ navigation, route }) {
                     const response = await updateUserProfilePicture(user.user.userId, profileImage);
     
                     if (response.success) {
+                        fetchUpdatedUserDetails();
                         Alert.alert('Success', 'Profile updated successfully!');
                     } else {
                         Alert.alert('Error', response.message || 'Profile update failed.');
@@ -137,7 +152,7 @@ function EditProfile({ navigation, route }) {
 
                     if (response.success) {
                         Alert.alert('Success', 'Image uploaded successfully!');
-                        fetchUpdatedUserDetails();
+                        fetchUpdatedUserDetailsImage();
                     } else {
                         Alert.alert('Error', response.message || 'Image upload failed.');
                     }
@@ -150,34 +165,7 @@ function EditProfile({ navigation, route }) {
             console.error('Error picking image:', error);
         }
     };
-
-    const handleUpdateProfilePicture = async () => {
-        try {
-          if (!profileImage) {
-            console.error('No profile image selected');
-            return;
-          }
-      
-          // Convert the image URI to base64 format
-          const response = await fetch(profileImage);
-          const blob = await response.blob();
-          const reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = async () => {
-            const imageBase64 = reader.result.split(',')[1];
-      
-            try {
-              await updateUserProfilePicture(imageBase64); // Update the user profile picture
-              Alert.alert('Success', 'Image uploaded successfully!');
-            } catch (error) {
-              console.error('Error uploading image:', error);
-              Alert.alert('Error', 'Image upload failed.');
-            }
-          };
-        } catch (error) {
-          console.error('Error updating profile picture:', error);
-        }
-      };      
+    
 
     return (
         <View style={styles.container}>

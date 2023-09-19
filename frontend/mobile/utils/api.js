@@ -60,7 +60,7 @@ export const updateUserProfile = async (userId, formData) => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log('Update Profile Response:', data); // Add this log statement
+      // console.log('Update Profile Response:', data); // Add this log statement
       return { success: true, data };
     } else {
       const errorData = await response.json();

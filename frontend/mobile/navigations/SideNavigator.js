@@ -24,7 +24,7 @@ import { AuthContext } from '../AuthContext'; // Import your AuthContext
 import base64 from 'react-native-base64';
 
 const CustomDrawerContent = (props) => {
-    const { navigation, user } = props;
+    const { navigation, user, updateUserProfilePicture } = props;
 
     let profileImageBase64;
     if (user && user.user.profileImage && user.user.profileImage.data) {
@@ -36,6 +36,7 @@ const CustomDrawerContent = (props) => {
     };
 
     const [profileImage, setProfileImage] = useState(null);
+    
 
     useEffect(() => {
         if (profileImageBase64) {
@@ -43,7 +44,11 @@ const CustomDrawerContent = (props) => {
         } else {
             setProfileImage(require('../assets/Default-Profile-Picture-Icon.png'));
         }
+
+        setName(user && user.user.name ? user.user.name : '');
     }, [user]);
+
+    const [name, setName] = useState(user && user.user.name ? user.user.name : '');
 
     return (
         <DrawerContentScrollView {...props}>
@@ -62,6 +67,11 @@ const CustomDrawerContent = (props) => {
                 <Text style={{ marginTop: 15, fontSize: 16, fontWeight: 'bold', color: 'black' }}>
                     PropertyGo
                 </Text>
+                {user && user.user.name && (
+                    <Text style={{ marginTop: 5, fontSize: 16 }}>
+                        Welcome, {name}
+                    </Text>
+                )}
             </View>
 
             <DrawerItemList {...props} />
@@ -114,6 +124,7 @@ const SideBar = () => {
     }
 
     const [profileImage, setProfileImage] = useState(null);
+    const [name, setName] = useState(user && user.user.name ? user.user.name : '');
 
     useEffect(() => {
         if (user && user.user.profileImage) {
@@ -121,6 +132,8 @@ const SideBar = () => {
         } else {
             setProfileImage(require('../assets/Default-Profile-Picture-Icon.png'));
         }
+
+        setName(user && user.user.name ? user.user.name : '');
     }, [user]);
 
     return (
