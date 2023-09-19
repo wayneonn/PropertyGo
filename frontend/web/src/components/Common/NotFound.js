@@ -7,12 +7,12 @@ import TopBar from "./TopBar";
 const NotFound = () => {
   return (
     <div className="not-found">
-      {/* {localStorage.getItem("loggedInAdmin") && (
+      {localStorage.getItem("loggedInAdmin") && (
         <div>
           <SideBar />
           <TopBar />
         </div>
-      )} */}
+      )}
       <div
         style={{
           textAlign: "center",
