@@ -14,6 +14,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
 import base64 from 'react-native-base64';
 import * as ImagePicker from 'expo-image-picker'; // Import the Expo image picker
+import { updateUserProfile } from '../../utils/api';
 
 const countries = [
     { label: 'Select Country', value: '' },
@@ -61,9 +62,22 @@ function EditProfile({ navigation }) {
         setCountryPickerVisibility(false);
     };
 
-    const saveChanges = () => {
-        console.log('Edited User Data:', editedUser);
-    };
+    const saveChanges = async () => {
+        try {
+          const { success, data, message } = await updateUserProfile(user.user.id, editedUser);
+          if (success) {
+            console.log('User profile updated:', data);
+            // Optionally, you can navigate to another screen or perform actions after updating the profile.
+          } else {
+            console.error('Failed to update user profile:', message);
+            // Handle the error, show an alert, or perform other actions as needed.
+          }
+        } catch (error) {
+          console.error('Error updating user profile:', error);
+          // Handle the error, show an alert, or perform other actions as needed.
+        }
+      };
+    
 
     const chooseImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();

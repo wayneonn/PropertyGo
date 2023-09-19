@@ -45,5 +45,28 @@ export const loginUser = async (userName, password) => {
       return { success: false, error: error.message };
     }
   };
+
+  export const updateUserProfile = async (userId, userData) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${USER_ENDPOINT}/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+  
   
   

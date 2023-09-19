@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
                 ]
             }
         });
-        
+
         const usersWithProfileImages = listOfUser.map(user => {
             const userJSON = user.toJSON();
             if (userJSON.profileImage) {
@@ -59,7 +59,7 @@ router.post("/", upload.single('profileImage'), async (req, res) => {
 
         // If neither the username nor email exists, create the user
         const createdUser = await User.create(user);
-        
+
         if (req.file) {
             const profileImage = req.file.buffer;
             await createdUser.update({ profileImage });
@@ -70,7 +70,38 @@ router.post("/", upload.single('profileImage'), async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: "Error creating user" });
     }
-    
+
 });
+
+router.put("/:id", upload.single('profileImage'), async (req, res) => {
+    const userId = req.params.id;
+    const updatedUserData = req.body;
+    console.log("Received body:", req.body);
+    console.log("Received file:", req.file);
+
+    try {
+        // Find the user by ID
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Update user data
+        await user.update(updatedUserData);
+
+        if (req.file) {
+            const profileImage = req.file.buffer;
+            await user.update({ profileImage });
+        }
+
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ error: "Error updating user profile" });
+    }
+});
+
+module.exports = router;
+
 
 module.exports = router;
