@@ -16,9 +16,9 @@ module.exports = [
     propertyType: "RESALE",
     propertyStatus: "ACTIVE",
 
-    userId: 123, // buyer
-    agentId: 456,
-    sellerId: 789,
+    userId: 1, // buyer
+    agentId: 4,
+    sellerId: 5,
 
     transactionId: 1,
   },
@@ -39,9 +39,9 @@ module.exports = [
     tenure: 99,
     propertyType: "RESALE",
     propertyStatus: "ACTIVE",
-    userId: 456,
-    agentId: 789,
-    sellerId: 123,
+    userId: 1,
+    agentId: 4,
+    sellerId: 5,
     transactionId: 2,
   },
 
@@ -61,9 +61,9 @@ module.exports = [
     tenure: 99,
     propertyType: "RESALE",
     propertyStatus: "ACTIVE",
-    userId: 789,
-    agentId: 123,
-    sellerId: 456,
+    userId: 1,
+    agentId: 4,
+    sellerId: 5,
     transactionId: 3,
   },
 ];

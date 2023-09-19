@@ -10,6 +10,12 @@ const adminTestData = require("./test_data/adminTestData");
 // testing purpose - remove before demo(?)
 const faqTestData = require("./test_data/faqTestData");
 const transactionTestData = require("./test_data/transactionTestData");
+const invoiceTestData = require("./test_data/invoiceTestData");
+const propertyTestData = require("./test_data/propertyTestData");
+const imageTestData = require("./test_data/imageTestData");
+const reviewTestData = require("./test_data/reviewTestData");
+const chatTestData = require("./test_data/chatTestData");
+const requestTestData = require("./test_data/requestTestData");
 
 // admin routes
 const authRouter = require("./routes/admin/authRoutes");
@@ -20,6 +26,7 @@ const faqRouter = require("./routes/admin/faqRoutes");
 const postRouter = require("./routes/user/User");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
+const e = require("express");
 
 app.use(cors());
 app.use(express.json());
@@ -37,7 +44,15 @@ db.sequelize
     const existingAdminRecordsCount = await db.Admin.count();
     const existingFaqRecordsCount = await db.FAQ.count();
     const existingTransactionRecordsCount = await db.Transaction.count();
+    const existingInvoiceRecordsCount = await db.Invoice.count();
+    const existingPropertyRecordsCount = await db.Property.count();
+    const existingImageRecordsCount = await db.Image.count();
+    const existingReviewRecordsCount = await db.Review.count();
+    const existingChatRecordsCount = await db.Chat.count();
+    const existingRequestRecordsCount = await db.Request.count();
 
+    // General order of data insertion:
+    // User -> Admin -> FAQ -> Property -> Image -> Chat -> Transaction -> Invoice -> Review
     if (existingUserRecordsCount === 0) {
       try {
         for (const userData of userTestData) {
@@ -78,6 +93,84 @@ db.sequelize
       }
     } else {
       console.log("Admin test data already exists in the database.");
+    }
+
+    if (existingPropertyRecordsCount === 0) {
+      try {
+        for (const propertyData of propertyTestData) {
+          await db.Property.create(propertyData);
+        }
+        console.log("Property test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Property test data:", error);
+      }
+    } else {
+      console.log("Property test data already exists in the database.");
+    }
+
+    if (existingImageRecordsCount === 0) {
+      try {
+        for (const imageData of imageTestData) {
+          await db.Image.create(imageData);
+        }
+        console.log("Image test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Image test data:", error);
+      }
+    } else {
+      console.log("Image test data already exists in the database.");
+    }
+
+    if (existingChatRecordsCount === 0) {
+      try {
+        for (const chatData of chatTestData) {
+          await db.Chat.create(chatData);
+        }
+        console.log("Chat test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Chat test data:", error);
+      }
+    } else {
+      console.log("Chat test data already exists in the database.");
+    }
+
+    if (existingRequestRecordsCount === 0) {
+      try {
+        for (const requestData of requestTestData) {
+          await db.Request.create(requestData);
+        }
+        console.log("Request test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Request test data:", error);
+      }
+    } else {
+      console.log("Request test data already exists in the database.");
+    }
+
+    if (existingReviewRecordsCount === 0) {
+      try {
+        for (const reviewData of reviewTestData) {
+          await db.Review.create(reviewData);
+        }
+        console.log("Review test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Review test data:", error);
+      }
+    } else {
+      console.log("Review test data already exists in the database.");
+    }
+
+    if (existingInvoiceRecordsCount === 0) {
+      try {
+        for (const invoiceData of invoiceTestData) {
+          await db.Invoice.create(invoiceData);
+        }
+        console.log("Invoice test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Invoice test data:", error);
+      }
+    } else {
+      console.log("Invoice test data already exists in the database.");
     }
 
     if (existingTransactionRecordsCount === 0) {
