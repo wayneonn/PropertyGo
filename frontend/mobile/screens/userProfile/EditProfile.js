@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useState, useEffect, ActivityIndicator } from 'react';
 import {
     View,
     Text,
@@ -15,6 +15,8 @@ import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { updateUserProfile } from '../../utils/api';
 import { updateUserProfilePicture } from '../../utils/api';
+import base64 from 'react-native-base64';
+
 
 const countries = [
     { label: 'Select Country', value: '' },
@@ -23,7 +25,7 @@ const countries = [
     { label: 'Malaysia', value: 'Malaysia' },
 ];
 
-function EditProfile({ navigation }) {
+function EditProfile({ navigation, route }) {
     const { user } = useContext(AuthContext);
 
     const [editedUser, setEditedUser] = useState({
@@ -36,6 +38,26 @@ function EditProfile({ navigation }) {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [isCountryPickerVisible, setCountryPickerVisibility] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
+
+    // Get the profileImageBase64 prop from route.params
+
+    const [profileImageBase64, setProfileImageBase64] = useState(null);
+
+    useEffect(() => {
+        let profileImageBase64;
+        if (user && user.user.profileImage && user.user.profileImage.data) {
+            profileImageBase64 = base64.encodeFromByteArray(user.user.profileImage.data);
+        }
+        setProfileImageBase64(profileImageBase64);
+    }, [user]);
+
+
+    useEffect(() => {
+        // Update profileImage when profileImageBase64 changes
+        if (profileImageBase64) {
+            setProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
+        }
+    }, [profileImageBase64]);
 
     const handleInputChange = (field, value) => {
         setEditedUser({ ...editedUser, [field]: value });
@@ -81,7 +103,6 @@ function EditProfile({ navigation }) {
         }
     };
 
-
     const chooseImage = async () => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
@@ -90,14 +111,14 @@ function EditProfile({ navigation }) {
                 aspect: [4, 3],
                 quality: 0.2,
             });
-    
+
             if (!result.cancelled) {
                 setProfileImage(result.uri);
-    
+
                 // Upload the image right after setting it
                 try {
                     const response = await updateUserProfilePicture(user.user.userId, result.uri);
-                    
+
                     if (response.success) {
                         Alert.alert('Success', 'Image uploaded successfully!');
                     } else {
@@ -112,24 +133,25 @@ function EditProfile({ navigation }) {
             console.error('Error picking image:', error);
         }
     };
-    
+
     return (
         <View style={styles.container}>
             <View style={styles.profileHeader}>
                 <TouchableOpacity onPress={chooseImage}>
                     {profileImage ? (
-                        <Image
-                            source={{ uri: profileImage }}
-                            style={styles.profileImage}
-                        />
+                        <Image source={{ uri: profileImage }} style={styles.profileImage} />
+                    ) : profileImageBase64 ? (
+                        <Image source={{ uri: `data:image/jpeg;base64,${profileImageBase64}` }} style={styles.profileImage} />
                     ) : (
                         <View style={styles.defaultProfileImage}>
-                            <Text style={styles.defaultProfileText}>Add Image</Text>
+                            <Text style={styles.defaultProfileText}>Upload Image</Text>
                         </View>
                     )}
+
                 </TouchableOpacity>
                 <Text style={styles.heading}>User Profile</Text>
             </View>
+
             <View style={styles.profileInfo}>
                 <View style={styles.row}>
                     <Text style={styles.label}>Name:</Text>
