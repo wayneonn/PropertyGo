@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       // Create StatusEnum
       status: {
-        type: DataTypes.ENUM("REPLIED", "CLOSED", "PENDING"),
+        type: DataTypes.ENUM("REPLIED", "PENDING"),
         allowNull: false,
       },
       response: {
