@@ -55,7 +55,7 @@ const ContactUs = () => {
   const indexOfFirstItemClosed = indexOfLastItemClosed - itemsPerPage;
 
   const [validationMessages, setValidationMessages] = useState({
-    emptyResponse: false
+    emptyResponse: false,
   });
 
   // toast message
@@ -121,7 +121,7 @@ const ContactUs = () => {
   const handleEdit = async () => {
     //edit contact us in backend, use the contactusid of the editId, response
     const newMessage = {
-      emptyResponse: false
+      emptyResponse: false,
     };
 
     const responseTrimmed = response.trim();
@@ -134,7 +134,7 @@ const ContactUs = () => {
 
     try {
       const response = await API.patch(`/admin/contactUs/${editId}`, {
-        response: responseTrimmed
+        response: responseTrimmed,
       });
 
       if (response.status === 200) {
@@ -143,7 +143,6 @@ const ContactUs = () => {
         setShowEditModal(false);
         showToast("updated");
       }
-
     } catch (error) {
       console.error("error");
     }
@@ -153,7 +152,7 @@ const ContactUs = () => {
     //add contact us respond in the backend, use the contactusid of the respondId, addedResponse
     // setAddedRespond("");
     const newMessage = {
-      emptyResponse: false
+      emptyResponse: false,
     };
 
     const addedRespondTrimmed = addedRespond.trim();
@@ -166,7 +165,7 @@ const ContactUs = () => {
 
     try {
       const response = await API.patch(`/admin/contactUs/${respondId}`, {
-        response: addedRespondTrimmed
+        response: addedRespondTrimmed,
       });
 
       if (response.status === 200) {
@@ -176,16 +175,17 @@ const ContactUs = () => {
         setShowRespondModal(false);
         showToast("responded");
       }
-
     } catch (error) {
       console.error("error");
     }
   };
 
   const getUserName = async (userId) => {
-    const response = await API.get(`http://localhost:3000/admin/users/${userId}`);
+    const response = await API.get(
+      `http://localhost:3000/admin/users/${userId}`
+    );
     return response.data;
-  }
+  };
 
   const fetchData = async () => {
     try {
@@ -205,15 +205,33 @@ const ContactUs = () => {
       const pendingContactus = contactUs.filter(
         (contactus) => contactus.status === "PENDING"
       );
+      pendingContactus.sort((a, b) => {
+        const timestampA = new Date(a.updatedAt).getTime();
+        const timestampB = new Date(b.updatedAt).getTime();
+        return timestampB - timestampA;
+      });
       setPendingContactus(pendingContactus);
+
       const repliedContactus = contactUs.filter(
         (contactus) => contactus.status === "REPLIED"
       );
+      repliedContactus.sort((a, b) => {
+        const timestampA = new Date(a.updatedAt).getTime();
+        const timestampB = new Date(b.updatedAt).getTime();
+        return timestampB - timestampA;
+      });
       setRepliedContactus(repliedContactus);
+
       const closedContactus = contactUs.filter(
         (contactus) => contactus.status === "CLOSED"
       );
+      closedContactus.sort((a, b) => {
+        const timestampA = new Date(a.updatedAt).getTime();
+        const timestampB = new Date(b.updatedAt).getTime();
+        return timestampB - timestampA;
+      });
       setClosedContactus(closedContactus);
+
       setTotalPagePending(Math.ceil(pendingContactus.length / itemsPerPage));
       setTotalPageReplied(Math.ceil(repliedContactus.length / itemsPerPage));
       setTotalPageClosed(Math.ceil(closedContactus.length / itemsPerPage));
@@ -287,7 +305,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(pendingContactus) &&
-                  pendingContactus.length > 0 ? (
+                pendingContactus.length > 0 ? (
                   <tbody>
                     {pendingContactus
                       .slice(indexOfFirstItemPending, indexOfLastItemPending)
@@ -304,7 +322,9 @@ const ContactUs = () => {
                           <td className="truncate-text">
                             {contactus.createdAt}
                           </td>
-                          <td className="truncate-text">{userNames[contactus.userId]}</td>
+                          <td className="truncate-text">
+                            {userNames[contactus.userId]}
+                          </td>
                           <td>
                             <Button
                               size="sm"
@@ -391,7 +411,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(repliedContactus) &&
-                  repliedContactus.length > 0 ? (
+                repliedContactus.length > 0 ? (
                   <tbody>
                     {repliedContactus
                       .slice(indexOfFirstItemReplied, indexOfLastItemReplied)
@@ -414,7 +434,9 @@ const ContactUs = () => {
                           <td className="truncate-text">
                             {contactus.updatedAt}
                           </td>
-                          <td className="truncate-text">{userNames[contactus.userId]}</td>
+                          <td className="truncate-text">
+                            {userNames[contactus.userId]}
+                          </td>
                           <td>
                             <Button
                               size="sm"
@@ -502,7 +524,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(closedContactus) &&
-                  closedContactus.length > 0 ? (
+                closedContactus.length > 0 ? (
                   <tbody>
                     {closedContactus
                       .slice(indexOfFirstItemClosed, indexOfLastItemClosed)
@@ -525,7 +547,9 @@ const ContactUs = () => {
                           <td className="truncate-text">
                             {contactus.updatedAt}
                           </td>
-                          <td className="truncate-text">{userNames[contactus.userId]}</td>
+                          <td className="truncate-text">
+                            {userNames[contactus.userId]}
+                          </td>
                           <td>
                             <Button
                               size="sm"
