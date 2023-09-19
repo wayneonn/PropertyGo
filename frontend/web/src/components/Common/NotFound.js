@@ -3,31 +3,39 @@ import "./styles/NotFound.css";
 
 import SideBar from "./SideBar";
 import TopBar from "./TopBar";
+import LogoutNotFound from "./LogoutNotFound";
 
 const NotFound = () => {
+  const isLoggedIn = localStorage.getItem("loggedInAdmin");
+
   return (
     <div className="not-found">
-      {localStorage.getItem("loggedInAdmin") && (
+      {isLoggedIn && (
         <div>
           <SideBar />
           <TopBar />
         </div>
       )}
-      <div
-        style={{
-          textAlign: "center",
-        }}
-      >
-        <h3
+
+      {isLoggedIn ? (
+        <div className="not-found"
           style={{
-            fontWeight: "400",
-            font: "Montserrat",
+            textAlign: "center",
           }}
         >
-          404 Page Not Found
-        </h3>
-        <span>The page that you are looking for does not exist.</span>
-      </div>
+          <h3
+            style={{
+              fontWeight: "400",
+              font: "Montserrat",
+            }}
+          >
+            404 Page Not Found
+          </h3>
+          <span>The page that you are looking for does not exist.</span>
+        </div>
+      ) : (
+        <LogoutNotFound />
+      )}
     </div>
   );
 };
