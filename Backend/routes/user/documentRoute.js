@@ -1,8 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const cors = require("cors");
 const admin = require("firebase-admin");
-const { Sequelize, DataTypes } = require("sequelize");
 const fs = require("fs");
 const { Document } = require("../../models");
 const router = express.Router();
