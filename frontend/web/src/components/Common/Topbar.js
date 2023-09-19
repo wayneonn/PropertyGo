@@ -2,6 +2,7 @@ import { React, useState } from "react";
 import "./styles/Topbar.css";
 import { IoMdNotificationsOutline, IoIosLogOut } from "react-icons/io";
 
+
 const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
