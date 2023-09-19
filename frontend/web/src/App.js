@@ -6,6 +6,7 @@ import AdminProfile from "./containers/AdminProfile";
 import Faq from "./containers/Faq";
 import ContactUs from "./containers/ContactUs";
 import NotFound from "./components/Common/NotFound";
+import LogoutNotFound from "./components/Common/LogoutNotFound";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./containers/Login";
