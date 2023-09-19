@@ -160,6 +160,9 @@ router.post(
           size: file.size,
           description: description,
           document: bufferData,
+          userId: file.userId,
+          transactionId: file.transactionId,
+          folderId: file.folderId,
         });
       }
 
