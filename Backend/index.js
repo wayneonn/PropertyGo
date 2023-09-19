@@ -9,7 +9,8 @@ const userTestData = require('./test_data/userTestData');
 // Routers
 const postRouter = require('./routes/User')
 const loginRoute = require('./routes/loginRoute')
-app.use("/user", postRouter, loginRoute)
+const contactUsRouter = require('./routes/user/contactUsRoutes');
+app.use("/user", postRouter, loginRoute, contactUsRouter)
 
 
 db.sequelize.sync()

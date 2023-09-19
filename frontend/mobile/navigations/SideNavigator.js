@@ -58,7 +58,7 @@ const createDrawerScreen = (name, component, iconName, label, hideHeader = false
     return {
         name,
         component,
-        options: ({ route }) => ({
+        options: () => ({
             drawerLabel: label,
             drawerIcon: ({ focused, color, size }) => (
                 <Ionicons
@@ -87,7 +87,8 @@ const drawerScreens = [
 ];
 
 
-const SideBar = () => {
+const SideBar = ({route}) => {
+
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -102,6 +103,7 @@ const SideBar = () => {
                     name={screen.name}
                     component={screen.component}
                     options={screen.options}
+                    initialParams={{ parentRoute: route }}
                 />
             ))}
         </Drawer.Navigator>
