@@ -70,7 +70,17 @@ const createFaq = async (req, res) => {
 const updateFaq = async (req, res) => {
     const { id: faqId } = req.params;
 
-    const { question, faqType } = req.body;
+    const { question, answer,faqType } = req.body;
+
+    const faq = await FAQ.findByPk(faqId);
+
+    if (faq.question === question && faq.answer !== answer) {
+        await faq.update(req.body);
+
+        const updatedFaq = await FAQ.findByPk(faqId);
+
+        return res.status(200).json({ faq: updatedFaq });
+    }
 
     const questionFound = await getFaqForUniqueness({ question, faqType });
 
