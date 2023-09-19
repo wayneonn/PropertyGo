@@ -7,13 +7,12 @@ import {
     Image,
     TextInput,
     Modal,
-    Alert
+    Alert,
 } from 'react-native';
 import { AuthContext } from '../../AuthContext';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
-import base64 from 'react-native-base64';
-import * as ImagePicker from 'expo-image-picker'; // Import the Expo image picker
+import * as ImagePicker from 'expo-image-picker';
 import { updateUserProfile } from '../../utils/api';
 
 const countries = [
@@ -37,13 +36,6 @@ function EditProfile({ navigation }) {
     const [isCountryPickerVisible, setCountryPickerVisibility] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
 
-    useEffect(() => {
-        if (user.user.profileImage && user.user.profileImage.data) {
-            const base64Image = base64.encodeFromByteArray(user.user.profileImage.data);
-            setProfileImage(`data:image/jpeg;base64,${base64Image}`);
-        }
-    }, [user]);
-
     const handleInputChange = (field, value) => {
         setEditedUser({ ...editedUser, [field]: value });
     };
@@ -64,36 +56,63 @@ function EditProfile({ navigation }) {
 
     const saveChanges = async () => {
         try {
-          const { success, data, message } = await updateUserProfile(user.user.id, editedUser);
-          if (success) {
-            console.log('User profile updated:', data);
-            // Optionally, you can navigate to another screen or perform actions after updating the profile.
-          } else {
-            console.error('Failed to update user profile:', message);
-            // Handle the error, show an alert, or perform other actions as needed.
-          }
+            const formData = new FormData();
+            formData.append('name', editedUser.name);
+            formData.append('email', editedUser.email);
+            formData.append('countryOfOrigin', editedUser.countryOfOrigin);
+            formData.append('dateOfBirth', editedUser.dateOfBirth);
+
+            if (profileImage) {
+                const response = await fetch(profileImage);
+                const blob = await response.blob();
+                formData.append('profileImage', blob, 'profile.jpg');
+            }
+
+            console.log('Profile Image:', formData);
+            const { success, data, message } = await updateUserProfile(user.user.userId, formData);
+            if (success) {
+                console.log('User profile updated:', data);
+            } else {
+                console.error('Failed to update user profile:', message);
+            }
         } catch (error) {
-          console.error('Error updating user profile:', error);
-          // Handle the error, show an alert, or perform other actions as needed.
+            console.error('Error updating user profile:', error);
         }
-      };
-    
+    };
+
 
     const chooseImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
         if (permissionResult.granted === false) {
             Alert.alert('Permission to access photos was denied');
             return;
         }
-    
+
         try {
             const result = await ImagePicker.launchImageLibraryAsync();
-    
+
             if (result.cancelled) {
                 console.log('Image selection was canceled');
             } else if (result.type === 'image') {
-                setProfileImage(result.uri);
+                const imageUri = result.uri;
+                console.log('Selected Image URI:', imageUri);
+
+                const imageBlob = await convertImageToBlob(imageUri);
+                console.log('Image Blob:', imageBlob);
+
+                // Now you can send the imageBlob to your server using FormData
+                const formData = new FormData();
+                formData.append('profileImage', imageBlob, 'profile.jpg'); // 'profileImage' should match your server's file field name
+                console.log('Profile Image:', formData);
+                // Make a POST request to your server to upload the image
+                const { success, message } = await updateUserProfile(user.user.userId, formData); // Call your updateUserProfile function from api.js
+                if (success) {
+                    // Image uploaded successfully, you can handle the server's response here
+                    console.log('Image uploaded successfully');
+                } else {
+                    console.error('Failed to upload image:', message);
+                }
             } else {
                 console.log(`Unsupported media type: ${result.type}`);
             }
@@ -101,7 +120,21 @@ function EditProfile({ navigation }) {
             console.error('Error selecting image:', error);
         }
     };
-    
+
+    // Function to convert an image file to a blob
+    const convertImageToBlob = async (imageUri) => {
+        try {
+            const response = await fetch(imageUri);
+            const blob = await response.blob();
+            console.log('Converted Blob:', blob);
+            return blob;
+        } catch (error) {
+            console.error('Error converting image to Blob:', error);
+            throw error;
+        }
+    };
+
+
 
     return (
         <View style={styles.container}>

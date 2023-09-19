@@ -1,14 +1,14 @@
 import React from 'react';
-import {SafeAreaView, Text, View } from 'react-native';
+import { SafeAreaView, Text, View } from 'react-native';
 import TopBar from '../../components/Common/TopNavBar';
 
 const ExploreServices = () => {
-    return (
-      <SafeAreaView >
-        <TopBar/>
-        <Text>ExploreServicesScreen</Text>
-      </SafeAreaView>
-    );
-  };
+  return (
+    <SafeAreaView >
+      <TopBar />
+      <Text>ExploreServicesScreen</Text>
+    </SafeAreaView>
+  );
+};
 
-  export default ExploreServices;
+export default ExploreServices;

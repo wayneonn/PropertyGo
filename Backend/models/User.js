@@ -80,7 +80,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
    },   
    profileImage: {
-    type: DataTypes.BLOB,
+    type: DataTypes.BLOB('long'),
     allowNull: true, 
   },
   }, {

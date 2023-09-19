@@ -5,7 +5,9 @@ const multer = require("multer");
 const { sequelize } = require('../models');
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({
+    storage: multer.memoryStorage(), // stores files in the memory
+  });
 
 router.get("/", async (req, res) => {
     try {
@@ -76,32 +78,57 @@ router.post("/", upload.single('profileImage'), async (req, res) => {
 router.put("/:id", upload.single('profileImage'), async (req, res) => {
     const userId = req.params.id;
     const updatedUserData = req.body;
-    console.log("Received body:", req.body);
-    console.log("Received file:", req.file);
-
+    console.log('Received UserData:', req.body);
+    console.log('Received Profile Image:', req.file);
     try {
-        // Find the user by ID
-        const user = await User.findByPk(userId);
+      const user = await User.findByPk(userId);
+  
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+  
+      if (req.file) {
+        updatedUserData.profileImage = req.file.buffer;
+      }
 
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        // Update user data
-        await user.update(updatedUserData);
-
-        if (req.file) {
-            const profileImage = req.file.buffer;
-            await user.update({ profileImage });
-        }
-
-        res.json(user);
+      console.log("Profile Image: ",updatedUserData.profileImage);
+  
+      await user.update(updatedUserData);
+  
+      res.json(user);
     } catch (error) {
-        res.status(500).json({ error: "Error updating user profile" });
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ error: "Error updating user profile" });
     }
-});
+  });  
 
-module.exports = router;
-
-
+  router.post('/:userId/profilePicture', upload.single('profileImage'), async (req, res) => {
+    const userId = req.params.userId;
+  
+    try {
+      const profileImage = req.file;
+  
+      if (!profileImage) {
+        return res.status(400).json({ error: 'No profile image provided' });
+      }
+  
+      const user = await User.findByPk(userId);
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      // I'm assuming your User model has a profileImage field of type Buffer
+      // Save the image as a Buffer
+      user.profileImage = profileImage.buffer;
+      await user.save();
+  
+      res.json({ success: true, message: 'Profile image uploaded successfully' });
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      res.status(500).json({ error: 'Error uploading profile picture' });
+    }
+  });  
+  
+  
 module.exports = router;
