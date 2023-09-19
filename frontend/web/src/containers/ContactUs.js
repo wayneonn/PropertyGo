@@ -13,7 +13,6 @@ const ContactUs = () => {
   const [contactus, setContactus] = useState([]);
   const [pendingContactus, setPendingContactus] = useState([]);
   const [repliedContactus, setRepliedContactus] = useState([]);
-  const [closedContactus, setClosedContactus] = useState([]);
   const [showRespondModal, setShowRespondModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editId, setEditId] = useState(0);
@@ -26,12 +25,6 @@ const ContactUs = () => {
   const [respondMessage, setRespondMessage] = useState("");
   const [respondReason, setRespondReason] = useState("");
   const [addedRespond, setAddedRespond] = useState("");
-  const [showClosed, setShowClosed] = useState(false);
-  const [closedId, setClosedId] = useState(0);
-  const [closedTitle, setClosedTitle] = useState("");
-  const [closedMessage, setClosedMessage] = useState("");
-  const [closedReason, setClosedReason] = useState("");
-  const [closedResponse, setClosedResponse] = useState("");
   const [userNames, setUserNames] = useState({});
 
   const itemsPerPage = 4;
@@ -48,12 +41,6 @@ const ContactUs = () => {
   const indexOfLastItemReplied = currentPageReplied * itemsPerPage;
   const indexOfFirstItemReplied = indexOfLastItemReplied - itemsPerPage;
 
-  const [currentPageClosed, setCurrentPageClosed] = useState(1);
-  const [totalPageClosed, setTotalPageClosed] = useState(0);
-
-  const indexOfLastItemClosed = currentPageClosed * itemsPerPage;
-  const indexOfFirstItemClosed = indexOfLastItemClosed - itemsPerPage;
-
   const [validationMessages, setValidationMessages] = useState({
     emptyResponse: false,
   });
@@ -68,10 +55,6 @@ const ContactUs = () => {
 
   const handlePageChangeReplied = (pageNumber) => {
     setCurrentPageReplied(pageNumber);
-  };
-
-  const handlePageChangeClosed = (pageNumber) => {
-    setCurrentPageClosed(pageNumber);
   };
 
   const toggleShowRespondModal = (title, message, reason, id) => {
@@ -91,21 +74,8 @@ const ContactUs = () => {
     setShowEditModal(!showEditModal);
   };
 
-  const toggleShowClosedModal = (title, message, reason, response, id) => {
-    setClosedTitle(title);
-    setClosedMessage(message);
-    setClosedReason(reason);
-    setClosedResponse(response);
-    setClosedId(id);
-    setShowClosed(!showClosed);
-  };
-
   const handleCloseEdit = () => {
     setShowEditModal(false);
-  };
-
-  const handleCloseClosed = () => {
-    setShowClosed(false);
   };
 
   const handleCloseRespond = () => {
@@ -222,19 +192,8 @@ const ContactUs = () => {
       });
       setRepliedContactus(repliedContactus);
 
-      const closedContactus = contactUs.filter(
-        (contactus) => contactus.status === "CLOSED"
-      );
-      closedContactus.sort((a, b) => {
-        const timestampA = new Date(a.updatedAt).getTime();
-        const timestampB = new Date(b.updatedAt).getTime();
-        return timestampB - timestampA;
-      });
-      setClosedContactus(closedContactus);
-
       setTotalPagePending(Math.ceil(pendingContactus.length / itemsPerPage));
       setTotalPageReplied(Math.ceil(repliedContactus.length / itemsPerPage));
-      setTotalPageClosed(Math.ceil(closedContactus.length / itemsPerPage));
     } catch (error) {
       console.error(error);
     }
@@ -493,119 +452,6 @@ const ContactUs = () => {
               </Pagination>
             </div>
           </div>
-          <div className="closedContactus">
-            <h3
-              style={{
-                color: "black",
-                font: "Montserrat",
-                fontWeight: "700",
-                fontSize: "16px",
-                padding: "5px 10px 5px 10px",
-              }}
-            >
-              Closed
-            </h3>
-            <div>
-              <Table hover responsive="sm" size="md">
-                <thead
-                  style={{
-                    textAlign: "center",
-                  }}
-                >
-                  <tr>
-                    <th>TITLE</th>
-                    <th>MESSAGE</th>
-                    <th>REASON</th>
-                    <th>RESPONSE</th>
-                    <th>CREATED AT</th>
-                    <th>UPDATED AT</th>
-                    <th>CREATED BY</th>
-                    <th>ACTION</th>
-                  </tr>
-                </thead>
-                {Array.isArray(closedContactus) &&
-                closedContactus.length > 0 ? (
-                  <tbody>
-                    {closedContactus
-                      .slice(indexOfFirstItemClosed, indexOfLastItemClosed)
-                      .map((contactus) => (
-                        <tr
-                          key={contactus.contactUsId}
-                          style={{
-                            textAlign: "center",
-                          }}
-                        >
-                          <td className="truncate-text">{contactus.title}</td>
-                          <td className="truncate-text">{contactus.message}</td>
-                          <td className="truncate-text">{contactus.reason}</td>
-                          <td className="truncate-text">
-                            {contactus.response}
-                          </td>
-                          <td className="truncate-text">
-                            {contactus.createdAt}
-                          </td>
-                          <td className="truncate-text">
-                            {contactus.updatedAt}
-                          </td>
-                          <td className="truncate-text">
-                            {userNames[contactus.userId]}
-                          </td>
-                          <td>
-                            <Button
-                              size="sm"
-                              title="Edit"
-                              style={{
-                                backgroundColor: "#FFD700",
-                                border: "0",
-                                marginRight: "10px",
-                              }}
-                              onClick={() =>
-                                toggleShowClosedModal(
-                                  contactus.title,
-                                  contactus.message,
-                                  contactus.reason,
-                                  contactus.response,
-                                  contactus.contactUsId
-                                )
-                              }
-                            >
-                              <MdPageview
-                                style={{
-                                  width: "18px",
-                                  height: "18px",
-                                  color: "black",
-                                }}
-                              ></MdPageview>
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                ) : (
-                  <tbody>
-                    <tr>
-                      <td colSpan="8" style={{ textAlign: "center" }}>
-                        No contact us available
-                      </td>
-                    </tr>
-                  </tbody>
-                )}
-              </Table>
-            </div>
-            <div>
-              <Pagination className="contactus-paginate">
-                {Array.from({ length: totalPageClosed }).map((_, index) => (
-                  <Pagination.Item
-                    key={index}
-                    active={index + 1 === currentPageClosed}
-                    onClick={() => handlePageChangeClosed(index + 1)}
-                  >
-                    {index + 1}
-                  </Pagination.Item>
-                ))}
-              </Pagination>
-            </div>
-          </div>
         </div>
         <Modal
           show={showEditModal}
@@ -837,103 +683,6 @@ const ContactUs = () => {
               onClick={() => handleRespond()}
             >
               Confirm
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        <Modal
-          show={showClosed}
-          onHide={handleCloseClosed}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>View Contact Us</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div style={{ marginBottom: "10px" }}>
-              <Form.Label
-                style={{
-                  color: "black",
-                  font: "Public Sans",
-                  fontWeight: "700",
-                  fontSize: "15px",
-                }}
-              >
-                Reason
-              </Form.Label>
-              <Form.Control
-                type="text"
-                name="reason"
-                value={closedReason}
-                readOnly
-              />
-            </div>
-            <Form.Label
-              style={{
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "700",
-                fontSize: "15px",
-              }}
-            >
-              Title
-            </Form.Label>
-            <Form.Control
-              type="text"
-              name="title"
-              value={closedTitle}
-              readOnly
-            />
-            <Form.Label
-              style={{
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "700",
-                fontSize: "15px",
-              }}
-            >
-              Message
-            </Form.Label>
-            <Form.Control
-              type="text"
-              name="message"
-              value={closedMessage}
-              readOnly
-            />
-            <Form.Label
-              style={{
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "700",
-                fontSize: "15px",
-              }}
-            >
-              Response
-            </Form.Label>
-            <Form.Control
-              as="textarea"
-              id="response"
-              name="message"
-              value={closedResponse}
-              readOnly
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              style={{
-                backgroundColor: "#F5F6F7",
-                border: "0",
-                width: "92px",
-                height: "40px",
-                borderRadius: "160px",
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "600",
-                fontSize: "14px",
-              }}
-              onClick={handleCloseClosed}
-            >
-              Close
             </Button>
           </Modal.Footer>
         </Modal>
