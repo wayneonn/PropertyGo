@@ -16,6 +16,7 @@ const imageTestData = require("./test_data/imageTestData");
 const reviewTestData = require("./test_data/reviewTestData");
 const chatTestData = require("./test_data/chatTestData");
 const requestTestData = require("./test_data/requestTestData");
+const partnerApplicationId = require("./test_data/partnerApplicationTestData");
 
 // admin routes
 const authRouter = require("./routes/admin/authRoutes");
@@ -59,6 +60,8 @@ db.sequelize
     const existingReviewRecordsCount = await db.Review.count();
     const existingChatRecordsCount = await db.Chat.count();
     const existingRequestRecordsCount = await db.Request.count();
+    const existingPartnerApplicationRecordsCount =
+      await db.PartnerApplication.count();
 
     // General order of data insertion:
     // User -> Admin -> FAQ -> Property -> Image -> Chat -> Transaction -> Invoice -> Review
@@ -91,6 +94,22 @@ db.sequelize
       }
     } else {
       console.log("Admin test data already exists in the database.");
+    }
+
+    // Partner Application
+    if (existingPartnerApplicationRecordsCount === 0) {
+      try {
+        for (const partnerApplicationData of partnerApplicationId) {
+          await db.PartnerApplication.create(partnerApplicationData);
+        }
+        console.log("Partner Application test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Partner Application test data:", error);
+      }
+    } else {
+      console.log(
+        "Partner Application test data already exists in the database."
+      );
     }
 
     // FAQ
