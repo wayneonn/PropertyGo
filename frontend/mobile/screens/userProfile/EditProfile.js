@@ -9,12 +9,12 @@ import {
     Modal,
     Alert,
 } from 'react-native';
-import { AuthContext } from '../../AuthContext';
+import { AuthContext} from '../../AuthContext';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { updateUserProfile } from '../../utils/api';
-import { updateUserProfilePicture } from '../../utils/api';
+import { updateUserProfilePicture, loginUser } from '../../utils/api';
 import base64 from 'react-native-base64';
 
 
@@ -27,6 +27,7 @@ const countries = [
 
 function EditProfile({ navigation, route }) {
     const { user } = useContext(AuthContext);
+    const { login } = useContext(AuthContext); 
 
     const [editedUser, setEditedUser] = useState({
         name: user.user.name,
@@ -77,6 +78,23 @@ function EditProfile({ navigation, route }) {
         setCountryPickerVisibility(false);
     };
 
+    const fetchUpdatedUserDetails = async () => {
+        try {
+            console.log('Username:', user.user.userName, 'Password:', user.user.password);
+            const { success, data, message } = await loginUser(user.user.userName, user.user.password);
+    
+            if (success) {
+                // Use the login function from AuthContext to set the user
+                login(data);
+                Alert.alert('Successful', 'User details updated');
+            } else {
+                Alert.alert('Error', message);
+            }
+        } catch (error) {
+            console.error('Error fetching updated user details:', error);
+        }
+    };    
+
     const saveChanges = async () => {
         try {
             const formData = new FormData();
@@ -95,6 +113,7 @@ function EditProfile({ navigation, route }) {
             const { success, data, message } = await updateUserProfile(user.user.userId, formData);
             if (success) {
                 console.log('User profile updated:', data);
+                fetchUpdatedUserDetails();
             } else {
                 console.error('Failed to update user profile:', message);
             }
