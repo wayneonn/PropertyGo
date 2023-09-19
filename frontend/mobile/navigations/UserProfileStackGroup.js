@@ -9,9 +9,10 @@ const UserProfileStack = createNativeStackNavigator();
 const UserProfileStackGroup = () => {
   return (
     <UserProfileStack.Navigator screenOptions={{ headerShown: false }}>
-      <UserProfileStack.Screen name="ProfileUpdate" component={ProfileUpdate} />
+      {/* <UserProfileStack.Screen name="ProfileUpdate" component={ProfileUpdate} /> */}
       <UserProfileStack.Screen name="UserProfile" component={UserProfile} />
-      <UserProfileStack.Screen name="EditProfile" component={EditProfile} />
+      <UserProfileStack.Screen name="ProfileUpdate" component={EditProfile} />
+      {/* <UserProfileStack.Screen name="ProfileUpdate" component={ProfileUpdate} /> */}
     </UserProfileStack.Navigator>
   );
 };

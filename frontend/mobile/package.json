@@ -25,6 +25,7 @@
     "expo-app-auth": "~11.1.0",
     "expo-auth-session": "~5.0.2",
     "expo-google-app-auth": "~8.3.0",
+    "expo-image-manipulator": "~11.3.0",
     "expo-image-picker": "~14.3.2",
     "expo-random": "~13.2.0",
     "expo-splash-screen": "~0.20.5",
@@ -36,6 +37,7 @@
     "react-native-base64": "^0.2.1",
     "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "~2.12.0",
+    "react-native-image-converter": "^0.4.2",
     "react-native-image-crop-picker": "^0.40.0",
     "react-native-image-picker": "^7.0.0",
     "react-native-linear-gradient": "^2.8.3",
@@ -50,7 +52,8 @@
     "react-native-unimodules": "^0.14.10",
     "react-native-web": "~0.19.6",
     "react-navigation": "^4.4.4",
-    "react-navigation-stack": "^2.10.4"
+    "react-navigation-stack": "^2.10.4",
+    "sharp": "^0.32.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

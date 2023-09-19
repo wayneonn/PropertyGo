@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const AuthContext = createContext();
@@ -26,13 +26,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Define your login and logout functions as before
+
   const login = async (userData) => {
     try {
       // Save the user session to AsyncStorage
-      const userJson = JSON.stringify(userData);
-      await AsyncStorage.setItem('userSession', userJson);
-      console.log('User logged in:', userData); 
+      await AsyncStorage.setItem('userSession', JSON.stringify(userData));
       setUser(userData);
+      console.log('User session saved');
     } catch (error) {
       console.error('Error saving user session:', error);
     }
@@ -43,13 +44,19 @@ export const AuthProvider = ({ children }) => {
       // Remove the user session from AsyncStorage
       await AsyncStorage.removeItem('userSession');
       setUser(null);
+      console.log('User session removed');
     } catch (error) {
       console.error('Error removing user session:', error);
     }
   };
 
+  // Pass the user and loading state in the context value
+  const contextValue = useMemo(() => {
+    return { user, loading, login, logout };
+  }, [user, loading]);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

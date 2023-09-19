@@ -3,6 +3,7 @@ const router = express.Router();
 const { User, Lawyer } = require("../models");
 const multer = require("multer");
 const { sequelize } = require('../models');
+const sharp = require('sharp');
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -118,9 +119,14 @@ router.put("/:id", upload.single('profileImage'), async (req, res) => {
         return res.status(404).json({ error: 'User not found' });
       }
   
-      // I'm assuming your User model has a profileImage field of type Buffer
-      // Save the image as a Buffer
-      user.profileImage = profileImage.buffer;
+      // Process the image using sharp and store it as a Buffer
+      const processedImageBuffer = await sharp(profileImage.buffer)
+        .resize({ width: 200, height: 200 }) // Adjust the dimensions as needed
+        .webp() // Convert to WebP format
+        .toBuffer();
+  
+      // Save the processed image as the user's profileImage
+      user.profileImage = processedImageBuffer;
       await user.save();
   
       res.json({ success: true, message: 'Profile image uploaded successfully' });
@@ -128,7 +134,7 @@ router.put("/:id", upload.single('profileImage'), async (req, res) => {
       console.error('Error uploading profile picture:', error);
       res.status(500).json({ error: 'Error uploading profile picture' });
     }
-  });  
+  });
   
   
 module.exports = router;
