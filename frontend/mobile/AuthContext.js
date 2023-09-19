@@ -26,6 +26,35 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUserProfilePicture = async (newProfileImageBase64) => {
+    try {
+      // Update the user state with the new profile image
+      setUser((prevUser) => ({
+        ...prevUser,
+        user: {
+          ...prevUser.user,
+          profileImage: {
+            data: newProfileImageBase64,
+          },
+        },
+      }));
+  
+      // Also update the user session stored in AsyncStorage
+      const userJson = await AsyncStorage.getItem('userSession');
+      if (userJson) {
+        const userData = JSON.parse(userJson);
+        userData.user.profileImage = { data: newProfileImageBase64 };
+        await AsyncStorage.setItem('userSession', JSON.stringify(userData));
+      }
+  
+      // Reload the updated user data from AsyncStorage
+      loadUserSessionFromStorage();
+  
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+    }
+  };
+  
   // Define your login and logout functions as before
 
   const login = async (userData) => {
@@ -52,7 +81,7 @@ export const AuthProvider = ({ children }) => {
 
   // Pass the user and loading state in the context value
   const contextValue = useMemo(() => {
-    return { user, loading, login, logout };
+    return { user, loading, login, logout, updateUserProfilePicture };
   }, [user, loading]);
 
   return (

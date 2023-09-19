@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, ActivityIndicator } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -9,14 +9,13 @@ import {
     Modal,
     Alert,
 } from 'react-native';
-import { AuthContext} from '../../AuthContext';
+import { AuthContext } from '../../AuthContext';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { updateUserProfile } from '../../utils/api';
 import { updateUserProfilePicture, loginUser } from '../../utils/api';
 import base64 from 'react-native-base64';
-
 
 const countries = [
     { label: 'Select Country', value: '' },
@@ -26,8 +25,7 @@ const countries = [
 ];
 
 function EditProfile({ navigation, route }) {
-    const { user } = useContext(AuthContext);
-    const { login } = useContext(AuthContext); 
+    const { user, login, upd } = useContext(AuthContext);
 
     const [editedUser, setEditedUser] = useState({
         name: user.user.name,
@@ -39,9 +37,6 @@ function EditProfile({ navigation, route }) {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [isCountryPickerVisible, setCountryPickerVisibility] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
-
-    // Get the profileImageBase64 prop from route.params
-
     const [profileImageBase64, setProfileImageBase64] = useState(null);
 
     useEffect(() => {
@@ -52,9 +47,7 @@ function EditProfile({ navigation, route }) {
         setProfileImageBase64(profileImageBase64);
     }, [user]);
 
-
     useEffect(() => {
-        // Update profileImage when profileImageBase64 changes
         if (profileImageBase64) {
             setProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
         }
@@ -80,11 +73,9 @@ function EditProfile({ navigation, route }) {
 
     const fetchUpdatedUserDetails = async () => {
         try {
-            console.log('Username:', user.user.userName, 'Password:', user.user.password);
             const { success, data, message } = await loginUser(user.user.userName, user.user.password);
-    
+
             if (success) {
-                // Use the login function from AuthContext to set the user
                 login(data);
                 Alert.alert('Successful', 'User details updated');
             } else {
@@ -93,7 +84,7 @@ function EditProfile({ navigation, route }) {
         } catch (error) {
             console.error('Error fetching updated user details:', error);
         }
-    };    
+    };
 
     const saveChanges = async () => {
         try {
@@ -102,18 +93,24 @@ function EditProfile({ navigation, route }) {
             formData.append('email', editedUser.email);
             formData.append('countryOfOrigin', editedUser.countryOfOrigin);
             formData.append('dateOfBirth', editedUser.dateOfBirth);
-
-            // if (profileImage) {
-            //     const response = await fetch(profileImage);
-            //     const blob = await response.blob();
-            //     formData.append('profileImage', blob, 'profile.jpg');
-            // }
-
-            console.log('Profile Image:', formData);
+    
+            // Call the updateUserProfile function to update user profile data
             const { success, data, message } = await updateUserProfile(user.user.userId, formData);
+    
             if (success) {
-                console.log('User profile updated:', data);
-                fetchUpdatedUserDetails();
+                // If the profile update is successful, also update the profile picture
+                if (profileImage) {
+                    const response = await updateUserProfilePicture(user.user.userId, profileImage);
+    
+                    if (response.success) {
+                        Alert.alert('Success', 'Profile updated successfully!');
+                    } else {
+                        Alert.alert('Error', response.message || 'Profile update failed.');
+                    }
+                } else {
+                    // If no profile image is selected, only update the profile data
+                    fetchUpdatedUserDetails();
+                }
             } else {
                 console.error('Failed to update user profile:', message);
             }
@@ -121,6 +118,7 @@ function EditProfile({ navigation, route }) {
             console.error('Error updating user profile:', error);
         }
     };
+    
 
     const chooseImage = async () => {
         try {
@@ -134,12 +132,12 @@ function EditProfile({ navigation, route }) {
             if (!result.cancelled) {
                 setProfileImage(result.uri);
 
-                // Upload the image right after setting it
                 try {
                     const response = await updateUserProfilePicture(user.user.userId, result.uri);
 
                     if (response.success) {
                         Alert.alert('Success', 'Image uploaded successfully!');
+                        fetchUpdatedUserDetails();
                     } else {
                         Alert.alert('Error', response.message || 'Image upload failed.');
                     }
@@ -152,6 +150,34 @@ function EditProfile({ navigation, route }) {
             console.error('Error picking image:', error);
         }
     };
+
+    const handleUpdateProfilePicture = async () => {
+        try {
+          if (!profileImage) {
+            console.error('No profile image selected');
+            return;
+          }
+      
+          // Convert the image URI to base64 format
+          const response = await fetch(profileImage);
+          const blob = await response.blob();
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = async () => {
+            const imageBase64 = reader.result.split(',')[1];
+      
+            try {
+              await updateUserProfilePicture(imageBase64); // Update the user profile picture
+              Alert.alert('Success', 'Image uploaded successfully!');
+            } catch (error) {
+              console.error('Error uploading image:', error);
+              Alert.alert('Error', 'Image upload failed.');
+            }
+          };
+        } catch (error) {
+          console.error('Error updating profile picture:', error);
+        }
+      };      
 
     return (
         <View style={styles.container}>
@@ -166,7 +192,6 @@ function EditProfile({ navigation, route }) {
                             <Text style={styles.defaultProfileText}>Upload Image</Text>
                         </View>
                     )}
-
                 </TouchableOpacity>
                 <Text style={styles.heading}>User Profile</Text>
             </View>
@@ -248,8 +273,8 @@ const styles = StyleSheet.create({
     },
     profileHeader: {
         alignItems: 'center',
-        justifyContent: 'center', // Center the content vertically
-        marginTop: 50, // Add top margin to push it down from the top
+        justifyContent: 'center',
+        marginTop: 50,
     },
     profileImage: {
         width: 200,

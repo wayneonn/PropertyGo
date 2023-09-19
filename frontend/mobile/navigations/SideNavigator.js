@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'; // Import useState
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import {
@@ -6,8 +6,6 @@ import {
     DrawerItemList,
     DrawerItem
 } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
-import HomeStackGroup from './HomeStackGroup';
 import { Ionicons } from '@expo/vector-icons';
 import LogoutButton from '../components/LogoutButton';
 import Appointments from '../screens/sideNavigatorBar/Appointments'
@@ -20,12 +18,13 @@ import UserListings from '../screens/sideNavigatorBar/UserListings'
 import UserProfile from '../screens/sideNavigatorBar/UserProfile'
 import WorkWithUs from '../screens/sideNavigatorBar/WorkWithUs'
 import ContactUsStackGroup from './ContactUsStackGroup';
+import HomeStackGroup from './HomeStackGroup';
 import UserProfileStackGroup from './UserProfileStackGroup';
 import { AuthContext } from '../AuthContext'; // Import your AuthContext
 import base64 from 'react-native-base64';
 
 const CustomDrawerContent = (props) => {
-    const { navigation, user } = props; // Receive the user object from props
+    const { navigation, user } = props;
 
     let profileImageBase64;
     if (user && user.user.profileImage && user.user.profileImage.data) {
@@ -39,27 +38,24 @@ const CustomDrawerContent = (props) => {
     const [profileImage, setProfileImage] = useState(null);
 
     useEffect(() => {
-        // Update profileImage whenever user changes
-        if (user && user.user.profileImage) {
+        if (profileImageBase64) {
             setProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
         } else {
-            // Set a default image source if user or profileImage is missing
             setProfileImage(require('../assets/Default-Profile-Picture-Icon.png'));
         }
     }, [user]);
 
     return (
         <DrawerContentScrollView {...props}>
-            {/* Profile Picture */}
             <View style={{ alignItems: 'center', padding: 16 }}>
-                {user && user.user.profileImage ? ( // Check if user and profileImage exist
+                {user && user.user.profileImage ? (
                     <Image
                         source={{ uri: `data:image/jpeg;base64,${profileImageBase64}` }}
                         style={{ width: 100, height: 100, borderRadius: 50 }}
                     />
                 ) : (
                     <Image
-                        source={require('../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                        source={require('../assets/Default-Profile-Picture-Icon.png')}
                         style={{ width: 100, height: 100, borderRadius: 50 }}
                     />
                 )}
@@ -68,10 +64,8 @@ const CustomDrawerContent = (props) => {
                 </Text>
             </View>
 
-            {/* Drawer Items */}
             <DrawerItemList {...props} />
 
-            {/* Logout Button */}
             <LogoutButton onPress={handleLogout} />
         </DrawerContentScrollView>
     );
@@ -92,7 +86,7 @@ const createDrawerScreen = (name, component, iconName, label, hideHeader = false
                     color={color}
                 />
             ),
-            headerShown: false, // Show header unless it's the "Home" screen
+            headerShown: false,
         }),
     };
 };
@@ -122,11 +116,9 @@ const SideBar = () => {
     const [profileImage, setProfileImage] = useState(null);
 
     useEffect(() => {
-        // Update profileImage whenever user changes
         if (user && user.user.profileImage) {
             setProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
         } else {
-            // Set a default image source if user or profileImage is missing
             setProfileImage(require('../assets/Default-Profile-Picture-Icon.png'));
         }
     }, [user]);
