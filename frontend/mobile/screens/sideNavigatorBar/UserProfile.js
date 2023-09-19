@@ -32,9 +32,10 @@ function UserProfile({ navigation }) {
             style={styles.profileImage}
           />
         ) : (
-          <View style={styles.defaultProfileImage}>
-            <Text style={styles.defaultProfileText}>Add Image</Text>
-          </View>
+          <Image
+            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+            style={{ width: 100, height: 100, borderRadius: 50 }}
+          />
         )}
         <Text style={styles.heading}>User Profile</Text>
       </View>

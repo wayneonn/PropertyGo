@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import {
@@ -21,9 +21,16 @@ import UserProfile from '../screens/sideNavigatorBar/UserProfile'
 import WorkWithUs from '../screens/sideNavigatorBar/WorkWithUs'
 import ContactUsStackGroup from './ContactUsStackGroup';
 import UserProfileStackGroup from './UserProfileStackGroup';
+import { AuthContext } from '../AuthContext'; // Import your AuthContext
+import base64 from 'react-native-base64';
 
 const CustomDrawerContent = (props) => {
-    const { navigation, profilePictureUrl } = props; // Replace with the actual prop name you use
+    const { navigation, user } = props; // Receive the user object from props
+
+    let profileImageBase64;
+    if (user && user.user.profileImage && user.user.profileImage.data) {
+      profileImageBase64 = base64.encodeFromByteArray(user.user.profileImage.data);
+    }
 
     const handleLogout = () => {
         navigation.navigate("Login Portal");
@@ -33,10 +40,17 @@ const CustomDrawerContent = (props) => {
         <DrawerContentScrollView {...props}>
             {/* Profile Picture */}
             <View style={{ alignItems: 'center', padding: 16 }}>
-                <Image
-                    source={require('../assets/dog.jpg')}
-                    style={{ width: 100, height: 100, borderRadius: 50 }}
-                />
+                {user && user.user.profileImage ? ( // Check if user and profileImage exist
+                    <Image
+                        source={{ uri: `data:image/jpeg;base64,${profileImageBase64}` }}
+                        style={{ width: 100, height: 100, borderRadius: 50 }}
+                    />
+                ) : (
+                    <Image
+                        source={require('../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                        style={{ width: 100, height: 100, borderRadius: 50 }}
+                    />
+                )}
                 <Text style={{ marginTop: 15, fontSize: 16, fontWeight: 'bold', color: 'black' }}>
                     PropertyGo
                 </Text>
@@ -50,6 +64,7 @@ const CustomDrawerContent = (props) => {
         </DrawerContentScrollView>
     );
 };
+
 
 
 
@@ -89,9 +104,11 @@ const drawerScreens = [
 
 
 const SideBar = () => {
+    const { user } = useContext(AuthContext); 
+
     return (
         <Drawer.Navigator
-            drawerContent={(props) => <CustomDrawerContent {...props} />}
+            drawerContent={(props) => <CustomDrawerContent {...props} user={user} />} 
             screenOptions={() => ({
                 drawerActiveTintColor: "#FFD700",
             })}
