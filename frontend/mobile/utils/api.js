@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 const BASE_URL = 'http://localhost:3000';
 const BASE_URL_WAYNE = 'http://10.0.0.17:3000';
 const USER_ENDPOINT = 'user';
@@ -71,24 +73,28 @@ export const updateUserProfile = async (userId, formData) => {
   }
 };
 
-export const updateUserProfilePicture = async (userId, imageBlobData) => {
+export const updateUserProfilePicture = async (userId, imageUri) => {
   try {
     const formData = new FormData();
-
-    const blob = new Blob([imageBlobData], { type: 'image/jpeg' });
-
-    formData.append('profileImage', blob, 'profile.jpg');
-    console.log('Form Data:', formData);
-    const response = await fetch(`${BASE_URL}/${USER_ENDPOINT}/${userId}/profilePicture`, {
-      method: 'POST',
-      body: formData,
+    formData.append('profileImage', {
+      uri: imageUri,
+      type: 'image/jpeg',
+      name: 'profile.jpg',
     });
 
-    if (response.ok) {
-      const data = await response.json();
+    const responseUpload = await fetch(`${BASE_URL}/${USER_ENDPOINT}/${userId}/profilePicture`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (responseUpload.ok) {
+      const data = await responseUpload.json();
       return { success: true, data };
     } else {
-      const errorData = await response.json();
+      const errorData = await responseUpload.json();
       console.error('Update Profile Picture Error:', errorData);
       return { success: false, message: errorData.message };
     }
@@ -97,6 +103,7 @@ export const updateUserProfilePicture = async (userId, imageBlobData) => {
     return { success: false, message: error.message };
   }
 };
+
 
 
 

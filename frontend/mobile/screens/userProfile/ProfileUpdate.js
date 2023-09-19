@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button, Image, View, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { updateUserProfilePicture } from '../../utils/api'; // Assuming api.js is in the same directory
 
-function App() {
+function ProfileUpdate() {
   const [imageUri, setImageUri] = useState(null);
 
   const pickImage = async () => {
@@ -29,29 +30,16 @@ function App() {
         return;
       }
 
-      const formData = new FormData();
-      formData.append('profileImage', {
-        uri: imageUri,
-        type: 'image/jpeg', // Change this based on your image type
-        name: 'profile.jpg',
-      });
+      // Use the function from api.js to upload the image
+      const response = await updateUserProfilePicture('1', imageUri);
 
-      const uploadResponse = await fetch('http://localhost:3000/user/1/profilePicture', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      const uploadResult = await uploadResponse.json();
-
-      if (uploadResult.success) {
+      if (response.success) {
         Alert.alert('Success', 'Image uploaded successfully!');
       } else {
-        Alert.alert('Error', uploadResult.error || 'Image upload failed.');
+        Alert.alert('Error', response.message || 'Image upload failed.');
       }
 
-      console.log(uploadResult);
+      console.log(response);
     } catch (error) {
       console.error('Error uploading image:', error);
       Alert.alert('Error', 'Image upload failed.');
@@ -67,4 +55,4 @@ function App() {
   );
 }
 
-export default App;
+export default ProfileUpdate;
