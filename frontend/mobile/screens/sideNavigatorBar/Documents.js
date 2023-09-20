@@ -47,14 +47,15 @@ function UploadScreen({ navigation }) {
   const [defaultFolderId, setDefaultFolderId] = useState(1); // Default folder id
   const [filteredDocs, setFilteredDocs] = useState(prevDocuments); // Filtered documents
 
+  // General issue here seems to be that the Data Array is too big
+  // It is in one omega array? I think we need to split it up into smaller arrays.
   const fetchDocuments = async () => {
     try {
       const response = await fetch(
-        "http://10.249.191.117:3000/user/documents/list"
+        "http://10.249.191.117:3000/user/documents/list/metadata"
       );
       const documents = await response.json();
       setPrevDocuments(documents);
-      setFilteredDocs(documents);
     } catch (error) {
       console.error(error);
     }
@@ -95,14 +96,19 @@ function UploadScreen({ navigation }) {
   };
 
   const downloadPDF = async (document) => {
-    if (FileSaver) {
+    if (Platform.OS === "web") {
       // Web download logic
       // Web: convert buffer to blob
-      console.log(document.document.data);
+      const response = await fetch(
+        `http://10.249.191.117:3000/user/documents/${document.documentId}/data`
+      );
+      const result = await response.json();
+      const doc = result.document;
+      console.log(doc);
       // Some how the blob is double writing.
       // Supposing that document.data.data is in base64 format
       // Assuming document.data takes the form {type: 'Buffer', data: Array}
-      const byteArray = new Uint8Array(document.document.data);
+      const byteArray = new Uint8Array(result.document.data);
       // Create a blob from the typed array
       const blob = new Blob([byteArray], { type: "application/pdf" });
       console.log(blob);
@@ -156,7 +162,6 @@ function UploadScreen({ navigation }) {
         .includes((searchQuery || "").toLowerCase());
       return matchesFolder && matchesSearch;
     });
-
     setFilteredDocs(docs);
   }, [searchQuery, selectedFolder]);
 

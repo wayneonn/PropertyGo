@@ -1,15 +1,16 @@
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 
-const BASE_URL = 'http://localhost:3000';
-const BASE_URL_WAYNE = 'http://10.0.0.17:3000';
-const USER_ENDPOINT = 'user';
+const BASE_URL = "http://10.249.191.117:3000";
+// Please change it back to whatever your IP address is. 
+const BASE_URL_WAYNE = "http://10.0.0.17:3000";
+const USER_ENDPOINT = "user";
 
 export const loginUser = async (userName, password) => {
   try {
     const response = await fetch(`${BASE_URL}/${USER_ENDPOINT}/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ userName, password }),
     });
@@ -29,9 +30,9 @@ export const loginUser = async (userName, password) => {
 export const signUpUser = async (userData) => {
   try {
     const response = await fetch(`${BASE_URL}/${USER_ENDPOINT}`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(userData),
     });
@@ -51,10 +52,10 @@ export const signUpUser = async (userData) => {
 export const updateUserProfile = async (userId, formData) => {
   try {
     const response = await fetch(`${BASE_URL}/${USER_ENDPOINT}/${userId}`, {
-      method: 'PUT',
+      method: "PUT",
       body: formData,
       headers: {
-        'Content-Type': 'multipart/form-data', // Explicitly set the Content-Type
+        "Content-Type": "multipart/form-data", // Explicitly set the Content-Type
       },
     });
 
@@ -64,11 +65,11 @@ export const updateUserProfile = async (userId, formData) => {
       return { success: true, data };
     } else {
       const errorData = await response.json();
-      console.error('Update Profile Error:', errorData); // Add this log statement
+      console.error("Update Profile Error:", errorData); // Add this log statement
       return { success: false, message: errorData.message };
     }
   } catch (error) {
-    console.error('Update Profile Error:', error); // Add this log statement
+    console.error("Update Profile Error:", error); // Add this log statement
     return { success: false, message: error.message };
   }
 };
@@ -76,35 +77,33 @@ export const updateUserProfile = async (userId, formData) => {
 export const updateUserProfilePicture = async (userId, imageUri) => {
   try {
     const formData = new FormData();
-    formData.append('profileImage', {
+    formData.append("profileImage", {
       uri: imageUri,
-      type: 'image/jpeg',
-      name: 'profile.jpg',
+      type: "image/jpeg",
+      name: "profile.jpg",
     });
 
-    const responseUpload = await fetch(`${BASE_URL}/${USER_ENDPOINT}/${userId}/profilePicture`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const responseUpload = await fetch(
+      `${BASE_URL}/${USER_ENDPOINT}/${userId}/profilePicture`,
+      {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
     if (responseUpload.ok) {
       const data = await responseUpload.json();
       return { success: true, data };
     } else {
       const errorData = await responseUpload.json();
-      console.error('Update Profile Picture Error:', errorData);
+      console.error("Update Profile Picture Error:", errorData);
       return { success: false, message: errorData.message };
     }
   } catch (error) {
-    console.error('Update Profile Picture Error:', error);
+    console.error("Update Profile Picture Error:", error);
     return { success: false, message: error.message };
   }
 };
-
-
-
-
-
