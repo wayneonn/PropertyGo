@@ -122,7 +122,7 @@ router.post(
 );
 
 // Give us the whole list of the documents.
-router.get("/documents/list/metadata", async (req, res) => {
+router.get("/documents/list/metadata/:id", async (req, res) => {
   try {
     const documents = await Document.findAll({
       attributes: [
@@ -134,7 +134,7 @@ router.get("/documents/list/metadata", async (req, res) => {
         "createdAt",
         "updatedAt",
       ],
-      where: { deleted: false },
+      where: { deleted: false, userId: req.params.id },
     });
     res.json(documents);
   } catch (error) {
