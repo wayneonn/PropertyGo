@@ -145,10 +145,12 @@ const styles = {
     alignItems: 'center', // Center vertically
     justifyContent: 'center',
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 10,
     backgroundColor: '#1E90FF',
     marginVertical: 10,
-    marginTop: 30,
+    marginTop: 20,
+    marginLeft: 65,
+    width: '60%',
   },
   loginIcon: {
     marginRight: 10,

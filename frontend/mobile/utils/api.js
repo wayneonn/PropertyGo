@@ -64,8 +64,8 @@ export const updateUserProfile = async (userId, formData) => {
       return { success: true, data };
     } else {
       const errorData = await response.json();
-      console.error('Update Profile Error:', errorData); // Add this log statement
-      return { success: false, message: errorData.message };
+      console.error('Update Profile Error:', errorData.error); // Add this log statement
+      return { success: false, message: errorData.error };
     }
   } catch (error) {
     console.error('Update Profile Error:', error); // Add this log statement

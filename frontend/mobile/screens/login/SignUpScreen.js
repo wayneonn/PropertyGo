@@ -6,15 +6,16 @@ import {
   Text,
   TouchableOpacity,
   Modal,
+  ScrollView,
   Alert,
-  Image
+  Image,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { AuthContext } from '../../AuthContext';
 import { signUpUser } from '../../utils/api';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icon library
-import { AuthContext } from '../../AuthContext';
 import { loginUser } from '../../utils/api';
 
 const countries = [
@@ -35,13 +36,20 @@ const SignUpScreen = () => {
   const [dateOfBirth, setDateOfBirth] = useState(null);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isCountryPickerVisible, setCountryPickerVisibility] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Added showPassword state
   const { login } = useContext(AuthContext);
 
   const handleSignUp = async () => {
-    
     // Add email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!userName || !password || !confirmPassword || !email || !selectedCountry || !dateOfBirth) {
+    if (
+      !userName ||
+      !password ||
+      !confirmPassword ||
+      !email ||
+      !selectedCountry ||
+      !dateOfBirth
+    ) {
       Alert.alert('Sign Up Failed', 'Please fill in all fields.');
       return;
     }
@@ -56,26 +64,19 @@ const SignUpScreen = () => {
       return;
     }
 
-    const today = new Date(); 
+    const today = new Date();
     const dob = new Date(dateOfBirth);
-    let age = today.getFullYear() - dob.getFullYear(); 
+    let age = today.getFullYear() - dob.getFullYear();
 
-    if (today.getMonth() < dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) {
+    if (
+      today.getMonth() < dob.getMonth() ||
+      (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())
+    ) {
       age--;
     }
 
     if (age < 21) {
       Alert.alert('Sign Up Failed', 'You must be at least 21 years old to sign up.');
-      return;
-    }
-
-    if (!userName || !password || !confirmPassword || !email || !selectedCountry || !dateOfBirth) {
-      Alert.alert('Sign Up Failed', 'Please fill in all fields.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert('Sign Up Failed', 'Passwords do not match');
       return;
     }
 
@@ -137,167 +138,227 @@ const SignUpScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.iconContainer}>
-        {/* Icon at the top center */}
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.headerContainer}>
         <Image
-          source={require('../../assets/PropertyGo-HighRes-Logo.png')} // Replace with the actual path to your image
-          style={styles.iconImage}
+          source={require('../../assets/PropertyGo-HighRes-Logo.png')}
+          style={styles.headerImage}
         />
+        <Text style={styles.headerText}>Sign Up</Text>
       </View>
-      <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        placeholderTextColor="black"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="User Name"
-        placeholderTextColor="black"
-        value={userName}
-        onChangeText={setUserName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="black"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        placeholderTextColor="black"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="black"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <View style={styles.pickerContainer}>
-        {/* Date of Birth Picker */}
-        <TouchableOpacity
-          style={styles.datePickerButton}
-          onPress={() => setDatePickerVisibility(true)}
-        >
-          <Text style={styles.pickerText}>
-            {dateOfBirth ? dateOfBirth.toDateString() : 'Date of Birth'}
-          </Text>
-        </TouchableOpacity>
-        <Modal
-          transparent={true}
-          animationType="slide"
-          visible={isDatePickerVisible}
-          onRequestClose={() => setDatePickerVisibility(false)}
-        >
-          <View style={styles.modalView}>
-            <DateTimePicker
-              isVisible={isDatePickerVisible}
-              mode="date"
-              onConfirm={(date) => {
-                setDateOfBirth(date);
-                setDatePickerVisibility(false);
-              }}
-              onCancel={() => setDatePickerVisibility(false)}
+      <View style={styles.formContainer}>
+        <View style={styles.inputRow}>
+          <Text style={styles.label}>Full Name:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Full Name"
+            placeholderTextColor="black"
+            value={name}
+            onChangeText={setName}
+          />
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.label}>User Name:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="User Name"
+            placeholderTextColor="black"
+            value={userName}
+            onChangeText={setUserName}
+          />
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.label}>Password:</Text>
+          <View style={styles.passwordInputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="black"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword} // Toggle secureTextEntry based on showPassword
+            />
+            <TouchableOpacity
+              style={styles.passwordIcon}
+              onPress={() => setShowPassword(!showPassword)} // Toggle showPassword state
+            >
+              <Icon
+                name={showPassword ? 'eye' : 'eye-slash'}
+                size={20}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.label}>Confirm Password:</Text>
+          <View style={styles.passwordInputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm Password"
+              placeholderTextColor="black"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={!showPassword} // Toggle secureTextEntry based on showPassword
             />
           </View>
-        </Modal>
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.label}>Email:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="black"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+          />
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.label}>Date of Birth:</Text>
+          <TouchableOpacity
+            style={styles.datePickerButton}
+            onPress={() => setDatePickerVisibility(true)}
+          >
+            <Text style={styles.pickerText}>
+              {dateOfBirth ? dateOfBirth.toDateString() : 'Date of Birth'}
+            </Text>
+          </TouchableOpacity>
+          <Modal
+            transparent={true}
+            animationType="slide"
+            visible={isDatePickerVisible}
+            onRequestClose={() => setDatePickerVisibility(false)}
+          >
+            <View style={styles.modalView}>
+              <DateTimePicker
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={(date) => {
+                  setDateOfBirth(date);
+                  setDatePickerVisibility(false);
+                }}
+                onCancel={() => setDatePickerVisibility(false)}
+              />
+            </View>
+          </Modal>
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.label}>Country:</Text>
+          <TouchableOpacity
+            style={styles.countryPickerButton}
+            onPress={() => setCountryPickerVisibility(true)}
+          >
+            <Text style={styles.pickerText}>
+              {selectedCountry || 'Select Country'}
+            </Text>
+          </TouchableOpacity>
+          <Modal
+            transparent={true}
+            animationType="slide"
+            visible={isCountryPickerVisible}
+            onRequestClose={() => setCountryPickerVisibility(false)}
+          >
+            <View style={styles.modalView}>
+              <Picker
+                selectedValue={selectedCountry}
+                onValueChange={(itemValue) => {
+                  setSelectedCountry(itemValue);
+                  setCountryPickerVisibility(false);
+                }}
+              >
+                {countries.map((country) => (
+                  <Picker.Item
+                    key={country.value}
+                    label={country.label}
+                    value={country.value}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </Modal>
+        </View>
       </View>
-      <View style={styles.pickerContainer}>
-        {/* Country Picker */}
-        <TouchableOpacity
-          style={styles.countryPickerButton}
-          onPress={() => setCountryPickerVisibility(true)}
-        >
-          <Text style={styles.pickerText}>
-            {selectedCountry || 'Select Country'}
-          </Text>
-        </TouchableOpacity>
-        <Modal
-          transparent={true}
-          animationType="slide"
-          visible={isCountryPickerVisible}
-          onRequestClose={() => setCountryPickerVisibility(false)}
-        >
-          <View style={styles.modalView}>
-            <Picker
-              selectedValue={selectedCountry}
-              onValueChange={(itemValue) => {
-                setSelectedCountry(itemValue);
-                setCountryPickerVisibility(false);
-              }}
-            >
-              {countries.map((country) => (
-                <Picker.Item
-                  key={country.value}
-                  label={country.label}
-                  value={country.value}
-                />
-              ))}
-            </Picker>
-          </View>
-        </Modal>
-      </View>
-      <View style={styles.buttonContainer}>
-        {/* Shifted "Sign Up" button below */}
-        <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+      <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+        <View style={styles.buttonContent}>
+          <Icon name="user-plus" size={24} color="white" style={styles.icon} />
           <Text style={styles.signUpButtonText}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        </View>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
+    alignItems: 'center',
     padding: 16,
+    backgroundColor: '#FFFFFF',
   },
-  iconContainer: {
-    alignItems: 'center', // Center the icon horizontally
-    marginTop: 10, // Add some top margin
-    marginBottom: 20, // Add some bottom margin
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerImage: {
+    width: 60,
+    height: 60,
+    marginRight: 10,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  formContainer: {
+    width: '100%',
+  },
+  inputRow: {
+    marginBottom: 10,
+    width: '100%',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
   input: {
-    height: 50,
+    height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 20,
-    paddingLeft: 10,
-    color: 'black',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    fontSize: 14, // Match the font size
   },
-  pickerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+  passwordInputContainer: {
+    position: 'relative',
+  },
+  passwordIcon: {
+    position: 'absolute',
+    right: 10,
+    top: '45%',
+    transform: [{ translateY: -12 }],
   },
   datePickerButton: {
-    flex: 1,
-    height: 50,
+    height: 40,
     borderColor: 'gray',
     borderWidth: 1,
     paddingLeft: 10,
     justifyContent: 'center',
+    borderRadius: 5, // Add border radius
   },
   countryPickerButton: {
-    flex: 1,
-    height: 50,
+    height: 40,
     borderColor: 'gray',
     borderWidth: 1,
     paddingLeft: 10,
     justifyContent: 'center',
+    borderRadius: 5, // Add border radius
   },
   pickerText: {
-    fontSize: 16,
+    fontSize: 14,
     color: 'black',
   },
   modalView: {
@@ -305,25 +366,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
   },
-  buttonContainer: {
-    flex: 1, // Ensure the button container takes remaining space
-    justifyContent: 'flex-end', // Push the button to the bottom
-  },
   signUpButton: {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 10,
     backgroundColor: '#1E90FF',
     marginVertical: 10,
+    width: '60%',
   },
   signUpButtonText: {
     fontSize: 18,
     color: 'white',
   },
-  iconImage: {
-    width: 60, // Adjust the width and height as needed
-    height: 60,
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    marginLeft: 10,
   },
 });
 

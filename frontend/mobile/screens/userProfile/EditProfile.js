@@ -152,6 +152,7 @@ function EditProfile({ navigation, route }) {
                 }
             } else {
                 console.error('Failed to update user profile:', message);
+                Alert.alert('Error', message || 'Profile update failed.');
             }
         } catch (error) {
             console.error('Error updating user profile:', error);
