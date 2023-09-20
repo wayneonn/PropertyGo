@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { AuthContext } from '../../AuthContext';
 import base64 from 'react-native-base64';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icon library
 
 function UserProfile({ navigation }) {
   const { user, logout } = useContext(AuthContext);
@@ -35,7 +36,7 @@ function UserProfile({ navigation }) {
         ) : (
           <Image
             source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-            style={{ width: 200, height: 200, borderRadius: 50 }}
+            style={{ width: 150, height: 150, borderRadius: 120 }}
           />
         )}
         <Text style={styles.heading}>Profile Picture</Text>
@@ -64,6 +65,12 @@ function UserProfile({ navigation }) {
           navigation.navigate('EditProfile'); //Change this to the correct screen name
         }}
       >
+        <Icon
+          name="edit"
+          size={20}
+          color="white"
+          style={styles.editIcon}
+        />
         <Text style={styles.editProfileButtonText}>Edit Profile</Text>
       </TouchableOpacity>
     </View>
@@ -77,18 +84,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  iconContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  userIcon: {
+    marginBottom: 20,
+  },
   profileHeader: {
     alignItems: 'center',
     marginBottom: 20,
   },
   profileImage: {
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     borderRadius: 120,
   },
   defaultProfileImage: {
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     borderRadius: 120,
     backgroundColor: 'lightgray',
     justifyContent: 'center',
@@ -113,12 +128,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   label: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     marginRight: 8,
   },
   value: {
-    fontSize: 20,
+    fontSize: 18,
     marginBottom: 16,
   },
   editProfileButton: {
@@ -127,7 +142,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 20,
     width: '90%',
-    marginTop: 100,
+    marginTop: 40,
+    flexDirection: 'row', // Align icon and text horizontally
+    alignItems: 'center', // Center vertically
+    justifyContent: 'center',
+  },
+  editIcon: {
+    marginRight: 10,
   },
   editProfileButtonText: {
     color: 'white',
@@ -144,9 +165,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 80,
-},
+    marginTop: -50,
+    marginBottom: 50,
+  },
 });
 
 export default UserProfile;
