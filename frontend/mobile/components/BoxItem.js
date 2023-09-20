@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { getTimeAgo } from '../services/CalculateTimeAgo';
 
-const BoxItem = ({ parentTitleStatus, title, reason, message, createdAt, response }) => {
+const BoxItem = ({ parentTitleStatus, title, reason, message, updatedAt, response }) => {
   const backgroundColor =
     parentTitleStatus === 'Replied'
       ? 'rgba(0, 255, 0, 0.1)'
@@ -19,7 +19,7 @@ const BoxItem = ({ parentTitleStatus, title, reason, message, createdAt, respons
         )}
       </View>
       <View style={styles.rightBox}>
-        <Text style={styles.timestampText}>{getTimeAgo(createdAt)}</Text>
+        <Text style={styles.timestampText}>{getTimeAgo(updatedAt)}</Text>
       </View>
     </View>
   );
