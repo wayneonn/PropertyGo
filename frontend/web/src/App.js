@@ -2,8 +2,6 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./components/Common/AppLayout";
 
-import SideBar from "./components/Common/SideBar";
-import TopBar from "./components/Common/TopBar";
 import AdminProfile from "./containers/AdminProfile";
 import Faq from "./containers/Faq";
 import ContactUs from "./containers/ContactUs";
@@ -18,13 +16,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<PrivateRoute />}>
-          <Route path="/admin/profile" element={<AdminProfile />} />
-          <Route path="/admin/faqs" element={<Faq />} />
-          <Route path="/admin/contact-us" element={<ContactUs />} />
-          <Route path="/admin" element={<NotFound />} />
-          <Route path="/not-found" element={<LogoutNotFound />} />
-        </Route>
         <Route
           element={
             <AppLayout>
