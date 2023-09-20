@@ -31,6 +31,7 @@ const AdminProfile = () => {
   const [validationMessages, setValidationMessages] = useState({
     empty: false,
     notUnique: false,
+    userNameUnchanged: false,
   });
 
   // toast message
@@ -76,6 +77,7 @@ const AdminProfile = () => {
     const newMessage = {
       empty: false,
       notUnique: false,
+      userNameUnchanged: false,
     };
 
     const newUserNameTrimmed = newUserName.trim();
@@ -92,6 +94,12 @@ const AdminProfile = () => {
         oldUserName: userName,
         updatedUserName: newUserName,
       });
+
+      if (response.data.message === "unchanged") {
+        newMessage.userNameUnchanged = true;
+        setValidationMessages(newMessage);
+        return;
+      }
 
       if (response.status === 200) {
         setValidationMessages(newMessage);
@@ -117,6 +125,7 @@ const AdminProfile = () => {
       emptyConfirmNewPassword: false,
       currentPasswordIncorrect: false,
       newPasswordDifferentConfirmPassword: false,
+      passwordUnchanged: false,
     };
 
     const passwordTrimmed = password.trim();
@@ -147,6 +156,17 @@ const AdminProfile = () => {
     if (newPasswordTrimmed !== confirmPasswordTrimmed) {
       newMessage.newPasswordDifferentConfirmPassword = true;
       setValidationMessages(newMessage);
+    }
+
+    if (passwordTrimmed === newPasswordTrimmed) {
+      newMessage.passwordUnchanged = true;
+      setValidationMessages(newMessage);
+    }
+
+    if (
+      newMessage.newPasswordDifferentConfirmPassword ||
+      newMessage.passwordUnchanged
+    ) {
       return;
     }
 
@@ -203,7 +223,13 @@ const AdminProfile = () => {
         <BreadCrumb name="Profile"></BreadCrumb>
       </div>
       <div>
-        <div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <Row>
             <Col xs={6}>
               <Toast
@@ -315,7 +341,9 @@ const AdminProfile = () => {
                   value={newUserName}
                   onChange={(e) => setNewUserName(e.target.value)}
                   isInvalid={
-                    validationMessages.empty || validationMessages.notUnique
+                    validationMessages.empty ||
+                    validationMessages.notUnique ||
+                    validationMessages.userNameUnchanged
                   }
                 />
                 {validationMessages.empty && (
@@ -326,6 +354,11 @@ const AdminProfile = () => {
                 {validationMessages.notUnique && (
                   <Form.Control.Feedback type="invalid">
                     Username already exists. Please choose another username.
+                  </Form.Control.Feedback>
+                )}
+                {validationMessages.userNameUnchanged && (
+                  <Form.Control.Feedback type="invalid">
+                    Username unchanged.
                   </Form.Control.Feedback>
                 )}
               </Form.Group>
@@ -463,7 +496,10 @@ const AdminProfile = () => {
                     name="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    isInvalid={validationMessages.emptyNewPassword}
+                    isInvalid={
+                      validationMessages.emptyNewPassword ||
+                      validationMessages.passwordUnchanged
+                    }
                   />
                   <Button
                     id={newOpenEye ? "newEyeIconOpen" : "newEyeIconClose"}
@@ -491,6 +527,11 @@ const AdminProfile = () => {
                   {validationMessages.emptyNewPassword && (
                     <Form.Control.Feedback type="invalid">
                       New Password is required.
+                    </Form.Control.Feedback>
+                  )}
+                  {validationMessages.passwordUnchanged && (
+                    <Form.Control.Feedback type="invalid">
+                      Password unchanged.
                     </Form.Control.Feedback>
                   )}
                 </InputGroup>
