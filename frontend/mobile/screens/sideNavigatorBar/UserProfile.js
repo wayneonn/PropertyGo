@@ -60,7 +60,7 @@ function UserProfile({ navigation }) {
       <TouchableOpacity
         style={styles.editProfileButton}
         onPress={() => {
-          navigation.navigate('ProfileUpdate'); //Change this to the correct screen name
+          navigation.navigate('EditProfile'); //Change this to the correct screen name
         }}
       >
         <Text style={styles.editProfileButtonText}>Edit Profile</Text>
