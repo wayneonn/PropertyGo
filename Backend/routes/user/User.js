@@ -79,24 +79,24 @@ router.post("/", upload.single('profileImage'), async (req, res) => {
 router.put("/:id", upload.single('profileImage'), async (req, res) => {
   const userId = req.params.id;
   const updatedUserData = req.body;
-  console.log('Received UserData:', req.body);
-  console.log('Received Profile Image:', req.file);
 
   try {
     const user = await User.findByPk(userId);
 
-    const existingEmail = await User.findOne({
-      where: {
-        email: user.email
-      }
-    });
-
-    if (existingEmail && updatedUserData.email !== user.email) {
-      return res.status(400).json({ error: "Email already exists" });
-    }
-
     if (!user) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    const existingEmail = await User.findOne({
+      where: {
+        email: updatedUserData.email
+      }
+    });
+    console.log('Existing Email:', user.email);
+    console.log('Updated User Data Email:', updatedUserData.email);
+    
+    if (existingEmail && (updatedUserData.email !== user.email)) {
+      return res.status(400).json({ error: "Email already exists" });
     }
 
     if (req.file) {
@@ -113,6 +113,7 @@ router.put("/:id", upload.single('profileImage'), async (req, res) => {
     res.status(500).json({ error: "Error updating user profile" });
   }
 });
+
 
 router.post('/:userId/profilePicture', upload.single('profileImage'), async (req, res) => {
   const userId = req.params.userId;
