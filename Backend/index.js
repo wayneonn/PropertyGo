@@ -30,6 +30,7 @@ const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
 const transactionRoute = require("./routes/user/transactionRoute");
+const contactUsRouter = require('./routes/user/contactUsRoutes');
 const e = require("express");
 
 app.use(cors());
@@ -46,6 +47,7 @@ app.use(
   documentRoute,
   folderRoute,
   transactionRoute,
+  contactUsRouter
 );
 
 db.sequelize

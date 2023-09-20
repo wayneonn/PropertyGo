@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     SafeAreaView,
     Text,
@@ -13,6 +13,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { createContactUs } from '../../utils/contactUsApi';
+import { AuthContext } from '../../AuthContext';
 
 const ContactUs = ({ navigation, route }) => {
     const [reason, setReason] = useState('');
@@ -20,7 +21,7 @@ const ContactUs = ({ navigation, route }) => {
     const [description, setDescription] = useState('');
     const [isModalVisible, setModalVisible] = useState(false);
     const reasonOptions = ['General', 'Support', 'Feedback', 'Other'];
-    const { user } = route.params.parentRoute.params.user;
+    const { user } = useContext(AuthContext);
 
     const handleSubmit = () => {
         if (!reason || !title || !description) {
@@ -42,7 +43,7 @@ const ContactUs = ({ navigation, route }) => {
 
         // console.log(contactUsData);
 
-        createContactUs(user.userId, contactUsData)
+        createContactUs(user.user.userId, contactUsData)
             .then((response) => {
                 toggleModal();
                 console.log('ContactUs created:', response);
