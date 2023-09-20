@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "expo": "^49.0.10"
+    "expo": "^49.0.10",
+    "react-native-image-converter": "^0.4.2"
   }
 }

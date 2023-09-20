@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import {
@@ -6,8 +6,6 @@ import {
     DrawerItemList,
     DrawerItem
 } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
-import HomeStackGroup from './HomeStackGroup';
 import { Ionicons } from '@expo/vector-icons';
 import LogoutButton from '../components/LogoutButton';
 import Appointments from '../screens/sideNavigatorBar/Appointments'
@@ -21,36 +19,68 @@ import UserProfile from '../screens/sideNavigatorBar/UserProfile'
 import WorkWithUs from '../screens/sideNavigatorBar/WorkWithUs'
 import ContactUsStackGroup from './ContactUsStackGroup';
 import TopBar from '../components/Common/TopNavBar';
+import HomeStackGroup from './HomeStackGroup';
+import UserProfileStackGroup from './UserProfileStackGroup';
+import { AuthContext } from '../AuthContext'; // Import your AuthContext
+import base64 from 'react-native-base64';
+
 const CustomDrawerContent = (props) => {
-    const { navigation, profilePictureUrl } = props; // Replace with the actual prop name you use
+    const { navigation, user, updateUserProfilePicture } = props;
+
+    let profileImageBase64;
+    if (user && user.user.profileImage && user.user.profileImage.data) {
+        profileImageBase64 = base64.encodeFromByteArray(user.user.profileImage.data);
+    }
 
     const handleLogout = () => {
         navigation.navigate("Login Portal");
     };
 
+    const [profileImage, setProfileImage] = useState(null);
+    
+
+    useEffect(() => {
+        if (profileImageBase64) {
+            setProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
+        } else {
+            setProfileImage(require('../assets/Default-Profile-Picture-Icon.png'));
+        }
+
+        setName(user && user.user.name ? user.user.name : '');
+    }, [user]);
+
+    const [name, setName] = useState(user && user.user.name ? user.user.name : '');
+
     return (
         <DrawerContentScrollView {...props}>
-            {/* Profile Picture */}
             <View style={{ alignItems: 'center', padding: 16 }}>
-                <Image
-                    source={require('../assets/dog.jpg')}
-                    style={{ width: 100, height: 100, borderRadius: 50 }}
-                />
+                {user && user.user.profileImage ? (
+                    <Image
+                        source={{ uri: `data:image/jpeg;base64,${profileImageBase64}` }}
+                        style={{ width: 100, height: 100, borderRadius: 50 }}
+                    />
+                ) : (
+                    <Image
+                        source={require('../assets/Default-Profile-Picture-Icon.png')}
+                        style={{ width: 100, height: 100, borderRadius: 50 }}
+                    />
+                )}
                 <Text style={{ marginTop: 15, fontSize: 16, fontWeight: 'bold', color: 'black' }}>
                     PropertyGo
                 </Text>
+                {user && user.user.name && (
+                    <Text style={{ marginTop: 5, fontSize: 16 }}>
+                        Welcome, {name}
+                    </Text>
+                )}
             </View>
 
-            {/* Drawer Items */}
             <DrawerItemList {...props} />
 
-            {/* Logout Button */}
             <LogoutButton onPress={handleLogout} />
         </DrawerContentScrollView>
     );
 };
-
-
 
 const Drawer = createDrawerNavigator();
 
@@ -68,6 +98,7 @@ const createDrawerScreen = (name, component, iconName, label, hideHeader = false
                 />
             ),
             // headerShown: !hideHeader && route.name !== 'Home', // Show header unless it's the "Home" screen
+            headerShown: false,
         }),
     };
 };
@@ -75,7 +106,7 @@ const createDrawerScreen = (name, component, iconName, label, hideHeader = false
 const drawerScreens = [
     createDrawerScreen('Home', HomeStackGroup, 'home', 'Home'),
     createDrawerScreen('Explore Services', ExploreServices, 'search', 'Explore Services'),
-    createDrawerScreen('User Profile', UserProfile, 'person', 'User Profile'),
+    createDrawerScreen('User Profile', UserProfileStackGroup, 'person', 'User Profile'),
     createDrawerScreen('User Listings', UserListings, 'list', 'User Listings'),
     createDrawerScreen('Appointments', Appointments, 'calendar', 'Appointments'),
     createDrawerScreen('Documents', Documents, 'document', 'Documents'),
@@ -86,17 +117,35 @@ const drawerScreens = [
     createDrawerScreen('Work With Us', WorkWithUs, 'briefcase', 'Work With Us'),
 ];
 
+const SideBar = ({ route }) => {
+    const { user } = useContext(AuthContext);
+    
+    let profileImageBase64;
+    if (user && user.user.profileImage && user.user.profileImage.data) {
+        profileImageBase64 = base64.encodeFromByteArray(user.user.profileImage.data);
+    }
 
-const SideBar = ({route}) => {
+    const [profileImage, setProfileImage] = useState(null);
+    const [name, setName] = useState(user && user.user.name ? user.user.name : '');
+
+    useEffect(() => {
+        if (user && user.user.profileImage) {
+            setProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
+        } else {
+            setProfileImage(require('../assets/Default-Profile-Picture-Icon.png'));
+        }
+
+        setName(user && user.user.name ? user.user.name : '');
+    }, [user]);
 
     return (
         <Drawer.Navigator
-            drawerContent={(props) => <CustomDrawerContent {...props} />}
-            screenOptions={{
+            drawerContent={(props) => <CustomDrawerContent {...props} user={user} />}
+            screenOptions={() => ({
                 drawerActiveTintColor: "#FFD700",
                 header: () => <TopBar/>,
                 // headerShown: false,
-            }}>
+            })}>
             {drawerScreens.map((screen) => (
                 <Drawer.Screen
                     key={screen.name}
