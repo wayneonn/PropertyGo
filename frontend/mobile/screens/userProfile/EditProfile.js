@@ -107,15 +107,15 @@ function EditProfile({ navigation, route }) {
             formData.append('email', editedUser.email);
             formData.append('countryOfOrigin', editedUser.countryOfOrigin);
             formData.append('dateOfBirth', editedUser.dateOfBirth);
-    
+
             // Call the updateUserProfile function to update user profile data
             const { success, data, message } = await updateUserProfile(user.user.userId, formData);
-    
+
             if (success) {
                 // If the profile update is successful, also update the profile picture
                 if (profileImage) {
                     const response = await updateUserProfilePicture(user.user.userId, profileImage);
-    
+
                     if (response.success) {
                         fetchUpdatedUserDetails();
                         Alert.alert('Success', 'Profile updated successfully!');
@@ -167,6 +167,16 @@ function EditProfile({ navigation, route }) {
 
     return (
         <View style={styles.container}>
+            <View style={styles.headerContainer}>
+                {/* Back button */}
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
+            <Text style={styles.header}>Edit Profile</Text>
             <View style={styles.profileHeader}>
                 <TouchableOpacity onPress={chooseImage}>
                     {profileImage ? (
@@ -289,7 +299,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     heading: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         marginTop: 16,
     },
@@ -369,7 +379,7 @@ const styles = StyleSheet.create({
     },
     updatePasswordButton: {
         backgroundColor: '#FF6347',
-        padding: 12,
+        padding: 10,
         borderRadius: 8,
         width: '90%',
         marginTop: 10,
@@ -381,6 +391,23 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         marginLeft: 8,
+        textAlign: 'center',
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 16,
+        marginTop: 40,
+    },
+    backButton: {
+        marginRight: 320,
+        marginTop: 20,
+    },
+    header: {
+        fontSize: 34,
+        fontWeight: 'bold',
+        marginBottom: 70,
+        marginTop: -20,
         textAlign: 'center',
     },
 });

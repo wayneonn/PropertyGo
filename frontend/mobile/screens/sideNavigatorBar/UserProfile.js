@@ -25,6 +25,7 @@ function UserProfile({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.header}>User Profile</Text>
       <View style={styles.profileHeader}>
         {profileImageBase64 ? (
           <Image
@@ -37,7 +38,7 @@ function UserProfile({ navigation }) {
             style={{ width: 200, height: 200, borderRadius: 50 }}
           />
         )}
-        <Text style={styles.heading}>User Profile</Text>
+        <Text style={styles.heading}>Profile Picture</Text>
       </View>
       <View style={styles.profileInfo}>
         <View style={styles.row}>
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   heading: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     marginTop: 16,
   },
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 20,
     width: '90%',
-    marginTop: 250,
+    marginTop: 100,
   },
   editProfileButtonText: {
     color: 'white',
@@ -138,6 +139,14 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     marginTop: 8,
   },
+  header: {
+    fontSize: 34,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+    marginTop: 100,
+    marginBottom: 80,
+},
 });
 
 export default UserProfile;

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useLayoutEffect } from 'react'; // Import the useLayoutEffect
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { AuthContext } from '../../AuthContext';
-import { updateUserProfile } from '../../utils/api'; // Import the function from your API utils
+import { updateUserProfile, loginUser } from '../../utils/api'; // Import the function from your API utils
 import { Ionicons } from '@expo/vector-icons';
 
 function UpdatePassword({ navigation }) {
@@ -15,16 +15,13 @@ function UpdatePassword({ navigation }) {
     const updateUserPassword = async () => {
         try {
             const formData = new FormData();
-            formData.append('name', user.user.name); // Reusing name here as it's not being updated
-            formData.append('email', user.user.email); // Reusing email here as it's not being updated
-            formData.append('countryOfOrigin', user.user.countryOfOrigin); // Reusing country here as it's not being updated
-            formData.append('dateOfBirth', user.user.dateOfBirth); // Reusing dateOfBirth here as it's not being updated
-            formData.append('password', newPassword); // Set the new password
+            formData.append('password', newPassword); 
 
             // Call the updateUserProfile function to update user profile data, including the password
             const { success, data, message } = await updateUserProfile(user.user.userId, formData);
 
             if (success) {
+                fetchUpdatedUserDetails();
                 Alert.alert('Success', 'Password changed successfully!', [
                     { text: 'OK', onPress: () => navigation.goBack() },
                 ]);
@@ -63,6 +60,20 @@ function UpdatePassword({ navigation }) {
         } catch (error) {
             console.error('Error updating password:', error);
             Alert.alert('Error', 'An error occurred while updating the password');
+        }
+    };
+
+    const fetchUpdatedUserDetails = async () => {
+        try {
+            const { success, data, message } = await loginUser(user.user.userName, newPassword);
+
+            if (success) {
+                login(data);
+            } else {
+                Alert.alert('Error', message);
+            }
+        } catch (error) {
+            console.error('Error fetching updated user details:', error);
         }
     };
 
