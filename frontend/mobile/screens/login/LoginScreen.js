@@ -1,60 +1,88 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
-import { AuthContext } from '../../AuthContext'; // Import the AuthContext from the correct path
+import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import { AuthContext } from '../../AuthContext';
 import { loginUser } from '../../utils/api';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icon library
 
 function LoginScreen({ navigation }) {
-  const { login } = useContext(AuthContext); // Use the AuthContext to access login function
+  const { login } = useContext(AuthContext);
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const showMessage = (msg) => {
     setMessage(msg);
     setTimeout(() => {
       setMessage(null);
-    }, 3000);
+    }, 500);
   };
 
   const handleLogin = async () => {
+    // Validate username and password
+    if (!userName.trim() || !password.trim()) {
+      Alert.alert("Input Entry",'Please enter both username and password.');
+      return;
+    }
+
     const { success, data, message } = await loginUser(userName, password);
 
     if (success) {
-      login(data); // Use the login function from AuthContext to set the user
+      login(data);
       showMessage('Login successful');
       setTimeout(() => {
         navigation.navigate('Side Navigator', { user: data });
       }, 500);
     } else {
-      showMessage(message);
+      Alert.alert("Error",message);
     }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        {/* Icon at the top center */}
         <Image
-          source={require('../../assets/PropertyGo-HighRes-Logo.png')} // Replace with the actual path to your image
+          source={require('../../assets/PropertyGo-HighRes-Logo.png')}
           style={styles.iconImage}
         />
       </View>
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        placeholderTextColor="black"
-        value={userName}
-        onChangeText={setUserName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="black"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <View style={styles.formContainer}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Username</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your username"
+            placeholderTextColor="black"
+            value={userName}
+            onChangeText={setUserName}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Password</Text>
+          <View style={styles.passwordInputContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Enter your password"
+              placeholderTextColor="black"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity
+              style={styles.eyeIcon}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Icon
+                name={showPassword ? 'eye-slash' : 'eye'}
+                size={20}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <Icon name="sign-in" size={20} color="white" style={styles.loginIcon} />
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
       {message && (
@@ -76,21 +104,54 @@ const styles = {
     marginTop: 20,
     marginBottom: 40,
   },
+  formContainer: {
+    marginBottom: 20,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: 'black',
+  },
   input: {
     height: 50,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 20,
     paddingLeft: 10,
+    borderRadius: 5,
     color: 'black',
   },
-  loginButton: {
+  passwordInputContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    height: 50,
+    color: 'black',
+  },
+  eyeIcon: {
+    paddingHorizontal: 10,
+  },
+  loginButton: {
+    flexDirection: 'row', // Align icon and text horizontally
+    alignItems: 'center', // Center vertically
     justifyContent: 'center',
     padding: 15,
     borderRadius: 25,
     backgroundColor: '#1E90FF',
     marginVertical: 10,
+    marginTop: 30,
+  },
+  loginIcon: {
+    marginRight: 10,
   },
   loginButtonText: {
     fontSize: 18,
@@ -104,7 +165,8 @@ const styles = {
     paddingVertical: 20,
     paddingHorizontal: 40,
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 200,
+    marginTop: 300,
   },
   messageText: {
     fontSize: 16,
@@ -115,6 +177,5 @@ const styles = {
     height: 60,
   },
 };
-
 
 export default LoginScreen;
