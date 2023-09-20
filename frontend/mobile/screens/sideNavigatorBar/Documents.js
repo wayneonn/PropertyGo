@@ -57,6 +57,7 @@ function UploadScreen({ navigation }) {
       const documents = await response.json();
       setPrevDocuments(documents);
       setFilteredDocs(documents);
+      setSelectedFolder(defaultFolderId); //
     } catch (error) {
       console.error(error);
     }
@@ -239,7 +240,7 @@ function UploadScreen({ navigation }) {
   // This is suppose to remove a documents from the selected documents list.
   const removeDocument = (document) => {
     const newSelectedDocuments = selectedDocuments.filter(
-      (doc) => doc.title !== document.title
+      (doc) => doc.name !== document.name
     );
     setSelectedDocuments([...newSelectedDocuments]);
   };
