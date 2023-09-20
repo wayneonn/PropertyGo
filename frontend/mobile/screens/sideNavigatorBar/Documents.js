@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -6,7 +6,6 @@ import {
   Button,
   FlatList,
   TextInput,
-  TouchableOpacity,
   Platform,
   Modal,
   ScrollView,
@@ -16,6 +15,7 @@ import { Picker } from "@react-native-picker/picker";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { openBrowserAsync } from "expo-web-browser";
+import { AuthContext } from "../../AuthContext";
 
 //Conditional FileSaver import.
 let FileSaver;
@@ -26,9 +26,11 @@ if (__DEV__ && Platform.OS === "web") {
 // I know my code is fuuuuuuucked up lol, I am going to be splitting them into smaller components soon so each parts has its own component.
 // This is some omega-level one JS file app XDDDDDDD
 
+/* CONSTANTS FOR THE WHOLE PAGE */
 // This may need to be responsive if we want auto-UI scaling per window size, but this only applies to Web.
 const { width, height } = Dimensions.get("window");
 const responsiveWidth = width * 0.8;
+const BASE_URL = "http://192.168.50.157:3000";
 
 function UploadScreen({ navigation }) {
   const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
@@ -46,18 +48,21 @@ function UploadScreen({ navigation }) {
   const [defaultTransactionId, setDefaultTransactionId] = useState(1); // Default transaction id
   const [defaultFolderId, setDefaultFolderId] = useState(1); // Default folder id
   const [filteredDocs, setFilteredDocs] = useState(prevDocuments); // Filtered documents
+  const { user } = useContext(AuthContext);
+  const USER_ID = user.user.userId;
 
   // General issue here seems to be that the Data Array is too big
   // It is in one omega array? I think we need to split it up into smaller arrays.
   const fetchDocuments = async () => {
     try {
       const response = await fetch(
-        "http://10.249.191.117:3000/user/documents/list/metadata"
+        `${BASE_URL}/user/documents/list/metadata/${USER_ID}}`
       );
       const documents = await response.json();
       setPrevDocuments(documents);
       setFilteredDocs(documents);
       setSelectedFolder(defaultFolderId); //
+      console.log(user);
     } catch (error) {
       console.error(error);
     }
@@ -65,11 +70,8 @@ function UploadScreen({ navigation }) {
 
   // Fetch list of folders from API
   const fetchFolders = async () => {
-    const userId = 4;
     try {
-      const response = await fetch(
-        `http://10.249.191.117:3000/user/folders/${userId}}`
-      );
+      const response = await fetch(`${BASE_URL}/user/folders/${USER_ID}}`);
       const results = await response.json();
       const folders = results.folders;
       console.log(folders);
@@ -84,9 +86,7 @@ function UploadScreen({ navigation }) {
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch(
-        "http://10.249.191.117:3000/user/transactions/1"
-      );
+      const response = await fetch(`${BASE_URL}/user/transactions/${USER_ID}`);
       const results = await response.json();
       const transactions = results.transactions;
       setTransactions(transactions);
@@ -102,7 +102,7 @@ function UploadScreen({ navigation }) {
       // Web download logic
       // Web: convert buffer to blob
       const response = await fetch(
-        `http://10.249.191.117:3000/user/documents/${document.documentId}/data`
+        `${BASE_URL}/user/documents/${document.documentId}/data`
       );
       const result = await response.json();
       const doc = result.document;
@@ -192,11 +192,10 @@ function UploadScreen({ navigation }) {
   const createNewFolder = async () => {
     // Title of folder
     const title = newFolderName;
-    const userId = 4;
     // Call API to create folder
     try {
       const response = await fetch(
-        `http://10.249.191.1173000/user/folders/create/${userId}`,
+        `${BASE_URL}/user/folders/create/${USER_ID}`,
         {
           method: "POST",
           headers: {
@@ -247,7 +246,7 @@ function UploadScreen({ navigation }) {
 
   const removeDocumentFromServer = async (document) => {
     try {
-      const url = `http://10.249.191.117:3000/user/documents/${document.documentId}`;
+      const url = `${BASE_URL}/user/documents/${document.documentId}`;
       const response = await fetch(url, {
         method: "DELETE",
       });
@@ -285,7 +284,6 @@ function UploadScreen({ navigation }) {
           documentTransactions[document.name] !== undefined
             ? documentTransactions[document.name]
             : defaultTransactionId;
-        const userId = 1;
         const folderId =
           folderSelection[document.name] !== undefined
             ? folderSelection[document.name]
@@ -321,7 +319,7 @@ function UploadScreen({ navigation }) {
         fileData.append("description", descriptions);
         fileData.append("transactionId", transactionId);
         fileData.append("folderId", folderId);
-        fileData.append("userId", userId);
+        fileData.append("userId", USER_ID);
         // Convert to regular JS object
         const obj = Object.fromEntries(fileData.entries());
         // Log object
@@ -329,13 +327,10 @@ function UploadScreen({ navigation }) {
       });
 
       // Send the data to the API
-      const response = await fetch(
-        "http://10.249.191.117:3000/user/documents/upload",
-        {
-          method: "post",
-          body: fileData,
-        }
-      );
+      const response = await fetch(`${BASE_URL}/user/documents/upload`, {
+        method: "post",
+        body: fileData,
+      });
 
       // Check the response status and log the result
       if (response.ok) {
@@ -561,6 +556,9 @@ function UploadScreen({ navigation }) {
           />
         </View>
       </View>
+      <Text style={styles.graytext}>
+        Welcome, {user.user.name}, you are the #{USER_ID} user!
+      </Text>
     </View>
   );
 }
@@ -685,6 +683,11 @@ const styles = StyleSheet.create({
     borderRadius: responsiveWidth * 0.01,
     backgroundColor: "white",
     color: "black",
+  },
+
+  graytext: {
+    fontSize: responsiveWidth * 0.02, // or whatever relative size you want
+    color: "#808080",
   },
 });
 
