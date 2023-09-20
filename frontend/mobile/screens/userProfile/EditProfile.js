@@ -400,14 +400,14 @@ const styles = StyleSheet.create({
         marginTop: 40,
     },
     backButton: {
-        marginRight: 320,
-        marginTop: 20,
+        marginRight: 360,
+        marginTop: -70,
     },
     header: {
         fontSize: 34,
         fontWeight: 'bold',
-        marginBottom: 70,
-        marginTop: -20,
+        marginBottom: 50,
+        marginTop: -50,
         textAlign: 'center',
     },
 });
