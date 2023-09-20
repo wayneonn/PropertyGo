@@ -56,6 +56,7 @@ function UploadScreen({ navigation }) {
       );
       const documents = await response.json();
       setPrevDocuments(documents);
+      setFilteredDocs(documents);
     } catch (error) {
       console.error(error);
     }
@@ -238,14 +239,14 @@ function UploadScreen({ navigation }) {
   // This is suppose to remove a documents from the selected documents list.
   const removeDocument = (document) => {
     const newSelectedDocuments = selectedDocuments.filter(
-      (doc) => doc.name !== document.name
+      (doc) => doc.title !== document.title
     );
     setSelectedDocuments([...newSelectedDocuments]);
   };
 
   const removeDocumentFromServer = async (document) => {
     try {
-      const url = `http://10.249.191.117:3000/user/documents/${document.id}`;
+      const url = `http://10.249.191.117:3000/user/documents/${document.documentId}`;
       const response = await fetch(url, {
         method: "DELETE",
       });
