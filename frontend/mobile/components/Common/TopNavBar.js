@@ -1,105 +1,87 @@
-import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
-import { useNavigation } from "@react-navigation/native";
 import React from 'react';
-import { AntDesign } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
-
+import { Image, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { AntDesign, FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const TopBar = () => {
-
   const navigation = useNavigation();
-
-  // Screen-specific header options
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ marginLeft: 10, marginBottom: 5 }}>
-          <AntDesign name="menu-unfold" size={24} color="black" />
-        </TouchableOpacity>
-      ),
-      headerTitle: () => (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Home')}
-        >
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.HamburgerIcon}>
+        <AntDesign name="menu-unfold" size={26} color="black" />
+      </TouchableOpacity>
+      <View style={styles.logoContainer}>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.logo}>
           <Image
             source={require('../../assets/PropertyGo-Logo.png')}
-            style={{ width: 45, height: 45, marginBottom: 5 }}
+            style={styles.logoImage}
           />
         </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity
-            onPress={() => {
-              /*side nav bar*/
-            }}
-            style={{ marginRight: 15, marginBottom: 5 }}
-          >
-            <FontAwesome5 name="coins" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              /*side nav bar*/
-            }}
-            style={{ marginRight: 10, marginBottom: 5 }}
-          >
-            <Ionicons name="chatbubble-ellipses-outline" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-      ),
-    });
-  }, [navigation]);
-
-
-  return null;
+      </View>
+      <View style={styles.iconsContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            // Handle your action here
+          }}
+          style={styles.coinIcon}
+        >
+          <FontAwesome5 name="coins" size={26} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            // Handle your action here
+          }}
+          style={styles.icon}
+        >
+          <Ionicons name="chatbubble-ellipses-outline" size={26} color="black" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-  topBar: {
+  container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#F5F5F5',
-    borderBottomWidth: 0.2, // Add a border line at the bottom
-    borderBottomColor: '#000',
+    paddingHorizontal: 15,
+    paddingTop:42,
+    paddingBottom:3,
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'grey',
+    elevation: 5,
+    backgroundColor: 'white', // Set the background color of the header
   },
-  centeredContainer: {
-    flexDirection: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 5,
+  HamburgerIcon: {
+    marginRight:39,
   },
-  rightIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  tokenIcon: {
-    width: 30,
-    height: 30,
-  },
-  tokenText: {
-    fontSize: 10,
-    padding: 5,
-    textAlign: 'center',
-  },
-  hamburgerIcon: {
-    width: 30,
-    height: 30,
-  },
-  centerIcon: {
-    position: 'absolute',
-    left: '50%',
-    marginLeft: -15, // half of your icon width
-    width: 50,
-    height: 50,
+  coinIcon: {
+    marginRight: 15,
+    marginBottom: 5,
   },
   chatIcon: {
-    marginLeft: 10,
-    width: 30,
-    height: 30,
-    marginBottom: 10,
+    marginBottom: 5,
+  },
+  logoContainer: {
+    flex: 1,
+    // justifyContent: 'center', // Center horizontally,
+    marginBottom: 5,
+    // borderWidth: 1,
+  },
+  logo: {
+    alignItems: 'center',
+  },
+  logoImage: {
+    width: 45,
+    height: 45,
+    // marginBottom: 3,
+  },
+  iconsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // borderWidth: 1,
+    justifyContent: 'space-between', // Add this line
   },
 });
 

@@ -17,7 +17,7 @@ const UserBottomNavigator = () => {
     return (
         <Tab.Navigator 
         screenOptions={({route, navigation}) => ({
-            // headerShown:false,
+            headerShown:false,
             tabBarIcon: ({color, focused, size}) => {
                 let iconName;
                 if (route.name === "Home") {

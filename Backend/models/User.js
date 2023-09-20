@@ -79,6 +79,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
    },   
+   profileImage: {
+    type: DataTypes.BLOB('long'),
+    allowNull: true, 
+  },
   }, {
     freezeTableName: true
   });
