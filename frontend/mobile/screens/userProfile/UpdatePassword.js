@@ -175,13 +175,13 @@ const styles = StyleSheet.create({
     },
     backButton: {
         marginLeft: 15,
-        marginTop: 20,
+        marginTop: -50,
     },
     header: {
         fontSize: 34,
         fontWeight: 'bold',
         marginBottom: 75,
-        marginTop: 50,
+        marginTop: 20,
         textAlign: 'center',
     },
 });

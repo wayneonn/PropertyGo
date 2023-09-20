@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
-    marginTop: 100,
+    marginTop: 20,
     marginBottom: 80,
 },
 });
