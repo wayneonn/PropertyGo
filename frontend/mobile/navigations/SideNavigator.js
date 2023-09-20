@@ -98,7 +98,7 @@ const createDrawerScreen = (name, component, iconName, label, hideHeader = false
                 />
             ),
             // headerShown: !hideHeader && route.name !== 'Home', // Show header unless it's the "Home" screen
-            headerShown: false,
+            // headerShown: false,
         }),
     };
 };
