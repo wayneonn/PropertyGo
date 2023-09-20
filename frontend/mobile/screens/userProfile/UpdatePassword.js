@@ -16,6 +16,7 @@ function UpdatePassword({ navigation }) {
         try {
             const formData = new FormData();
             formData.append('password', newPassword);
+            formData.append('email', user.user.email);
 
             const { success, data, message } = await updateUserProfile(
                 user.user.userId,
