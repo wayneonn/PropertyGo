@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -14,6 +14,8 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import { signUpUser } from '../../utils/api';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icon library
+import { AuthContext } from '../../AuthContext';
+import { loginUser } from '../../utils/api';
 
 const countries = [
   { label: 'Select Country', value: '' },
@@ -33,6 +35,7 @@ const SignUpScreen = () => {
   const [dateOfBirth, setDateOfBirth] = useState(null);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isCountryPickerVisible, setCountryPickerVisibility] = useState(false);
+  const { login } = useContext(AuthContext); 
 
   const handleSignUp = async () => {
     if (!userName || !password || !confirmPassword || !email || !selectedCountry || !dateOfBirth) {
@@ -67,6 +70,7 @@ const SignUpScreen = () => {
       const signUpResult = await signUpUser(userData);
 
       if (signUpResult.success) {
+        handleLogin();
         Alert.alert('Sign Up Successful', 'Signup successful');
         navigation.navigate('Side Navigator');
       } else if (signUpResult.message) {
@@ -87,6 +91,17 @@ const SignUpScreen = () => {
     } catch (error) {
       console.error('Error:', error);
       Alert.alert('Sign Up Failed', 'Signup failed');
+    }
+  };
+
+  const handleLogin = async () => {
+    const { success, data, message } = await loginUser(userName, password);
+
+    if (success) {
+      login(data); // Use the login function from AuthContext to set the user
+      console.log('Login successful');
+    } else {
+      console.log(message);
     }
   };
 

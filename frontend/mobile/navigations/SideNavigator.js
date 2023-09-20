@@ -26,6 +26,7 @@ import base64 from 'react-native-base64';
 
 const CustomDrawerContent = (props) => {
     const { navigation, user, updateUserProfilePicture } = props;
+    const { logout } = useContext(AuthContext);
 
     let profileImageBase64;
     if (user && user.user.profileImage && user.user.profileImage.data) {
@@ -33,6 +34,7 @@ const CustomDrawerContent = (props) => {
     }
 
     const handleLogout = () => {
+        logout();
         navigation.navigate("Login Portal");
     };
 
