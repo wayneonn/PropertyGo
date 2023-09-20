@@ -18,7 +18,7 @@ const SideBar = () => {
 
   return (
     <div className="navibar">
-      <Nav defaultActiveKey="/" className="flex-column">
+      <Nav defaultActiveKey="/profile" className="flex-column">
         <Nav.Item>
           <Image
             src={imageBasePath + "Logo.png"}
@@ -32,13 +32,13 @@ const SideBar = () => {
           />
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/">
+          <Nav.Link className="a" href="*">
             <PiHouseLine style={{ marginRight: "1em" }}></PiHouseLine>
             Dashboard
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/">
+          <Nav.Link className="a" href="*">
             <LiaClipboardListSolid
               style={{ marginRight: "1em" }}
             ></LiaClipboardListSolid>
@@ -46,7 +46,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/">
+          <Nav.Link className="a" href="*">
             <AiOutlineFolderOpen
               style={{ marginRight: "1em" }}
             ></AiOutlineFolderOpen>
@@ -54,7 +54,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/">
+          <Nav.Link className="a" href="*">
             <PiPuzzlePiece style={{ marginRight: "1em" }}></PiPuzzlePiece>
             Contractors
           </Nav.Link>
@@ -80,13 +80,13 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/">
+          <Nav.Link className="a" href="*">
             <AiOutlineBook style={{ marginRight: "1em" }}></AiOutlineBook>
             Invoice
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/">
+          <Nav.Link className="a" href="*">
             <AiOutlineCreditCard
               style={{ marginRight: "1em" }}
             ></AiOutlineCreditCard>
@@ -102,13 +102,13 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/">
+          <Nav.Link className="a" href="*">
             <PiPuzzlePiece style={{ marginRight: "1em" }}></PiPuzzlePiece>
             Forum
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="/">
+          <Nav.Link className="a" href="*">
             <AiOutlineFolderOpen
               style={{ marginRight: "1em" }}
             ></AiOutlineFolderOpen>
