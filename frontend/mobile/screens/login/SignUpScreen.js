@@ -35,9 +35,39 @@ const SignUpScreen = () => {
   const [dateOfBirth, setDateOfBirth] = useState(null);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isCountryPickerVisible, setCountryPickerVisibility] = useState(false);
-  const { login } = useContext(AuthContext); 
+  const { login } = useContext(AuthContext);
 
   const handleSignUp = async () => {
+    // Add email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!userName || !password || !confirmPassword || !email || !selectedCountry || !dateOfBirth) {
+      Alert.alert('Sign Up Failed', 'Please fill in all fields.');
+      return;
+    }
+
+    if (!emailPattern.test(email)) {
+      Alert.alert('Sign Up Failed', 'Please enter a valid email address.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Sign Up Failed', 'Passwords do not match');
+      return;
+    }
+
+    const today = new Date(); 
+    const dob = new Date(dateOfBirth);
+    let age = today.getFullYear() - dob.getFullYear(); 
+
+    if (today.getMonth() < dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) {
+      age--;
+    }
+
+    if (age < 21) {
+      Alert.alert('Sign Up Failed', 'You must be at least 21 years old to sign up.');
+      return;
+    }
+
     if (!userName || !password || !confirmPassword || !email || !selectedCountry || !dateOfBirth) {
       Alert.alert('Sign Up Failed', 'Please fill in all fields.');
       return;
