@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     SafeAreaView,
     Text,
@@ -10,17 +10,18 @@ import {
     Modal,
     Alert,
 } from 'react-native';
-import TopBar from '../../components/Common/TopNavBar';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
+import { createContactUs } from '../../utils/contactUsApi';
+import { AuthContext } from '../../AuthContext';
 
-const ContactUs = () => {
+const ContactUs = ({ navigation, route }) => {
     const [reason, setReason] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [isModalVisible, setModalVisible] = useState(false);
-    const [submissionStatus, setSubmissionStatus] = useState('');
-    const reasonOptions = ['General Inquiry', 'Support', 'Feedback', 'Other'];
+    const reasonOptions = ['General', 'Support', 'Feedback', 'Other'];
+    const { user } = useContext(AuthContext);
 
     const handleSubmit = () => {
         if (!reason || !title || !description) {
@@ -33,8 +34,25 @@ const ContactUs = () => {
         console.log('Title:', title);
         console.log('Description:', description);
 
-        setSubmissionStatus('success');
-        toggleModal();
+        const contactUsData = {
+            title: title,
+            message: description,
+            reason: reason.toUpperCase(), // Choose one of the allowed values: 'GENERAL', 'SUPPORT', 'FEEDBACK', 'OTHERS'
+            status: 'PENDING', // Choose one of the allowed values: 'PENDING', 'REPLIED'
+        };
+
+        // console.log(contactUsData);
+
+        createContactUs(user.user.userId, contactUsData)
+            .then((response) => {
+                toggleModal();
+                console.log('ContactUs created:', response);
+            })
+            .catch((error) => {
+                Alert.alert('Error', 'Error Submitting');
+                console.error('Error creating ContactUs:', error);
+            });
+
 
         // Clear the form
         setTitle('');
@@ -47,17 +65,14 @@ const ContactUs = () => {
     };
 
     const closeModal = () => {
-        setSubmissionStatus('');
+        navigation.navigate('ContactUs Status')
         toggleModal();
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* <TopBar /> */}
 
             <ScrollView style={styles.formContainer}>
-
-                <>
                     <Text style={styles.header}>Contact Us</Text>
                     <Text style={styles.subheader}>We would love to hear from you!</Text>
 
@@ -96,7 +111,6 @@ const ContactUs = () => {
                     >
                         <Text style={styles.submitButtonText}>Submit</Text>
                     </TouchableHighlight>
-                </>
                 {/* Company address and social media icons */}
                 <View style={styles.companyInfoContainer}>
                     <Text style={styles.companyAddress}>123 Cecil Street</Text>

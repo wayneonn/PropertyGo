@@ -7,6 +7,7 @@ import LoginScreen from '../screens/login/LoginScreen.js';
 import SignUpScreen from '../screens/login/SignUpScreen';
 import SignUpSelection from '../screens/login/SignUpSelection';
 import LoginSelection from '../screens/login/LoginSelection';
+import GoogleSignUp from '../screens/login/GoogleSignUp';
 import SideNavigator from './SideNavigator'
 
 const Stack = createNativeStackNavigator();
@@ -15,6 +16,7 @@ const LoginNavigator = () => {
     return (
         <Stack.Navigator>
             {/* <Stack.Screen name="Home Page" component={HomePage} /> */}
+            {/* <Stack.Screen name="Google Sign Up" component={GoogleSignUp} /> */}
             <Stack.Screen name="Get Started" component={GetStarted} />
             <Stack.Screen name="Login Portal" component={LoginPortal} />
             <Stack.Screen name="Sign Up Screen" component={SignUpScreen} />

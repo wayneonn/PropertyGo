@@ -3,8 +3,9 @@ const router = express.Router();
 
 const { OAuth2Client } = require('google-auth-library');
 const CLIENT_ID = '975614309732-7efv821237vv7prh9oq73vek4bv2h4il.apps.googleusercontent.com';
-const REDIRECT_URI = 'https://10c7-132-147-113-199.ngrok.io'; // Update with your actual redirect URI
-const client = new OAuth2Client(CLIENT_ID, '', REDIRECT_URI);
+// const REDIRECT_URI = 'https://c5c5-132-147-113-199.ngrok.io'; // Update with your actual redirect URI
+const client = new OAuth2Client(CLIENT_ID);
+// const client = new OAuth2Client(CLIENT_ID, '', REDIRECT_URI);
 
 const db = require('../models'); // Adjust path as needed
 
@@ -32,7 +33,7 @@ router.post("/google-signin", async (req, res) => {
         email: email,
         googleId: googleId,
         // Add any other necessary fields
-        // ...
+
       });
     }
 

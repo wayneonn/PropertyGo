@@ -12,10 +12,10 @@ const LoginPortal = () => {
         <View style={styles.container}>
             <Text style={styles.welcomeText}>Welcome to PropertyGo!</Text>
             <Image source={require('../../assets/PropertyGo-HighRes-Logo.png')} style={styles.icon} />
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login Options')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
                 <Text style={styles.buttonText}>Sign In</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign Up Options')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign Up Screen')}>
                 <Text style={styles.buttonText}>Sign Up</Text>
             </TouchableOpacity>
         </View>

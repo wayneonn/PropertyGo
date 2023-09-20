@@ -1,8 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const cors = require("cors");
-const admin = require("firebase-admin");
-const { Sequelize, DataTypes } = require("sequelize");
+// const admin = require("firebase-admin");
 const fs = require("fs");
 const { Document } = require("../../models");
 const router = express.Router();
@@ -81,34 +79,34 @@ const upload = multer({
 //   });
 
 // Functions needed or not needed.
-const uploadFirebase = async () => {
-  const defaultBucket = admin.storage().bucket(); // Get the default Firebase Storage bucket
-  const fileUpload = defaultBucket.file(file.originalname);
-  await fileUpload.save(file.buffer, {
-    metadata: {
-      contentType: file.mimetype,
-      metadata: {
-        customMetadata: {
-          originalname: file.originalname,
-          // Add more custom metadata if needed
-        },
-      },
-    },
-  });
-};
+// const uploadFirebase = async () => {
+//   const defaultBucket = admin.storage().bucket(); // Get the default Firebase Storage bucket
+//   const fileUpload = defaultBucket.file(file.originalname);
+//   await fileUpload.save(file.buffer, {
+//     metadata: {
+//       contentType: file.mimetype,
+//       metadata: {
+//         customMetadata: {
+//           originalname: file.originalname,
+//           // Add more custom metadata if needed
+//         },
+//       },
+//     },
+//   });
+// };
 
-const downloadListFirebase = async () => {
-  try {
-    const bucket = admin.storage().bucket(); // Get the default Firebase Storage bucket
-    const [files] = await bucket.getFiles();
-    const documentList = files.map((file) => file.name);
-    res.json(documentList);
-  } catch (error) {
-    // Handle any errors
-    console.error(error);
-    res.status(500).json({ message: "Failed to retrieve the document list" });
-  }
-};
+// const downloadListFirebase = async () => {
+//   try {
+//     const bucket = admin.storage().bucket(); // Get the default Firebase Storage bucket
+//     const [files] = await bucket.getFiles();
+//     const documentList = files.map((file) => file.name);
+//     res.json(documentList);
+//   } catch (error) {
+//     // Handle any errors
+//     console.error(error);
+//     res.status(500).json({ message: "Failed to retrieve the document list" });
+//   }
+// };
 
 const blobToBase64 = (blob) => {
   return new Promise((resolve, reject) => {
@@ -134,14 +132,43 @@ router.post(
       name: "description",
       maxCount: 1,
     },
+    {
+      name: "userId",
+      maxCount: 1,
+    },
+    {
+      name: "transactionId",
+      maxCount: 1,
+    },
+    {
+      name: "folderId",
+      maxCount: 1,
+    },
   ]),
   async (req, res) => {
     // Handle the uploaded files
     const files = req.files["documents"];
     let description = req.body.description;
+    console.log(req.body);
     // If description is an array, pick first element
     if (Array.isArray(description)) {
       description = description[0];
+    }
+    // All the ID to input into the document.
+    let userId = req.body.userId;
+    let transactionId = req.body.transactionId;
+    let folderId = req.body.folderId;
+    // If userId is an array, pick first element
+    if (Array.isArray(userId)) {
+      userId = userId[0];
+    }
+    // If transactionId is an array, pick first element
+    if (Array.isArray(transactionId)) {
+      transactionId = transactionId[0];
+    }
+    // If folderId is an array, pick first element
+    if (Array.isArray(folderId)) {
+      folderId = folderId[0];
     }
 
     // Perform necessary operations with the uploaded files
@@ -160,9 +187,9 @@ router.post(
           size: file.size,
           description: description,
           document: bufferData,
-          userId: file.userId,
-          transactionId: file.transactionId,
-          folderId: file.folderId,
+          userId: userId,
+          transactionId: transactionId,
+          folderId: folderId,
         });
       }
 

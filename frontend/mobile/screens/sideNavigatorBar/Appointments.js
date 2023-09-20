@@ -7,7 +7,6 @@ const Appointments = () => {
 
     return (
       <SafeAreaView >
-        <TopBar/>
         <Text>AppointmentsScreen</Text>
       </SafeAreaView>
     );

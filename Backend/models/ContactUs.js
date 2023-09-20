@@ -39,10 +39,10 @@ module.exports = (sequelize, DataTypes) => {
   ContactUs.associate = (models) => {
     ContactUs.belongsTo(models.User, {
       foreignKey: {
-        name: "userId", // Specify the foreign key name explicitly
+        name: 'userId', // Specify the foreign key name explicitly
         allowNull: false,
       },
-      as: "user",
+      as: 'user',
     });
   };
 
