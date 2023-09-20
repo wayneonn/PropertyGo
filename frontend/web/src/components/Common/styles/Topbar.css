@@ -1,11 +1,10 @@
 .topbar {
-  width: calc(100% - 220px);
+  width: calc(100% - 180px);
+  height: 60px;
   position: fixed;
   top: 0;
   right: 0;
   background-color: #FFFFFF;
-  /* background-color: grey; */
-  padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -6,7 +6,7 @@ const BreadCrumb = ({ name }) => {
     <Breadcrumb>
       <Breadcrumb.Item
         style={{
-          color: "#384D6C",
+          color: "black",
           font: "Montserrat",
           fontWeight: "700",
           fontSize: "16px",
@@ -17,7 +17,7 @@ const BreadCrumb = ({ name }) => {
       </Breadcrumb.Item>
       <Breadcrumb.Item
         style={{
-          color: "#384D6C",
+          color: "black",
           font: "Montserrat",
           fontWeight: "700",
           fontSize: "16px",

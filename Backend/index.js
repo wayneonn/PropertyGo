@@ -8,6 +8,16 @@ const userTestData = require("./test_data/userTestData");
 const adminTestData = require("./test_data/adminTestData");
 
 // testing purpose - remove before demo(?)
+const faqTestData = require('./test_data/faqTestData');
+const contactUsTestData = require('./test_data/contactUsTestData');
+
+// admin routes
+const authRouter = require('./routes/admin/authRoutes');
+const adminRouter = require('./routes/admin/adminRoutes');
+const faqRouter = require('./routes/admin/faqRoutes');
+const contactUsRouter = require('./routes/admin/contactUsRoutes');
+const adminUserRouter = require('./routes/admin/userRoutes');
+
 const faqTestData = require("./test_data/faqTestData");
 const transactionTestData = require("./test_data/transactionTestData");
 const invoiceTestData = require("./test_data/invoiceTestData");
@@ -16,11 +26,6 @@ const imageTestData = require("./test_data/imageTestData");
 const reviewTestData = require("./test_data/reviewTestData");
 const chatTestData = require("./test_data/chatTestData");
 const requestTestData = require("./test_data/requestTestData");
-
-// admin routes
-const authRouter = require("./routes/admin/authRoutes");
-const adminRouter = require("./routes/admin/adminRoutes");
-const faqRouter = require("./routes/admin/faqRoutes");
 
 // user routes
 const postRouter = require("./routes/user/User");
@@ -31,9 +36,11 @@ const e = require("express");
 app.use(cors());
 app.use(express.json());
 
-app.use("/admins", adminRouter);
-app.use("/admin/auth", authRouter);
-app.use("/admin/faqs", faqRouter);
+app.use('/admins', adminRouter);
+app.use('/admin/auth', authRouter);
+app.use('/admin/faqs', faqRouter);
+app.use('/admin/contactUs', contactUsRouter);
+app.use('/admin/users', adminUserRouter);
 
 app.use("/user", postRouter, loginRoute, documentRoute);
 
@@ -50,6 +57,7 @@ db.sequelize
     const existingReviewRecordsCount = await db.Review.count();
     const existingChatRecordsCount = await db.Chat.count();
     const existingRequestRecordsCount = await db.Request.count();
+    const existingContactUsRecordsCount = await db.ContactUs.count();
 
     // General order of data insertion:
     // User -> Admin -> FAQ -> Property -> Image -> Chat -> Transaction -> Invoice -> Review
@@ -60,7 +68,6 @@ db.sequelize
         for (const userData of userTestData) {
           await db.User.create(userData);
         }
-
         console.log("User test data inserted successfully.");
       } catch (error) {
         console.error("Error inserting user test data:", error);
@@ -91,7 +98,32 @@ db.sequelize
           await db.FAQ.create(faqData);
         }
 
-        console.log("Faq test data inserted successfully.");
+        if (existingFaqRecordsCount === 0) {
+            try {
+                for (const faqData of faqTestData) {
+                    await db.FAQ.create(faqData);
+                }
+
+                console.log('Faq test data inserted successfully.');
+            } catch (error) {
+                console.error('Error inserting Faq test data:', error);
+            }
+        } else {
+            console.log('Faq test data already exists in the database.');
+        }
+
+        if (existingContactUsRecordsCount === 0) {
+            try {
+                for (const contactUsData of contactUsTestData) {
+                    await db.ContactUs.create(contactUsData);
+                }
+
+                console.log('Contact Us test data inserted successfully.');
+            } catch (error) {
+                console.error('Error inserting Contact Us test data:', error);
+            }
+        } else {
+            console.log('Contact Us test data already exists in the database.');
       } catch (error) {
         console.error("Error inserting Faq test data:", error);
       }
