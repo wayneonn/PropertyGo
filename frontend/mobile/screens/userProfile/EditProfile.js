@@ -282,13 +282,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     profileImage: {
-        width: 200,
-        height: 200,
+        width: 150,
+        height: 150,
         borderRadius: 120,
     },
     defaultProfileImage: {
-        width: 200,
-        height: 200,
+        width: 150,
+        height: 150,
         borderRadius: 120,
         backgroundColor: 'lightgray',
         justifyContent: 'center',
@@ -299,12 +299,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     heading: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
         marginTop: 16,
     },
     profileInfo: {
-        marginTop: 20,
+        marginTop: 18,
         paddingHorizontal: 20,
         width: '100%', // Set width to 100% for consistent sizing
     },
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between', // To evenly distribute label and input
     },
     label: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 'bold',
         textAlign: 'right', // Align labels to the right
         width: '30%', // Adjust label width as needed
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
         flex: 1,
         borderBottomWidth: 0.5,
         borderColor: 'gray',
-        fontSize: 16,
+        fontSize: 14,
         padding: 5,
         marginLeft: 20,
     },
@@ -400,13 +400,13 @@ const styles = StyleSheet.create({
         marginTop: 40,
     },
     backButton: {
-        marginRight: 360,
+        marginRight: 320,
         marginTop: -70,
     },
     header: {
-        fontSize: 34,
+        fontSize: 30,
         fontWeight: 'bold',
-        marginBottom: 50,
+        marginBottom: 20,
         marginTop: -50,
         textAlign: 'center',
     },

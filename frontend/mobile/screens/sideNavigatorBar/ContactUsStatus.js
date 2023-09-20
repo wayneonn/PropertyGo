@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import { getUserContactUs } from '../../utils/contactUsApi';
 import { useFocusEffect } from '@react-navigation/native';
 import BoxItem from '../../components/BoxItem';
 import { ScrollView } from 'react-native-gesture-handler';
+import { AuthContext } from '../../AuthContext';
 
 const ContactUsStatus = ({ route }) => {
-  const { user } = route.params.parentRoute.params.user;
+  const { user } = useContext(AuthContext);
   const [contactUses, setContactUses] = useState([]);
   const [pendingData, setPendingData] = useState([]);
   const [repliedData, setRepliedData] = useState([]);
@@ -16,7 +17,7 @@ const ContactUsStatus = ({ route }) => {
     React.useCallback(() => {
       const fetchData = async () => {
         try {
-          const contactUsData = await getUserContactUs(user.userId);
+          const contactUsData = await getUserContactUs(user.user.userId);
           setContactUses(contactUsData);
           setPendingData(
             contactUsData
@@ -40,7 +41,7 @@ const ContactUsStatus = ({ route }) => {
       };
 
       fetchData();
-    }, [user.userId])
+    }, [user.user.userId])
   );
 
   const renderEmptyListComponent = () => (
