@@ -5,7 +5,6 @@ import TopBar from '../../components/Common/TopNavBar';
 const Favourite = () => {
     return (
       <SafeAreaView >
-        <TopBar/>
         <Text>FavouriteScreen</Text>
       </SafeAreaView>
     );

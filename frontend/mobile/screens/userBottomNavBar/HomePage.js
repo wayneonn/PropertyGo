@@ -30,12 +30,12 @@ const PropertyListing = ({ image, description, price, area, roomFeatures }) => {
 };
 
 // Main home page component
-const HomePage = () => {
+const HomePage = ({ navigation }) => {
 
 
   return (
     <SafeAreaView >
-      <TopBar />
+
       <SearchBar />
 
       {/* Main content image */}

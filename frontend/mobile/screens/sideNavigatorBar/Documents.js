@@ -5,7 +5,6 @@ import TopBar from '../../components/Common/TopNavBar';
 const Documents = () => {
     return (
       <SafeAreaView >
-        <TopBar/>
         <Text>DocumentsScreen</Text>
       </SafeAreaView>
     );

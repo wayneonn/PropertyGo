@@ -20,7 +20,7 @@ import UserListings from '../screens/sideNavigatorBar/UserListings'
 import UserProfile from '../screens/sideNavigatorBar/UserProfile'
 import WorkWithUs from '../screens/sideNavigatorBar/WorkWithUs'
 import ContactUsStackGroup from './ContactUsStackGroup';
-
+import TopBar from '../components/Common/TopNavBar';
 const CustomDrawerContent = (props) => {
     const { navigation, profilePictureUrl } = props; // Replace with the actual prop name you use
 
@@ -58,7 +58,7 @@ const createDrawerScreen = (name, component, iconName, label, hideHeader = false
     return {
         name,
         component,
-        options: ({ route }) => ({
+        options: () => ({
             drawerLabel: label,
             drawerIcon: ({ focused, color, size }) => (
                 <Ionicons
@@ -67,7 +67,7 @@ const createDrawerScreen = (name, component, iconName, label, hideHeader = false
                     color={color}
                 />
             ),
-            headerShown: false, // Show header unless it's the "Home" screen
+            // headerShown: !hideHeader && route.name !== 'Home', // Show header unless it's the "Home" screen
         }),
     };
 };
@@ -87,20 +87,23 @@ const drawerScreens = [
 ];
 
 
-const SideBar = () => {
+const SideBar = ({route}) => {
+
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawerContent {...props} />}
-            screenOptions={() => ({
+            screenOptions={{
                 drawerActiveTintColor: "#FFD700",
-            })}
-        >
+                header: () => <TopBar/>,
+                // headerShown: false,
+            }}>
             {drawerScreens.map((screen) => (
                 <Drawer.Screen
                     key={screen.name}
                     name={screen.name}
                     component={screen.component}
                     options={screen.options}
+                    initialParams={{ parentRoute: route }}
                 />
             ))}
         </Drawer.Navigator>

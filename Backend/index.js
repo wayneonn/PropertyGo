@@ -23,6 +23,7 @@ const authRouter = require("./routes/admin/authRoutes");
 const adminRouter = require("./routes/admin/adminRoutes");
 const faqRouter = require("./routes/admin/faqRoutes");
 
+
 // user routes
 const postRouter = require("./routes/user/User");
 const loginRoute = require("./routes/user/loginRoute");

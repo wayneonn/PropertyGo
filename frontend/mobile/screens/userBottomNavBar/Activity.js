@@ -8,7 +8,6 @@ const Activity = () => {
 
     return (
       <SafeAreaView >
-        <TopBar/>
         <Text>ActivityScreen</Text>
       </SafeAreaView>
     );
