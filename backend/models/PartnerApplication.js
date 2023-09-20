@@ -1,5 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
-    const PartnerApplication = sequelize.define("PartnerApplication", {
+  const PartnerApplication = sequelize.define(
+    "PartnerApplication",
+    {
       partnerApplicationId: {
         type: DataTypes.BIGINT,
         allowNull: false,
@@ -11,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       userRole: {
-        type: DataTypes.ENUM('GENERAL', 'SUPPORT', 'FEEDBACK', 'OTHERS'),
+        type: DataTypes.ENUM("GENERAL", "SUPPORT", "FEEDBACK", "OTHERS"),
         allowNull: false,
       },
       cardNumber: {
@@ -30,40 +32,41 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
-    }, {
-      freezeTableName: true
+    },
+    {
+      freezeTableName: true,
+    }
+  );
+
+  PartnerApplication.associate = (models) => {
+    // Define bi-directional relationships
+    // One-to-one relationship from PartnerApplication to Admin (1)
+    PartnerApplication.belongsTo(models.Admin, {
+      foreignKey: {
+        name: "adminId",
+        allowNull: false,
+      },
+      as: "admin",
     });
-  
-    PartnerApplication.associate = (models) => {
-      // Define bi-directional relationships
-      // One-to-one relationship from PartnerApplication to Admin (1)
-      PartnerApplication.belongsTo(models.Admin, {
-        foreignKey: {
-          name: 'adminId',
-          allowNull: false,
-        },
-        as: 'admin',
-      });
-  
-      // One-to-one relationship from PartnerApplication to Document (1..*)
-      PartnerApplication.hasMany(models.Document, {
-        foreignKey: {
-          name: 'documentId',
-          allowNull: false,
-        },
-        as: 'documents',
-      });
-  
-      // One-to-one relationship from PartnerApplication to User (1)
-      PartnerApplication.belongsTo(models.User, {
-        foreignKey: {
-          name: 'userId',
-          allowNull: false,
-        },
-        as: 'user',
-      });
-    };
-  
-    return PartnerApplication;
+
+    // One-to-one relationship from PartnerApplication to Document (1..*)
+    PartnerApplication.hasMany(models.Document, {
+      foreignKey: {
+        name: "partnerApplicationId",
+        allowNull: false,
+      },
+      as: "documents",
+    });
+
+    // One-to-one relationship from PartnerApplication to User (1)
+    PartnerApplication.belongsTo(models.User, {
+      foreignKey: {
+        name: "userId",
+        allowNull: false,
+      },
+      as: "user",
+    });
   };
-  
+
+  return PartnerApplication;
+};
