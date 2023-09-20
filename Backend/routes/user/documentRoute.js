@@ -134,6 +134,7 @@ router.get("/documents/list/metadata", async (req, res) => {
         "createdAt",
         "updatedAt",
       ],
+      where: { deleted: false },
     });
     res.json(documents);
   } catch (error) {
