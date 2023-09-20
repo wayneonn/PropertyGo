@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import {
+    ScrollView,
     View,
     Text,
     StyleSheet,
@@ -17,6 +18,7 @@ import { updateUserProfile } from '../../utils/api';
 import { updateUserProfilePicture, loginUser } from '../../utils/api';
 import base64 from 'react-native-base64';
 import { Ionicons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const countries = [
     { label: 'Select Country', value: '' },
@@ -101,6 +103,31 @@ function EditProfile({ navigation, route }) {
     };
 
     const saveChanges = async () => {
+        // Add email validation
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!editedUser.name || !editedUser.email || !editedUser.dateOfBirth || !editedUser.countryOfOrigin) {
+            Alert.alert('Sign Up Failed', 'Please fill in all fields.');
+            return;
+        }
+
+        if (!emailPattern.test(editedUser.email)) {
+            Alert.alert('Sign Up Failed', 'Please enter a valid email address.');
+            return;
+        }
+
+        const today = new Date();
+        const dob = new Date(editedUser.dateOfBirth);
+        let age = today.getFullYear() - dob.getFullYear();
+
+        if (today.getMonth() < dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) {
+            age--;
+        }
+
+        if (age < 21) {
+            Alert.alert('Sign Up Failed', 'You must be at least 21 years old to sign up.');
+            return;
+        }
+
         try {
             const formData = new FormData();
             formData.append('name', editedUser.name);
@@ -108,11 +135,9 @@ function EditProfile({ navigation, route }) {
             formData.append('countryOfOrigin', editedUser.countryOfOrigin);
             formData.append('dateOfBirth', editedUser.dateOfBirth);
 
-            // Call the updateUserProfile function to update user profile data
             const { success, data, message } = await updateUserProfile(user.user.userId, formData);
 
             if (success) {
-                // If the profile update is successful, also update the profile picture
                 if (profileImage) {
                     const response = await updateUserProfilePicture(user.user.userId, profileImage);
 
@@ -123,11 +148,11 @@ function EditProfile({ navigation, route }) {
                         Alert.alert('Error', response.message || 'Profile update failed.');
                     }
                 } else {
-                    // If no profile image is selected, only update the profile data
                     fetchUpdatedUserDetails();
                 }
             } else {
                 console.error('Failed to update user profile:', message);
+                Alert.alert('Error', message || 'Profile update failed.');
             }
         } catch (error) {
             console.error('Error updating user profile:', error);
@@ -166,26 +191,22 @@ function EditProfile({ navigation, route }) {
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.headerContainer}>
                 {/* Back button */}
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => navigation.goBack()}
-                >
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                     <Ionicons name="arrow-back" size={24} color="black" />
                 </TouchableOpacity>
+                <Text style={styles.header}>Edit Profile</Text>
             </View>
-            <Text style={styles.header}>Edit Profile</Text>
+
             <View style={styles.profileHeader}>
                 <TouchableOpacity onPress={chooseImage}>
                     {profileImage ? (
                         <Image source={{ uri: profileImage }} style={styles.profileImage} />
-                    ) : profileImageBase64 ? (
-                        <Image source={{ uri: `data:image/jpeg;base64,${profileImageBase64}` }} style={styles.profileImage} />
                     ) : (
-                        <View style={styles.defaultProfileImage}>
-                            <Text style={styles.defaultProfileText}>Upload Image</Text>
+                        <View style={styles.profileImagePlaceholder}>
+                            <Icon name="user" size={100} color="white" />
                         </View>
                     )}
                 </TouchableOpacity>
@@ -217,8 +238,8 @@ function EditProfile({ navigation, route }) {
                         style={styles.countryPickerButton}
                         onPress={() => setCountryPickerVisibility(true)}
                     >
-                        <Text style={styles.value}>{editedUser.countryOfOrigin || 'Select Country'}</Text>
-                        <Ionicons name="caret-down-outline" size={20} color="grey" />
+                        <Text style={styles.countryPickerText}>{editedUser.countryOfOrigin}</Text>
+                        <Ionicons name="caret-down-outline" size={20} color="black" />
                     </TouchableOpacity>
                     <Modal
                         transparent={true}
@@ -226,14 +247,15 @@ function EditProfile({ navigation, route }) {
                         visible={isCountryPickerVisible}
                         onRequestClose={() => setCountryPickerVisibility(false)}
                     >
-                        <View style={styles.modalView}>
+                        <View style={styles.modalContainer}>
                             <Picker
                                 selectedValue={editedUser.countryOfOrigin}
                                 onValueChange={handleCountryChange}
+                                style={styles.picker}
                             >
-                                {countries.map((country) => (
+                                {countries.map((country, index) => (
                                     <Picker.Item
-                                        key={country.value}
+                                        key={index}
                                         label={country.label}
                                         value={country.value}
                                     />
@@ -245,8 +267,9 @@ function EditProfile({ navigation, route }) {
                 <View style={styles.inputRow}>
                     <Text style={styles.label}>Date Of Birth:</Text>
                     <TouchableOpacity onPress={openDatePicker} style={styles.datePicker}>
-                        <Text style={styles.value}>{editedUser.dateOfBirth}</Text>
-                        <Ionicons name="calendar" size={20} color="grey" style={styles.calendarIcon} />
+
+                        <Text style={styles.datePickerText}>{editedUser.dateOfBirth}</Text>
+                        <Ionicons name="calendar-outline" size={20} color="black" />
                     </TouchableOpacity>
                     <DateTimePicker
                         isVisible={isDatePickerVisible}
@@ -256,161 +279,160 @@ function EditProfile({ navigation, route }) {
                     />
                 </View>
             </View>
+
             <TouchableOpacity
                 style={styles.updatePasswordButton}
                 onPress={() => navigation.navigate('UpdatePassword')}
             >
-                <Ionicons name="key-outline" size={24} color="white" />
+                <Ionicons name="key-outline" size={20} color="white" />
                 <Text style={styles.updatePasswordButtonText}>Update Password</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.editProfileButton} onPress={saveChanges}>
-                <Text style={styles.editProfileButtonText}>Save Changes</Text>
+
+            {/* Save Changes button with icon */}
+            <TouchableOpacity style={styles.saveChangesButton} onPress={saveChanges}>
+            <Ionicons name="save-outline" size={18} color="white" />
+                <Text style={styles.saveChangesButtonText}>Save Changes</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        padding: 16,
+        flexGrow: 1,
+        padding: 20,
+    },
+    headerContainer: {
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+    },
+    backButton: {
+        marginRight: 20,
+    },
+    header: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginLeft: 70,
     },
     profileHeader: {
         alignItems: 'center',
-        marginBottom: 20,
+        marginTop: 20,
     },
     profileImage: {
         width: 150,
         height: 150,
         borderRadius: 120,
     },
-    defaultProfileImage: {
+    profileImagePlaceholder: {
         width: 150,
         height: 150,
         borderRadius: 120,
-        backgroundColor: 'lightgray',
+        backgroundColor: 'gray',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    defaultProfileText: {
+    heading: {
         fontSize: 16,
         fontWeight: 'bold',
-    },
-    heading: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginTop: 16,
+        marginTop: 10,
     },
     profileInfo: {
-        marginTop: 18,
-        paddingHorizontal: 20,
-        width: '100%', // Set width to 100% for consistent sizing
+        marginTop: 20,
     },
     inputRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 35,
-        width: '100%', // Set width to 100% for consistent sizing
-        justifyContent: 'space-between', // To evenly distribute label and input
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        marginBottom: 20,
+        width: '100%',
     },
     label: {
         fontSize: 14,
         fontWeight: 'bold',
-        textAlign: 'right', // Align labels to the right
-        width: '30%', // Adjust label width as needed
+        marginBottom: 5,
+        width: '100%',
     },
     input: {
-        flex: 1,
-        borderBottomWidth: 0.5,
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
         borderColor: 'gray',
         fontSize: 14,
-        padding: 5,
-        marginLeft: 20,
+        padding: 10,
+        width: '100%',
     },
     countryPickerButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 35,
-        width: '65%', // Set width to 100% for consistent sizing
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
         borderColor: 'gray',
-        borderWidth: 0.5,
-        paddingLeft: 10,
+        fontSize: 14,
+        padding: 8,
+        width: '100%',
+        flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderRadius: 5,
     },
-    modalView: {
+    countryPickerText: {
+        fontSize: 14,
+    },
+    modalContainer: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    picker: {
         backgroundColor: 'white',
     },
-    editProfileButton: {
-        backgroundColor: '#1E90FF',
-        padding: 12,
-        borderRadius: 8,
-        width: '90%',
-        marginTop: 20,
-    },
-    editProfileButtonText: {
-        color: 'white',
-        fontSize: 18,
-        textAlign: 'center',
-    },
-    loginLink: {
-        color: 'blue',
-        textDecorationLine: 'underline',
-        marginTop: 8,
-    },
     datePicker: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderColor: 'gray',
-        borderWidth: 0.5,
-        paddingLeft: 10,
-        paddingVertical: 5,
+        borderWidth: 1,
         borderRadius: 5,
-        width: '65%', // Set width to 100% for consistent sizing
-        justifyContent: 'space-between', // To evenly distribute date and icon
+        paddingHorizontal: 10,
+        borderColor: 'gray',
+        fontSize: 14,
+        padding: 8,
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
-    calendarIcon: {
-        marginRight: 10,
+    datePickerText: {
+        fontSize: 14,
     },
     updatePasswordButton: {
-        backgroundColor: '#FF6347',
+        backgroundColor: 'dodgerblue',
         padding: 10,
-        borderRadius: 8,
-        width: '90%',
-        marginTop: 10,
+        borderRadius: 5,
+        marginTop: 20,
+        alignItems: 'center', // Center horizontally
         flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center', // Center vertically
+        width: '60%',
+        marginLeft: 70,
     },
     updatePasswordButtonText: {
         color: 'white',
-        fontSize: 18,
-        marginLeft: 8,
-        textAlign: 'center',
+        marginLeft: 10,
     },
-    headerContainer: {
+    saveChangesButton: {
+        backgroundColor: 'green',
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 10,
+        alignItems: 'center', // Center horizontally
+        flexDirection: 'row',
+        justifyContent: 'center', // Center vertically
+        width: '60%',
+        marginLeft: 70,
+    },
+    saveChangesButtonText: {
+        color: 'white',
+        marginLeft: 10,
+    },
+    buttonContent: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 16,
-        marginTop: 40,
-    },
-    backButton: {
-        marginRight: 320,
-        marginTop: -70,
-    },
-    header: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        marginTop: -50,
-        textAlign: 'center',
-    },
+        justifyContent: 'center',
+    }
 });
-
 
 export default EditProfile;

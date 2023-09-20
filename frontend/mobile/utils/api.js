@@ -1,6 +1,6 @@
 import { Platform } from "react-native";
 
-const BASE_URL = "http://10.249.191.117:3000";
+const BASE_URL = "http://localhost:3000";
 // Please change it back to whatever your IP address is. 
 const BASE_URL_WAYNE = "http://10.0.0.17:3000";
 const USER_ENDPOINT = "user";
@@ -65,8 +65,8 @@ export const updateUserProfile = async (userId, formData) => {
       return { success: true, data };
     } else {
       const errorData = await response.json();
-      console.error("Update Profile Error:", errorData); // Add this log statement
-      return { success: false, message: errorData.message };
+      console.error('Update Profile Error:', errorData.error); // Add this log statement
+      return { success: false, message: errorData.error };
     }
   } catch (error) {
     console.error("Update Profile Error:", error); // Add this log statement
