@@ -1,7 +1,8 @@
-import React, { useContext, useState, useLayoutEffect } from 'react'; // Import the useLayoutEffect
+import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { AuthContext } from '../../AuthContext';
-import { updateUserProfile, loginUser } from '../../utils/api'; // Import the function from your API utils
+import { updateUserProfile, loginUser } from '../../utils/api';
+import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome
 import { Ionicons } from '@expo/vector-icons';
 
 function UpdatePassword({ navigation }) {
@@ -9,16 +10,17 @@ function UpdatePassword({ navigation }) {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-
-   
+    const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
     const updateUserPassword = async () => {
         try {
             const formData = new FormData();
-            formData.append('password', newPassword); 
+            formData.append('password', newPassword);
 
-            // Call the updateUserProfile function to update user profile data, including the password
-            const { success, data, message } = await updateUserProfile(user.user.userId, formData);
+            const { success, data, message } = await updateUserProfile(
+                user.user.userId,
+                formData
+            );
 
             if (success) {
                 fetchUpdatedUserDetails();
@@ -46,16 +48,11 @@ function UpdatePassword({ navigation }) {
         }
 
         try {
-            // Here, you can add a check to verify the current password, and if it's correct,
-            // then call the updateUserPassword function to update the password.
-            
-            // Example: You can compare currentPassword with user.user.password here.
             if (currentPassword !== user.user.password) {
                 Alert.alert('Error', 'Current password is incorrect');
                 return;
             }
 
-            // If the current password is correct, proceed to update the password
             updateUserPassword();
         } catch (error) {
             console.error('Error updating password:', error);
@@ -65,7 +62,10 @@ function UpdatePassword({ navigation }) {
 
     const fetchUpdatedUserDetails = async () => {
         try {
-            const { success, data, message } = await loginUser(user.user.userName, newPassword);
+            const { success, data, message } = await loginUser(
+                user.user.userName,
+                newPassword
+            );
 
             if (success) {
                 login(data);
@@ -79,9 +79,7 @@ function UpdatePassword({ navigation }) {
 
     return (
         <View style={styles.container}>
-            
             <View style={styles.headerContainer}>
-                {/* Back button */}
                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => navigation.goBack()}
@@ -90,35 +88,73 @@ function UpdatePassword({ navigation }) {
                 </TouchableOpacity>
             </View>
             <Text style={styles.header}>Update Password</Text>
+
             <Text style={styles.label}>Current Password:</Text>
-            <TextInput
-                secureTextEntry
-                style={styles.input}
-                value={currentPassword}
-                onChangeText={setCurrentPassword}
-                placeholder="Current Password"
-            />
+            <View style={styles.passwordInputContainer}>
+                <TextInput
+                    secureTextEntry={!showPassword}
+                    style={styles.passwordInput}
+                    value={currentPassword}
+                    onChangeText={setCurrentPassword}
+                    placeholder="Current Password"
+                />
+                <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeIcon}
+                >
+                    <FontAwesome
+                        name={showPassword ? 'eye' : 'eye-slash'}
+                        size={20}
+                        color="#555"
+                    />
+                </TouchableOpacity>
+            </View>
 
             <Text style={styles.label}>New Password:</Text>
-            <TextInput
-                secureTextEntry
-                style={styles.input}
-                value={newPassword}
-                onChangeText={setNewPassword}
-                placeholder="New Password"
-            />
+            <View style={styles.passwordInputContainer}>
+                <TextInput
+                    secureTextEntry={!showPassword}
+                    style={styles.passwordInput}
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                    placeholder="New Password"
+                />
+                <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeIcon}
+                >
+                    <FontAwesome
+                        name={showPassword ? 'eye' : 'eye-slash'}
+                        size={20}
+                        color="#555"
+                    />
+                </TouchableOpacity>
+            </View>
 
             <Text style={styles.label}>Confirm New Password:</Text>
-            <TextInput
-                secureTextEntry
-                style={styles.input}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                placeholder="Confirm New Password"
-            />
+            <View style={styles.passwordInputContainer}>
+                <TextInput
+                    secureTextEntry={!showPassword}
+                    style={styles.passwordInput}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    placeholder="Confirm New Password"
+                />
+                <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeIcon}
+                >
+                    <FontAwesome
+                        name={showPassword ? 'eye' : 'eye-slash'}
+                        size={20}
+                        color="#555"
+                    />
+                </TouchableOpacity>
+            </View>
 
             <TouchableOpacity style={styles.button} onPress={handleSaveChanges}>
-                <Text style={styles.buttonText}>Update </Text>
+            <Ionicons name="save-outline" size={18} color="white" />
+                <Text style={styles.buttonText}>Update</Text>
             </TouchableOpacity>
         </View>
     );
@@ -128,44 +164,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-    },
-    header: {
-        fontSize: 34,
-        fontWeight: 'bold',
-        marginBottom: 16,
-        textAlign: 'center',
-        marginTop: 150,
-        marginBottom: 100,
-    },
-    label: {
-        fontSize: 18,
-        marginBottom: 12,
-        alignSelf: 'flex-start',
-        marginLeft: 16,
-
-    },
-    input: {
-        width: '90%',
-        padding: 8,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        marginBottom: 26,
-        borderRadius: 8,
-        marginLeft: 15,
-        height: 40,
-    },
-    button: {
-        backgroundColor: '#1E90FF',
-        padding: 12,
-        borderRadius: 8,
-        width: '90%',
-        alignSelf: 'center',
-        marginTop: 200,
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 18,
-        textAlign: 'center',
     },
     headerContainer: {
         flexDirection: 'row',
@@ -183,6 +181,52 @@ const styles = StyleSheet.create({
         marginBottom: 75,
         marginTop: 20,
         textAlign: 'center',
+    },
+    label: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginLeft: 18,
+        marginBottom: 10,
+        width: '100%',
+    },
+    passwordInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    passwordInput: {
+        flex: 1,
+        width: '90%',
+        padding: 8,
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginBottom: 26,
+        borderRadius: 8,
+        marginLeft: 15,
+        height: 40,
+    },
+    eyeIcon: {
+        position: 'absolute',
+        top: 12,
+        right: 10,
+    },
+    button: {
+        backgroundColor: 'green',
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 10,
+        alignItems: 'center', // Center horizontally
+        flexDirection: 'row',
+        justifyContent: 'center', // Center vertically
+        width: '60%',
+        marginLeft: 70,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        marginLeft: 10,
+    },
+    buttonIcon: {
+        marginRight: 10,
     },
 });
 

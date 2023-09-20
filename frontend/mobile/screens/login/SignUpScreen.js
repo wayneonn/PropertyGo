@@ -38,6 +38,7 @@ const SignUpScreen = () => {
   const { login } = useContext(AuthContext);
 
   const handleSignUp = async () => {
+    
     // Add email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!userName || !password || !confirmPassword || !email || !selectedCountry || !dateOfBirth) {

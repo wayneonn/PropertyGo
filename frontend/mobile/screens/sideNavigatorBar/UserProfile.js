@@ -137,22 +137,21 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   editProfileButton: {
-    backgroundColor: '#1E90FF',
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 20,
-    width: '90%',
-    marginTop: 40,
-    flexDirection: 'row', // Align icon and text horizontally
-    alignItems: 'center', // Center vertically
-    justifyContent: 'center',
+    backgroundColor: 'dodgerblue',
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 20,
+        alignItems: 'center', // Center horizontally
+        flexDirection: 'row',
+        justifyContent: 'center', // Center vertically
+        width: '60%',
+        marginLeft: 0,
   },
   editIcon: {
     marginRight: 10,
   },
   editProfileButtonText: {
     color: 'white',
-    fontSize: 18,
     textAlign: 'center',
   },
   loginLink: {

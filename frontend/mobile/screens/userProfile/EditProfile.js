@@ -103,6 +103,31 @@ function EditProfile({ navigation, route }) {
     };
 
     const saveChanges = async () => {
+        // Add email validation
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!editedUser.name || !editedUser.email || !editedUser.dateOfBirth || !editedUser.countryOfOrigin) {
+            Alert.alert('Sign Up Failed', 'Please fill in all fields.');
+            return;
+        }
+
+        if (!emailPattern.test(editedUser.email)) {
+            Alert.alert('Sign Up Failed', 'Please enter a valid email address.');
+            return;
+        }
+
+        const today = new Date();
+        const dob = new Date(editedUser.dateOfBirth);
+        let age = today.getFullYear() - dob.getFullYear();
+
+        if (today.getMonth() < dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) {
+            age--;
+        }
+
+        if (age < 21) {
+            Alert.alert('Sign Up Failed', 'You must be at least 21 years old to sign up.');
+            return;
+        }
+
         try {
             const formData = new FormData();
             formData.append('name', editedUser.name);
@@ -241,7 +266,7 @@ function EditProfile({ navigation, route }) {
                 <View style={styles.inputRow}>
                     <Text style={styles.label}>Date Of Birth:</Text>
                     <TouchableOpacity onPress={openDatePicker} style={styles.datePicker}>
-                        
+
                         <Text style={styles.datePickerText}>{editedUser.dateOfBirth}</Text>
                         <Ionicons name="calendar-outline" size={20} color="black" />
                     </TouchableOpacity>
@@ -264,7 +289,7 @@ function EditProfile({ navigation, route }) {
 
             {/* Save Changes button with icon */}
             <TouchableOpacity style={styles.saveChangesButton} onPress={saveChanges}>
-                <Ionicons name="checkmark-outline" size={20} color="white" />
+            <Ionicons name="save-outline" size={18} color="white" />
                 <Text style={styles.saveChangesButtonText}>Save Changes</Text>
             </TouchableOpacity>
         </ScrollView>
