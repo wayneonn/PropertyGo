@@ -76,11 +76,13 @@ const ContactUs = () => {
 
   const handleCloseEdit = () => {
     setShowEditModal(false);
+    setValidationMessages({});
   };
 
   const handleCloseRespond = () => {
     setShowRespondModal(false);
     setAddedRespond("");
+    setValidationMessages({});
   };
 
   const showToast = (action) => {

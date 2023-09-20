@@ -15,7 +15,7 @@ const contactUsTestData = require('./test_data/contactUsTestData');
 const authRouter = require('./routes/admin/authRoutes');
 const adminRouter = require('./routes/admin/adminRoutes');
 const faqRouter = require('./routes/admin/faqRoutes');
-// const contactUsRouter = require('./routes/admin/contactUsRoutes');
+const contactUsAdminRouter = require('./routes/admin/contactUsRoutes');
 const adminUserRouter = require('./routes/admin/userRoutes');
 
 // const faqTestData = require("./test_data/faqTestData");
@@ -40,7 +40,7 @@ const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
 const transactionRoute = require("./routes/user/transactionRoute");
-const contactUsRouter = require('./routes/user/contactUsRoutes');
+const contactUsUserRouter = require('./routes/user/contactUsRoutes');
 const e = require("express");
 
 app.use(cors());
@@ -49,7 +49,7 @@ app.use(express.json());
 app.use('/admins', adminRouter);
 app.use('/admin/auth', authRouter);
 app.use('/admin/faqs', faqRouter);
-app.use('/admin/contactUs', contactUsRouter);
+app.use('/admin/contactUs', contactUsAdminRouter);
 app.use('/admin/users', adminUserRouter);
 
 app.use(
@@ -59,7 +59,7 @@ app.use(
   documentRoute,
   folderRoute,
   transactionRoute,
-  contactUsRouter
+  contactUsUserRouter
 );
 
 db.sequelize
