@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import { AuthContext } from '../../AuthContext'; // Import the AuthContext from the correct path
 import { loginUser } from '../../utils/api';
-import * as Google from 'expo-google-app-auth';
 
 function LoginScreen({ navigation }) {
+  const { login } = useContext(AuthContext); // Use the AuthContext to access login function
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState(null);
@@ -19,6 +20,7 @@ function LoginScreen({ navigation }) {
     const { success, data, message } = await loginUser(userName, password);
 
     if (success) {
+      login(data); // Use the login function from AuthContext to set the user
       showMessage('Login successful');
       setTimeout(() => {
         navigation.navigate('Side Navigator', { user: data });
@@ -113,5 +115,6 @@ const styles = {
     height: 60,
   },
 };
+
 
 export default LoginScreen;

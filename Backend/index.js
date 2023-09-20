@@ -45,7 +45,7 @@ app.use(
   loginRoute,
   documentRoute,
   folderRoute,
-  transactionRoute
+  transactionRoute,
 );
 
 db.sequelize
