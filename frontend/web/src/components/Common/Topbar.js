@@ -1,11 +1,12 @@
 import { React, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import "./styles/Topbar.css";
 import { IoMdNotificationsOutline, IoIosLogOut } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+
 
 const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
-
   const navigate = useNavigate();
 
   const imageBasePath =
@@ -14,7 +15,11 @@ const TopBar = () => {
   const handleLogout = () => {
     localStorage.removeItem("loggedInAdmin");
 
-    navigate("/login");
+    window.location.reload();
+
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 0);
   };
 
   return (
@@ -42,7 +47,7 @@ const TopBar = () => {
             fontSize: "14px",
             color: "#959FA3",
             marginLeft: "0.2em",
-            height: "38px",
+            height: "30px",
             width: "169px",
           }}
         />

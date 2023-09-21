@@ -35,17 +35,16 @@ module.exports = (sequelize, DataTypes) => {
       freezeTableName: true,
     }
   );
-  
-    ContactUs.associate = (models) => {
-      ContactUs.belongsTo(models.User, {
-        foreignKey: {
-          name: 'userId', // Specify the foreign key name explicitly
-          allowNull: false,
-        },
-        as: 'user',
-      });
-    };
-  
-    return ContactUs;
+
+  ContactUs.associate = (models) => {
+    ContactUs.belongsTo(models.User, {
+      foreignKey: {
+        name: 'userId', // Specify the foreign key name explicitly
+        allowNull: false,
+      },
+      as: 'user',
+    });
   };
-  
+
+  return ContactUs;
+};

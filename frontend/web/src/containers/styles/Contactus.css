@@ -1,0 +1,51 @@
+.contactus {
+  background-color: #0000000D;
+  width: calc(100% - 180px);
+  top: 60px;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  overflow-y: auto;
+}
+
+.displayContactus {
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+.pendingContactus {
+  background-color: #FFFFFF;
+  width: 1230px;
+  height: 330px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.repliedContactus {
+  background-color: #FFFFFF;
+  width: 1230px;
+  height: 330px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.closedContactus {
+  background-color: #FFFFFF;
+  width: 1230px;
+  height: 330px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.contactus-paginate {
+  justify-content: center;
+  align-items: center;
+  padding: 5px 5px 5px 5px;
+}
+
+.truncate-text {
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
