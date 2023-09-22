@@ -9,6 +9,8 @@ import SignUpSelection from '../screens/login/SignUpSelection';
 import LoginSelection from '../screens/login/LoginSelection';
 import GoogleSignUp from '../screens/login/GoogleSignUp';
 import SideNavigator from './SideNavigator'
+import ForumSideNavigator from './ForumSideNavigator';
+import PropertyListingsStackGroup from './PropertyListingsStackGroup';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +32,17 @@ const LoginNavigator = () => {
                 component={SideNavigator}
                 options={{ headerShown: false }}
             />
+            <Stack.Screen
+                name="Forum Side Navigator"
+                component={ForumSideNavigator}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Property Listings Stack Group"
+                component={PropertyListingsStackGroup}
+                options={{ headerShown: false }}
+            />
+
         </Stack.Navigator>
     );
 };
