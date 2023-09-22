@@ -8,15 +8,16 @@ const userTestData = require("./test_data/userTestData");
 const adminTestData = require("./test_data/adminTestData");
 
 // testing purpose - remove before demo(?)
-const faqTestData = require('./test_data/faqTestData');
-const contactUsTestData = require('./test_data/contactUsTestData');
+const faqTestData = require("./test_data/faqTestData");
+const contactUsTestData = require("./test_data/contactUsTestData");
+const responsesTestData = require("./test_data/responseTestData");
 
 // admin routes
-const authRouter = require('./routes/admin/authRoutes');
-const adminRouter = require('./routes/admin/adminRoutes');
-const faqRouter = require('./routes/admin/faqRoutes');
-const contactUsAdminRouter = require('./routes/admin/contactUsRoutes');
-const adminUserRouter = require('./routes/admin/userRoutes');
+const authRouter = require("./routes/admin/authRoutes");
+const adminRouter = require("./routes/admin/adminRoutes");
+const faqRouter = require("./routes/admin/faqRoutes");
+const contactUsAdminRouter = require("./routes/admin/contactUsRoutes");
+const adminUserRouter = require("./routes/admin/userRoutes");
 
 // const faqTestData = require("./test_data/faqTestData");
 const transactionTestData = require("./test_data/transactionTestData");
@@ -33,24 +34,23 @@ const partnerApplicationId = require("./test_data/partnerApplicationTestData");
 // const adminRouter = require("./routes/admin/adminRoutes");
 // const faqRouter = require("./routes/admin/faqRoutes");
 
-
 // user routes
 const postRouter = require("./routes/user/User");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
 const transactionRoute = require("./routes/user/transactionRoute");
-const contactUsUserRouter = require('./routes/user/contactUsRoutes');
+const contactUsUserRouter = require("./routes/user/contactUsRoutes");
 const e = require("express");
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/admins', adminRouter);
-app.use('/admin/auth', authRouter);
-app.use('/admin/faqs', faqRouter);
-app.use('/admin/contactUs', contactUsAdminRouter);
-app.use('/admin/users', adminUserRouter);
+app.use("/admins", adminRouter);
+app.use("/admin/auth", authRouter);
+app.use("/admin/faqs", faqRouter);
+app.use("/admin/contactUs", contactUsAdminRouter);
+app.use("/admin/users", adminUserRouter);
 
 app.use(
   "/user",
@@ -76,6 +76,7 @@ db.sequelize
     const existingChatRecordsCount = await db.Chat.count();
     const existingRequestRecordsCount = await db.Request.count();
     const existingContactUsRecordsCount = await db.ContactUs.count();
+    const existingResponseRecordsCount = await db.Response.count();
     const existingPartnerApplicationRecordsCount =
       await db.PartnerApplication.count();
 
@@ -134,18 +135,31 @@ db.sequelize
     //       await db.FAQ.create(faqData);
     //     }
 
-    //     if (existingContactUsRecordsCount === 0) {
-    //       try {
-    //         for (const contactUsData of contactUsTestData) {
-    //           await db.ContactUs.create(contactUsData);
-    //         }
-    //         console.log('Contact Us test data inserted successfully.');
-    //       } catch (error) {
-    //         console.error('Error inserting Contact Us test data:', error);
-    //       }
-    //     } else {
-    //       console.log('Contact Us test data already exists in the database.');
-    //     }
+    if (existingContactUsRecordsCount === 0) {
+      try {
+        for (const contactUsData of contactUsTestData) {
+          await db.ContactUs.create(contactUsData);
+        }
+        console.log("Contact Us test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Contact Us test data:", error);
+      }
+    } else {
+      console.log("Contact Us test data already exists in the database.");
+    }
+
+    if (existingResponseRecordsCount === 0) {
+      try {
+        for (const responseData of responsesTestData) {
+          await db.Response.create(responseData);
+        }
+        console.log("Response test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Response test data:", error);
+      }
+    } else {
+      console.log("Response test data already exists in the database.");
+    }
 
     //     console.log('Faq test data inserted successfully.');
     //   } catch (error) {
@@ -154,7 +168,6 @@ db.sequelize
     // } else {
     //   console.log('Admin test data already exists in the database.');
     // }
-
 
     // Property
     if (existingPropertyRecordsCount === 0) {
@@ -262,4 +275,3 @@ db.sequelize
   .catch((error) => {
     console.error("Sequelize sync error:", error);
   });
-

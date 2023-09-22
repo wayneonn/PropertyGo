@@ -23,13 +23,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       // Create StatusEnum
       status: {
-        type: DataTypes.ENUM("REPLIED", "PENDING"),
+        type: DataTypes.ENUM("REPLIED", "PENDING", "CLOSED"),
         allowNull: false,
       },
-      response: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
+      // response: {
+      //   type: DataTypes.STRING,
+      //   allowNull: true,
+      // },
     },
     {
       freezeTableName: true,
@@ -39,10 +39,15 @@ module.exports = (sequelize, DataTypes) => {
   ContactUs.associate = (models) => {
     ContactUs.belongsTo(models.User, {
       foreignKey: {
-        name: 'userId', // Specify the foreign key name explicitly
+        name: "userId", // Specify the foreign key name explicitly
         allowNull: false,
       },
-      as: 'user',
+      as: "user",
+    });
+    ContactUs.hasMany(models.Response, {
+      onDelete: "CASCADE",
+      foreignKey: "contactUsId",
+      as: "responses",
     });
   };
 

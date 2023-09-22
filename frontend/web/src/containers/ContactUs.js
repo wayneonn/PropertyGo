@@ -4,6 +4,8 @@ import "./styles/Contactus.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { BsFillReplyFill } from "react-icons/bs";
 import { MdEditSquare, MdPageview } from "react-icons/md";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import the styles
 
 import API from "../services/API";
 
@@ -13,8 +15,10 @@ const ContactUs = () => {
   const [contactus, setContactus] = useState([]);
   const [pendingContactus, setPendingContactus] = useState([]);
   const [repliedContactus, setRepliedContactus] = useState([]);
+  const [closedContactus, setClosedContactus] = useState([]);
   const [showRespondModal, setShowRespondModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddRespondModal, setShowAddRespondModal] = useState(false);
   const [editId, setEditId] = useState(0);
   const [respondId, setRespondId] = useState(0);
   const [editTitle, setEditTitle] = useState("");
@@ -26,6 +30,8 @@ const ContactUs = () => {
   const [respondReason, setRespondReason] = useState("");
   const [addedRespond, setAddedRespond] = useState("");
   const [userNames, setUserNames] = useState({});
+  const [responses, setResponses] = useState([]);
+  const [contactUsId, setContactUsId] = useState([]);
 
   const itemsPerPage = 4;
 
@@ -41,6 +47,12 @@ const ContactUs = () => {
   const indexOfLastItemReplied = currentPageReplied * itemsPerPage;
   const indexOfFirstItemReplied = indexOfLastItemReplied - itemsPerPage;
 
+  const [currentPageClosed, setCurrentPageClosed] = useState(1);
+  const [totalPageClosed, setTotalPageClosed] = useState(0);
+
+  const indexOfLastItemClosed = currentPageClosed * itemsPerPage;
+  const indexOfFirstItemClosed = indexOfLastItemClosed - itemsPerPage;
+
   const [validationMessages, setValidationMessages] = useState({
     emptyResponse: false,
   });
@@ -55,6 +67,10 @@ const ContactUs = () => {
 
   const handlePageChangeReplied = (pageNumber) => {
     setCurrentPageReplied(pageNumber);
+  };
+
+  const handlePageChangeClosed = (pageNumber) => {
+    setCurrentPageClosed(pageNumber);
   };
 
   const toggleShowRespondModal = (title, message, reason, id) => {
@@ -74,8 +90,19 @@ const ContactUs = () => {
     setShowEditModal(!showEditModal);
   };
 
+  const toggleShowAddResponseModal = (responses, id) => {
+    setResponses(responses);
+    setContactUsId(id);
+    setShowAddRespondModal(!showAddRespondModal);
+  };
+
   const handleCloseEdit = () => {
     setShowEditModal(false);
+    setValidationMessages({});
+  };
+
+  const handleCloseAddRespond = () => {
+    setShowAddRespondModal(false);
     setValidationMessages({});
   };
 
@@ -96,7 +123,7 @@ const ContactUs = () => {
       emptyResponse: false,
     };
 
-    const responseTrimmed = response.trim();
+    const responseTrimmed = htmlToPlainText(response).trim();
 
     if (responseTrimmed === "") {
       newMessage.emptyResponse = true;
@@ -127,7 +154,7 @@ const ContactUs = () => {
       emptyResponse: false,
     };
 
-    const addedRespondTrimmed = addedRespond.trim();
+    const addedRespondTrimmed = htmlToPlainText(addedRespond).trim();
 
     if (addedRespondTrimmed === "") {
       newMessage.emptyResponse = true;
@@ -204,6 +231,12 @@ const ContactUs = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  function htmlToPlainText(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  }
 
   return (
     <div className="contactus">
@@ -364,7 +397,7 @@ const ContactUs = () => {
                     <th>TITLE</th>
                     <th>MESSAGE</th>
                     <th>REASON</th>
-                    <th>RESPONSE</th>
+                    {/* <th>RESPONSE</th> */}
                     <th>CREATED AT</th>
                     <th>UPDATED AT</th>
                     <th>CREATED BY</th>
@@ -386,9 +419,9 @@ const ContactUs = () => {
                           <td className="truncate-text">{contactus.title}</td>
                           <td className="truncate-text">{contactus.message}</td>
                           <td className="truncate-text">{contactus.reason}</td>
-                          <td className="truncate-text">
-                            {contactus.response}
-                          </td>
+                          {/* <td className="truncate-text">
+                            {htmlToPlainText(contactus.response)}
+                          </td> */}
                           <td className="truncate-text">
                             {contactus.createdAt}
                           </td>
@@ -399,7 +432,7 @@ const ContactUs = () => {
                             {userNames[contactus.userId]}
                           </td>
                           <td>
-                            <Button
+                            {/* <Button
                               size="sm"
                               title="Edit"
                               style={{
@@ -412,7 +445,7 @@ const ContactUs = () => {
                                   contactus.title,
                                   contactus.message,
                                   contactus.reason,
-                                  contactus.response,
+                                  htmlToPlainText(contactus.response),
                                   contactus.contactUsId
                                 )
                               }
@@ -424,6 +457,32 @@ const ContactUs = () => {
                                   color: "black",
                                 }}
                               ></MdEditSquare>
+                            </Button> */}
+                            <Button
+                              size="sm"
+                              title="view responses"
+                              style={{
+                                backgroundColor: "#FFD700",
+                                border: "0",
+                                marginRight: "10px",
+                              }}
+                              onClick={() =>
+                                toggleShowAddResponseModal(
+                                  // contactus.title,
+                                  // contactus.message,
+                                  // contactus.reason,
+                                  htmlToPlainText(contactus.responses),
+                                  contactus.contactUsId
+                                )
+                              }
+                            >
+                              <MdPageview
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  color: "black",
+                                }}
+                              ></MdPageview>
                             </Button>
                           </td>
                         </tr>
@@ -432,7 +491,7 @@ const ContactUs = () => {
                 ) : (
                   <tbody>
                     <tr>
-                      <td colSpan="8" style={{ textAlign: "center" }}>
+                      <td colSpan="7" style={{ textAlign: "center" }}>
                         No contact us available
                       </td>
                     </tr>
@@ -455,120 +514,6 @@ const ContactUs = () => {
             </div>
           </div>
         </div>
-        <Modal
-          show={showEditModal}
-          onHide={handleCloseEdit}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Edit Response</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div style={{ marginBottom: "10px" }}>
-              <Form.Label
-                style={{
-                  color: "black",
-                  font: "Public Sans",
-                  fontWeight: "700",
-                  fontSize: "15px",
-                }}
-              >
-                Reason
-              </Form.Label>
-              <Form.Control
-                type="text"
-                name="reason"
-                value={editReason}
-                readOnly
-              />
-            </div>
-            <Form.Label
-              style={{
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "700",
-                fontSize: "15px",
-              }}
-            >
-              Title
-            </Form.Label>
-            <Form.Control type="text" name="title" value={editTitle} readOnly />
-            <Form.Label
-              style={{
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "700",
-                fontSize: "15px",
-              }}
-            >
-              Message
-            </Form.Label>
-            <Form.Control
-              type="text"
-              name="message"
-              value={editMessage}
-              readOnly
-            />
-            <Form.Label
-              style={{
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "700",
-                fontSize: "15px",
-              }}
-            >
-              Response
-            </Form.Label>
-            <Form.Control
-              as="textarea"
-              id="response"
-              name="message"
-              value={response}
-              onChange={(e) => setResponse(e.target.value)}
-              isInvalid={validationMessages.emptyResponse}
-            />
-            {validationMessages.emptyResponse && (
-              <Form.Control.Feedback type="invalid">
-                Response is required.
-              </Form.Control.Feedback>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              style={{
-                backgroundColor: "#F5F6F7",
-                border: "0",
-                width: "92px",
-                height: "40px",
-                borderRadius: "160px",
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "600",
-                fontSize: "14px",
-              }}
-              onClick={handleCloseEdit}
-            >
-              Close
-            </Button>
-            <Button
-              style={{
-                backgroundColor: "#FFD700",
-                border: "0",
-                width: "92px",
-                height: "40px",
-                borderRadius: "160px",
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "600",
-                fontSize: "14px",
-              }}
-              onClick={() => handleEdit()}
-            >
-              Confirm
-            </Button>
-          </Modal.Footer>
-        </Modal>
         <Modal
           show={showRespondModal}
           onHide={handleCloseRespond}
@@ -639,19 +584,73 @@ const ContactUs = () => {
             >
               Response
             </Form.Label>
-            <Form.Control
-              as="textarea"
-              id="response"
-              name="message"
-              value={addedRespond}
-              onChange={(e) => setAddedRespond(e.target.value)}
-              isInvalid={validationMessages.emptyResponse}
-            />
-            {validationMessages.emptyResponse && (
-              <Form.Control.Feedback type="invalid">
-                Response is required.
-              </Form.Control.Feedback>
-            )}
+            <Form.Group>
+              <ReactQuill
+                value={addedRespond}
+                onChange={setAddedRespond}
+                theme="snow"
+                className={validationMessages.emptyResponse ? "is-invalid" : ""}
+              />
+              {validationMessages.emptyResponse && (
+                <Form.Control.Feedback type="invalid">
+                  Response is required.
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#F5F6F7",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleCloseRespond}
+            >
+              Close
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={() => handleRespond()}
+            >
+              Confirm
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal
+          show={showAddRespondModal}
+          onHide={handleCloseAddRespond}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Responses</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {Array.isArray(responses) &&
+              responses.length > 0 &&
+              responses.map((response) => (
+                <div key={response.id}>
+                  <div></div>
+                  <div>{/* Content for the second <div> */}</div>
+                </div>
+              ))}
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -694,3 +693,122 @@ const ContactUs = () => {
 };
 
 export default ContactUs;
+
+//Modal for editing
+
+{
+  /* <Modal
+show={showEditModal}
+onHide={handleCloseEdit}
+backdrop="static"
+keyboard={false}
+>
+<Modal.Header closeButton>
+  <Modal.Title>Edit Response</Modal.Title>
+</Modal.Header>
+<Modal.Body>
+  <div style={{ marginBottom: "10px" }}>
+    <Form.Label
+      style={{
+        color: "black",
+        font: "Public Sans",
+        fontWeight: "700",
+        fontSize: "15px",
+      }}
+    >
+      Reason
+    </Form.Label>
+    <Form.Control
+      type="text"
+      name="reason"
+      value={editReason}
+      readOnly
+    />
+  </div>
+  <Form.Label
+    style={{
+      color: "black",
+      font: "Public Sans",
+      fontWeight: "700",
+      fontSize: "15px",
+    }}
+  >
+    Title
+  </Form.Label>
+  <Form.Control type="text" name="title" value={editTitle} readOnly />
+  <Form.Label
+    style={{
+      color: "black",
+      font: "Public Sans",
+      fontWeight: "700",
+      fontSize: "15px",
+    }}
+  >
+    Message
+  </Form.Label>
+  <Form.Control
+    type="text"
+    name="message"
+    value={editMessage}
+    readOnly
+  />
+  <Form.Label
+    style={{
+      color: "black",
+      font: "Public Sans",
+      fontWeight: "700",
+      fontSize: "15px",
+    }}
+  >
+    Response
+  </Form.Label>
+  <Form.Group>
+    <ReactQuill
+      value={response}
+      onChange={setResponse}
+      theme="snow"
+      className={validationMessages.emptyResponse ? "is-invalid" : ""}
+    />
+    {validationMessages.emptyResponse && (
+      <Form.Control.Feedback type="invalid">
+        Response is required.
+      </Form.Control.Feedback>
+    )}
+  </Form.Group>
+</Modal.Body>
+<Modal.Footer>
+  <Button
+    style={{
+      backgroundColor: "#F5F6F7",
+      border: "0",
+      width: "92px",
+      height: "40px",
+      borderRadius: "160px",
+      color: "black",
+      font: "Public Sans",
+      fontWeight: "600",
+      fontSize: "14px",
+    }}
+    onClick={handleCloseEdit}
+  >
+    Close
+  </Button>
+  <Button
+    style={{
+      backgroundColor: "#FFD700",
+      border: "0",
+      width: "92px",
+      height: "40px",
+      borderRadius: "160px",
+      color: "black",
+      font: "Public Sans",
+      fontWeight: "600",
+      fontSize: "14px",
+    }}
+    onClick={() => handleEdit()}
+  >
+    Confirm
+  </Button>
+</Modal.Footer>
+</Modal> */
+}
