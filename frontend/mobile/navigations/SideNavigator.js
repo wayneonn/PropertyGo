@@ -6,21 +6,21 @@ import {
     DrawerItemList,
     DrawerItem
 } from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
+// import { Ionicons } from '@expo/vector-icons';
 import LogoutButton from '../components/LogoutButton';
 import Appointments from '../screens/sideNavigatorBar/Appointments'
 import Documents from '../screens/sideNavigatorBar/Documents'
-import ExploreServices from '../screens/sideNavigatorBar/ExploreServices'
+import ExploreServicesStackGroup from './ExploreServicesStackGroup'; 
 import FAQ from '../screens/sideNavigatorBar/FAQs'
 import MortgageCalculator from '../screens/sideNavigatorBar/MortgageCalculator'
 import Transactions from '../screens/sideNavigatorBar/Transactions'
 import UserListings from '../screens/sideNavigatorBar/UserListings'
-import UserProfile from '../screens/sideNavigatorBar/UserProfile'
 import WorkWithUs from '../screens/sideNavigatorBar/WorkWithUs'
 import ContactUsStackGroup from './ContactUsStackGroup';
 import TopBar from '../components/Common/TopNavBar';
-import HomeStackGroup from './HomeStackGroup';
 import UserProfileStackGroup from './UserProfileStackGroup';
+import UserBottomNavigator from './UserBottomNavigator';
+import { createDrawerScreen } from '../components/DrawerScreen';
 import { AuthContext } from '../AuthContext'; // Import your AuthContext
 import base64 from 'react-native-base64';
 
@@ -86,28 +86,9 @@ const CustomDrawerContent = (props) => {
 
 const Drawer = createDrawerNavigator();
 
-const createDrawerScreen = (name, component, iconName, label, hideHeader = false) => {
-    return {
-        name,
-        component,
-        options: () => ({
-            drawerLabel: label,
-            drawerIcon: ({ focused, color, size }) => (
-                <Ionicons
-                    name={focused ? iconName : `${iconName}-outline`}
-                    size={size}
-                    color={color}
-                />
-            ),
-            // headerShown: !hideHeader && route.name !== 'Home', // Show header unless it's the "Home" screen
-            // headerShown: false,
-        }),
-    };
-};
-
 const drawerScreens = [
-    createDrawerScreen('Home', HomeStackGroup, 'home', 'Home'),
-    createDrawerScreen('Explore Services', ExploreServices, 'search', 'Explore Services'),
+    createDrawerScreen('User Bottom Navigator', UserBottomNavigator, 'home', 'Home'),
+    createDrawerScreen('Explore Services Stack Group', ExploreServicesStackGroup, 'search', 'Explore Services'),
     createDrawerScreen('User Profile', UserProfileStackGroup, 'person', 'User Profile'),
     createDrawerScreen('User Listings', UserListings, 'list', 'User Listings'),
     createDrawerScreen('Appointments', Appointments, 'calendar', 'Appointments'),

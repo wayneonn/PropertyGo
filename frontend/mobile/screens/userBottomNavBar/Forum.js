@@ -1,14 +1,19 @@
 import React from 'react';
-import {SafeAreaView, Text, View } from 'react-native';
-import TopBar from '../../components/Common/TopNavBar';
+import { SafeAreaView, Text, View, Button } from 'react-native';
 
-const Forum = () => {
-    return (
-      <SafeAreaView >
-        <TopBar/>
-        <Text>ForumScreen</Text>
-      </SafeAreaView>
-    );
-  };
+const Forum = ({navigation}) => {
+  return (
+    <SafeAreaView >
+      <View>
+        <Text>Welcome to the Forum!</Text>
+        <Button
+          title="Go to Forum Side Navigator"
+          onPress={() => navigation.navigate('Forum Side Navigator')}
+        />
+      </View>
 
-  export default Forum;
+    </SafeAreaView>
+  );
+};
+
+export default Forum;
