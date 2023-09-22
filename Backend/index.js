@@ -10,6 +10,7 @@ const adminTestData = require("./test_data/adminTestData");
 // testing purpose - remove before demo(?)
 const faqTestData = require("./test_data/faqTestData");
 const contactUsTestData = require("./test_data/contactUsTestData");
+const responsesTestData = require("./test_data/responseTestData");
 
 // admin routes
 const authRouter = require("./routes/admin/authRoutes");
@@ -75,6 +76,7 @@ db.sequelize
     const existingChatRecordsCount = await db.Chat.count();
     const existingRequestRecordsCount = await db.Request.count();
     const existingContactUsRecordsCount = await db.ContactUs.count();
+    const existingResponseRecordsCount = await db.Response.count();
     const existingPartnerApplicationRecordsCount =
       await db.PartnerApplication.count();
 
@@ -133,18 +135,31 @@ db.sequelize
     //       await db.FAQ.create(faqData);
     //     }
 
-    //     if (existingContactUsRecordsCount === 0) {
-    //       try {
-    //         for (const contactUsData of contactUsTestData) {
-    //           await db.ContactUs.create(contactUsData);
-    //         }
-    //         console.log('Contact Us test data inserted successfully.');
-    //       } catch (error) {
-    //         console.error('Error inserting Contact Us test data:', error);
-    //       }
-    //     } else {
-    //       console.log('Contact Us test data already exists in the database.');
-    //     }
+    if (existingContactUsRecordsCount === 0) {
+      try {
+        for (const contactUsData of contactUsTestData) {
+          await db.ContactUs.create(contactUsData);
+        }
+        console.log("Contact Us test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Contact Us test data:", error);
+      }
+    } else {
+      console.log("Contact Us test data already exists in the database.");
+    }
+
+    if (existingResponseRecordsCount === 0) {
+      try {
+        for (const responseData of responsesTestData) {
+          await db.Response.create(responseData);
+        }
+        console.log("Response test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Response test data:", error);
+      }
+    } else {
+      console.log("Response test data already exists in the database.");
+    }
 
     //     console.log('Faq test data inserted successfully.');
     //   } catch (error) {

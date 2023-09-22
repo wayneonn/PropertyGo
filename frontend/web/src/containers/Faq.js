@@ -4,6 +4,8 @@ import "./styles/Faq.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import FaqCreate from "./FaqCreate.js";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import the styles
 
 import API from "../services/API";
 
@@ -85,8 +87,8 @@ const Faq = () => {
       faqQuestionUnique: false,
     };
 
-    const questionTrimmed = faqQuestion.trim();
-    const answerTrimmed = faqAnswer.trim();
+    const questionTrimmed = htmlToPlainText(faqQuestion).trim();
+    const answerTrimmed = htmlToPlainText(faqAnswer).trim();
 
     if (questionTrimmed === "") {
       newMessage.emptyFaqQuestion = true;
@@ -172,6 +174,12 @@ const Faq = () => {
     fetchData();
   }, [faqs]);
 
+  function htmlToPlainText(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  }
+
   return (
     <div className="faq">
       <div
@@ -184,7 +192,7 @@ const Faq = () => {
       >
         <BreadCrumb name="FAQ"></BreadCrumb>
       </div>
-      <div style={{ position: "fixed", top: "5%", left: "50%" }}>
+      <div style={{ position: "fixed", top: "5%", left: "50%", zIndex: "1" }}>
         <Row>
           <Col xs={6}>
             <Toast
@@ -243,8 +251,12 @@ const Faq = () => {
                               textAlign: "center",
                             }}
                           >
-                            <td className="truncate-text">{faq.question}</td>
-                            <td className="truncate-text">{faq.answer}</td>
+                            <td className="truncate-text">
+                              {htmlToPlainText(faq.question)}
+                            </td>
+                            <td className="truncate-text">
+                              {htmlToPlainText(faq.answer)}
+                            </td>
                             <td className="truncate-text">{faq.createdAt}</td>
                             <td className="truncate-text">{faq.updatedAt}</td>
                             <td>
@@ -259,8 +271,8 @@ const Faq = () => {
                                 onClick={() =>
                                   toggleEditModal(
                                     faq.faqId,
-                                    faq.question,
-                                    faq.answer,
+                                    htmlToPlainText(faq.question),
+                                    htmlToPlainText(faq.answer),
                                     faq.faqType
                                   )
                                 }
@@ -354,8 +366,12 @@ const Faq = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td className="truncate-text">{faq.question}</td>
-                          <td className="truncate-text">{faq.answer}</td>
+                          <td className="truncate-text">
+                            {htmlToPlainText(faq.question)}
+                          </td>
+                          <td className="truncate-text">
+                            {htmlToPlainText(faq.answer)}
+                          </td>
                           <td className="truncate-text">{faq.createdAt}</td>
                           <td className="truncate-text">{faq.updatedAt}</td>
                           <td>
@@ -370,8 +386,8 @@ const Faq = () => {
                               onClick={() =>
                                 toggleEditModal(
                                   faq.faqId,
-                                  faq.question,
-                                  faq.answer,
+                                  htmlToPlainText(faq.question),
+                                  htmlToPlainText(faq.answer),
                                   faq.faqType
                                 )
                               }
@@ -472,7 +488,7 @@ const Faq = () => {
             >
               Question
             </Form.Label>
-            <Form.Control
+            {/* <Form.Control
               as="textarea"
               id="question"
               rows={6}
@@ -482,17 +498,30 @@ const Faq = () => {
                 validationMessages.emptyFaqQuestion ||
                 validationMessages.faqQuestionUnique
               }
-            />
-            {validationMessages.emptyFaqQuestion && (
-              <Form.Control.Feedback type="invalid">
-                Question is required.
-              </Form.Control.Feedback>
-            )}
-            {validationMessages.faqQuestionUnique && (
-              <Form.Control.Feedback type="invalid">
-                Question already exists. Please type another question.
-              </Form.Control.Feedback>
-            )}
+            /> */}
+            <Form.Group>
+              <ReactQuill
+                value={faqQuestion}
+                onChange={setFaqQuestion}
+                theme="snow"
+                className={
+                  validationMessages.emptyFaqQuestion ||
+                  validationMessages.faqQuestionUnique
+                    ? "is-invalid"
+                    : ""
+                }
+              />
+              {validationMessages.emptyFaqQuestion && (
+                <Form.Control.Feedback type="invalid">
+                  Question is required.
+                </Form.Control.Feedback>
+              )}
+              {validationMessages.faqQuestionUnique && (
+                <Form.Control.Feedback type="invalid">
+                  Question already exists. Please type another question.
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
             <Form.Label
               style={{
                 color: "black",
@@ -503,19 +532,29 @@ const Faq = () => {
             >
               Answer
             </Form.Label>
-            <Form.Control
+            {/* <Form.Control
               as="textarea"
               id="answer"
               rows={6}
               value={faqAnswer}
               onChange={(e) => setFaqAnswer(e.target.value)}
               isInvalid={validationMessages.emptyFaqAnswer}
-            />
-            {validationMessages.emptyFaqAnswer && (
-              <Form.Control.Feedback type="invalid">
-                Answer is required.
-              </Form.Control.Feedback>
-            )}
+            /> */}
+            <Form.Group>
+              <ReactQuill
+                value={faqAnswer}
+                onChange={setFaqAnswer}
+                theme="snow"
+                className={
+                  validationMessages.emptyFaqAnswer ? "is-invalid" : ""
+                }
+              />
+              {validationMessages.emptyFaqAnswer && (
+                <Form.Control.Feedback type="invalid">
+                  Answer is required.
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <Button
