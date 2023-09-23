@@ -18,6 +18,7 @@ const adminRouter = require("./routes/admin/adminRoutes");
 const faqRouter = require("./routes/admin/faqRoutes");
 const contactUsAdminRouter = require("./routes/admin/contactUsRoutes");
 const adminUserRouter = require("./routes/admin/userRoutes");
+const responseRouter = require("./routes/admin/responseRoutes");
 
 // const faqTestData = require("./test_data/faqTestData");
 const transactionTestData = require("./test_data/transactionTestData");
@@ -49,8 +50,9 @@ app.use(express.json());
 app.use("/admins", adminRouter);
 app.use("/admin/auth", authRouter);
 app.use("/admin/faqs", faqRouter);
-app.use("/admin/contactUs", contactUsAdminRouter);
 app.use("/admin/users", adminUserRouter);
+app.use("/admin/contactUs", contactUsAdminRouter);
+app.use("/admin/contactUs/:id/responses", responseRouter);
 
 app.use(
   "/user",
