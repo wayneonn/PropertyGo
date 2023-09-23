@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { Response } = require("../../models");
+const { ContactUs, Response } = require("../../models");
 
 const getAllResponses = async (req, res) => {
     const { id: contactUsId } = req.params;
@@ -26,6 +26,19 @@ const getAllResponses = async (req, res) => {
 
 const addResponse = async (req, res) => {
     const response = await Response.create(req.body);
+
+    // update the status of contact us to be 'REPLIED'
+    const { contactUsId } = req.body;
+
+    const contactUs = await ContactUs.findByPk(contactUsId);
+
+    if (contactUs.status !== "REPLIED") {
+        contactUs.status = "REPLIED";
+    }
+
+    contactUs.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    await contactUs.save();
+
     res.status(201).json({ response });
 };
 
@@ -38,6 +51,7 @@ const editResponse = async (req, res) => {
         return res.status(404).json({ message: "Response not found" });
       }
 
+    response.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
     await response.update(req.body);
 
     const updatedResponse = await Response.findByPk(responseId);
