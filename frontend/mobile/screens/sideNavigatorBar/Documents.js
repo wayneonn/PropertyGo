@@ -327,16 +327,10 @@ function UploadScreen({ navigation }) {
 
   // This is for the Select Documents
   const renderDocumentItem = ({ item }) => (
-    <ScrollView contentContainerStyle={styles.documentItem} horizontal={true}>
+    <View style={styles.documentItem}>
       <Text style={styles.documentText}>{item.name}</Text>
       <Text>&nbsp; &nbsp;</Text>
       <View>
-        <Button
-          style={styles.downloadButton}
-          title="Remove"
-          onPress={() => removeDocument(item)}
-        />
-        <Text>&nbsp;</Text>
         <Text style={styles.descriptionText}>Transaction ID: </Text>
         <Picker
           selectedValue={documentTransactions[item.name]}
@@ -355,7 +349,6 @@ function UploadScreen({ navigation }) {
             />
           ))}
         </Picker>
-        <Text>&nbsp;</Text>
         <Text style={styles.descriptionText}>Folder for Document: </Text>
         <Picker
           selectedValue={folderSelection[item.name]}
@@ -374,13 +367,17 @@ function UploadScreen({ navigation }) {
             />
           ))}
         </Picker>
+        <TouchableOpacity style={styles.downloadButton} onPress={() => removeDocument(item)}>
+          <Text style={styles.downloadButtonText}>Remove</Text>
+        </TouchableOpacity>
+        <Text>&nbsp;</Text>
       </View>
-    </ScrollView>
+    </View>
   );
 
   // This is for the Previously Uploaded Documents
   const renderDocumentListItem = ({ item }) => (
-    <ScrollView contentContainerStyle={styles.documentItem} horizontal={true}>
+    <View contentContainerStyle={styles.documentItem} horizontal={true}>
       <Text style={styles.documentText}>{item.title}</Text>
       <Text>&nbsp; &nbsp;</Text>
       <View>
@@ -406,7 +403,7 @@ function UploadScreen({ navigation }) {
           onPress={() => downloadDocumentFromServer(item)}
         > <Entypo name="download" size={24} color="black" /> </Button>
       </View>
-    </ScrollView>
+    </View>
   );
 
   // BEGIN OF ACTUAL HTML RENDERING //
@@ -491,12 +488,13 @@ function UploadScreen({ navigation }) {
             ))}
           </Picker>
           <Text>&nbsp;</Text>
-          <TouchableOpacity
-            onPress={() => setNewFolderModalOpen(true)}
-          >
-            <Text> Create Folder</Text>
-            <AntDesign name="addfolder" size={24} color="black" />
-          </TouchableOpacity>
+          <View style={styles.iconContainer}>
+            <TouchableOpacity
+              onPress={() => setNewFolderModalOpen(true)}
+            >
+              <AntDesign name="addfolder" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
           {newFolderModalOpen && (
             <Modal
               animationType="fade"
@@ -589,11 +587,29 @@ const styles = StyleSheet.create({
   },
 
   downloadButton: {
-    backgroundColor: "#007AFF",
-    color: "#fff",
-    padding: "4%",
-    borderRadius: 5, // Changed from `2%` to a fixed value
+    backgroundColor: "#ffffff", // White background
+    borderColor: "#007AFF", // Blue border
+    borderWidth: 1, // Border width
+    paddingVertical: 10, // Vertical padding
+    paddingHorizontal: 20, // Horizontal padding
+    borderRadius: 12, // Rounded corners
+    alignItems: 'center', // Center text horizontally
+    justifyContent: 'center', // Center text vertically
+    shadowColor: "#000", // Shadow color
+    shadowOffset: {
+      width: 0,
+      height: 2, // Shadow position
+    },
+    shadowOpacity: 0.1, // Shadow opacity
+    shadowRadius: 4, // Shadow blurring
   },
+
+  downloadButtonText: {
+    color: "#007AFF", // Blue text
+    fontWeight: "600", // Semi-bold text
+    fontSize: 16, // Font size
+  },
+
 
   detailText: {
     fontSize: 12,
@@ -610,14 +626,21 @@ const styles = StyleSheet.create({
   },
 
   documentItem: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "3%",
-    marginBottom: "2%",
-    backgroundColor: "#F8F8F8",
-    borderRadius: 5, // Changed from `2%` to a fixed value
+    padding: "1.5%", // Reduced padding for a more compact look
+    marginBottom: "1%", // Reduced margin for a more compact look
+    backgroundColor: "#FFFFFF", // Lighter background color for iOS theme
+    borderRadius: 10, // Moderate border radius for a card-like appearance
     width: "100%",
+    shadowColor: "#000", // Shadow for a card-like appearance
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
   },
 
   documentText: {
