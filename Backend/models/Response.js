@@ -29,14 +29,14 @@ module.exports = (sequelize, DataTypes) => {
     Response.belongsTo(models.User, {
       foreignKey: {
         name: "userId",
-        allowNull: false,
+        allowNull: true,
       },
       as: "user",
     });
     Response.belongsTo(models.Admin, {
       foreignKey: {
         name: "adminId",
-        allowNull: false,
+        allowNull: true,
       },
       as: "admin",
     });
