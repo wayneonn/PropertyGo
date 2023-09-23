@@ -15,39 +15,41 @@ const Tab = createBottomTabNavigator();
 const UserBottomNavigator = () => {
 
     return (
-        <Tab.Navigator 
-        screenOptions={({route, navigation}) => ({
-            headerShown:false,
-            tabBarIcon: ({color, focused, size}) => {
-                let iconName;
-                if (route.name === "Home") {
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                headerShown: false,
+                tabBarIcon: ({ color, focused, size }) => {
+                    let iconName;
 
-                    iconName = focused ? "home" : "home-outline";
+                    if (route.name === "Home") {
+                        iconName = focused ? "home" : "home-outline";
+                    } else if (route.name === "Favourite") {
+                        iconName = focused ? "favorite" : "favorite-border";
+                    } else if (route.name === "Sell") {
+                        iconName = "add-sharp";
+                    } else if (route.name === "Forum") {
+                        iconName = focused ? "forum" : "forum-outline";
+                    } else if (route.name === "Activity") {
+                        iconName = focused ? "md-notifications-sharp" : "md-notifications-outline";
+                    }
 
-                } else if (route.name === "Favourite") {
+                    const iconComponent =
+                        route.name === "Favourite" ? (
+                            <MaterialIcons name={iconName} size={size} color={"#FFD700"} />
+                        ) : route.name === "Forum" ? (
+                            <MaterialCommunityIcons name={iconName} size={size} color={"#FFD700"} />
+                        ) : (
+                            <Ionicons name={iconName} size={size} color={"#FFD700"} />
+                        );
 
-                    iconName = focused ? "favorite" : "favorite-border";
-
-                } else if (route.name === "Sell") {
-
-                    iconName = "add-sharp" ;
-
-                } else if (route.name === "Forum") {
-
-                    iconName = focused ? "forum" : "forum-outline";
-                    
-                } else if (route.name === "Activity") {
-
-                    iconName = focused ? "md-notifications-sharp" : "md-notifications-outline";
-                    
-                }
-                return route.name ===  "Favourite" ? <MaterialIcons name={iconName} size={size} color={color}/>
-                : (route.name ===  "Forum")  ? <MaterialCommunityIcons name={iconName} size={size} color={color}/>
-                : <Ionicons name={iconName} size={size} color={color}/> 
-            },
-            tabBarActiveTintColor: "#FFD700",
-
-        })}
+                    return iconComponent;
+                },
+                tabBarActiveTintColor: "#000000", 
+                tabBarLabelStyle: {
+                    fontSize: 12,
+                    fontWeight: 'bold',
+                },
+            })}
         >
             <Tab.Screen name="Home" component={HomePage} />
             <Tab.Screen name="Favourite" component={Favourite} />

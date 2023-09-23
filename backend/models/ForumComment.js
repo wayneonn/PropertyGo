@@ -10,14 +10,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        likes: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        dislikes: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
+        // likes: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false,
+        // },
+        // dislikes: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false,
+        // },
         isInappropriate: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
@@ -39,6 +39,21 @@ module.exports = (sequelize, DataTypes) => {
         ForumComment.belongsTo(models.ForumPost, {
             foreignKey: 'forumPostId', 
             as: 'forumPost', 
+        });
+        ForumComment.belongsToMany(models.User, {
+            through: "UserCommentFlagged", // Specify the intermediary model
+            foreignKey: "forumCommentId",
+            as: "usersFlagged",
+        });
+        ForumComment.belongsToMany(models.User, {
+            through: "UserCommentUpvoted", // Specify the intermediary model
+            foreignKey: "forumCommentId",
+            as: "usersUpvoted",
+        });
+        ForumComment.belongsToMany(models.User, {
+            through: "UserCommentDownvoted", // Specify the intermediary model
+            foreignKey: "forumCommentId",
+            as: "usersDownvoted",
         });
     };
 
