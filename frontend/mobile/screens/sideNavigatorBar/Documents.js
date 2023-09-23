@@ -1,3 +1,7 @@
+// I am going to start refactoring this thing.
+// God damn is the structure soooo bad.
+
+/*** IMPORTS *****/
 import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
@@ -10,6 +14,7 @@ import {
   Modal,
   ScrollView,
   Dimensions,
+  SafeAreaView, TouchableOpacity,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as DocumentPicker from "expo-document-picker";
@@ -17,20 +22,22 @@ import * as FileSystem from "expo-file-system";
 import { openBrowserAsync } from "expo-web-browser";
 import { AuthContext } from "../../AuthContext";
 
+// ICON IMPORTS
+import { Entypo } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+
 //Conditional FileSaver import.
 let FileSaver;
 if (__DEV__ && Platform.OS === "web") {
   FileSaver = require("file-saver").default;
 }
-
-// I know my code is fuuuuuuucked up lol, I am going to be splitting them into smaller components soon so each parts has its own component.
-// This is some omega-level one JS file app XDDDDDDD
+/*******************************************/
 
 /* CONSTANTS FOR THE WHOLE PAGE */
-// This may need to be responsive if we want auto-UI scaling per window size, but this only applies to Web.
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 const responsiveWidth = width * 0.8;
-const BASE_URL = "http://192.168.50.157:3000";
+const BASE_URL = "http://10.218.53.124:3000"; // Change this according to Wifi.
 
 function UploadScreen({ navigation }) {
   const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
@@ -51,8 +58,62 @@ function UploadScreen({ navigation }) {
   const { user } = useContext(AuthContext);
   const USER_ID = user.user.userId;
 
-  // General issue here seems to be that the Data Array is too big
-  // It is in one omega array? I think we need to split it up into smaller arrays.
+  // USE-EFFECT HOOKS //
+  // Fetch the previous documents from the server.
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  // Call fetchFolders on initial mount
+  useEffect(() => {
+    fetchFolders();
+  }, []);
+
+  // Fetch transactions on mount
+  // Currently dummy user set to 1.
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  useEffect(() => {
+    const docs = prevDocuments.filter((doc) => {
+      console.log("prevDocuments:", prevDocuments);
+      console.log("selectedFolder:", selectedFolder);
+      console.log("searchQuery:", searchQuery);
+      const matchesFolder = selectedFolder
+          ? doc.folderId.toString() === selectedFolder.toString()
+          : true;
+      const matchesSearch = doc.title
+          .toLowerCase()
+          .includes((searchQuery || "").toLowerCase());
+      return matchesFolder && matchesSearch;
+    });
+    setFilteredDocs(docs);
+  }, [searchQuery, selectedFolder]);
+
+  // Weird hack so that useState works properly.
+  useEffect(() => {
+    console.log(transactions);
+    setTransactions(transactions);
+  }, [transactions]);
+
+  useEffect(() => {
+    console.log(prevDocuments);
+    setPrevDocuments(prevDocuments);
+  }, [prevDocuments]);
+
+  useEffect(() => {
+    console.log(folders);
+    setFolders(folders);
+  }, [folders]);
+
+  useEffect(() => {
+    console.log(filteredDocs);
+    setFilteredDocs(filteredDocs);
+  }, [filteredDocs]);
+  // END OF USE-EFFECT HOOKS //
+
+  // FETCH DATA FUNCTIONS
   const fetchDocuments = async () => {
     try {
       const response = await fetch(
@@ -61,14 +122,13 @@ function UploadScreen({ navigation }) {
       const documents = await response.json();
       setPrevDocuments(documents);
       setFilteredDocs(documents);
-      setSelectedFolder(defaultFolderId); //
+      setSelectedFolder(defaultFolderId);
       console.log(user);
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Fetch list of folders from API
   const fetchFolders = async () => {
     try {
       const response = await fetch(`${BASE_URL}/user/folders/${USER_ID}}`);
@@ -97,26 +157,23 @@ function UploadScreen({ navigation }) {
     }
   };
 
+  // END OF FETCH FUNCTIONS
+
+  // START OF BUSINESS FUNCTIONS //
   const downloadPDF = async (document) => {
+    // The web version is kinda not needed.
     if (Platform.OS === "web") {
-      // Web download logic
-      // Web: convert buffer to blob
       const response = await fetch(
         `${BASE_URL}/user/documents/${document.documentId}/data`
       );
       const result = await response.json();
       const doc = result.document;
       console.log(doc);
-      // Some how the blob is double writing.
-      // Supposing that document.data.data is in base64 format
-      // Assuming document.data takes the form {type: 'Buffer', data: Array}
       const byteArray = new Uint8Array(result.document.data);
-      // Create a blob from the typed array
       const blob = new Blob([byteArray], { type: "application/pdf" });
       console.log(blob);
       const url = URL.createObjectURL(blob);
-      // Use FileSaver to download
-      openBrowserAsync(url);
+      await openBrowserAsync(url);
       FileSaver.saveAs(blob, document.name);
       URL.revokeObjectURL(url);
     } else {
@@ -127,72 +184,16 @@ function UploadScreen({ navigation }) {
         document.data,
         { encoding: FileSystem.EncodingType.Base64 }
       );
-    }
-    if (uri) {
-      alert("Downloaded to " + uri);
-    } else {
-      alert("Failed to download PDF");
+      if (uri) {
+        alert("Downloaded to " + uri);
+      } else {
+        alert("Failed to download PDF");
+      }
     }
   };
 
-  // Fetch the previous documents from the server.
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-
-  // Call fetchFolders on initial mount
-  useEffect(() => {
-    fetchFolders();
-  }, []);
-
-  // Fetch transactions on mount
-  // Currently dummy user set to 1.
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  useEffect(() => {
-    const docs = prevDocuments.filter((doc) => {
-      console.log("prevDocuments:", prevDocuments);
-      console.log("selectedFolder:", selectedFolder);
-      console.log("searchQuery:", searchQuery);
-      const matchesFolder = selectedFolder
-        ? doc.folderId.toString() === selectedFolder.toString()
-        : true;
-      const matchesSearch = doc.title
-        .toLowerCase()
-        .includes((searchQuery || "").toLowerCase());
-      return matchesFolder && matchesSearch;
-    });
-    setFilteredDocs(docs);
-  }, [searchQuery, selectedFolder]);
-
-  // Weird hack so that useState works properly.
-  useEffect(() => {
-    console.log(transactions);
-    setTransactions(transactions);
-  }, [transactions]);
-
-  useEffect(() => {
-    console.log(prevDocuments);
-    setPrevDocuments(prevDocuments);
-  }, [prevDocuments]);
-
-  useEffect(() => {
-    console.log(folders);
-    setFolders(folders);
-  }, [folders]);
-
-  useEffect(() => {
-    console.log(filteredDocs);
-    setFilteredDocs(filteredDocs);
-  }, [filteredDocs]);
-
   // Function to create new folder
   const createNewFolder = async () => {
-    // Title of folder
-    const title = newFolderName;
-    // Call API to create folder
     try {
       const response = await fetch(
         `${BASE_URL}/user/folders/create/${USER_ID}`,
@@ -201,32 +202,28 @@ function UploadScreen({ navigation }) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ folderTitle: title }),
+          body: JSON.stringify({ folderTitle: newFolderName }),
         }
       );
       if (response.ok) {
         console.log("Folder created successfully");
       } else {
-        throw "Error creating folder";
+        console.log( "Error creating folder");
       }
-      // Close modal
       setNewFolderModalOpen(false);
-      // Fetch updated folders list
-      fetchFolders();
+      await fetchFolders();
     } catch (error) {
       console.error(error);
     }
   };
 
-  // This is suppose to show all the documents that you selected.
+  // This is supposed to show all the documents that you selected.
   const selectDocuments = async () => {
     try {
       const results = await DocumentPicker.getDocumentAsync({
         multiple: true,
         type: "application/pdf",
       });
-
-      // If there is a file that is selected.
       if (results.canceled === false) {
         const newSelectedDocuments = results.assets;
         setSelectedDocuments([...newSelectedDocuments]);
@@ -236,7 +233,7 @@ function UploadScreen({ navigation }) {
     }
   };
 
-  // This is suppose to remove a documents from the selected documents list.
+  // This is supposed to remove a documents from the selected documents list.
   const removeDocument = (document) => {
     const newSelectedDocuments = selectedDocuments.filter(
       (doc) => doc.name !== document.name
@@ -252,10 +249,9 @@ function UploadScreen({ navigation }) {
       });
       if (response.ok) {
         console.log("Document deleted successfully");
-        // redirect or update state
-        fetchDocuments();
+        await fetchDocuments();
       } else {
-        throw "Error deleting document";
+        console.log("Error deleting document");
       }
     } catch (error) {
       console.error(error);
@@ -273,9 +269,7 @@ function UploadScreen({ navigation }) {
   // This then uploads the documents you selected.
   const handleUpload = async () => {
     try {
-      //Begin logic to send data to API
       const fileData = new FormData();
-      // Append each selected document to the FormData object
       selectedDocuments.forEach((document) => {
         const fileuri = document.uri;
         const filetype = "application/pdf";
@@ -291,16 +285,8 @@ function UploadScreen({ navigation }) {
         console.log(documentTransactions);
         console.log(folderSelection);
 
-        // Need to add in more details here.
-        // User = 4, Transaction = 1, Folder = Choose.
-        const file = {
-          uri: fileuri,
-          type: filetype,
-          name: filename,
-        };
-
         // Extract the base64-encoded data from the URI
-        const base64Data = file.uri.split(",")[1];
+        const base64Data = fileuri.split(",")[1];
 
         // Decode the base64 string into a Uint8Array
         const base64String = window.atob(base64Data);
@@ -310,20 +296,12 @@ function UploadScreen({ navigation }) {
         }
 
         // Create a Blob object from the decoded data
-        const fileBlob = new Blob([bytes], { type: file.type });
-        // console.log(fileBlob);
-        // console.log(descriptions);
-        // console.log(fileData.get("description"));
-        // console.log(...selectedDocuments);
+        const fileBlob = new Blob([bytes], { type: filetype });
         fileData.append("documents", fileBlob, filename);
         fileData.append("description", descriptions);
         fileData.append("transactionId", transactionId);
         fileData.append("folderId", folderId);
         fileData.append("userId", USER_ID);
-        // Convert to regular JS object
-        const obj = Object.fromEntries(fileData.entries());
-        // Log object
-        console.log(obj);
       });
 
       // Send the data to the API
@@ -336,17 +314,18 @@ function UploadScreen({ navigation }) {
       if (response.ok) {
         const data = await response.json();
         console.log("Upload response:", data);
-        fetchDocuments();
+        await fetchDocuments();
       } else {
-        throw new Error("File upload failed");
+        console.log("File upload failed");
       }
     } catch (error) {
       console.log("Error upload:", error);
     }
   };
 
+  // END OF FUNCTIONS, MOVING INTO RENDERED FUNCTION COMPONENTS. //
+
   // This is for the Select Documents
-  // Probably going to add a Partner Application Box as well.
   const renderDocumentItem = ({ item }) => (
     <ScrollView contentContainerStyle={styles.documentItem} horizontal={true}>
       <Text style={styles.documentText}>{item.name}</Text>
@@ -423,17 +402,16 @@ function UploadScreen({ navigation }) {
         />
         <Text>&nbsp;</Text>
         <Button
-          style={styles.downloadButton}
           title="Download"
           onPress={() => downloadDocumentFromServer(item)}
-        />
+        > <Entypo name="download" size={24} color="black" /> </Button>
       </View>
     </ScrollView>
   );
 
+  // BEGIN OF ACTUAL HTML RENDERING //
   return (
-    <View style={styles.container}>
-      <Text style={styles.headerText}>Upload your documents here!</Text>
+    <SafeAreaView style={styles.container}>
       {/* Wrap the FlatList in a View with border styles */}
       <View style={styles.documentListContainer}>
         <Text style={styles.detailText}>List of selected Documents:</Text>
@@ -467,18 +445,19 @@ function UploadScreen({ navigation }) {
         />
         <Text> Remaining: {length}</Text>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          style={styles.downloadButton}
-          title="Select Documents"
+      <View style={styles.iconContainer}>
+        <TouchableOpacity
           onPress={selectDocuments}
-        />
+        >
+          <AntDesign name="addfile" size={24} color="black" />
+        </TouchableOpacity>
         <Text> &nbsp;&nbsp;&nbsp; </Text>
-        <Button
-          style={styles.downloadButton}
-          title="Upload Documents"
+
+        <TouchableOpacity
           onPress={handleUpload}
-        />
+        >
+          <AntDesign name="clouduploado" size={24} color="black" />
+        </TouchableOpacity>
       </View>
 
       <View>
@@ -512,10 +491,12 @@ function UploadScreen({ navigation }) {
             ))}
           </Picker>
           <Text>&nbsp;</Text>
-          <Button
-            title="Create New Folder"
+          <TouchableOpacity
             onPress={() => setNewFolderModalOpen(true)}
-          />
+          >
+            <Text> Create Folder</Text>
+            <AntDesign name="addfolder" size={24} color="black" />
+          </TouchableOpacity>
           {newFolderModalOpen && (
             <Modal
               animationType="fade"
@@ -545,7 +526,7 @@ function UploadScreen({ navigation }) {
             data={filteredDocs}
             renderItem={renderDocumentListItem}
             ListEmptyComponent={() => (
-              <Text style={styles.emptyListText}>
+              <Text style={styles.detailText}>
                 {" "}
                 Your previous documents would appear here.
               </Text>
@@ -559,97 +540,95 @@ function UploadScreen({ navigation }) {
       <Text style={styles.graytext}>
         Welcome, {user.user.name}, you are the #{USER_ID} user!
       </Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: responsiveWidth * 0.02,
+    padding: '10%',
     backgroundColor: "#fff",
-    overflow: "scroll",
   },
 
   headerText: {
-    fontSize: responsiveWidth * 0.06,
-    marginBottom: responsiveWidth * 0.02,
+    fontSize: 10,
+    marginBottom: "2%",
     textAlign: "center",
   },
 
   searchBar: {
-    height: responsiveWidth * 0.1,
+    height: '20%', // 'auto' is not a valid value for height in React Native
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: responsiveWidth * 0.02,
-    paddingHorizontal: responsiveWidth * 0.02,
-    marginVertical: responsiveWidth * 0.02,
+    borderRadius: 10,
+    paddingHorizontal: 2,
+    marginVertical: 2,
   },
 
-  buttonContainer: {
+  iconContainer: {
+    alignItems: 'flex-start',
+    justifyContent: 'space-evenly',
     flexDirection: "row",
-    alignItems: "center",
-    marginVertical: responsiveWidth * 0.04,
+    borderColor: '#000',
+    borderWidth: 1,
+    borderRadius: 15,
+    padding: 5,
   },
 
   descriptionContainer: {
-    marginVertical: responsiveWidth * 0.04,
+    marginVertical: '4%',
   },
 
   descriptionInput: {
-    height: responsiveWidth * 0.1,
+    height: 30, // Changed from `1%` to a fixed value
     borderColor: "gray",
     borderWidth: 1,
-    borderRadius: responsiveWidth * 0.02,
-    marginVertical: responsiveWidth * 0.02,
-    padding: responsiveWidth * 0.02,
+    borderRadius: 5, // Changed from `2%` to a fixed value
+    marginVertical: `2%`,
+    padding: `2%`,
   },
 
   downloadButton: {
     backgroundColor: "#007AFF",
     color: "#fff",
-    padding: responsiveWidth * 0.04,
-    borderRadius: responsiveWidth * 0.02,
+    padding: "4%",
+    borderRadius: 5, // Changed from `2%` to a fixed value
   },
 
   detailText: {
-    fontSize: responsiveWidth * 0.04,
-    marginBottom: responsiveWidth * 0.02,
+    fontSize: 12,
+    marginBottom: "2%",
     fontWeight: "bold",
   },
 
   documentListContainer: {
     borderWidth: 1,
     borderColor: "#ddd",
-    borderRadius: responsiveWidth * 0.02,
-    padding: responsiveWidth * 0.03,
-    paddingTop: responsiveWidth * 0.035,
+    borderRadius: 5, // Changed from `2%` to a fixed value
+    padding: "3%",
+    paddingTop: "3.5%",
   },
 
   documentItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: responsiveWidth * 0.03,
-    marginBottom: responsiveWidth * 0.02,
+    padding: "3%",
+    marginBottom: "2%",
     backgroundColor: "#F8F8F8",
-    borderRadius: responsiveWidth * 0.02,
+    borderRadius: 5, // Changed from `2%` to a fixed value
     width: "100%",
   },
 
   documentText: {
-    fontSize: responsiveWidth * 0.035,
+    fontSize: 14, // Changed from `3.5%` to a fixed value
     color: "#333",
   },
 
   descriptionText: {
-    fontSize: responsiveWidth * 0.035,
+    fontSize: 14, // Changed from `3.5%` to a fixed value
     fontStyle: "italic",
     fontWeight: "bold",
-  },
-
-  descriptiontContainer: {
-    alignContent: "top-left",
   },
 
   centeredView: {
@@ -661,8 +640,8 @@ const styles = StyleSheet.create({
 
   modalView: {
     backgroundColor: "white",
-    borderRadius: responsiveWidth * 0.025,
-    padding: responsiveWidth * 0.05,
+    borderRadius: 10, // Changed from `2.5%` to a fixed value
+    padding: "5%",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -675,18 +654,18 @@ const styles = StyleSheet.create({
   },
 
   picker: {
-    fontSize: responsiveWidth * 0.03,
-    paddingVertical: responsiveWidth * 0.03,
-    paddingHorizontal: responsiveWidth * 0.025,
+    fontSize: 12,
+    paddingVertical: "3%",
+    paddingHorizontal: "2.5%",
     borderWidth: 1,
     borderColor: "gray",
-    borderRadius: responsiveWidth * 0.01,
+    borderRadius: 5, // Changed from `1%` to a fixed value
     backgroundColor: "white",
     color: "black",
   },
 
   graytext: {
-    fontSize: responsiveWidth * 0.02, // or whatever relative size you want
+    fontSize: 12, // Changed from `2%` to a fixed value
     color: "#808080",
   },
 });
