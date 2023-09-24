@@ -29,6 +29,9 @@ const reviewTestData = require("./test_data/reviewTestData");
 const chatTestData = require("./test_data/chatTestData");
 const requestTestData = require("./test_data/requestTestData");
 const partnerApplicationId = require("./test_data/partnerApplicationTestData");
+const forumTopicTestData = require("./test_data/forumTopicTestData");
+const forumPostTestData = require("./test_data/forumPostTestData");
+const forumCommentTestData = require("./test_data/forumCommentTestData");
 
 // admin routes
 // const authRouter = require("./routes/admin/authRoutes");
@@ -61,7 +64,10 @@ app.use(
   documentRoute,
   folderRoute,
   transactionRoute,
-  contactUsUserRouter
+  contactUsUserRouter,
+  forumTopicUserRouter,
+  forumPostUserRouter,
+  forumCommentUserRouter
 );
 
 db.sequelize
@@ -81,6 +87,9 @@ db.sequelize
     const existingResponseRecordsCount = await db.Response.count();
     const existingPartnerApplicationRecordsCount =
       await db.PartnerApplication.count();
+    const existingForumTopicRecordsCount = await db.ForumTopic.count();
+    const existingForumPostRecordsCount = await db.ForumPost.count();
+    const existingForumCommentRecordsCount = await db.ForumComment.count();
 
     // General order of data insertion:
     // User -> Admin -> FAQ -> Property -> Image -> Chat -> Transaction -> Invoice -> Review
@@ -186,18 +195,18 @@ db.sequelize
     }
 
     // Images
-    if (existingImageRecordsCount === 0) {
-      try {
-        for (const imageData of imageTestData) {
-          await db.Image.create(imageData);
-        }
-        console.log("Image test data inserted successfully.");
-      } catch (error) {
-        console.log("Error inserting Image test data:", error);
-      }
-    } else {
-      console.log("Image test data already exists in the database.");
-    }
+    // if (existingImageRecordsCount === 0) {
+    //   try {
+    //     for (const imageData of imageTestData) {
+    //       await db.Image.create(imageData);
+    //     }
+    //     console.log("Image test data inserted successfully.");
+    //   } catch (error) {
+    //     console.log("Error inserting Image test data:", error);
+    //   }
+    // } else {
+    //   console.log("Image test data already exists in the database.");
+    // }
 
     // Chats
     if (existingChatRecordsCount === 0) {
@@ -268,6 +277,51 @@ db.sequelize
       }
     } else {
       console.log("Transaction test data already exists in the database.");
+    }
+
+    // ForumTopic
+    if (existingForumTopicRecordsCount === 0) {
+      try {
+        for (const forumTopicData of forumTopicTestData) {
+          await db.ForumTopic.create(forumTopicData);
+        }
+
+        console.log("ForumTopic test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting ForumTopic test data:", error);
+      }
+    } else {
+      console.log("ForumTopic test data already exists in the database.");
+    }
+
+    // ForumPost
+    if (existingForumPostRecordsCount === 0) {
+      try {
+        for (const forumPostData of forumPostTestData) {
+          await db.ForumPost.create(forumPostData);
+        }
+
+        console.log("ForumPost test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting ForumPost test data:", error);
+      }
+    } else {
+      console.log("ForumPost test data already exists in the database.");
+    }
+
+    // ForumComment
+    if (existingForumCommentRecordsCount === 0) {
+      try {
+        for (const forumCommentData of forumCommentTestData) {
+          await db.ForumComment.create(forumCommentData);
+        }
+
+        console.log("ForumComment test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting ForumComment test data:", error);
+      }
+    } else {
+      console.log("ForumComment test data already exists in the database.");
     }
 
     app.listen(3000, () => {

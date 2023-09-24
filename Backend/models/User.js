@@ -235,6 +235,52 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId",
       as: "responses",
     });
+    User.belongsToMany(models.ForumTopic, {
+      through: "UserTopicFlagged", // Specify the intermediary model
+      foreignKey: "userId", // Foreign key
+      as: "flaggedTopics",
+    });
+    User.belongsToMany(models.ForumTopic, {
+      through: "UserTopicUpvoted", // Specify the intermediary model
+      foreignKey: "userId", // Foreign key
+      as: "upvotedTopics",
+    });
+    User.belongsToMany(models.ForumTopic, {
+      through: "UserTopicDownvoted", // Specify the intermediary model
+      foreignKey: "userId", // Foreign key
+      as: "downvotedTopics",
+    });
+    User.belongsToMany(models.ForumPost, {
+      through: "UserPostFlagged", // Specify the intermediary model
+      foreignKey: "userId", // Foreign key
+      as: "flaggedPosts",
+    });
+    User.belongsToMany(models.ForumPost, {
+      through: "UserPostUpvoted", // Specify the intermediary model
+      foreignKey: "userId", // Foreign key
+      as: "upvotedPosts",
+    });
+    User.belongsToMany(models.ForumPost, {
+      through: "UserPostDownvoted", // Specify the intermediary model
+      foreignKey: "userId", // Foreign key
+      as: "downvotedPosts",
+    });
+    User.belongsToMany(models.ForumComment, {
+      through: "UserCommentFlagged", // Specify the intermediary model
+      foreignKey: "userId", // Foreign key
+      as: "flaggedComments",
+    });
+    User.belongsToMany(models.ForumComment, {
+      through: "UserCommentUpvoted", // Specify the intermediary model
+      foreignKey: "userId", // Foreign key
+      as: "upvotedComments",
+    });
+    User.belongsToMany(models.ForumComment, {
+      through: "UserCommentDownvoted", // Specify the intermediary model
+      foreignKey: "userId", // Foreign key
+      as: "downvotedComments",
+    });
+
   };
 
   return User;
