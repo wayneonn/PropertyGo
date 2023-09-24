@@ -16,22 +16,22 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        likes: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        dislikes: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
+        // likes: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false,
+        // },
+        // dislikes: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false,
+        // },
         isInappropriate: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },
-        images: {
-            type: DataTypes.BLOB,
-            allowNull: false,
-        },
+        // images: {
+        //     type: DataTypes.BLOB,
+        //     // allowNull: false,
+        // },
     }
         , {
             freezeTableName: true
@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
         ForumPost.hasMany(models.ForumComment, {
             onDelete: "CASCADE",
             foreignKey: {
-                name: 'forumCommentId'
+                name: 'forumPostId'
             },
             as: 'forumComments',
         });
@@ -62,6 +62,21 @@ module.exports = (sequelize, DataTypes) => {
         });
         ForumPost.belongsTo(models.Image, {
             foreignKey: 'imageId',
+        });
+        ForumPost.belongsToMany(models.User, {
+            through: "UserPostFlagged", // Specify the intermediary model
+            foreignKey: "forumPostId",
+            as: "usersFlagged",
+        });
+        ForumPost.belongsToMany(models.User, {
+            through: "UserPostUpvoted", // Specify the intermediary model
+            foreignKey: "forumPostId",
+            as: "usersUpvoted",
+        });
+        ForumPost.belongsToMany(models.User, {
+            through: "UserPostDownvoted", // Specify the intermediary model
+            foreignKey: "forumPostId",
+            as: "usersDownvoted",
         });
     };
 

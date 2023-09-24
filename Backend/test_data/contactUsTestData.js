@@ -1,5 +1,36 @@
 module.exports = [
   {
+    userId: 2, // Replace with the actual user ID to associate with
+    title: "Your Title Here",
+    message: "Your Message Here",
+    reason: "GENERAL", // Choose one of the allowed values: 'GENERAL', 'SUPPORT', 'FEEDBACK', 'OTHERS'
+    status: "PENDING", // Choose one of the allowed values: 'PENDING', 'REPLIED'
+  },
+  {
+    userId: 1,
+    title: "Need Technical Support",
+    message: "I'm experiencing technical issues with the website.",
+    reason: "SUPPORT",
+    status: "PENDING",
+
+  },
+  {
+    userId: 2,
+    title: "Website Feedback",
+    message: "I have some feedback to share about the website's user experience.",
+    reason: "FEEDBACK",
+    response: "Go head?",
+    status: "REPLIED",
+  },
+  {
+    userId: 1,
+    title: "General Inquiry",
+    message: "I have a general question that doesn't fit other categories.",
+    reason: "OTHERS",
+    response: "Go head?",
+    status: "REPLIED",
+  },
+  {
     title: "hello",
     message: "world",
     reason: "GENERAL",

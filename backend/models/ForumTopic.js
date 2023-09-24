@@ -21,23 +21,38 @@ module.exports = (sequelize, DataTypes) => {
         ForumTopic.hasMany(models.ForumPost, {
             onDelete: "CASCADE",
             foreignKey: {
-                name: 'forumPostId'
+                name: 'forumTopicId'
             },
             as: 'forumPosts',
         });
         ForumTopic.belongsTo(models.User, { 
             foreignKey: {
-                allowNull: false,
+                allowNull: true,
                 name: 'userId'
             },
             as: 'user',
         });
         ForumTopic.belongsTo(models.Admin, { 
             foreignKey: {
-                allowNull: false,
+                allowNull: true,
                 name: 'adminId'
             },
             as: 'admin',
+        });
+        ForumTopic.belongsToMany(models.User, {
+            through: "UserTopicFlagged", // Specify the intermediary model
+            foreignKey: "forumTopicId", // Foreign key 
+            as: "usersFlagged",
+        });
+        ForumTopic.belongsToMany(models.User, {
+            through: "UserTopicUpvoted", // Specify the intermediary model
+            foreignKey: "forumTopicId", // Foreign key 
+            as: "usersUpvoted",
+        });
+        ForumTopic.belongsToMany(models.User, {
+            through: "UserTopicDownvoted", // Specify the intermediary model
+            foreignKey: "forumTopicId", // Foreign key 
+            as: "usersDownvoted",
         });
     };
 

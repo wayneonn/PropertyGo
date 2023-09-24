@@ -1,7 +1,7 @@
 module.exports = [
   {
     propertyListingId: 1,
-    images: "image_data_1",
+    // images: "image_data_1",
     postedAt: "2023-01-05T12:34:56.789Z",
     description: "Nice apartment with great view",
     updatedAt: "2023-02-15T17:45:32.456Z",
@@ -25,7 +25,7 @@ module.exports = [
 
   {
     propertyListingId: 2,
-    images: "image_data_1",
+    // images: "image_data_1",
     postedAt: "2023-01-05T12:34:56.789Z",
     description: "Nice apartment with great view",
     updatedAt: "2023-02-15T17:45:32.456Z",
@@ -47,7 +47,7 @@ module.exports = [
 
   {
     propertyListingId: 3,
-    images: "image_data_1",
+    // images: "image_data_1",
     postedAt: "2023-01-05T12:34:56.789Z",
     description: "Nice apartment with great view",
     updatedAt: "2023-02-15T17:45:32.456Z",
