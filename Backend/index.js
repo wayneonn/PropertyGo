@@ -4,23 +4,13 @@ const app = express();
 
 // model
 const db = require("./models");
+
+// seed data
 const userTestData = require("./test_data/userTestData");
 const adminTestData = require("./test_data/adminTestData");
-
-// testing purpose - remove before demo(?)
 const faqTestData = require("./test_data/faqTestData");
 const contactUsTestData = require("./test_data/contactUsTestData");
 const responsesTestData = require("./test_data/responseTestData");
-
-// admin routes
-const authRouter = require("./routes/admin/authRoutes");
-const adminRouter = require("./routes/admin/adminRoutes");
-const faqRouter = require("./routes/admin/faqRoutes");
-const contactUsAdminRouter = require("./routes/admin/contactUsRoutes");
-const adminUserRouter = require("./routes/admin/userRoutes");
-const responseRouter = require("./routes/admin/responseRoutes");
-
-// const faqTestData = require("./test_data/faqTestData");
 const transactionTestData = require("./test_data/transactionTestData");
 const invoiceTestData = require("./test_data/invoiceTestData");
 const propertyTestData = require("./test_data/propertyTestData");
@@ -34,9 +24,13 @@ const forumPostTestData = require("./test_data/forumPostTestData");
 const forumCommentTestData = require("./test_data/forumCommentTestData");
 
 // admin routes
-// const authRouter = require("./routes/admin/authRoutes");
-// const adminRouter = require("./routes/admin/adminRoutes");
-// const faqRouter = require("./routes/admin/faqRoutes");
+const authRouter = require("./routes/admin/authRoutes");
+const adminRouter = require("./routes/admin/adminRoutes");
+const faqRouter = require("./routes/admin/faqRoutes");
+const contactUsAdminRouter = require("./routes/admin/contactUsRoutes");
+const adminUserRouter = require("./routes/admin/userRoutes");
+const responseRouter = require("./routes/admin/responseRoutes");
+const forumTopicAdminRouter = require("./routes/admin/forumTopicRoutes");
 
 // user routes
 const postRouter = require("./routes/user/User");
@@ -44,8 +38,10 @@ const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
 const transactionRoute = require("./routes/user/transactionRoute");
-const contactUsUserRouter = require("./routes/user/contactUsRoutes");
-const e = require("express");
+const contactUsUserRouter = require('./routes/user/contactUsRoutes');
+const forumTopicUserRouter = require('./routes/user/forumTopicRoute');
+const forumPostUserRouter = require('./routes/user/forumPostRoute');
+const forumCommentUserRouter = require('./routes/user/forumCommentRoute');
 
 app.use(cors());
 app.use(express.json());
@@ -56,6 +52,7 @@ app.use("/admin/faqs", faqRouter);
 app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", contactUsAdminRouter);
 app.use("/admin/contactUs/:id/responses", responseRouter);
+app.use("/admin/forumTopics", forumTopicAdminRouter);
 
 app.use(
   "/user",
