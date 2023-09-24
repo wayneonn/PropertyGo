@@ -1,7 +1,8 @@
 import { Platform } from "react-native";
 
-const BASE_URL = "http://localhost:3000";
-// Please change it back to whatever your IP address is. 
+const BASE_URL_NORM = "http://localhost:3000";
+// Please change it back to whatever your IP address is.
+const BASE_URL = "http://192.168.50.157:3000";
 const BASE_URL_WAYNE = "http://10.0.0.17:3000";
 const USER_ENDPOINT = "user";
 
@@ -107,3 +108,5 @@ export const updateUserProfilePicture = async (userId, imageUri) => {
     return { success: false, message: error.message };
   }
 };
+
+

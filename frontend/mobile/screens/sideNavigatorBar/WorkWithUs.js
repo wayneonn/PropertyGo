@@ -1,7 +1,8 @@
 import React from 'react';
 import {SafeAreaView, Text, View } from 'react-native';
 
-const WotkWithUs = () => {
+// I am going to turn this into a Partner Application Page.
+const WorkWithUs = () => {
     return (
       <SafeAreaView >
         <Text>WotkWithUsScreen</Text>
@@ -9,4 +10,4 @@ const WotkWithUs = () => {
     );
   };
 
-  export default WotkWithUs;
+  export default WorkWithUs;

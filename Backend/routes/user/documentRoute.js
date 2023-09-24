@@ -16,7 +16,7 @@ const router = express.Router();
 // const app = express();
 // app.use(cors());
 
-// Temporary Disk Storage for Testing.
+  // Temporary Disk Storage for Testing.
 
 // const storage = multer.diskStorage({
 //   destination: "uploads/",
@@ -32,10 +32,6 @@ const upload = multer({
   limits: { fieldSize: 25 * 1024 * 1024 },
 });
 
-// API works when tested with Insomnia.
-// Works with one more more then one.
-// TODO: Append UserID to the file so we can grab it by UserID in the giant bucket.
-// TODO: Or add more folders to it so each user gets a unique folder.
 router.post(
   "/documents/upload",
   upload.fields([
@@ -89,7 +85,6 @@ router.post(
     // For example, you can move the files to a different directory, save their metadata to a database, etc.
 
     // I think the Blob is being saved wrongly.
-    // It is not writing the full buffer jajajaajaja. Not suited in a NodeJS backend?
     try {
       for (const file of files) {
         const bufferData = Buffer.from(file.buffer);
