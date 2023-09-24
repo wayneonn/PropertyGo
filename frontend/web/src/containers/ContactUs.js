@@ -84,12 +84,7 @@ const ContactUs = () => {
 
   const toggleShowViewResponseModal = (id) => {
     setViewResponseId(id);
-<<<<<<< HEAD
-    // console.log("view response id " + viewResponseId);
-    getResponses();
-=======
     getResponses(id);
->>>>>>> 938b89ce59086776b1615a9164b0a71d18410b9c
     setShowViewResponseModal(!showViewResponseModal);
   };
 
@@ -182,8 +177,6 @@ const ContactUs = () => {
       );
 
       if (response.status === 201) {
-<<<<<<< HEAD
-=======
         fetchData();
         setValidationMessages(newMessage);
         setAddedRespond("");
@@ -221,7 +214,6 @@ const ContactUs = () => {
       );
 
       if (response.status === 201) {
->>>>>>> 938b89ce59086776b1615a9164b0a71d18410b9c
         fetchData();
         setValidationMessages(newMessage);
         setAddedRespond("");
@@ -240,12 +232,7 @@ const ContactUs = () => {
     return response.data;
   };
 
-<<<<<<< HEAD
-  const getResponses = async () => {
-    console.log("response id " + viewResponseId);
-=======
   const getResponses = async (id) => {
->>>>>>> 938b89ce59086776b1615a9164b0a71d18410b9c
     const response = await API.get(
       `http://localhost:3000/admin/contactUs/${id}/responses`
     );
@@ -258,10 +245,6 @@ const ContactUs = () => {
         return timestampA - timestampB;
       })
     );
-<<<<<<< HEAD
-    setResponses(response.data.responsesList);
-=======
->>>>>>> 938b89ce59086776b1615a9164b0a71d18410b9c
   };
 
   const fetchData = async () => {
@@ -824,9 +807,6 @@ const ContactUs = () => {
           <Modal.Header closeButton>
             <Modal.Title>Responses</Modal.Title>
           </Modal.Header>
-<<<<<<< HEAD
-          <Modal.Body>
-=======
           <Modal.Body
             style={{
               maxHeight: "400px",
@@ -835,28 +815,10 @@ const ContactUs = () => {
               flexDirection: "column",
             }}
           >
->>>>>>> 938b89ce59086776b1615a9164b0a71d18410b9c
             {Array.isArray(responses) && responses.length > 0 ? (
               responses.map((response) => (
                 <div style={{ marginBottom: "10px" }}>
                   {response.userId === null ? (
-<<<<<<< HEAD
-                    <div>
-                      <Form.Control
-                        type="text"
-                        name="response"
-                        value={response.message}
-                        readOnly
-                      />
-                      <Button
-                        size="sm"
-                        title="Edit Response"
-                        style={{
-                          backgroundColor: "#FFD700",
-                          border: "0",
-                          marginRight: "10px",
-                        }}
-=======
                     <div className="adminResponse">
                       <TextareaAutosize
                         readOnly
@@ -878,7 +840,6 @@ const ContactUs = () => {
                           border: "0",
                           marginLeft: "2px",
                         }}
->>>>>>> 938b89ce59086776b1615a9164b0a71d18410b9c
                         onClick={() =>
                           toggleShowEditModal(
                             response.message,
@@ -888,27 +849,14 @@ const ContactUs = () => {
                       >
                         <MdEditSquare
                           style={{
-<<<<<<< HEAD
-                            width: "18px",
-                            height: "18px",
-=======
                             width: "15px",
                             height: "15px",
->>>>>>> 938b89ce59086776b1615a9164b0a71d18410b9c
                             color: "black",
                           }}
                         ></MdEditSquare>
                       </Button>
                     </div>
                   ) : (
-<<<<<<< HEAD
-                    <div>
-                      <Form.Control
-                        type="text"
-                        name="response"
-                        value={response.message}
-                        readOnly
-=======
                     <div className="userResponse">
                       <TextareaAutosize
                         readOnly
@@ -921,7 +869,6 @@ const ContactUs = () => {
                           padding: "5px",
                         }}
                         value={response.message}
->>>>>>> 938b89ce59086776b1615a9164b0a71d18410b9c
                       />
                     </div>
                   )}

@@ -216,7 +216,7 @@ const Forum = () => {
             </h3>
             <div>
               <div>
-                <Table responsive style={{ width: "51em" }}>
+                <Table responsive style={{ width: "70em" }}>
                   <thead
                     style={{
                       textAlign: "center",
