@@ -27,14 +27,14 @@ module.exports = (sequelize, DataTypes) => {
         });
         ForumTopic.belongsTo(models.User, { 
             foreignKey: {
-                allowNull: false,
+                allowNull: true,
                 name: 'userId'
             },
             as: 'user',
         });
         ForumTopic.belongsTo(models.Admin, { 
             foreignKey: {
-                allowNull: false,
+                allowNull: true,
                 name: 'adminId'
             },
             as: 'admin',

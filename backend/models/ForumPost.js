@@ -28,10 +28,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },
-        images: {
-            type: DataTypes.BLOB,
-            allowNull: false,
-        },
+        // images: {
+        //     type: DataTypes.BLOB,
+        //     // allowNull: false,
+        // },
     }
         , {
             freezeTableName: true

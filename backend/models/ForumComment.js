@@ -22,10 +22,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },
-        images: {
-            type: DataTypes.BLOB, // there is no array for BLOB. so either we use postgresql as sequelize offer arrays datatype for postgresql or we create an Images entity referencing to those entities require image and then the single image is in BLOB
-            allowNull: false,
-        },
+        // images: {
+        //     type: DataTypes.BLOB, // there is no array for BLOB. so either we use postgresql as sequelize offer arrays datatype for postgresql or we create an Images entity referencing to those entities require image and then the single image is in BLOB
+        //     // allowNull: false,
+        // },
     }, {
         freezeTableName: true
     }
@@ -39,6 +39,13 @@ module.exports = (sequelize, DataTypes) => {
         ForumComment.belongsTo(models.ForumPost, {
             foreignKey: 'forumPostId', 
             as: 'forumPost', 
+        });
+        ForumComment.belongsTo(models.User, {
+            foreignKey: {
+                allowNull: false,
+                name: 'userId',
+            },
+            as: 'user',
         });
         ForumComment.belongsToMany(models.User, {
             through: "UserCommentFlagged", // Specify the intermediary model

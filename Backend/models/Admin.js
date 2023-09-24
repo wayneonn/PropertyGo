@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
           onDelete: "CASCADE",
           foreignKey: {
             name: 'adminId',
-            allowNull: false,
+            allowNull: true,
           },
           as: 'forumTopics', // Define an alias for the association
         });
