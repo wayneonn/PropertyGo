@@ -13,6 +13,7 @@ import {
 import API from "../services/API";
 
 import Pagination from "react-bootstrap/Pagination";
+import TextareaAutosize from "react-textarea-autosize";
 
 const ContactUs = () => {
   const [contactus, setContactus] = useState([]);
@@ -83,7 +84,7 @@ const ContactUs = () => {
 
   const toggleShowViewResponseModal = (id) => {
     setViewResponseId(id);
-    getResponses();
+    getResponses(id);
     setShowViewResponseModal(!showViewResponseModal);
   };
 
@@ -187,11 +188,63 @@ const ContactUs = () => {
     }
   };
 
+  const handleAddRespond = async () => {
+    const newMessage = {
+      emptyResponse: false,
+    };
+
+    const addedRespondTrimmed = addedRespond.trim();
+
+    if (addedRespondTrimmed === "") {
+      newMessage.emptyResponse = true;
+      setValidationMessages(newMessage);
+      return;
+    }
+
+    console.log("hi");
+
+    try {
+      const response = await API.post(
+        `/admin/contactUs/${viewResponseId}/responses`,
+        {
+          message: addedRespondTrimmed,
+          adminId: localStorage.getItem("loggedInAdmin"),
+          contactUsId: viewResponseId,
+        }
+      );
+
+      if (response.status === 201) {
+        fetchData();
+        setValidationMessages(newMessage);
+        setAddedRespond("");
+        setShowRespondModal(false);
+        showToast("responded");
+      }
+    } catch (error) {
+      console.error("error");
+    }
+  };
+
   const getUserName = async (userId) => {
     const response = await API.get(
       `http://localhost:3000/admin/users/${userId}`
     );
     return response.data;
+  };
+
+  const getResponses = async (id) => {
+    const response = await API.get(
+      `http://localhost:3000/admin/contactUs/${id}/responses`
+    );
+    console.log(response.data);
+
+    setResponses(
+      response.data.responsesList.sort((a, b) => {
+        const timestampA = new Date(a.createdAt).getTime();
+        const timestampB = new Date(b.createdAt).getTime();
+        return timestampA - timestampB;
+      })
+    );
   };
 
   const fetchData = async () => {
@@ -249,7 +302,7 @@ const ContactUs = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [responses]);
 
   return (
     <div className="contactus">
@@ -754,38 +807,104 @@ const ContactUs = () => {
           <Modal.Header closeButton>
             <Modal.Title>Responses</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            {Array.isArray(responses) &&
-              responses.length > 0 &&
+          <Modal.Body
+            style={{
+              maxHeight: "400px",
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {Array.isArray(responses) && responses.length > 0 ? (
               responses.map((response) => (
-                <div key={response.id}>
-                  <div></div>
-                  <div>{/* Content for the second <div> */}</div>
+                <div style={{ marginBottom: "10px" }}>
+                  {response.userId === null ? (
+                    <div className="adminResponse">
+                      <TextareaAutosize
+                        readOnly
+                        style={{
+                          borderRadius: "10px",
+                          borderColor: "#F5F6F7",
+                          backgroundColor: "#FFD700",
+                          resize: "none",
+                          overflowY: "auto",
+                          padding: "5px",
+                        }}
+                        value={response.message}
+                      />
+                      <Button
+                        size="sm"
+                        title="Edit Response"
+                        style={{
+                          backgroundColor: "#F5F6F7",
+                          border: "0",
+                          marginLeft: "2px",
+                        }}
+                        onClick={() =>
+                          toggleShowEditModal(
+                            response.message,
+                            response.responseId
+                          )
+                        }
+                      >
+                        <MdEditSquare
+                          style={{
+                            width: "15px",
+                            height: "15px",
+                            color: "black",
+                          }}
+                        ></MdEditSquare>
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="userResponse">
+                      <TextareaAutosize
+                        readOnly
+                        style={{
+                          borderRadius: "10px",
+                          border: "0",
+                          backgroundColor: "#F5F6F7",
+                          resize: "none",
+                          overflowY: "auto",
+                          padding: "5px",
+                        }}
+                        value={response.message}
+                      />
+                    </div>
+                  )}
                 </div>
-              ))}
+              ))
+            ) : (
+              <div>
+                <span>No Responses</span>
+              </div>
+            )}
           </Modal.Body>
-          <Modal.Footer>
-            <Button
-              style={{
-                backgroundColor: "#F5F6F7",
-                border: "0",
-                width: "92px",
-                height: "40px",
-                borderRadius: "160px",
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "600",
-                fontSize: "14px",
-              }}
-              onClick={handleCloseRespond}
-            >
-              Close
-            </Button>
+          <Modal.Footer
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Form.Control
+              type="text"
+              id="response"
+              name="message"
+              value={addedRespond}
+              onChange={(e) => setAddedRespond(e.target.value)}
+              isInvalid={validationMessages.emptyResponse}
+              style={{ maxWidth: "100%" }}
+            />
+            {validationMessages.emptyResponse && (
+              <Form.Control.Feedback type="invalid">
+                Response is required.
+              </Form.Control.Feedback>
+            )}
             <Button
               style={{
                 backgroundColor: "#FFD700",
                 border: "0",
-                width: "92px",
+                width: "130px",
                 height: "40px",
                 borderRadius: "160px",
                 color: "black",
@@ -793,9 +912,9 @@ const ContactUs = () => {
                 fontWeight: "600",
                 fontSize: "14px",
               }}
-              onClick={() => handleRespond()}
+              onClick={() => handleAddRespond(viewResponseId)}
             >
-              Confirm
+              Add response
             </Button>
           </Modal.Footer>
         </Modal>
