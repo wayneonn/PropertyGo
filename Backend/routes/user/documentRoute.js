@@ -1,6 +1,5 @@
 const express = require("express");
 const multer = require("multer");
-// const admin = require("firebase-admin");
 const fs = require("fs");
 const { Document } = require("../../models");
 const router = express.Router();
@@ -60,10 +59,10 @@ router.post(
 );
 
 // Give us the whole list of the documents.
-router.get("/documents/list/metadata/:id", DocumentController.getDocumentsMetadata());
+router.get("/documents/list/metadata/:id", DocumentController.getDocumentsMetadata);
 
 // Give me the specific dataset.
-router.get("/documents/:documentId/data", DocumentController.getDocumentData());
+router.get("/documents/:documentId/data", DocumentController.getDocumentData);
 
 // Delete route
 router.delete("/documents/:id", DocumentController.deleteDocument);
