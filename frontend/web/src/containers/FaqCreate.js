@@ -87,7 +87,7 @@ const FaqCreate = ({ showToast }) => {
 
   return (
     <div>
-      <Card style={{ width: "27rem", height: "38rem", border: "0" }}>
+      <Card style={{ width: "26rem", height: "38rem", border: "0" }}>
         <Card.Body>
           <div className="title">
             <Card.Title>Create a FAQ</Card.Title>

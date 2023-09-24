@@ -13,9 +13,8 @@ import { htmlToPlainText } from "../services/richTextEditor";
 import Pagination from "react-bootstrap/Pagination";
 
 const Forum = () => {
-  const [faqs, setFaqs] = useState([]);
-  const [buyerfaqs, setBuyerfaqs] = useState([]);
-  const [sellerfaqs, setSellerfaqs] = useState([]);
+  const [forumTopics, setForumTopics] = useState([]);
+  const [flaggedForumTopics, setFlaggedForumTopics] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [faqId, setFaqId] = useState(0);
   const [faqQuestion, setFaqQuestion] = useState("");
@@ -24,19 +23,19 @@ const Forum = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteFaqId, setDeleteFaqId] = useState(0);
 
-  const itemsPerPage = 4;
+  const ITEMS_PER_PAGE = 4;
 
-  const [currentPageSeller, setCurrentPageSeller] = useState(1);
-  const [totalPageSeller, setTotalPageSeller] = useState(0);
+  const [currentPageForumTopic, setCurrentPageForumTopic] = useState(1);
+  const [totalPageForumTopics, setTotalPageForumTopics] = useState(0);
 
-  const indexOfLastItemSeller = currentPageSeller * itemsPerPage;
-  const indexOfFirstItemSeller = indexOfLastItemSeller - itemsPerPage;
+  const indexOfLastItemForumTopic = currentPageForumTopic * ITEMS_PER_PAGE;
+  const indexOfFirstItemForumTopic = indexOfLastItemForumTopic - ITEMS_PER_PAGE;
 
-  const [currentPageBuyer, setCurrentPageBuyer] = useState(1);
-  const [totalPageBuyer, setTotalPageBuyer] = useState(0);
+  const [currentPageFlaggedForumTopic, setCurrentPageFlaggedForumTopic] = useState(1);
+  const [totalPageFlaggedForumTopics, setTotalPageFlaggedForumTopics] = useState(0);
 
-  const indexOfLastItemBuyer = currentPageBuyer * itemsPerPage;
-  const indexOfFirstItemBuyer = indexOfLastItemBuyer - itemsPerPage;
+  const indexOfLastItemFlaggedForumTopic = currentPageFlaggedForumTopic * ITEMS_PER_PAGE;
+  const indexOfFirstItemFlaggedForumTopic = indexOfLastItemFlaggedForumTopic - ITEMS_PER_PAGE;
 
   // toast message
   const [show, setShow] = useState(false);
@@ -50,12 +49,12 @@ const Forum = () => {
     faqQuestionUnique: false,
   });
 
-  const handlePageChangeSeller = (pageNumber) => {
-    setCurrentPageSeller(pageNumber);
+  const handlePageChangeForumTopic = (pageNumber) => {
+    setCurrentPageForumTopic(pageNumber);
   };
 
-  const handlePageChangeBuyer = (pageNumber) => {
-    setCurrentPageBuyer(pageNumber);
+  const handlePageChangeFlaggedForumTopic = (pageNumber) => {
+    setCurrentPageFlaggedForumTopic(pageNumber);
   };
 
   const toggleEditModal = (faqId, faqQuestion, faqAnswer, faqType) => {
@@ -80,100 +79,94 @@ const Forum = () => {
     setValidationMessages({});
   };
 
-  const handleEdit = async () => {
-    //edit faq in database
-    const newMessage = {
-      emptyFaqQuestion: false,
-      emptyFaqAnswer: false,
-      faqQuestionUnique: false,
-    };
+//   const handleEdit = async () => {
+//     //edit faq in database
+//     const newMessage = {
+//       emptyFaqQuestion: false,
+//       emptyFaqAnswer: false,
+//       faqQuestionUnique: false,
+//     };
 
-    const questionTrimmed = htmlToPlainText(faqQuestion).trim();
-    const answerTrimmed = htmlToPlainText(faqAnswer).trim();
+//     const questionTrimmed = htmlToPlainText(faqQuestion).trim();
+//     const answerTrimmed = htmlToPlainText(faqAnswer).trim();
 
-    if (questionTrimmed === "") {
-      newMessage.emptyFaqQuestion = true;
-    }
+//     if (questionTrimmed === "") {
+//       newMessage.emptyFaqQuestion = true;
+//     }
 
-    if (answerTrimmed === "") {
-      newMessage.emptyFaqAnswer = true;
-    }
+//     if (answerTrimmed === "") {
+//       newMessage.emptyFaqAnswer = true;
+//     }
 
-    if (newMessage.emptyFaqQuestion || newMessage.emptyFaqAnswer) {
-      setValidationMessages(newMessage);
-      return;
-    }
+//     if (newMessage.emptyFaqQuestion || newMessage.emptyFaqAnswer) {
+//       setValidationMessages(newMessage);
+//       return;
+//     }
 
-    try {
-      // Save to database
-      const response = await API.patch(
-        `/admin/faqs/${faqId}?adminId=${localStorage.getItem("loggedInAdmin")}`,
-        {
-          question: faqQuestion,
-          answer: faqAnswer,
-          faqType,
-        }
-      );
+//     try {
+//       // Save to database
+//       const response = await API.patch(
+//         `/admin/faqs/${faqId}?adminId=${localStorage.getItem("loggedInAdmin")}`,
+//         {
+//           question: faqQuestion,
+//           answer: faqAnswer,
+//           faqType,
+//         }
+//       );
 
-      if (response.status === 200) {
-        setValidationMessages(newMessage);
-        setFaqType("");
-        setFaqQuestion("");
-        setFaqAnswer("");
-        setShowEditModal(false);
+//       if (response.status === 200) {
+//         setValidationMessages(newMessage);
+//         setFaqType("");
+//         setFaqQuestion("");
+//         setFaqAnswer("");
+//         setShowEditModal(false);
 
-        showToast("updated");
-      }
-    } catch (error) {
-      const status = error.response.status;
-      if (status === 409) {
-        newMessage.faqQuestionUnique = true;
-      }
+//         showToast("updated");
+//       }
+//     } catch (error) {
+//       const status = error.response.status;
+//       if (status === 409) {
+//         newMessage.faqQuestionUnique = true;
+//       }
 
-      setValidationMessages(newMessage);
-    }
-  };
+//       setValidationMessages(newMessage);
+//     }
+//   };
 
-  const handleDelete = async () => {
-    //delete faq from database. Use the value of the useState deleteFaqId for the faqId
-    await API.delete(`/admin/faqs/${deleteFaqId}`);
-    setShowDeleteModal(false);
-    showToast("deleted");
-  };
+//   const handleDelete = async () => {
+//     //delete faq from database. Use the value of the useState deleteFaqId for the faqId
+//     await API.delete(`/admin/faqs/${deleteFaqId}`);
+//     setShowDeleteModal(false);
+//     showToast("deleted");
+//   };
 
-  const showToast = (action) => {
-    setToastAction(action);
-    setShow(true);
-  };
+//   const showToast = (action) => {
+//     setToastAction(action);
+//     setShow(true);
+//   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await API.get(`http://localhost:3000/admin/faqs`);
-        const faqs = response.data.faqs;
-        setFaqs(faqs);
-        const buyerFaqs = faqs.filter((faq) => faq.faqType === "BUYER");
-        buyerFaqs.sort((a, b) => {
+        const response = await API.get(`/admin/forumTopics`);
+        const forumTopics = response.data.forumTopics;
+        const unflaggedForumTopics = forumTopics.filter((forumTopic) => !forumTopic.isInappropriate);
+        setForumTopics(unflaggedForumTopics);
+        const flaggedForumtopics = forumTopics.filter((forumTopic) => forumTopic.isInappropriate);
+        flaggedForumtopics.sort((a, b) => {
           const timestampA = new Date(a.updatedAt).getTime();
           const timestampB = new Date(b.updatedAt).getTime();
           return timestampB - timestampA;
         });
-        setBuyerfaqs(buyerFaqs);
-        const sellerFaqs = faqs.filter((faq) => faq.faqType === "SELLER");
-        sellerFaqs.sort((a, b) => {
-          const timestampA = new Date(a.updatedAt).getTime();
-          const timestampB = new Date(b.updatedAt).getTime();
-          return timestampB - timestampA;
-        });
-        setSellerfaqs(sellerFaqs);
-        setTotalPageSeller(Math.ceil(sellerFaqs.length / itemsPerPage));
-        setTotalPageBuyer(Math.ceil(buyerFaqs.length / itemsPerPage));
+        setFlaggedForumTopics(flaggedForumtopics);
+        setTotalPageForumTopics(Math.ceil(unflaggedForumTopics.length / ITEMS_PER_PAGE));
+        setTotalPageFlaggedForumTopics(Math.ceil(flaggedForumTopics.length / ITEMS_PER_PAGE));
       } catch (error) {
         console.error(error);
       }
     };
     fetchData();
-  }, [faqs]);
+  }, [forumTopics]);
 
  
 
@@ -219,7 +212,7 @@ const Forum = () => {
                 padding: "5px 5px 5px 5px",
               }}
             >
-              SELLER FAQ
+              UNFLAGGED FORUM TOPIC
             </h3>
             <div>
               <div>
@@ -230,32 +223,28 @@ const Forum = () => {
                     }}
                   >
                     <tr>
-                      <th>QUESTION</th>
-                      <th>ANSWER</th>
+                      <th>TOPIC NAME</th>
                       <th>DATE CREATED</th>
                       <th>UPDATED AT</th>
                       <th>ACTION</th>
                     </tr>
                   </thead>
-                  {Array.isArray(sellerfaqs) && sellerfaqs.length > 0 ? (
+                  {Array.isArray(forumTopics) && forumTopics.length > 0 ? (
                     <tbody>
-                      {sellerfaqs
-                        .slice(indexOfFirstItemSeller, indexOfLastItemSeller)
-                        .map((faq) => (
+                      {forumTopics
+                        .slice(indexOfFirstItemForumTopic, indexOfLastItemForumTopic)
+                        .map((forumTopic) => (
                           <tr
-                            key={faq.faqId}
+                            key={forumTopic.forumTopicId}
                             style={{
                               textAlign: "center",
                             }}
                           >
                             <td className="truncate-text">
-                              {htmlToPlainText(faq.question)}
+                              {htmlToPlainText(forumTopic.topicName)}
                             </td>
-                            <td className="truncate-text">
-                              {htmlToPlainText(faq.answer)}
-                            </td>
-                            <td className="truncate-text">{faq.createdAt}</td>
-                            <td className="truncate-text">{faq.updatedAt}</td>
+                            <td className="truncate-text">{forumTopic.createdAt}</td>
+                            <td className="truncate-text">{forumTopic.updatedAt}</td>
                             <td>
                               <Button
                                 size="sm"
@@ -265,14 +254,14 @@ const Forum = () => {
                                   border: "0",
                                   marginRight: "10px",
                                 }}
-                                onClick={() =>
-                                  toggleEditModal(
-                                    faq.faqId,
-                                    htmlToPlainText(faq.question),
-                                    htmlToPlainText(faq.answer),
-                                    faq.faqType
-                                  )
-                                }
+                                // onClick={() =>
+                                //   toggleEditModal(
+                                //     faq.faqId,
+                                //     htmlToPlainText(faq.question),
+                                //     htmlToPlainText(faq.answer),
+                                //     faq.faqType
+                                //   )
+                                // }
                               >
                                 <MdEditSquare
                                   style={{
@@ -282,7 +271,7 @@ const Forum = () => {
                                   }}
                                 ></MdEditSquare>
                               </Button>
-                              <Button
+                              {/* <Button
                                 size="sm"
                                 title="Delete"
                                 style={{
@@ -298,7 +287,7 @@ const Forum = () => {
                                     color: "black",
                                   }}
                                 ></MdDelete>
-                              </Button>
+                              </Button> */}
                             </td>
                           </tr>
                         ))}
@@ -307,7 +296,7 @@ const Forum = () => {
                     <tbody>
                       <tr>
                         <td colSpan="5" style={{ textAlign: "center" }}>
-                          No FAQs available
+                          No Forum Topics available
                         </td>
                       </tr>
                     </tbody>
@@ -316,11 +305,11 @@ const Forum = () => {
               </div>
               <div>
                 <Pagination className="faq-paginate">
-                  {Array.from({ length: totalPageSeller }).map((_, index) => (
+                  {Array.from({ length: totalPageForumTopics }).map((_, index) => (
                     <Pagination.Item
                       key={index}
-                      active={index + 1 === currentPageSeller}
-                      onClick={() => handlePageChangeSeller(index + 1)}
+                      active={index + 1 === currentPageForumTopic}
+                      onClick={() => handlePageChangeForumTopic(index + 1)}
                     >
                       {index + 1}
                     </Pagination.Item>
@@ -339,38 +328,34 @@ const Forum = () => {
                 padding: "5px 5px 5px 5px",
               }}
             >
-              BUYER FAQ
+              FLAGGED FORUM TOPIC
             </h3>
             <div>
               <Table hover responsive style={{ width: "51em" }}>
                 <thead style={{ textAlign: "center" }}>
                   <tr>
-                    <th>QUESTION</th>
-                    <th>ANSWER</th>
+                    <th>FORUM TOPIC</th>
                     <th>DATE CREATED</th>
                     <th>UPDATED AT</th>
                     <th>ACTION</th>
                   </tr>
                 </thead>
-                {Array.isArray(buyerfaqs) && buyerfaqs.length > 0 ? (
+                {Array.isArray(flaggedForumTopics) && flaggedForumTopics.length > 0 ? (
                   <tbody>
-                    {buyerfaqs
-                      .slice(indexOfFirstItemBuyer, indexOfLastItemBuyer)
-                      .map((faq) => (
+                    {flaggedForumTopics
+                      .slice(indexOfFirstItemFlaggedForumTopic, indexOfLastItemFlaggedForumTopic)
+                      .map((flaggedForumTopic) => (
                         <tr
-                          key={faq.faqId}
+                          key={flaggedForumTopics.forumTopicId}
                           style={{
                             textAlign: "center",
                           }}
                         >
                           <td className="truncate-text">
-                            {htmlToPlainText(faq.question)}
+                            {htmlToPlainText(flaggedForumTopic.topicName)}
                           </td>
-                          <td className="truncate-text">
-                            {htmlToPlainText(faq.answer)}
-                          </td>
-                          <td className="truncate-text">{faq.createdAt}</td>
-                          <td className="truncate-text">{faq.updatedAt}</td>
+                          <td className="truncate-text">{flaggedForumTopic.createdAt}</td>
+                          <td className="truncate-text">{flaggedForumTopic.updatedAt}</td>
                           <td>
                             <Button
                               size="sm"
@@ -380,14 +365,14 @@ const Forum = () => {
                                 border: "0",
                                 marginRight: "10px",
                               }}
-                              onClick={() =>
-                                toggleEditModal(
-                                  faq.faqId,
-                                  htmlToPlainText(faq.question),
-                                  htmlToPlainText(faq.answer),
-                                  faq.faqType
-                                )
-                              }
+                            //   onClick={() =>
+                            //     toggleEditModal(
+                            //       faq.faqId,
+                            //       htmlToPlainText(faq.question),
+                            //       htmlToPlainText(faq.answer),
+                            //       faq.faqType
+                            //     )
+                            //   }
                             >
                               <MdEditSquare
                                 style={{
@@ -404,7 +389,7 @@ const Forum = () => {
                                 backgroundColor: "#FFD700",
                                 border: "0",
                               }}
-                              onClick={() => toggleDeleteModal(faq.faqId)}
+                            //   onClick={() => toggleDeleteModal(faq.faqId)}
                             >
                               <MdDelete
                                 style={{
@@ -422,7 +407,7 @@ const Forum = () => {
                   <tbody>
                     <tr>
                       <td colSpan="5" style={{ textAlign: "center" }}>
-                        No FAQs available
+                        No Flagged Forum Topics available
                       </td>
                     </tr>
                   </tbody>
@@ -430,11 +415,11 @@ const Forum = () => {
               </Table>
               <div>
                 <Pagination className="faq-paginate">
-                  {Array.from({ length: totalPageBuyer }).map((_, index) => (
+                  {Array.from({ length: totalPageFlaggedForumTopics }).map((_, index) => (
                     <Pagination.Item
                       key={index}
-                      active={index + 1 === currentPageBuyer}
-                      onClick={() => handlePageChangeBuyer(index + 1)}
+                      active={index + 1 === currentPageFlaggedForumTopic}
+                      onClick={() => handlePageChangeFlaggedForumTopic(index + 1)}
                     >
                       {index + 1}
                     </Pagination.Item>
@@ -444,7 +429,7 @@ const Forum = () => {
             </div>
           </div>
         </div>
-        <FaqCreate showToast={showToast}></FaqCreate>
+        {/* <FaqCreate showToast={showToast}></FaqCreate> */}
         {/* <Modal
           show={showEditModal}
           onHide={handleClose}
