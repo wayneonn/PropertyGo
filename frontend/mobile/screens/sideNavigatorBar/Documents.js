@@ -52,7 +52,7 @@ function UploadScreen({navigation}) {
     // USE-EFFECT HOOKS //
     // Fetch the previous documents from the server.
     useEffect(() => {
-        fetchDocuments();
+        fetchDocuments().then(r => console.log("Fetch documents completed."));
     }, []);
 
     useEffect(() => {

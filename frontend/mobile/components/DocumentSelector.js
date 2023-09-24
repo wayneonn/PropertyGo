@@ -28,7 +28,7 @@ export const DocumentSelector = ({documentFetch}) => {
 
     // Call fetchFolders on initial mount
     useEffect(() => {
-        fetchFolders();
+        fetchFolders().then(r => console.log("Fetch folders completed."));
     }, []);
 
     useEffect(() => {
@@ -39,7 +39,7 @@ export const DocumentSelector = ({documentFetch}) => {
     // Fetch transactions on mount
     // Currently dummy user set to 1.
     useEffect(() => {
-        fetchTransactions();
+        fetchTransactions().then(r => console.log("Fetch transactions completed."));
     }, [])
 
     useEffect(() => {
@@ -52,11 +52,9 @@ export const DocumentSelector = ({documentFetch}) => {
             const response = await fetch(`${BASE_URL}/user/folders/${USER_ID}}`);
             const results = await response.json();
             const folders = results.folders;
-            console.log(folders);
             setFolders(folders);
             setDefaultFolderId(folders[0].folderId);
             setSelectedFolder(folders[0].folderId);
-            console.log(defaultFolderId);
         } catch (error) {
             console.error(error);
         }
@@ -69,7 +67,6 @@ export const DocumentSelector = ({documentFetch}) => {
             const transactions = results.transactions;
             setTransactions(transactions);
             setDefaultTransactionId(transactions[0].transactionId);
-            console.log(defaultTransactionId);
         } catch (error) {
             console.error(error);
         }
@@ -267,12 +264,6 @@ export const DocumentSelector = ({documentFetch}) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        padding: '10%',
-        backgroundColor: "#fff",
-        flex: 1,
-        paddingHorizontal: 10,
-    },
 
     headerText: {
         fontSize: 10,
@@ -350,38 +341,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)', // Semi-transparent background
-    },
-
-    modalView: {
-        width: '80%',
-        backgroundColor: 'white',
-        borderRadius: 10,
-        padding: 35,
-        alignItems: 'center',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-
-    modalTextInput: {
-        width: '100%',
-        height: 40,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 10, // Text input padding
-        marginBottom: 20, // Margin at the bottom of the input
-    },
 
     button: {
         backgroundColor: '#1a73e8', // A pleasant blue tone for the primary button
