@@ -133,10 +133,16 @@ const ContactUs = () => {
       return;
     }
 
+    console.log("view response id:" + viewResponseId);
+    console.log("edit response id:" + editResponseId);
+
     try {
-      const response = await API.patch(`/admin/contactUs/${editResponseId}`, {
-        response: responseTrimmed,
-      });
+      const response = await API.patch(
+        `/admin/contactUs/${viewResponseId}/responses/${editResponseId}`,
+        {
+          response: responseTrimmed,
+        }
+      );
 
       if (response.status === 200) {
         fetchData();
