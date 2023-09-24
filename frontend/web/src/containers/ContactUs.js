@@ -77,12 +77,13 @@ const ContactUs = () => {
     setRespondTitle(title);
     setRespondMessage(message);
     setRespondReason(reason);
-    setRespondId(id);
+    setRespondId(id); //id of the contact us that the admin is adding response to
     setShowRespondModal(!showRespondModal);
   };
 
   const toggleShowViewResponseModal = (id) => {
     setViewResponseId(id);
+    // console.log("view response id " + viewResponseId);
     getResponses();
     setShowViewResponseModal(!showViewResponseModal);
   };
@@ -164,11 +165,16 @@ const ContactUs = () => {
     }
 
     try {
-      const response = await API.patch(`/admin/contactUs/${respondId}`, {
-        response: addedRespondTrimmed,
-      });
+      const response = await API.post(
+        `/admin/contactUs/${respondId}/responses`,
+        {
+          message: addedRespondTrimmed,
+          adminId: localStorage.getItem("loggedInAdmin"),
+          contactUsId: respondId,
+        }
+      );
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         fetchData();
         setValidationMessages(newMessage);
         setAddedRespond("");
@@ -188,10 +194,11 @@ const ContactUs = () => {
   };
 
   const getResponses = async () => {
+    console.log("response id " + viewResponseId);
     const response = await API.get(
       `http://localhost:3000/admin/contactUs/${viewResponseId}/responses`
     );
-    setResponses(response.data);
+    setResponses(response.data.responsesList);
   };
 
   const fetchData = async () => {
@@ -755,52 +762,58 @@ const ContactUs = () => {
             <Modal.Title>Responses</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {responses.map((response) => (
-              <div style={{ marginBottom: "10px" }}>
-                {response.userId === null ? (
-                  <div>
-                    <Form.Control
-                      type="text"
-                      name="response"
-                      value={response.message}
-                      readOnly
-                    />
-                    <Button
-                      size="sm"
-                      title="Edit Response"
-                      style={{
-                        backgroundColor: "#FFD700",
-                        border: "0",
-                        marginRight: "10px",
-                      }}
-                      onClick={() =>
-                        toggleShowEditModal(
-                          response.message,
-                          response.responseId
-                        )
-                      }
-                    >
-                      <MdEditSquare
+            {Array.isArray(responses) && responses.length > 0 ? (
+              responses.map((response) => (
+                <div style={{ marginBottom: "10px" }}>
+                  {response.userId === null ? (
+                    <div>
+                      <Form.Control
+                        type="text"
+                        name="response"
+                        value={response.message}
+                        readOnly
+                      />
+                      <Button
+                        size="sm"
+                        title="Edit Response"
                         style={{
-                          width: "18px",
-                          height: "18px",
-                          color: "black",
+                          backgroundColor: "#FFD700",
+                          border: "0",
+                          marginRight: "10px",
                         }}
-                      ></MdEditSquare>
-                    </Button>
-                  </div>
-                ) : (
-                  <div>
-                    <Form.Control
-                      type="text"
-                      name="response"
-                      value={response.message}
-                      readOnly
-                    />
-                  </div>
-                )}
+                        onClick={() =>
+                          toggleShowEditModal(
+                            response.message,
+                            response.responseId
+                          )
+                        }
+                      >
+                        <MdEditSquare
+                          style={{
+                            width: "18px",
+                            height: "18px",
+                            color: "black",
+                          }}
+                        ></MdEditSquare>
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Form.Control
+                        type="text"
+                        name="response"
+                        value={response.message}
+                        readOnly
+                      />
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div>
+                <span>No Responses</span>
               </div>
-            ))}
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button
