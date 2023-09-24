@@ -194,14 +194,6 @@ const ContactUs = () => {
     return response.data;
   };
 
-  const getResponses = async () => {
-    const response = await API.get(
-      `http://localhost:3000/admin/contactUs/${viewResponseId}/responses`
-    );
-    console.log(response.data);
-    setResponses(response.data);
-  };
-
   const fetchData = async () => {
     try {
       const response = await API.get(`http://localhost:3000/admin/contactUs`);
@@ -763,58 +755,14 @@ const ContactUs = () => {
             <Modal.Title>Responses</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {Array.isArray(responses) && responses.length > 0 ? (
+            {Array.isArray(responses) &&
+              responses.length > 0 &&
               responses.map((response) => (
-                <div style={{ marginBottom: "10px" }}>
-                  {response.userId === null ? (
-                    <div>
-                      <Form.Control
-                        type="text"
-                        name="response"
-                        value={response.message}
-                        readOnly
-                      />
-                      <Button
-                        size="sm"
-                        title="Edit Response"
-                        style={{
-                          backgroundColor: "#FFD700",
-                          border: "0",
-                          marginRight: "10px",
-                        }}
-                        onClick={() =>
-                          toggleShowEditModal(
-                            response.message,
-                            response.responseId
-                          )
-                        }
-                      >
-                        <MdEditSquare
-                          style={{
-                            width: "18px",
-                            height: "18px",
-                            color: "black",
-                          }}
-                        ></MdEditSquare>
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <Form.Control
-                        type="text"
-                        name="response"
-                        value={response.message}
-                        readOnly
-                      />
-                    </div>
-                  )}
+                <div key={response.id}>
+                  <div></div>
+                  <div>{/* Content for the second <div> */}</div>
                 </div>
-              ))
-            ) : (
-              <div>
-                <span>No Responses</span>
-              </div>
-            )}
+              ))}
           </Modal.Body>
           <Modal.Footer>
             <Button
