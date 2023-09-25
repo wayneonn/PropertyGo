@@ -35,6 +35,7 @@ const ContactUs = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editResponse, setEditResponse] = useState("");
   const [editResponseId, setEditResponseId] = useState(0);
+  const [showResponsesModal, setShowResponsesModal] = useState([]);
 
   const itemsPerPage = 4;
 
@@ -90,6 +91,12 @@ const ContactUs = () => {
     setShowViewResponseModal(!showViewResponseModal);
   };
 
+  const toggleShowResponsesModal = (id) => {
+    setViewResponseId(id);
+    getResponses(id);
+    setShowResponsesModal(!showResponsesModal);
+  };
+
   const toggleShowEditModal = (response, id) => {
     setEditResponse(response);
     setEditResponseId(id);
@@ -107,13 +114,33 @@ const ContactUs = () => {
     setValidationMessages({});
   };
 
+  const handleCloseResponses = () => {
+    setShowResponsesModal(false);
+    setValidationMessages({});
+  };
+
   const handleCloseEditRespond = () => {
     setShowEditModal(false);
     setValidationMessages({});
   };
 
-  const closeRespond = (id) => {
+  const closeRespond = async (id) => {
     //change the status of this contact us to "CLOSED"
+    const newMessage = {
+      emptyResponse: false,
+    };
+
+    try {
+      const response = await API.patch(`/admin/contactUs/${id}`);
+
+      if (response.status === 200) {
+        fetchData();
+        setValidationMessages(newMessage);
+        showToast("closed contact us");
+      }
+    } catch (error) {
+      console.error("error");
+    }
   };
 
   const showToast = (action) => {
@@ -333,7 +360,9 @@ const ContactUs = () => {
       </div>
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayContactus">
-          <div style={{ position: "fixed", top: "5%", left: "50%" }}>
+          <div
+            style={{ position: "fixed", top: "5%", left: "50%", zIndex: "1" }}
+          >
             <Row>
               <Col xs={6}>
                 <Toast
@@ -651,9 +680,7 @@ const ContactUs = () => {
                                 marginRight: "10px",
                               }}
                               onClick={() =>
-                                toggleShowViewResponseModal(
-                                  contactus.contactUsId
-                                )
+                                toggleShowResponsesModal(contactus.contactUsId)
                               }
                             >
                               <MdPageview
@@ -961,6 +988,96 @@ const ContactUs = () => {
               Add response
             </Button>
           </Modal.Footer>
+        </Modal>
+        <Modal
+          show={showResponsesModal}
+          onHide={handleCloseResponses}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Responses</Modal.Title>
+          </Modal.Header>
+          <Modal.Body
+            style={{
+              maxHeight: "400px",
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {Array.isArray(responses) && responses.length > 0 ? (
+              responses.map((response) => (
+                <div style={{ marginBottom: "10px" }}>
+                  {response.userId === null ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        float: "right",
+                        maxWidth: "60%",
+                      }}
+                    >
+                      <div className="adminResponse">
+                        <TextareaAutosize
+                          readOnly
+                          style={{
+                            borderRadius: "10px",
+                            borderColor: "#F5F6F7",
+                            backgroundColor: "#FFD88D",
+                            // color: "white",
+                            resize: "none",
+                            overflowY: "auto",
+                            padding: "5px",
+                          }}
+                          value={htmlToPlainText(response.message)}
+                        />
+                      </div>
+                      {new Date(response.updatedAt).getTime() !==
+                        new Date(response.createdAt).getTime() && (
+                        <span className="muted-text">
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        float: "left",
+                        maxWidth: "50%",
+                      }}
+                    >
+                      <TextareaAutosize
+                        readOnly
+                        style={{
+                          borderRadius: "10px",
+                          border: "0",
+                          // color: "white",
+                          backgroundColor: "#FFD88D",
+                          resize: "none",
+                          overflowY: "auto",
+                          padding: "5px",
+                        }}
+                        value={htmlToPlainText(response.message)}
+                      />
+                      {new Date(response.updatedAt).getTime() !==
+                        new Date(response.createdAt).getTime() && (
+                        <span className="muted-text">
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div>
+                <span>No Responses</span>
+              </div>
+            )}
+          </Modal.Body>
         </Modal>
         <Modal
           show={showEditModal}
