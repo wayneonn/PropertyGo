@@ -210,8 +210,18 @@ router.post(
 // Give us the whole list of the documents.
 router.get("/documents/list", async (req, res) => {
   try {
-    const files = await Document.findAll({
-      where: { deleted: false },
+    const documents = await Document.findAll({
+      attributes: [
+        "documentId",
+        "folderId",
+        "userId",
+        "transactionId",
+        "title",
+        "createdAt",
+        "updatedAt",
+        "description"
+      ],
+      where: { deleted: false, userId: req.params.id },
     });
     // This is insanity since we are literally sending all the data over.
     res.json(files);
