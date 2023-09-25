@@ -3,7 +3,7 @@ const multer = require("multer");
 const fs = require("fs");
 const { Document } = require("../../models");
 const router = express.Router();
-const DocumentController = require("../../controllers/user/documentController")
+const {uploadDocuments, getDocumentsMetadata, getDocumentData, deleteDocument} = require("../../controllers/user/documentController")
 
 // Setting up a MySQL connection since we are using MySQL.
 
@@ -55,17 +55,17 @@ router.post(
       maxCount: 1,
     },
   ]),
-    DocumentController.uploadDocuments
+    uploadDocuments
 );
 
 // Give us the whole list of the documents.
-router.get("/documents/list/metadata/:id", DocumentController.getDocumentsMetadata);
+router.get("/documents/list/metadata/:id", getDocumentsMetadata);
 
 // Give me the specific dataset.
-router.get("/documents/:documentId/data", DocumentController.getDocumentData);
+router.get("/documents/:documentId/data", getDocumentData);
 
 // Delete route
-router.delete("/documents/:id", DocumentController.deleteDocument);
+router.delete("/documents/:id", deleteDocument);
 
 // app.listen(3000, () => {
 //   console.log("Server started on port 3000");

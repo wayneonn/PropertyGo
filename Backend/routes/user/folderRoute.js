@@ -1,5 +1,5 @@
 const express = require("express");
-const { FolderController } = require("../../controllers/user/folderController")
+const { getFolders, createFolders } = require("../../controllers/user/folderController")
 const multer = require("multer");
 
 const router = express.Router();
@@ -10,8 +10,8 @@ const upload = multer({
   limits: { fieldSize: 25 * 1024 * 1024 },
 });
 
-router.get("/folders/:id", FolderController.getFolders);
+router.get("/folders/:id", getFolders);
 
-router.post("/folders/create/:id", FolderController.createFolders);
+router.post("/folders/create/:id", createFolders);
 
 module.exports = router;
