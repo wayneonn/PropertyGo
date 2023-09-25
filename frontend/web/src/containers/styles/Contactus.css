@@ -51,8 +51,6 @@
 }
 
 .adminResponse {
-  float: right; /* Float the adminResponse to the right */
-  max-width: 50%; /* Adjust as needed */
   /* Add any other styling you need */
   display: flex;
   justify-content: center;
@@ -63,4 +61,11 @@
   float: left; /* Float the userResponse to the left */
   max-width: 50%; /* Adjust as needed */
   /* Add any other styling you need */
+}
+
+.muted-text {
+  color: #777; /* Define your muted color here */
+  font-style: italic;
+  font-size: 10px;
+  /* Add any other muted styles you need */
 }
