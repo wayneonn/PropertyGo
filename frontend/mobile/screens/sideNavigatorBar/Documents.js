@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -6,7 +6,6 @@ import {
   Button,
   FlatList,
   TextInput,
-  TouchableOpacity,
   Platform,
   Modal,
   ScrollView,
@@ -16,6 +15,9 @@ import { Picker } from "@react-native-picker/picker";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { openBrowserAsync } from "expo-web-browser";
+import { AuthContext } from "../../AuthContext";
+import base64 from "react-native-base64";
+import { Base64 } from "js-base64";
 
 //Conditional FileSaver import.
 let FileSaver;
@@ -26,9 +28,11 @@ if (__DEV__ && Platform.OS === "web") {
 // I know my code is fuuuuuuucked up lol, I am going to be splitting them into smaller components soon so each parts has its own component.
 // This is some omega-level one JS file app XDDDDDDD
 
+/* CONSTANTS FOR THE WHOLE PAGE */
 // This may need to be responsive if we want auto-UI scaling per window size, but this only applies to Web.
 const { width, height } = Dimensions.get("window");
 const responsiveWidth = width * 0.8;
+const BASE_URL = "http://192.168.50.157:3000";
 
 function UploadScreen({ navigation }) {
   const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
@@ -46,15 +50,21 @@ function UploadScreen({ navigation }) {
   const [defaultTransactionId, setDefaultTransactionId] = useState(1); // Default transaction id
   const [defaultFolderId, setDefaultFolderId] = useState(1); // Default folder id
   const [filteredDocs, setFilteredDocs] = useState(prevDocuments); // Filtered documents
+  const { user } = useContext(AuthContext);
+  const USER_ID = user.user.userId;
 
+  // General issue here seems to be that the Data Array is too big
+  // It is in one omega array? I think we need to split it up into smaller arrays.
   const fetchDocuments = async () => {
     try {
       const response = await fetch(
-        "http://10.249.191.117:3000/user/documents/list"
+        `${BASE_URL}/user/documents/list/metadata/${USER_ID}}`
       );
       const documents = await response.json();
       setPrevDocuments(documents);
       setFilteredDocs(documents);
+      setSelectedFolder(defaultFolderId); //
+      console.log(user);
     } catch (error) {
       console.error(error);
     }
@@ -62,11 +72,8 @@ function UploadScreen({ navigation }) {
 
   // Fetch list of folders from API
   const fetchFolders = async () => {
-    const userId = 4;
     try {
-      const response = await fetch(
-        `http://10.249.191.117:3000/user/folders/${userId}}`
-      );
+      const response = await fetch(`${BASE_URL}/user/folders/${USER_ID}}`);
       const results = await response.json();
       const folders = results.folders;
       console.log(folders);
@@ -81,9 +88,7 @@ function UploadScreen({ navigation }) {
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch(
-        "http://10.249.191.117:3000/user/transactions/1"
-      );
+      const response = await fetch(`${BASE_URL}/user/transactions/${USER_ID}`);
       const results = await response.json();
       const transactions = results.transactions;
       setTransactions(transactions);
@@ -95,14 +100,19 @@ function UploadScreen({ navigation }) {
   };
 
   const downloadPDF = async (document) => {
-    if (FileSaver) {
+    if (Platform.OS === "web") {
       // Web download logic
       // Web: convert buffer to blob
-      console.log(document.document.data);
+      const response = await fetch(
+        `${BASE_URL}/user/documents/${document.documentId}/data`
+      );
+      const result = await response.json();
+      const doc = result.document;
+      console.log(doc);
       // Some how the blob is double writing.
       // Supposing that document.data.data is in base64 format
       // Assuming document.data takes the form {type: 'Buffer', data: Array}
-      const byteArray = new Uint8Array(document.document.data);
+      const byteArray = new Uint8Array(result.document.data);
       // Create a blob from the typed array
       const blob = new Blob([byteArray], { type: "application/pdf" });
       console.log(blob);
@@ -156,7 +166,6 @@ function UploadScreen({ navigation }) {
         .includes((searchQuery || "").toLowerCase());
       return matchesFolder && matchesSearch;
     });
-
     setFilteredDocs(docs);
   }, [searchQuery, selectedFolder]);
 
@@ -185,11 +194,10 @@ function UploadScreen({ navigation }) {
   const createNewFolder = async () => {
     // Title of folder
     const title = newFolderName;
-    const userId = 4;
     // Call API to create folder
     try {
       const response = await fetch(
-        `http://10.249.191.1173000/user/folders/create/${userId}`,
+        `${BASE_URL}/user/folders/create/${USER_ID}`,
         {
           method: "POST",
           headers: {
@@ -240,7 +248,7 @@ function UploadScreen({ navigation }) {
 
   const removeDocumentFromServer = async (document) => {
     try {
-      const url = `http://10.249.191.117:3000/user/documents/${document.id}`;
+      const url = `${BASE_URL}/user/documents/${document.documentId}`;
       const response = await fetch(url, {
         method: "DELETE",
       });
@@ -278,57 +286,75 @@ function UploadScreen({ navigation }) {
           documentTransactions[document.name] !== undefined
             ? documentTransactions[document.name]
             : defaultTransactionId;
-        const userId = 1;
         const folderId =
           folderSelection[document.name] !== undefined
             ? folderSelection[document.name]
             : defaultFolderId;
         console.log(documentTransactions);
         console.log(folderSelection);
-
-        // Need to add in more details here.
-        // User = 4, Transaction = 1, Folder = Choose.
-        const file = {
-          uri: fileuri,
-          type: filetype,
-          name: filename,
-        };
+        console.log(fileuri, filetype);
 
         // Extract the base64-encoded data from the URI
-        const base64Data = file.uri.split(",")[1];
-
-        // Decode the base64 string into a Uint8Array
-        const base64String = window.atob(base64Data);
-        const bytes = new Uint8Array(base64String.length);
-        for (let i = 0; i < base64String.length; i++) {
-          bytes[i] = base64String.charCodeAt(i);
-        }
+        // Dependent on Platform
+        let base64Data;
 
         // Create a Blob object from the decoded data
-        const fileBlob = new Blob([bytes], { type: file.type });
-        // console.log(fileBlob);
-        // console.log(descriptions);
-        // console.log(fileData.get("description"));
-        // console.log(...selectedDocuments);
-        fileData.append("documents", fileBlob, filename);
-        fileData.append("description", descriptions);
-        fileData.append("transactionId", transactionId);
-        fileData.append("folderId", folderId);
-        fileData.append("userId", userId);
-        // Convert to regular JS object
-        const obj = Object.fromEntries(fileData.entries());
-        // Log object
-        console.log(obj);
+        if (Platform.OS === "web") {
+          base64Data = fileuri.split(",")[1];
+          const base64String = base64.decode(base64Data);
+          const bytes = new Uint8Array(base64String.length);
+          for (let i = 0; i < base64String.length; i++) {
+            bytes[i] = base64String.charCodeAt(i);
+          }
+          const fileBlob = new Blob([bytes], { type: filetype });
+          // console.log(fileBlob);
+          // console.log(descriptions);
+          // console.log(fileData.get("description"));
+          // console.log(...selectedDocuments);
+          fileData.append("documents", fileBlob, filename);
+          fileData.append("description", descriptions);
+          fileData.append("transactionId", transactionId);
+          fileData.append("folderId", folderId);
+          fileData.append("userId", USER_ID);
+          fileData.append("fileData", {
+            uri: fileuri,
+            type: filetype,
+            name: filename,
+          });
+          // Convert to regular JS object
+          const obj = Object.fromEntries(fileData.entries());
+          console.log(obj);
+        } else {
+          fileBlob = {
+            uri: fileuri,
+            type: filetype,
+            name: filename,
+          };
+          // console.log(fileBlob);
+          // console.log(descriptions);
+          // console.log(fileData.get("description"));
+          // console.log(...selectedDocuments);
+          fileData.append("documents", fileBlob);
+          fileData.append("description", descriptions);
+          fileData.append("transactionId", transactionId);
+          fileData.append("folderId", folderId);
+          fileData.append("userId", USER_ID);
+          fileData.append("fileData", {
+            uri: fileuri,
+            type: filetype,
+            name: filename,
+          });
+          // Convert to regular JS object
+          // const obj = Object.fromEntries(fileData.entries());
+          // console.log(obj);
+        }
       });
 
       // Send the data to the API
-      const response = await fetch(
-        "http://10.249.191.117:3000/user/documents/upload",
-        {
-          method: "post",
-          body: fileData,
-        }
-      );
+      const response = await fetch(`${BASE_URL}/user/documents/upload`, {
+        method: "post",
+        body: fileData,
+      });
 
       // Check the response status and log the result
       if (response.ok) {
@@ -368,7 +394,7 @@ function UploadScreen({ navigation }) {
         >
           {transactions.map((transaction) => (
             <Picker.Item
-              label={transaction.transactionId}
+              label={transaction.transactionId.toString()}
               value={transaction.transactionId}
               key={transaction.transactionId}
             />
@@ -443,9 +469,7 @@ function UploadScreen({ navigation }) {
             </Text>
           )}
           data={selectedDocuments}
-          keyExtractor={(item, index) =>
-            item.id ? item.id.toString() : index.toString()
-          }
+          keyExtractor={(item) => item.name.toString()}
           renderItem={renderDocumentItem}
         />
       </View>
@@ -554,6 +578,9 @@ function UploadScreen({ navigation }) {
           />
         </View>
       </View>
+      <Text style={styles.graytext}>
+        Welcome, {user.user.name}, you are the #{USER_ID} user!
+      </Text>
     </View>
   );
 }
@@ -678,6 +705,11 @@ const styles = StyleSheet.create({
     borderRadius: responsiveWidth * 0.01,
     backgroundColor: "white",
     color: "black",
+  },
+
+  graytext: {
+    fontSize: responsiveWidth * 0.02, // or whatever relative size you want
+    color: "#808080",
   },
 });
 

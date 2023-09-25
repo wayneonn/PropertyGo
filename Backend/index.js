@@ -129,137 +129,137 @@ db.sequelize
     }
 
     // FAQ
-    if (existingFaqRecordsCount === 0) {
+    // if (existingFaqRecordsCount === 0) {
+    //   try {
+    //     for (const faqData of faqTestData) {
+    //       await db.FAQ.create(faqData);
+    //     }
+
+    //     if (existingContactUsRecordsCount === 0) {
+    //       try {
+    //         for (const contactUsData of contactUsTestData) {
+    //           await db.ContactUs.create(contactUsData);
+    //         }
+    //         console.log('Contact Us test data inserted successfully.');
+    //       } catch (error) {
+    //         console.error('Error inserting Contact Us test data:', error);
+    //       }
+    //     } else {
+    //       console.log('Contact Us test data already exists in the database.');
+    //     }
+
+    //     console.log('Faq test data inserted successfully.');
+    //   } catch (error) {
+    //     console.error('Error inserting Faq test data:', error);
+    //   }
+    // } else {
+    //   console.log('Admin test data already exists in the database.');
+    // }
+
+
+    // Property
+    if (existingPropertyRecordsCount === 0) {
       try {
-        for (const faqData of faqTestData) {
-          await db.FAQ.create(faqData);
+        for (const propertyData of propertyTestData) {
+          await db.Property.create(propertyData);
         }
-    
-        if (existingContactUsRecordsCount === 0) {
-          try {
-            for (const contactUsData of contactUsTestData) {
-              await db.ContactUs.create(contactUsData);
-            }
-            console.log('Contact Us test data inserted successfully.');
-          } catch (error) {
-            console.error('Error inserting Contact Us test data:', error);
-          }
-        } else {
-          console.log('Contact Us test data already exists in the database.');
-        }
-    
-        console.log('Faq test data inserted successfully.');
+        console.log("Property test data inserted successfully.");
       } catch (error) {
-        console.error('Error inserting Faq test data:', error);
+        console.log("Error inserting Property test data:", error);
       }
     } else {
-      console.log('Admin test data already exists in the database.');
+      console.log("Property test data already exists in the database.");
     }
 
+    // Images
+    if (existingImageRecordsCount === 0) {
+      try {
+        for (const imageData of imageTestData) {
+          await db.Image.create(imageData);
+        }
+        console.log("Image test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Image test data:", error);
+      }
+    } else {
+      console.log("Image test data already exists in the database.");
+    }
 
-        // Property
-        if (existingPropertyRecordsCount === 0) {
-          try {
-            for (const propertyData of propertyTestData) {
-              await db.Property.create(propertyData);
-            }
-            console.log("Property test data inserted successfully.");
-          } catch (error) {
-            console.log("Error inserting Property test data:", error);
-          }
-        } else {
-          console.log("Property test data already exists in the database.");
+    // Chats
+    if (existingChatRecordsCount === 0) {
+      try {
+        for (const chatData of chatTestData) {
+          await db.Chat.create(chatData);
+        }
+        console.log("Chat test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Chat test data:", error);
+      }
+    } else {
+      console.log("Chat test data already exists in the database.");
+    }
+
+    // Requests
+    if (existingRequestRecordsCount === 0) {
+      try {
+        for (const requestData of requestTestData) {
+          await db.Request.create(requestData);
+        }
+        console.log("Request test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Request test data:", error);
+      }
+    } else {
+      console.log("Request test data already exists in the database.");
+    }
+
+    // Review
+    if (existingReviewRecordsCount === 0) {
+      try {
+        for (const reviewData of reviewTestData) {
+          await db.Review.create(reviewData);
+        }
+        console.log("Review test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Review test data:", error);
+      }
+    } else {
+      console.log("Review test data already exists in the database.");
+    }
+
+    // Invoice
+    if (existingInvoiceRecordsCount === 0) {
+      try {
+        for (const invoiceData of invoiceTestData) {
+          await db.Invoice.create(invoiceData);
+        }
+        console.log("Invoice test data inserted successfully.");
+      } catch (error) {
+        console.log("Error inserting Invoice test data:", error);
+      }
+    } else {
+      console.log("Invoice test data already exists in the database.");
+    }
+
+    // Transaction
+    if (existingTransactionRecordsCount === 0) {
+      try {
+        for (const transactionData of transactionTestData) {
+          await db.Transaction.create(transactionData);
         }
 
-        // Images
-        if (existingImageRecordsCount === 0) {
-          try {
-            for (const imageData of imageTestData) {
-              await db.Image.create(imageData);
-            }
-            console.log("Image test data inserted successfully.");
-          } catch (error) {
-            console.log("Error inserting Image test data:", error);
-          }
-        } else {
-          console.log("Image test data already exists in the database.");
-        }
+        console.log("Transaction test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Transaction test data:", error);
+      }
+    } else {
+      console.log("Transaction test data already exists in the database.");
+    }
 
-        // Chats
-        if (existingChatRecordsCount === 0) {
-          try {
-            for (const chatData of chatTestData) {
-              await db.Chat.create(chatData);
-            }
-            console.log("Chat test data inserted successfully.");
-          } catch (error) {
-            console.log("Error inserting Chat test data:", error);
-          }
-        } else {
-          console.log("Chat test data already exists in the database.");
-        }
-
-        // Requests
-        if (existingRequestRecordsCount === 0) {
-          try {
-            for (const requestData of requestTestData) {
-              await db.Request.create(requestData);
-            }
-            console.log("Request test data inserted successfully.");
-          } catch (error) {
-            console.log("Error inserting Request test data:", error);
-          }
-        } else {
-          console.log("Request test data already exists in the database.");
-        }
-
-        // Review
-        if (existingReviewRecordsCount === 0) {
-          try {
-            for (const reviewData of reviewTestData) {
-              await db.Review.create(reviewData);
-            }
-            console.log("Review test data inserted successfully.");
-          } catch (error) {
-            console.log("Error inserting Review test data:", error);
-          }
-        } else {
-          console.log("Review test data already exists in the database.");
-        }
-
-        // Invoice
-        if (existingInvoiceRecordsCount === 0) {
-          try {
-            for (const invoiceData of invoiceTestData) {
-              await db.Invoice.create(invoiceData);
-            }
-            console.log("Invoice test data inserted successfully.");
-          } catch (error) {
-            console.log("Error inserting Invoice test data:", error);
-          }
-        } else {
-          console.log("Invoice test data already exists in the database.");
-        }
-
-        // Transaction
-        if (existingTransactionRecordsCount === 0) {
-          try {
-            for (const transactionData of transactionTestData) {
-              await db.Transaction.create(transactionData);
-            }
-
-            console.log("Transaction test data inserted successfully.");
-          } catch (error) {
-            console.error("Error inserting Transaction test data:", error);
-          }
-        } else {
-          console.log("Transaction test data already exists in the database.");
-        }
-
-        app.listen(3000, () => {
-          console.log("Server running on port 3000");
-        });
-      })
+    app.listen(3000, () => {
+      console.log("Server running on port 3000");
+    });
+  })
   .catch((error) => {
     console.error("Sequelize sync error:", error);
   });

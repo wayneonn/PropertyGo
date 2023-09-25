@@ -32,92 +32,6 @@ const upload = multer({
   limits: { fieldSize: 25 * 1024 * 1024 },
 });
 
-// Imma define a testing sequelize model and a testing mySQL table connection.
-// Will intergrate it later.
-// Create connection
-// const PASSWORD = "3times5=15";
-// const sequelize = new Sequelize("database_testing", "root", PASSWORD, {
-//   host: "127.0.0.1",
-//   dialect: "mysql",
-// });
-// Define File model
-// This is only for testing purposes.
-// const File = sequelize.define("File", {
-//   name: {
-//     type: DataTypes.STRING,
-//   },
-//   type: {
-//     type: DataTypes.STRING,
-//   },
-//   data: {
-//     type: DataTypes.BLOB("medium"), // binary data
-//   },
-//   size: {
-//     type: DataTypes.INTEGER,
-//   },
-//   description: {
-//     type: DataTypes.TEXT,
-//   },
-//   uploadedAt: {
-//     type: DataTypes.DATE,
-//     defaultValue: DataTypes.NOW,
-//   },
-//   deleted: {
-//     type: DataTypes.BOOLEAN,
-//     defaultValue: false,
-//   },
-// });
-
-// Sync all models to the database
-// sequelize
-//   .sync()
-//   .then(() => {
-//     console.log("Database synced");
-//   })
-//   .catch((err) => {
-//     console.error("Error syncing database: ", err);
-//   });
-
-// Functions needed or not needed.
-// const uploadFirebase = async () => {
-//   const defaultBucket = admin.storage().bucket(); // Get the default Firebase Storage bucket
-//   const fileUpload = defaultBucket.file(file.originalname);
-//   await fileUpload.save(file.buffer, {
-//     metadata: {
-//       contentType: file.mimetype,
-//       metadata: {
-//         customMetadata: {
-//           originalname: file.originalname,
-//           // Add more custom metadata if needed
-//         },
-//       },
-//     },
-//   });
-// };
-
-// const downloadListFirebase = async () => {
-//   try {
-//     const bucket = admin.storage().bucket(); // Get the default Firebase Storage bucket
-//     const [files] = await bucket.getFiles();
-//     const documentList = files.map((file) => file.name);
-//     res.json(documentList);
-//   } catch (error) {
-//     // Handle any errors
-//     console.error(error);
-//     res.status(500).json({ message: "Failed to retrieve the document list" });
-//   }
-// };
-
-const blobToBase64 = (blob) => {
-  return new Promise((resolve, reject) => {
-    const buffer = Buffer.from(blob);
-    fs.readFile(buffer, (err, data) => {
-      if (err) reject(err);
-      else resolve(data.toString("base64"));
-    });
-  });
-};
-
 // API works when tested with Insomnia.
 // Works with one more more then one.
 // TODO: Append UserID to the file so we can grab it by UserID in the giant bucket.
@@ -208,7 +122,7 @@ router.post(
 );
 
 // Give us the whole list of the documents.
-router.get("/documents/list", async (req, res) => {
+router.get("/documents/list/metadata/:id", async (req, res) => {
   try {
     const documents = await Document.findAll({
       attributes: [
@@ -223,11 +137,25 @@ router.get("/documents/list", async (req, res) => {
       ],
       where: { deleted: false, userId: req.params.id },
     });
-    // This is insanity since we are literally sending all the data over.
-    res.json(files);
+    res.json(documents);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to retrieve document list" });
+    res.status(500).send("Document metadata collection error.");
+  }
+});
+
+// Give me the specific dataset.
+router.get("/documents/:documentId/data", async (req, res) => {
+  try {
+    const documentData = await Document.findByPk(req.params.documentId);
+    if (documentData) {
+      res.json(documentData);
+    } else {
+      res.status(404).send("Document not found");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
   }
 });
 
