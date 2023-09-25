@@ -46,15 +46,55 @@ const PartnerApplicationScreen = ({ navigation }) => {
                             {errors.companyName}
                         </HelperText>
 
-                        {/* Add other input fields similarly */}
                         <TextInput
                             label="User Role"
                             value={values.userRole}
                             onChangeText={handleChange('userRole')}
                         />
-                        {/* ... other fields ... */}
+                        <HelperText type="error" visible={!!errors.userRole}>
+                            {errors.userRole}
+                        </HelperText>
 
-                        <Button onPress={handleSubmit}>Submit Application</Button>
+                        <TextInput
+                            label="Card Number"
+                            value={values.cardNumber}
+                            onChangeText={handleChange('cardNumber')}
+                            keyboardType="number-pad" // To show number keypad
+                        />
+                        <HelperText type="error" visible={!!errors.cardNumber}>
+                            {errors.cardNumber}
+                        </HelperText>
+
+                        <TextInput
+                            label="Card Holder Name"
+                            value={values.cardHolderName}
+                            onChangeText={handleChange('cardHolderName')}
+                        />
+                        <HelperText type="error" visible={!!errors.cardHolderName}>
+                            {errors.cardHolderName}
+                        </HelperText>
+
+                        <TextInput
+                            label="CVC"
+                            value={values.cvc}
+                            onChangeText={handleChange('cvc')}
+                            keyboardType="number-pad" // To show number keypad
+                        />
+                        <HelperText type="error" visible={!!errors.cvc}>
+                            {errors.cvc}
+                        </HelperText>
+
+                        <TextInput
+                            label="Expiry Date"
+                            value={values.expiryDate}
+                            onChangeText={handleChange('expiryDate')}
+                            placeholder="MM/YY"
+                        />
+                        <HelperText type="error" visible={!!errors.expiryDate}>
+                            {errors.expiryDate}
+                        </HelperText>
+
+                        <Button onPress={handleSubmit}> Submit Application</Button>
                     </View>
                 )}
             </Formik>
