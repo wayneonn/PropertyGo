@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { Button, Table, Modal, Form, Toast, Row, Col } from "react-bootstrap";
-import "./styles/Faq.css";
+import "./styles/Forum.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import FaqCreate from "./FaqCreate.js";
@@ -140,10 +140,10 @@ const Forum = () => {
 //     showToast("deleted");
 //   };
 
-//   const showToast = (action) => {
-//     setToastAction(action);
-//     setShow(true);
-//   };
+  const showToast = (action) => {
+    setToastAction(action);
+    setShow(true);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -331,7 +331,7 @@ const Forum = () => {
               FLAGGED FORUM TOPIC
             </h3>
             <div>
-              <Table hover responsive style={{ width: "51em" }}>
+              <Table hover responsive style={{ width: "70em" }}>
                 <thead style={{ textAlign: "center" }}>
                   <tr>
                     <th>FORUM TOPIC</th>
@@ -429,7 +429,7 @@ const Forum = () => {
             </div>
           </div>
         </div>
-        {/* <FaqCreate showToast={showToast}></FaqCreate> */}
+        <FaqCreate showToast={showToast}></FaqCreate>
         {/* <Modal
           show={showEditModal}
           onHide={handleClose}

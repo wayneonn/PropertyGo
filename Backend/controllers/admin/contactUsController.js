@@ -42,13 +42,13 @@ const getSingleContactUs = async (req, res) => {
     }
 };
 
-const respondContactUs = async (req, res) => {
+const closeContactUs = async (req, res) => {
     const { id: contactUsId } = req.params;
 
     try {
         const contactUs = await ContactUs.findByPk(contactUsId);
 
-        req.body.status = "REPLIED";
+        req.body.status = "CLOSED";
         req.body.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
         await contactUs.update(req.body);
@@ -65,5 +65,5 @@ const respondContactUs = async (req, res) => {
 module.exports = {
     getAllContactUs,
     getSingleContactUs,
-    respondContactUs
+    closeContactUs
 }
