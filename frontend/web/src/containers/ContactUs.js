@@ -14,6 +14,8 @@ import API from "../services/API";
 
 import Pagination from "react-bootstrap/Pagination";
 import TextareaAutosize from "react-textarea-autosize";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import the styles
 
 const ContactUs = () => {
   const [contactus, setContactus] = useState([]);
@@ -125,7 +127,7 @@ const ContactUs = () => {
       emptyResponse: false,
     };
 
-    const responseTrimmed = editResponse.trim();
+    const responseTrimmed = htmlToPlainText(editResponse).trim();
 
     if (responseTrimmed === "") {
       newMessage.emptyResponse = true;
@@ -140,12 +142,13 @@ const ContactUs = () => {
       const response = await API.patch(
         `/admin/contactUs/${viewResponseId}/responses/${editResponseId}`,
         {
-          response: responseTrimmed,
+          message: responseTrimmed,
         }
       );
 
       if (response.status === 200) {
-        fetchData();
+        // fetchData();
+        getResponses(viewResponseId);
         setValidationMessages(newMessage);
         setShowEditModal(false);
         showToast("updated");
@@ -162,7 +165,7 @@ const ContactUs = () => {
       emptyResponse: false,
     };
 
-    const addedRespondTrimmed = addedRespond.trim();
+    const addedRespondTrimmed = htmlToPlainText(addedRespond).trim();
 
     if (addedRespondTrimmed === "") {
       newMessage.emptyResponse = true;
@@ -199,7 +202,7 @@ const ContactUs = () => {
       emptyResponse: false,
     };
 
-    const addedRespondTrimmed = addedRespond.trim();
+    const addedRespondTrimmed = htmlToPlainText(addedRespond).trim();
 
     if (addedRespondTrimmed === "") {
       newMessage.emptyResponse = true;
@@ -220,7 +223,7 @@ const ContactUs = () => {
       );
 
       if (response.status === 201) {
-        fetchData();
+        getResponses(viewResponseId);
         setValidationMessages(newMessage);
         setAddedRespond("");
         setShowRespondModal(false);
@@ -252,6 +255,12 @@ const ContactUs = () => {
       })
     );
   };
+
+  function htmlToPlainText(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  }
 
   const fetchData = async () => {
     try {
@@ -755,19 +764,19 @@ const ContactUs = () => {
             >
               Response
             </Form.Label>
-            <Form.Control
-              as="textarea"
-              id="response"
-              name="message"
-              value={addedRespond}
-              onChange={(e) => setAddedRespond(e.target.value)}
-              isInvalid={validationMessages.emptyResponse}
-            />
-            {validationMessages.emptyResponse && (
-              <Form.Control.Feedback type="invalid">
-                Response is required.
-              </Form.Control.Feedback>
-            )}
+            <Form.Group>
+              <ReactQuill
+                value={addedRespond}
+                onChange={setAddedRespond}
+                theme="snow"
+                className={validationMessages.emptyResponse ? "is-invalid" : ""}
+              />
+              {validationMessages.emptyResponse && (
+                <Form.Control.Feedback type="invalid">
+                  Response is required.
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -825,57 +834,87 @@ const ContactUs = () => {
               responses.map((response) => (
                 <div style={{ marginBottom: "10px" }}>
                   {response.userId === null ? (
-                    <div className="adminResponse">
-                      <TextareaAutosize
-                        readOnly
-                        style={{
-                          borderRadius: "10px",
-                          borderColor: "#F5F6F7",
-                          backgroundColor: "#FFD700",
-                          resize: "none",
-                          overflowY: "auto",
-                          padding: "5px",
-                        }}
-                        value={response.message}
-                      />
-                      <Button
-                        size="sm"
-                        title="Edit Response"
-                        style={{
-                          backgroundColor: "#F5F6F7",
-                          border: "0",
-                          marginLeft: "2px",
-                        }}
-                        onClick={() =>
-                          toggleShowEditModal(
-                            response.message,
-                            response.responseId
-                          )
-                        }
-                      >
-                        <MdEditSquare
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        float: "right",
+                        maxWidth: "60%",
+                      }}
+                    >
+                      <div className="adminResponse">
+                        <TextareaAutosize
+                          readOnly
                           style={{
-                            width: "15px",
-                            height: "15px",
-                            color: "black",
+                            borderRadius: "10px",
+                            borderColor: "#F5F6F7",
+                            backgroundColor: "#FFD88D",
+                            // color: "white",
+                            resize: "none",
+                            overflowY: "auto",
+                            padding: "5px",
                           }}
-                        ></MdEditSquare>
-                      </Button>
+                          value={htmlToPlainText(response.message)}
+                        />
+                        <Button
+                          size="sm"
+                          title="Edit Response"
+                          style={{
+                            backgroundColor: "#FFD700",
+                            border: "0",
+                            marginLeft: "1px",
+                          }}
+                          onClick={() =>
+                            toggleShowEditModal(
+                              response.message,
+                              response.responseId
+                            )
+                          }
+                        >
+                          <MdEditSquare
+                            style={{
+                              width: "15px",
+                              height: "15px",
+                              color: "black",
+                            }}
+                          ></MdEditSquare>
+                        </Button>
+                      </div>
+                      {new Date(response.updatedAt).getTime() !==
+                        new Date(response.createdAt).getTime() && (
+                        <span className="muted-text">
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
                     </div>
                   ) : (
-                    <div className="userResponse">
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        float: "left",
+                        maxWidth: "50%",
+                      }}
+                    >
                       <TextareaAutosize
                         readOnly
                         style={{
                           borderRadius: "10px",
                           border: "0",
-                          backgroundColor: "#F5F6F7",
+                          // color: "white",
+                          backgroundColor: "#FFD88D",
                           resize: "none",
                           overflowY: "auto",
                           padding: "5px",
                         }}
-                        value={response.message}
+                        value={htmlToPlainText(response.message)}
                       />
+                      {new Date(response.updatedAt).getTime() !==
+                        new Date(response.createdAt).getTime() && (
+                        <span className="muted-text">
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -892,31 +931,30 @@ const ContactUs = () => {
               alignItems: "center",
             }}
           >
-            <Form.Control
-              type="text"
-              id="response"
-              name="message"
-              value={addedRespond}
-              onChange={(e) => setAddedRespond(e.target.value)}
-              isInvalid={validationMessages.emptyResponse}
-              style={{ maxWidth: "100%" }}
-            />
-            {validationMessages.emptyResponse && (
-              <Form.Control.Feedback type="invalid">
-                Response is required.
-              </Form.Control.Feedback>
-            )}
+            <Form.Group>
+              <ReactQuill
+                value={addedRespond}
+                onChange={setAddedRespond}
+                theme="snow"
+                className={validationMessages.emptyResponse ? "is-invalid" : ""}
+              />
+              {validationMessages.emptyResponse && (
+                <Form.Control.Feedback type="invalid">
+                  Response is required.
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
             <Button
               style={{
                 backgroundColor: "#FFD700",
                 border: "0",
-                width: "130px",
+                width: "120px",
                 height: "40px",
                 borderRadius: "160px",
                 color: "black",
                 font: "Public Sans",
                 fontWeight: "600",
-                fontSize: "14px",
+                fontSize: "13px",
               }}
               onClick={() => handleAddRespond(viewResponseId)}
             >
@@ -945,19 +983,21 @@ const ContactUs = () => {
               >
                 Response
               </Form.Label>
-              <Form.Control
-                as="textarea"
-                id="response"
-                name="message"
-                value={editResponse}
-                onChange={(e) => setEditResponse(e.target.value)}
-                isInvalid={validationMessages.emptyResponse}
-              />
-              {validationMessages.emptyResponse && (
-                <Form.Control.Feedback type="invalid">
-                  Response is required.
-                </Form.Control.Feedback>
-              )}
+              <Form.Group>
+                <ReactQuill
+                  value={editResponse}
+                  onChange={setEditResponse}
+                  theme="snow"
+                  className={
+                    validationMessages.emptyResponse ? "is-invalid" : ""
+                  }
+                />
+                {validationMessages.emptyResponse && (
+                  <Form.Control.Feedback type="invalid">
+                    Response is required.
+                  </Form.Control.Feedback>
+                )}
+              </Form.Group>
             </div>
           </Modal.Body>
           <Modal.Footer>
