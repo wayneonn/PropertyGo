@@ -4,7 +4,7 @@ const router = express.Router();
 const {
     getAllContactUs,
     getSingleContactUs,
-    respondContactUs
+    closeContactUs
 } = require('../../controllers/admin/contactUsController');
 
 router.route('/')
@@ -12,6 +12,6 @@ router.route('/')
     
 router.route('/:id')
     .get(getSingleContactUs)
-    .patch(respondContactUs);
+    .patch(closeContactUs);
 
 module.exports = router;
