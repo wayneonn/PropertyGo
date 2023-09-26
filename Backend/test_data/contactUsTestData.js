@@ -12,15 +12,16 @@ module.exports = [
     message: "I'm experiencing technical issues with the website.",
     reason: "SUPPORT",
     status: "PENDING",
-
   },
   {
     userId: 2,
     title: "Website Feedback",
-    message: "I have some feedback to share about the website's user experience.",
+    message:
+      "I have some feedback to share about the website's user experience.",
     reason: "FEEDBACK",
     response: "Go head?",
     status: "REPLIED",
+    adminId: 1,
   },
   {
     userId: 1,
@@ -29,6 +30,7 @@ module.exports = [
     reason: "OTHERS",
     response: "Go head?",
     status: "REPLIED",
+    adminId: 1,
   },
   {
     title: "hello",
@@ -78,6 +80,7 @@ module.exports = [
     reason: "FEEDBACK",
     status: "REPLIED",
     userId: 1,
+    adminId: 2,
   },
   {
     title: "hello",
@@ -85,6 +88,7 @@ module.exports = [
     reason: "FEEDBACK",
     status: "REPLIED",
     userId: 1,
+    adminId: 1,
   },
   {
     title: "hello",
@@ -92,6 +96,7 @@ module.exports = [
     reason: "FEEDBACK",
     status: "REPLIED",
     userId: 2,
+    adminId: 1,
   },
   {
     title: "hello",
@@ -99,6 +104,7 @@ module.exports = [
     reason: "FEEDBACK",
     status: "REPLIED",
     userId: 2,
+    adminId: 1,
   },
   {
     title: "hello",
@@ -106,6 +112,7 @@ module.exports = [
     reason: "FEEDBACK",
     status: "REPLIED",
     userId: 3,
+    adminId: 1,
   },
   {
     title: "hello",
@@ -113,5 +120,6 @@ module.exports = [
     reason: "FEEDBACK",
     status: "REPLIED",
     userId: 3,
+    adminId: 1,
   },
 ];
