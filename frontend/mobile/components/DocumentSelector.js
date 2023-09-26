@@ -128,13 +128,19 @@ export const DocumentSelector = ({documentFetch}) => {
                     const fileBlob = new Blob([bytes], {type: filetype});
                     fileData.append("documents", fileBlob, filename);
                 } else {
-                    fileData.append("documents", fileuri)
+                    fileData.append("documents", {
+                        uri: fileuri,
+                        name: filename,
+                        type: filetype
+                    });
                 }
                 fileData.append("description", descriptions);
                 fileData.append("transactionId", transactionId);
                 fileData.append("folderId", folderId);
                 fileData.append("userId", USER_ID);
             });
+
+            console.log(fileData)
 
             // Send the data to the API
             const response = await fetch(`${BASE_URL}/user/documents/upload`, {

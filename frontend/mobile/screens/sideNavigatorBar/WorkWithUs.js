@@ -16,7 +16,6 @@ const validationSchema = yup.object().shape({
 const PartnerApplicationScreen = ({ navigation }) => {
     const handleSubmit = async (values) => {
         // Here, you would typically make a POST request to your API endpoint to create a new PartnerApplication
-        console.log('Submitted Partner Application: ', values);
 
         // Navigate to another screen or show a success message as needed
     };

@@ -87,7 +87,17 @@ exports.getDocumentData = async (req, res) => {
     try {
         const documentData = await Document.findByPk(req.params.documentId);
         if (documentData) {
-            res.json(documentData);
+            const base64Data = documentData.document.toString('base64');
+            res.json({
+                documentId: documentData.documentId,
+                title: documentData.title,
+                timestamp: documentData.timestamp,
+                deleted: documentData.deleted,
+                description: documentData.description,
+                type: documentData.type,
+                size: documentData.size,
+                document: base64Data,
+            });
         } else {
             res.status(404).send("Document not found");
         }

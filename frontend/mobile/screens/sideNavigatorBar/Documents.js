@@ -16,6 +16,7 @@ import {
     View,
 } from "react-native";
 import * as FileSystem from "expo-file-system";
+import * as Sharing from 'expo-sharing';
 import {openBrowserAsync} from "expo-web-browser";
 import {AuthContext} from "../../AuthContext";
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -39,7 +40,7 @@ const BASE_URL = "http://192.168.50.157:3000"; // Change this according to Wifi.
 function UploadScreen({navigation}) {
     const [prevDocuments, setPrevDocuments] = useState([]); // This is suppose to be the list of documents that you have uploaded previously.
     const [searchQuery, setSearchQuery] = useState(""); // This is for the search bar.
-    const [selectedFolder, setSelectedFolder] = useState(); // Add state for selected folder
+    const [selectedFolder, setSelectedFolder] = useState(""); // Add state for selected folder
     const [folders, setFolders] = useState([]); // Add state for folders list
     const [newFolderModalOpen, setNewFolderModalOpen] = useState(false); // Modal boolean for folder creation
     const [newFolderName, setNewFolderName] = useState(""); // New folder name
@@ -92,7 +93,7 @@ function UploadScreen({navigation}) {
             const documents = await response.json();
             setPrevDocuments(documents);
             setFilteredDocs(documents);
-            setSelectedFolder(defaultFolderId);
+            setSelectedFolder(defaultFolderId.toString());
             console.log(user);
         } catch (error) {
             console.error(error);
@@ -103,33 +104,63 @@ function UploadScreen({navigation}) {
 
     // START OF BUSINESS FUNCTIONS //
     const downloadPDF = async (document) => {
+        const response = await fetch(
+            `${BASE_URL}/user/documents/${document.documentId}/data`
+        );
+        console.log(response)
+        const result = await response.json();
+        const doc = result.document;
+        console.log(result)
         // The web version is kinda not needed.
         if (Platform.OS === "web") {
-            const response = await fetch(
-                `${BASE_URL}/user/documents/${document.documentId}/data`
-            );
-            const result = await response.json();
-            const doc = result.document;
-            console.log(doc);
-            const byteArray = new Uint8Array(result.document.data);
-            const blob = new Blob([byteArray], {type: "application/pdf"});
-            console.log(blob);
+            const byteCharacters = atob(result.document); // Decode the Base64 string
+            const byteArrays = [];
+
+            for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                const slice = byteCharacters.slice(offset, offset + 512);
+
+                const byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+
+                const byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+
+            const blob = new Blob(byteArrays, {type: "application/pdf"});
             const url = URL.createObjectURL(blob);
-            await openBrowserAsync(url);
-            FileSaver.saveAs(blob, document.name);
+            await openBrowserAsync(url); // Assuming this opens the URL in a new browser tab/window
+            FileSaver.saveAs(blob, document.name); // Assuming document.name is the desired name of the downloaded file
             URL.revokeObjectURL(url);
         } else {
-            // Native FileSystem logic
-            // Need to make sure it works.
-            const {uri} = await FileSystem.writeAsStringAsync(
-                FileSystem.documentDirectory + document.name,
-                document.data,
-                {encoding: FileSystem.EncodingType.Base64}
-            );
-            if (uri) {
-                alert("Downloaded to " + uri);
-            } else {
-                alert("Failed to download PDF");
+            try {
+                // Native FileSystem logic
+                const fileName = FileSystem.documentDirectory + result.title;
+                console.log('Filename:', fileName);
+
+                //Scam URI
+                await FileSystem.writeAsStringAsync(
+                    fileName,
+                    result.document,
+                    {encoding: FileSystem.EncodingType.Base64}
+                );
+
+                const isAvailable = await Sharing.isAvailableAsync();
+                if (!isAvailable) {
+                    alert(`Uh oh, sharing isn't available on your platform`);
+                    return;
+                }
+
+                if (fileName) {
+                    alert("Downloaded to " + fileName);
+                    await Sharing.shareAsync(fileName);
+                } else {
+                    alert("Failed to download PDF");
+                }
+            } catch (error) {
+                console.error("Error opening the file", error);
+                alert("Failed to open PDF");
             }
         }
     };
