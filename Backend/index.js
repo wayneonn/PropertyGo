@@ -39,7 +39,8 @@ const forumCommentTestData = require("./test_data/forumCommentTestData");
 
 
 // user routes
-const postRouter = require("./routes/user/User");
+const userRoute = require("./routes/user/userRoute");
+// const userRoute = require("./routes/user/User");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
@@ -61,7 +62,7 @@ app.use('/admin/users', adminUserRouter);
 
 app.use(
   "/user",
-  postRouter,
+  userRoute,
   loginRoute,
   documentRoute,
   folderRoute,

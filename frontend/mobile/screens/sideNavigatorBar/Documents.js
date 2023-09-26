@@ -16,6 +16,8 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { openBrowserAsync } from "expo-web-browser";
 import { AuthContext } from "../../AuthContext";
+import base64 from "react-native-base64";
+import { Base64 } from "js-base64";
 
 //Conditional FileSaver import.
 let FileSaver;
@@ -290,40 +292,62 @@ function UploadScreen({ navigation }) {
             : defaultFolderId;
         console.log(documentTransactions);
         console.log(folderSelection);
-
-        // Need to add in more details here.
-        // User = 4, Transaction = 1, Folder = Choose.
-        const file = {
-          uri: fileuri,
-          type: filetype,
-          name: filename,
-        };
+        console.log(fileuri, filetype);
 
         // Extract the base64-encoded data from the URI
-        const base64Data = file.uri.split(",")[1];
-
-        // Decode the base64 string into a Uint8Array
-        const base64String = window.atob(base64Data);
-        const bytes = new Uint8Array(base64String.length);
-        for (let i = 0; i < base64String.length; i++) {
-          bytes[i] = base64String.charCodeAt(i);
-        }
+        // Dependent on Platform
+        let base64Data;
 
         // Create a Blob object from the decoded data
-        const fileBlob = new Blob([bytes], { type: file.type });
-        // console.log(fileBlob);
-        // console.log(descriptions);
-        // console.log(fileData.get("description"));
-        // console.log(...selectedDocuments);
-        fileData.append("documents", fileBlob, filename);
-        fileData.append("description", descriptions);
-        fileData.append("transactionId", transactionId);
-        fileData.append("folderId", folderId);
-        fileData.append("userId", USER_ID);
-        // Convert to regular JS object
-        const obj = Object.fromEntries(fileData.entries());
-        // Log object
-        console.log(obj);
+        if (Platform.OS === "web") {
+          base64Data = fileuri.split(",")[1];
+          const base64String = base64.decode(base64Data);
+          const bytes = new Uint8Array(base64String.length);
+          for (let i = 0; i < base64String.length; i++) {
+            bytes[i] = base64String.charCodeAt(i);
+          }
+          const fileBlob = new Blob([bytes], { type: filetype });
+          // console.log(fileBlob);
+          // console.log(descriptions);
+          // console.log(fileData.get("description"));
+          // console.log(...selectedDocuments);
+          fileData.append("documents", fileBlob, filename);
+          fileData.append("description", descriptions);
+          fileData.append("transactionId", transactionId);
+          fileData.append("folderId", folderId);
+          fileData.append("userId", USER_ID);
+          fileData.append("fileData", {
+            uri: fileuri,
+            type: filetype,
+            name: filename,
+          });
+          // Convert to regular JS object
+          const obj = Object.fromEntries(fileData.entries());
+          console.log(obj);
+        } else {
+          fileBlob = {
+            uri: fileuri,
+            type: filetype,
+            name: filename,
+          };
+          // console.log(fileBlob);
+          // console.log(descriptions);
+          // console.log(fileData.get("description"));
+          // console.log(...selectedDocuments);
+          fileData.append("documents", fileBlob);
+          fileData.append("description", descriptions);
+          fileData.append("transactionId", transactionId);
+          fileData.append("folderId", folderId);
+          fileData.append("userId", USER_ID);
+          fileData.append("fileData", {
+            uri: fileuri,
+            type: filetype,
+            name: filename,
+          });
+          // Convert to regular JS object
+          // const obj = Object.fromEntries(fileData.entries());
+          // console.log(obj);
+        }
       });
 
       // Send the data to the API
@@ -370,7 +394,7 @@ function UploadScreen({ navigation }) {
         >
           {transactions.map((transaction) => (
             <Picker.Item
-              label={transaction.transactionId}
+              label={transaction.transactionId.toString()}
               value={transaction.transactionId}
               key={transaction.transactionId}
             />
@@ -445,9 +469,7 @@ function UploadScreen({ navigation }) {
             </Text>
           )}
           data={selectedDocuments}
-          keyExtractor={(item, index) =>
-            item.id ? item.id.toString() : index.toString()
-          }
+          keyExtractor={(item) => item.name.toString()}
           renderItem={renderDocumentItem}
         />
       </View>

@@ -133,6 +133,7 @@ router.get("/documents/list/metadata/:id", async (req, res) => {
         "title",
         "createdAt",
         "updatedAt",
+        "description"
       ],
       where: { deleted: false, userId: req.params.id },
     });
