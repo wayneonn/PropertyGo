@@ -44,6 +44,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: "user",
     });
+    ContactUs.belongsTo(models.Admin, {
+      foreignKey: {
+        name: "adminId", // Specify the foreign key name explicitly
+        allowNull: true,
+      },
+      as: "admin",
+    });
     ContactUs.hasMany(models.Response, {
       onDelete: "CASCADE",
       foreignKey: "contactUsId",
