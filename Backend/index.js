@@ -38,7 +38,7 @@ const forumCommentTestData = require("./test_data/forumCommentTestData");
 // const faqRouter = require("./routes/admin/faqRoutes");
 
 
-// user routes
+
 const userRoute = require("./routes/user/userRoute");
 // const userRoute = require("./routes/user/User");
 const loginRoute = require("./routes/user/loginRoute");
