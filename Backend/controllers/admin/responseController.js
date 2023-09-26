@@ -5,7 +5,7 @@ const getAllResponses = async (req, res) => {
     const { id: contactUsId } = req.params;
 
     const responses = await Response.findAll({
-        attributes: ['responseId', 'message', 'createdAt', 'updatedAt', 'userId'],
+        attributes: ['responseId', 'message', 'createdAt', 'updatedAt', 'userId', 'adminId'],
         where: {
             contactUsId: contactUsId,
         },
@@ -16,6 +16,7 @@ const getAllResponses = async (req, res) => {
             responseId: response.responseId,
             message: response.message,
             userId: response.userId,
+            adminId: response.adminId,
             createdAt: moment(response.createdAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
             updatedAt: moment(response.updatedAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
         };

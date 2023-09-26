@@ -5,6 +5,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import the styles
 
 import API from "../services/API";
+import { formats, modules } from "../components/Common/RichTextEditor";
 
 const FaqCreate = ({ showToast }) => {
   const [question, setQuestion] = useState("");
@@ -118,10 +119,12 @@ const FaqCreate = ({ showToast }) => {
                   theme="snow"
                   className={
                     validationMessages.emptyFaqQuestion ||
-                    validationMessages.faqQuestionUnique
+                      validationMessages.faqQuestionUnique
                       ? "is-invalid"
                       : ""
                   }
+                  modules={modules}
+                  formats={formats}
                 />
                 {validationMessages.emptyFaqQuestion && (
                   <Form.Control.Feedback type="invalid">
@@ -145,6 +148,8 @@ const FaqCreate = ({ showToast }) => {
                   className={
                     validationMessages.emptyFaqAnswer ? "is-invalid" : ""
                   }
+                  modules={modules}
+                  formats={formats}
                 />
                 {validationMessages.emptyFaqAnswer && (
                   <Form.Control.Feedback type="invalid">

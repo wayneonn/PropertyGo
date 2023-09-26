@@ -7,7 +7,6 @@ import {
   MdEditSquare,
   MdPageview,
   MdCurtainsClosed,
-  MdAddCircle,
 } from "react-icons/md";
 
 import API from "../services/API";
@@ -16,6 +15,7 @@ import Pagination from "react-bootstrap/Pagination";
 import TextareaAutosize from "react-textarea-autosize";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import the styles
+import { formats, modules } from "../components/Common/RichTextEditor";
 
 const ContactUs = () => {
   const [contactus, setContactus] = useState([]);
@@ -30,12 +30,13 @@ const ContactUs = () => {
   const [respondReason, setRespondReason] = useState("");
   const [addedRespond, setAddedRespond] = useState("");
   const [userNames, setUserNames] = useState({});
+  const [adminNames, setAdminNames] = useState({});
   const [viewResponseId, setViewResponseId] = useState(0);
   const [responses, setResponses] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editResponse, setEditResponse] = useState("");
   const [editResponseId, setEditResponseId] = useState(0);
-  const [showResponsesModal, setShowResponsesModal] = useState([]);
+  const [showResponsesModal, setShowResponsesModal] = useState(false);
 
   const itemsPerPage = 4;
 
@@ -162,9 +163,6 @@ const ContactUs = () => {
       return;
     }
 
-    console.log("view response id:" + viewResponseId);
-    console.log("edit response id:" + editResponseId);
-
     try {
       const response = await API.patch(
         `/admin/contactUs/${viewResponseId}/responses/${editResponseId}`,
@@ -199,8 +197,6 @@ const ContactUs = () => {
       setValidationMessages(newMessage);
       return;
     }
-
-    console.log("hi");
 
     try {
       const response = await API.post(
@@ -237,8 +233,6 @@ const ContactUs = () => {
       return;
     }
 
-    console.log("hi");
-
     try {
       const response = await API.post(
         `/admin/contactUs/${viewResponseId}/responses`,
@@ -265,6 +259,14 @@ const ContactUs = () => {
     const response = await API.get(
       `http://localhost:3000/admin/users/${userId}`
     );
+    return response.data;
+  };
+
+  const getAdminName = async (adminId) => {
+    const response = await API.get(
+      `/admins/${adminId}`
+    );
+
     return response.data;
   };
 
@@ -303,6 +305,15 @@ const ContactUs = () => {
       }
 
       setUserNames(userNamesData);
+
+      const adminResponse = await API.get(`http://localhost:3000/admins`);
+      const admins = adminResponse.data.admins;
+
+      for (const admin of admins) {
+        adminNames[admin.adminId] = admin.userName;
+      }
+
+      setAdminNames(adminNames);
 
       const pendingContactus = contactUs.filter(
         (contactus) => contactus.status === "PENDING"
@@ -409,7 +420,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(pendingContactus) &&
-                pendingContactus.length > 0 ? (
+                  pendingContactus.length > 0 ? (
                   <tbody>
                     {pendingContactus
                       .slice(indexOfFirstItemPending, indexOfLastItemPending)
@@ -507,7 +518,6 @@ const ContactUs = () => {
                     <th>TITLE</th>
                     <th>MESSAGE</th>
                     <th>REASON</th>
-                    {/* <th>RESPONSE</th> */}
                     <th>CREATED AT</th>
                     <th>UPDATED AT</th>
                     <th>CREATED BY</th>
@@ -515,7 +525,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(repliedContactus) &&
-                repliedContactus.length > 0 ? (
+                  repliedContactus.length > 0 ? (
                   <tbody>
                     {repliedContactus
                       .slice(indexOfFirstItemReplied, indexOfLastItemReplied)
@@ -529,9 +539,6 @@ const ContactUs = () => {
                           <td className="truncate-text">{contactus.title}</td>
                           <td className="truncate-text">{contactus.message}</td>
                           <td className="truncate-text">{contactus.reason}</td>
-                          {/* <td className="truncate-text">
-                            {contactus.response}
-                          </td> */}
                           <td className="truncate-text">
                             {contactus.createdAt}
                           </td>
@@ -636,7 +643,6 @@ const ContactUs = () => {
                     <th>TITLE</th>
                     <th>MESSAGE</th>
                     <th>REASON</th>
-                    {/* <th>RESPONSE</th> */}
                     <th>CREATED AT</th>
                     <th>UPDATED AT</th>
                     <th>CREATED BY</th>
@@ -644,7 +650,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(closedContactus) &&
-                closedContactus.length > 0 ? (
+                  closedContactus.length > 0 ? (
                   <tbody>
                     {closedContactus
                       .slice(indexOfFirstItemClosed, indexOfLastItemClosed)
@@ -658,9 +664,6 @@ const ContactUs = () => {
                           <td className="truncate-text">{contactus.title}</td>
                           <td className="truncate-text">{contactus.message}</td>
                           <td className="truncate-text">{contactus.reason}</td>
-                          {/* <td className="truncate-text">
-                            {contactus.response}
-                          </td> */}
                           <td className="truncate-text">
                             {contactus.createdAt}
                           </td>
@@ -797,6 +800,9 @@ const ContactUs = () => {
                 onChange={setAddedRespond}
                 theme="snow"
                 className={validationMessages.emptyResponse ? "is-invalid" : ""}
+                style={{width: "29em"}}
+                modules={modules}
+                formats={formats}
               />
               {validationMessages.emptyResponse && (
                 <Form.Control.Feedback type="invalid">
@@ -869,6 +875,9 @@ const ContactUs = () => {
                         maxWidth: "60%",
                       }}
                     >
+                      <span className="muted-text">
+                        {adminNames[response.adminId]}
+                      </span>
                       <div className="adminResponse">
                         <TextareaAutosize
                           readOnly
@@ -876,12 +885,11 @@ const ContactUs = () => {
                             borderRadius: "10px",
                             borderColor: "#F5F6F7",
                             backgroundColor: "#FFD88D",
-                            // color: "white",
                             resize: "none",
                             overflowY: "auto",
                             padding: "5px",
                           }}
-                          value={htmlToPlainText(response.message)}
+                          value={response.message}
                         />
                         <Button
                           size="sm"
@@ -909,10 +917,10 @@ const ContactUs = () => {
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text">
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   ) : (
                     <div
@@ -923,25 +931,27 @@ const ContactUs = () => {
                         maxWidth: "50%",
                       }}
                     >
+                       <span className="muted-text">
+                        {userNames[response.userId]}
+                      </span>
                       <TextareaAutosize
                         readOnly
                         style={{
                           borderRadius: "10px",
                           border: "0",
-                          // color: "white",
-                          backgroundColor: "#FFD88D",
+                          backgroundColor: "#F5F6F7",
                           resize: "none",
                           overflowY: "auto",
                           padding: "5px",
                         }}
-                        value={htmlToPlainText(response.message)}
+                        value={response.message}
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text">
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   )}
                 </div>
@@ -964,6 +974,9 @@ const ContactUs = () => {
                 onChange={setAddedRespond}
                 theme="snow"
                 className={validationMessages.emptyResponse ? "is-invalid" : ""}
+                style={{width: "29em"}}
+                modules={modules}
+                formats={formats}
               />
               {validationMessages.emptyResponse && (
                 <Form.Control.Feedback type="invalid">
@@ -1030,15 +1043,15 @@ const ContactUs = () => {
                             overflowY: "auto",
                             padding: "5px",
                           }}
-                          value={htmlToPlainText(response.message)}
+                          value={response.message}
                         />
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text">
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   ) : (
                     <div
@@ -1060,14 +1073,14 @@ const ContactUs = () => {
                           overflowY: "auto",
                           padding: "5px",
                         }}
-                        value={htmlToPlainText(response.message)}
+                        value={response.message}
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text">
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   )}
                 </div>
@@ -1108,6 +1121,9 @@ const ContactUs = () => {
                   className={
                     validationMessages.emptyResponse ? "is-invalid" : ""
                   }
+                  style={{width: "29em"}}
+                  modules={modules}
+                  formats={formats}
                 />
                 {validationMessages.emptyResponse && (
                   <Form.Control.Feedback type="invalid">
