@@ -35,7 +35,7 @@ const ContactUs = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editResponse, setEditResponse] = useState("");
   const [editResponseId, setEditResponseId] = useState(0);
-  const [showResponsesModal, setShowResponsesModal] = useState([]);
+  const [showResponsesModal, setShowResponsesModal] = useState(false);
 
   const itemsPerPage = 4;
 
@@ -336,7 +336,7 @@ const ContactUs = () => {
 
       setTotalPagePending(Math.ceil(pendingContactus.length / itemsPerPage));
       setTotalPageReplied(Math.ceil(repliedContactus.length / itemsPerPage));
-      setTotalPageReplied(Math.ceil(closedContactus.length / itemsPerPage));
+      setTotalPageClosed(Math.ceil(closedContactus.length / itemsPerPage));
     } catch (error) {
       console.error(error);
     }
