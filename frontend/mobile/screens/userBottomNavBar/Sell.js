@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createProperty } from '../../utils/api';
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from the correct library
+import { AuthContext } from '../../AuthContext';
 
 const propertyTypes = [
   { label: 'Select Property Type', value: '' },
@@ -24,6 +25,7 @@ const propertyTypes = [
 ];
 
 export default function PropertyListing() {
+  const { user } = useContext(AuthContext);
   const [property, setProperty] = useState({
     title: 'Sample Title',
     description:
@@ -36,7 +38,8 @@ export default function PropertyListing() {
     tenure: 1,
     propertyType: '',
     propertyStatus: 'ACTIVE',
-    userId: 1,
+    userId: user.user.userId,
+    postalCode: '822126',
   });
 
   const [images, setImages] = useState([]);
@@ -161,6 +164,10 @@ export default function PropertyListing() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>List A Property</Text>
+        </View>
+
         <View style={styles.imageRow}>
           <TouchableOpacity onPress={handleChoosePhoto} style={styles.imagePicker}>
             <Icon name="camera" size={40} color="#aaa" />
@@ -214,6 +221,16 @@ export default function PropertyListing() {
           <TextInput
             placeholder="Size"
             value={property.size}
+            onChangeText={(text) => setProperty({ ...property, size: text })}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Postal Code</Text>
+          <TextInput
+            placeholder="Postal Code"
+            value={property.postalCode}
             onChangeText={(text) => setProperty({ ...property, size: text })}
             style={styles.input}
           />
@@ -384,9 +401,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Center vertically
     width: '60%',
     marginLeft: 70,
-},
-saveChangesButtonText: {
+  },
+  saveChangesButtonText: {
     color: 'white',
     marginLeft: 10,
-}, 
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginLeft: 90,
+  },
 });

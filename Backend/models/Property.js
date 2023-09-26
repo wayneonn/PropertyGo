@@ -62,6 +62,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM('ACTIVE', 'ON_HOLD', 'COMPLETED'), 
             allowNull: false,
         },
+        postalCode: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
     }, {
         freezeTableName: true
     });

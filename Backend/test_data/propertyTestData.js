@@ -21,6 +21,7 @@ module.exports = [
     sellerId: 5,
 
     transactionId: 1,
+    postalCode: 123456,
   },
 
   {
@@ -43,6 +44,7 @@ module.exports = [
     agentId: 4,
     sellerId: 5,
     transactionId: 2,
+    postalCode: 123456,
   },
 
   {
@@ -65,5 +67,6 @@ module.exports = [
     agentId: 4,
     sellerId: 5,
     transactionId: 3,
+    postalCode: 123456,
   },
 ];
