@@ -4,6 +4,7 @@ const BASE_URL = "http://localhost:3000";
 // Please change it back to whatever your IP address is. 
 const BASE_URL_WAYNE = "http://10.0.0.17:3000";
 const USER_ENDPOINT = "user";
+const PROPERTY_ENDPOINT = "property";
 
 export const loginUser = async (userName, password) => {
   try {
@@ -104,6 +105,42 @@ export const updateUserProfilePicture = async (userId, imageUri) => {
     }
   } catch (error) {
     console.error("Update Profile Picture Error:", error);
+    return { success: false, message: error.message };
+  }
+};
+
+export const createProperty = async (propertyData, images) => {
+  try {
+    const formData = new FormData();
+
+    images.forEach((image, index) => {
+      const imageBlob = {
+        uri: image.uri,
+        type: 'image/jpeg',
+        name: `propertyImage${index}.jpg`,
+      };
+
+      formData.append(`images`, imageBlob);
+    });
+
+    formData.append('property', JSON.stringify(propertyData));
+
+    const response = await fetch(`${BASE_URL}/${PROPERTY_ENDPOINT}`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.error };
+    }
+  } catch (error) {
     return { success: false, message: error.message };
   }
 };

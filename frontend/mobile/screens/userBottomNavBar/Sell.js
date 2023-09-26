@@ -8,31 +8,34 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
-  Alert, // Import Alert from React Native
+  Alert,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker'; // Import from expo-image-picker
+import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { createProperty } from '../../utils/api'; // Import the createProperty function
+
 
 export default function PropertyListing() {
   const [property, setProperty] = useState({
     title: 'Sample Title',
-    description: 'Sample Description',
-    price: '100000', // Add a sample price
-    offeredPrice: '90000', // Add a sample offeredPrice
-    bed: '2', // Add a sample bed count
-    bathroom: '2', // Add a sample bathroom count
-    size: '1200', // Add a sample size
-    tenure: 1, // Add a sample tenure
-    propertyType: 'RESALE', // Add a sample propertyType
-    propertyStatus: "ACTIVE", // Add a sample propertyStatus
-    userId: 1, // Add a sample userId
+    description:
+      'Sample Description (You can add a longer description here.)', // Adjust the initial description
+    price: '100000',
+    offeredPrice: '90000',
+    bed: '2',
+    bathroom: '2',
+    size: '1200',
+    tenure: 1,
+    propertyType: 'RESALE',
+    propertyStatus: 'ACTIVE',
+    userId: 1,
   });
-  
 
-  const [images, setImages] = useState([]); // Store selected images as an array
+  const [images, setImages] = useState([]);
 
   const handleChoosePhoto = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       console.warn('Permission to access photos was denied');
@@ -48,7 +51,6 @@ export default function PropertyListing() {
     let response = await ImagePicker.launchImageLibraryAsync(options);
 
     if (!response.cancelled) {
-      // Append the selected image to the images array
       setImages([...images, response]);
     }
   };
@@ -75,7 +77,8 @@ export default function PropertyListing() {
   };
 
   const replaceImage = async (index) => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       console.warn('Permission to access photos was denied');
@@ -98,7 +101,6 @@ export default function PropertyListing() {
   };
 
   const removeImage = (index) => {
-    // Remove the image at the specified index
     const updatedImages = [...images];
     updatedImages.splice(index, 1);
     setImages(updatedImages);
@@ -106,48 +108,30 @@ export default function PropertyListing() {
 
   const handleSubmit = async () => {
     if (images.length === 0) {
-      console.warn('No images selected');
+      Alert.alert('No images selected', 'Please select at least one image.');
       return;
     }
 
-    // Convert images into blobs to send as FormData
-    const formData = new FormData();
-
-    images.forEach((image, index) => {
-      const imageBlob = {
-        uri: image.uri,
-        type: 'image/jpeg',
-        name: `propertyImage${index}.jpg`,
-      };
-
-      formData.append(`images`, imageBlob);
-    });
-
-    formData.append('property', JSON.stringify(property));
-
     try {
-      const response = await fetch('http://localhost:3000/property', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // Call the createProperty function to create the property listing
+      const { success, data, message } = await createProperty(property, images);
 
-      const data = await response.json();
-      console.log(data);
+      if (success) {
+        // Property created successfully
+        Alert.alert('Property Created', 'The property listing has been created successfully.');
+      } else {
+        // Property creation failed, show an error message
+        Alert.alert('Error', `Failed to create property: ${message}`);
+      }
     } catch (error) {
       console.log('Error uploading property:', error);
+      Alert.alert('Error', 'An error occurred while creating the property listing.');
     }
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.imageRow} // Added styling for the row
-      >
+    <ScrollView style={styles.container}>
+      <View style={styles.imageRow}>
         <TouchableOpacity onPress={handleChoosePhoto} style={styles.imagePicker}>
           <Icon name="camera" size={40} color="#aaa" />
         </TouchableOpacity>
@@ -155,7 +139,7 @@ export default function PropertyListing() {
         {images.map((image, index) => (
           <TouchableOpacity
             key={index}
-            onPress={() => handleImagePress(index)} // Handle image press with alert
+            onPress={() => handleImagePress(index)}
             style={styles.imageContainer}
           >
             <Image
@@ -164,55 +148,55 @@ export default function PropertyListing() {
             />
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
 
       <TextInput
         placeholder="Title"
         value={property.title}
-        onChangeText={(text) =>
-          setProperty((prevState) => ({ ...prevState, title: text }))
-        }
+        onChangeText={(text) => setProperty({ ...property, title: text })}
         style={styles.input}
       />
       <TextInput
         placeholder="Property Type (RESALE/NEW_LAUNCH)"
         value={property.propertyType}
-        onChangeText={(text) => setProperty(prevState => ({ ...prevState, propertyType: text }))}
+        onChangeText={(text) => setProperty({ ...property, propertyType: text })}
         style={styles.input}
       />
       <TextInput
         placeholder="Bed"
         value={property.bed}
-        onChangeText={(text) => setProperty(prevState => ({ ...prevState, bed: text }))}
+        onChangeText={(text) => setProperty({ ...property, bed: text })}
         style={styles.input}
       />
       <TextInput
         placeholder="Bathroom"
         value={property.bathroom}
-        onChangeText={(text) => setProperty(prevState => ({ ...prevState, bathroom: text }))}
+        onChangeText={(text) => setProperty({ ...property, bathroom: text })}
         style={styles.input}
       />
       <TextInput
         placeholder="Size"
         value={property.size}
-        onChangeText={(text) => setProperty(prevState => ({ ...prevState, size: text }))}
+        onChangeText={(text) => setProperty({ ...property, size: text })}
         style={styles.input}
       />
       <TextInput
         placeholder="Description"
         value={property.description}
-        onChangeText={(text) => setProperty(prevState => ({ ...prevState, description: text }))}
-        style={styles.input}
+        onChangeText={(text) => setProperty({ ...property, description: text })}
+        style={[styles.input, styles.largeTextInput]} // Larger TextInput
+        multiline={true}
+        numberOfLines={4}
       />
       <TextInput
         placeholder="Price"
         value={property.price}
-        onChangeText={(text) => setProperty(prevState => ({ ...prevState, price: text }))}
+        onChangeText={(text) => setProperty({ ...property, price: text })}
         style={styles.input}
       />
 
       <Button title="Submit" onPress={handleSubmit} />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -223,16 +207,18 @@ const styles = StyleSheet.create({
   },
   input: {
     borderColor: 'gray',
-    flex: 2, 
     borderWidth: 1,
-    marginBottom: 5, // Reduce vertical margin
+    marginBottom: 10, // Increased margin
     padding: 8,
     height: 40,
   },
+  largeTextInput: {
+    height: 120, // Increased height for larger input
+  },
   imageRow: {
-    flexDirection: 'row', // Arrange items horizontally
-    marginBottom: 10, // Adjust margin as needed
-    paddingVertical: 10, // Add some vertical padding to the row
+    flexDirection: 'row',
+    marginBottom: 10,
+    paddingVertical: 10,
   },
   imagePicker: {
     alignItems: 'center',
