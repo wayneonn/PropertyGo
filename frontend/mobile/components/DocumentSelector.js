@@ -151,7 +151,7 @@ export const DocumentSelector = ({documentFetch}) => {
             if (response.ok) {
                 const data = await response.json();
                 console.log("Upload response:", data);
-                await documentFetch();
+                await documentFetch;
             } else {
                 console.log("File upload failed");
             }
