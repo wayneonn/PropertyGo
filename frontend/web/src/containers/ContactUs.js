@@ -341,10 +341,12 @@ const ContactUs = () => {
 
       setPendingContactus(pendingContactus);
 
-      const repliedContactus = contactUs.filter(
-        (contactus) => contactus.status === "REPLIED"
-      );
-
+      const repliedContactus = contactUs
+        .filter((contactus) => contactus.status === "REPLIED")
+        .filter(
+          (contactus) =>
+            contactus.adminId === parseInt(localStorage.getItem("loggedInAdmin")));
+        
       repliedContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
         const timestampB = new Date(b.updatedAt).getTime();
