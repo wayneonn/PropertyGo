@@ -21,7 +21,7 @@ import {openBrowserAsync} from "expo-web-browser";
 import {AuthContext} from "../../AuthContext";
 import DropDownPicker from 'react-native-dropdown-picker';
 import {DocumentSelector} from "../../components/DocumentSelector";
-import {fetchDocuments, fetchFolders} from "../../utils/documentApi";
+import {fetchDocuments, fetchFolders, BASE_URL} from "../../utils/documentApi";
 
 // ICON IMPORTS
 import {AntDesign, Entypo, FontAwesome, MaterialIcons} from '@expo/vector-icons';
@@ -36,7 +36,7 @@ if (__DEV__ && Platform.OS === "web") {
 /* CONSTANTS FOR THE WHOLE PAGE */
 const {width} = Dimensions.get("window");
 const responsiveWidth = width * 0.8;
-const BASE_URL = "http://192.168.50.157:3000"; // Change this according to Wifi.
+// This is getting a bit cancer having to go to multiple files to change it.
 
 function UploadScreen({navigation}) {
     const [prevDocuments, setPrevDocuments] = useState([]); // This is suppose to be the list of documents that you have uploaded previously.
@@ -207,6 +207,7 @@ function UploadScreen({navigation}) {
     const downloadDocumentFromServer = (document) => {
         downloadPDF(document);
     };
+
     const getFolderTitle = (folderId) => {
         const foundFolder = folders.find((folder) => folder.folderId === folderId);
         return foundFolder ? foundFolder.title : "";
@@ -268,7 +269,7 @@ function UploadScreen({navigation}) {
         <SafeAreaView style={styles.container}>
             {/* Wrap the FlatList in a View with border styles */}
             <View style={styles.documentListContainer}>
-                <DocumentSelector documentFetch={fetchData}/>
+                <DocumentSelector documentFetch={fetchData} folderState={folders} setFolderState={setFolders}/>
             </View>
             <Text> &nbsp; &nbsp;</Text>
             <View style={styles.documentListContainer}>

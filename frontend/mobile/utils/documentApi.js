@@ -2,8 +2,7 @@
 import {AuthContext} from "../AuthContext";
 import {useContext} from "react";
 
-const BASE_URL = "http://192.168.50.157:3000"; // Change this according to Wifi.
-
+export const BASE_URL = "http://172.20.10.2:3000"; // Change this according to Wifi.
 // Dumping all my API's here.
 export const fetchFolders = async (USER_ID) => {
     try {

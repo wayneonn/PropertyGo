@@ -5,14 +5,13 @@ import {AntDesign, Foundation, MaterialIcons} from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import {AuthContext} from "../AuthContext";
 import DropDownPicker from "react-native-dropdown-picker";
-import {fetchFolders, fetchTransactions} from "../utils/documentApi";
+import {fetchFolders, fetchTransactions, BASE_URL} from "../utils/documentApi";
 
-const BASE_URL = "http://192.168.50.157:3000"; // Change this according to Wifi.
-export const DocumentSelector = ({documentFetch}) => {
+export const DocumentSelector = ({documentFetch, folderState, setFolderState}) => {
     const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
     const [descriptions, setDescriptions] = useState(""); // Description text
     const [length, setLength] = useState(200); // Description text length
-    const [folders, setFolders] = useState([]); // Add state for folders list
+    const [folders, setFolders] = useState(folderState); // Add state for folders list
     const [folderSelection, setFoldersSelection] = useState({}); // Add state for folder selection -> map document to folder
     const [transactions, setTransactions] = useState([]); // Add state for transactions list
     const [documentTransactions, setDocumentTransactions] = useState({}); // Document transactions
@@ -151,7 +150,7 @@ export const DocumentSelector = ({documentFetch}) => {
             if (response.ok) {
                 const data = await response.json();
                 console.log("Upload response:", data);
-                await documentFetch;
+                await documentFetch();
             } else {
                 console.log("File upload failed");
             }
@@ -199,7 +198,7 @@ export const DocumentSelector = ({documentFetch}) => {
                         const newValue = callback(folderSelection[item.name]);
                         setFoldersSelection(prev => ({...prev, [item.name]: newValue}));
                     }}
-                    items={folders.map(folder => ({label: folder.title, value: folder.folderId}))}
+                    items={folderState.map(folder => ({label: folder.title, value: folder.folderId}))}
                     defaultValue={folderSelection[item.name]}
                     onChangeItem={(item) => setFoldersSelection({...folderSelection, [item.name]: item.value})}
                     containerStyle={{height: 40}} // Adjust the height as needed
