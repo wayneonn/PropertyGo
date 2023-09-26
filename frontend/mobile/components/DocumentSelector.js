@@ -5,6 +5,7 @@ import {AntDesign, MaterialIcons} from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import {AuthContext} from "../AuthContext";
 import DropDownPicker from "react-native-dropdown-picker";
+import {fetchFolders, fetchTransactions} from "../utils/documentApi";
 
 const BASE_URL = "http://192.168.50.157:3000"; // Change this according to Wifi.
 export const DocumentSelector = ({documentFetch}) => {
@@ -28,7 +29,7 @@ export const DocumentSelector = ({documentFetch}) => {
 
     // Call fetchFolders on initial mount
     useEffect(() => {
-        fetchFolders().then(r => console.log("Fetch folders completed."));
+        fetchFoldersFromServer().then(r => console.log("Fetch folders completed."));
     }, []);
 
     useEffect(() => {
@@ -39,7 +40,7 @@ export const DocumentSelector = ({documentFetch}) => {
     // Fetch transactions on mount
     // Currently dummy user set to 1.
     useEffect(() => {
-        fetchTransactions().then(r => console.log("Fetch transactions completed."));
+        fetchTransactionsFromServer().then(r => console.log("Fetch transactions completed."));
     }, [])
 
     useEffect(() => {
@@ -47,11 +48,9 @@ export const DocumentSelector = ({documentFetch}) => {
         setTransactions(transactions);
     }, [transactions]);
 
-    const fetchFolders = async () => {
+    const fetchFoldersFromServer = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/user/folders/${USER_ID}}`);
-            const results = await response.json();
-            const folders = results.folders;
+            const folders = await fetchFolders()
             setFolders(folders);
             setDefaultFolderId(folders[0].folderId);
             setSelectedFolder(folders[0].folderId);
@@ -60,11 +59,9 @@ export const DocumentSelector = ({documentFetch}) => {
         }
     };
 
-    const fetchTransactions = async () => {
+    const fetchTransactionsFromServer = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/user/transactions/${USER_ID}`);
-            const results = await response.json();
-            const transactions = results.transactions;
+            const transactions = await fetchTransactions()
             setTransactions(transactions);
             setDefaultTransactionId(transactions[0].transactionId);
         } catch (error) {

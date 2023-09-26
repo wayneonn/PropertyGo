@@ -21,6 +21,7 @@ import {openBrowserAsync} from "expo-web-browser";
 import {AuthContext} from "../../AuthContext";
 import DropDownPicker from 'react-native-dropdown-picker';
 import {DocumentSelector} from "../../components/DocumentSelector";
+import {fetchDocuments, fetchFolders, fetchTransactions} from "../../utils/documentApi";
 
 // ICON IMPORTS
 import {AntDesign, Entypo, FontAwesome, MaterialIcons} from '@expo/vector-icons';
@@ -53,7 +54,21 @@ function UploadScreen({navigation}) {
     // USE-EFFECT HOOKS //
     // Fetch the previous documents from the server.
     useEffect(() => {
-        fetchDocuments().then(r => console.log("Fetch documents completed."));
+        const fetchData = async () => {
+            try {
+                const documents = await fetchDocuments(USER_ID);
+                const folders = await fetchFolders(USER_ID);
+                setFolders(folders);
+                setPrevDocuments(documents);
+                setFilteredDocs(documents);
+                setSelectedFolder(defaultFolderId.toString());
+                console.log(user);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData().then(r => console.log("Fetch Data successful."));
     }, []);
 
     useEffect(() => {
@@ -84,23 +99,6 @@ function UploadScreen({navigation}) {
     }, [filteredDocs]);
     // END OF USE-EFFECT HOOKS //
 
-    // FETCH DATA FUNCTIONS
-    const fetchDocuments = async () => {
-        try {
-            const response = await fetch(
-                `${BASE_URL}/user/documents/list/metadata/${USER_ID}}`
-            );
-            const documents = await response.json();
-            setPrevDocuments(documents);
-            setFilteredDocs(documents);
-            setSelectedFolder(defaultFolderId.toString());
-            console.log(user);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    // END OF FETCH FUNCTIONS
 
     // START OF BUSINESS FUNCTIONS //
     const downloadPDF = async (document) => {
@@ -115,7 +113,6 @@ function UploadScreen({navigation}) {
         if (Platform.OS === "web") {
             const byteCharacters = atob(result.document); // Decode the Base64 string
             const byteArrays = [];
-
             for (let offset = 0; offset < byteCharacters.length; offset += 512) {
                 const slice = byteCharacters.slice(offset, offset + 512);
 
@@ -127,7 +124,6 @@ function UploadScreen({navigation}) {
                 const byteArray = new Uint8Array(byteNumbers);
                 byteArrays.push(byteArray);
             }
-
             const blob = new Blob(byteArrays, {type: "application/pdf"});
             const url = URL.createObjectURL(blob);
             await openBrowserAsync(url); // Assuming this opens the URL in a new browser tab/window
@@ -184,7 +180,8 @@ function UploadScreen({navigation}) {
                 console.log("Error creating folder");
             }
             setNewFolderModalOpen(false);
-            await fetchFolders();
+            const folders = await fetchFolders(USER_ID);
+            setFolders(folders);
         } catch (error) {
             console.error(error);
         }
@@ -271,7 +268,7 @@ function UploadScreen({navigation}) {
         <SafeAreaView style={styles.container}>
             {/* Wrap the FlatList in a View with border styles */}
             <View style={styles.documentListContainer}>
-                <DocumentSelector documentFetch={fetchDocuments}/>
+                <DocumentSelector documentFetch={fetchDocuments} />
             </View>
             <Text> &nbsp; &nbsp;</Text>
             <View style={styles.documentListContainer}>
