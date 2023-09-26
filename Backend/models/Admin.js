@@ -1,22 +1,26 @@
 module.exports = (sequelize, DataTypes) => {
-  const Admin = sequelize.define("Admin", {
-    adminId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
+  const Admin = sequelize.define(
+    "Admin",
+    {
+      adminId: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      userName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
-    userName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  }, {
-    freezeTableName: true
-  });
+    {
+      freezeTableName: true,
+    }
+  );
 
   Admin.associate = (models) => {
     // Define a one-to-many relationship from Admin to FAQ (1..*)
@@ -27,6 +31,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       as: "faqs",
+    });
+
+    Admin.hasMany(models.ContactUs, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: "adminId",
+        allowNull: true,
+      },
+      as: "repliedContactUs",
     });
 
     // Define a one-to-many relationship from Admin to PartnerApplication (0..*)
@@ -57,4 +70,4 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   return Admin;
-}
+};

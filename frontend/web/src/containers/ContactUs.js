@@ -307,31 +307,53 @@ const ContactUs = () => {
       const pendingContactus = contactUs.filter(
         (contactus) => contactus.status === "PENDING"
       );
+
       pendingContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
         const timestampB = new Date(b.updatedAt).getTime();
         return timestampB - timestampA;
       });
+
       setPendingContactus(pendingContactus);
 
-      const repliedContactus = contactUs.filter(
-        (contactus) => contactus.status === "REPLIED"
-      );
+      const repliedContactus = contactUs
+        .filter((contactus) => contactus.status === "REPLIED")
+        .filter(
+          (contactus) =>
+            contactus.adminId === localStorage.getItem("loggedInAdmin")
+        );
+
+      // const repliedAdminContactus = repliedContactus.filter(
+      //   (contactus) =>
+      //     contactus.adminId === localStorage.getItem("loggedInAdmin")
+      // );
+
       repliedContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
         const timestampB = new Date(b.updatedAt).getTime();
         return timestampB - timestampA;
       });
+
       setRepliedContactus(repliedContactus);
 
-      const closedContactus = contactUs.filter(
-        (contactus) => contactus.status === "CLOSED"
-      );
+      const closedContactus = contactUs
+        .filter((contactus) => contactus.status === "CLOSED")
+        .filter(
+          (contactus) =>
+            contactus.adminId === localStorage.getItem("loggedInAdmin")
+        );
+
+      // const closedAdminContactus = closedContactus.filter(
+      //   (contactus) =>
+      //     contactus.adminId === localStorage.getItem("loggedInAdmin")
+      // );
+
       closedContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
         const timestampB = new Date(b.updatedAt).getTime();
         return timestampB - timestampA;
       });
+
       setClosedContactus(closedContactus);
 
       setTotalPagePending(Math.ceil(pendingContactus.length / itemsPerPage));
