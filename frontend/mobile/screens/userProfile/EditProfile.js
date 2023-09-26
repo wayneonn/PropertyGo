@@ -142,6 +142,7 @@ function EditProfile({ navigation, route }) {
                     const response = await updateUserProfilePicture(user.user.userId, profileImage);
 
                     if (response.success) {
+
                         fetchUpdatedUserDetails();
                         Alert.alert('Success', 'Profile updated successfully!');
                     } else {
