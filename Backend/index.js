@@ -38,6 +38,9 @@ const forumCommentTestData = require("./test_data/forumCommentTestData");
 // const faqRouter = require("./routes/admin/faqRoutes");
 
 
+//property routes
+const propertyRoute = require("./routes/user/propertyRoute");
+
 // user routes
 const userRoute = require("./routes/user/userRoute");
 // const userRoute = require("./routes/user/User");
@@ -72,6 +75,11 @@ app.use(
   forumPostUserRouter,
   forumCommentUserRouter
 );
+
+app.use(
+  "/property",
+  propertyRoute,
+  );
 
 db.sequelize
   .sync()

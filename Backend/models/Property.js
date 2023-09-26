@@ -2,6 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const Property = sequelize.define("Property", {
         propertyListingId: {
             type: DataTypes.BIGINT,
+            autoIncrement: true,
             primaryKey: true,
             allowNull: false,
         },
@@ -47,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         top: {
             type: DataTypes.DATE,
-            allowNull: false,
+            allowNull: true,
         },
         tenure: {
             type: DataTypes.INTEGER,
