@@ -1,7 +1,7 @@
 // Since the Document Selector is a common component, I am going to abstract it.
 import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import {AntDesign, MaterialIcons} from "@expo/vector-icons";
+import {AntDesign, Foundation, MaterialIcons} from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import {AuthContext} from "../AuthContext";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -50,7 +50,8 @@ export const DocumentSelector = ({documentFetch}) => {
 
     const fetchFoldersFromServer = async () => {
         try {
-            const folders = await fetchFolders()
+            const folders = await fetchFolders(USER_ID)
+            console.log(folders)
             setFolders(folders);
             setDefaultFolderId(folders[0].folderId);
             setSelectedFolder(folders[0].folderId);
@@ -61,7 +62,8 @@ export const DocumentSelector = ({documentFetch}) => {
 
     const fetchTransactionsFromServer = async () => {
         try {
-            const transactions = await fetchTransactions()
+            const transactions = await fetchTransactions(USER_ID)
+            console.log(transactions)
             setTransactions(transactions);
             setDefaultTransactionId(transactions[0].transactionId);
         } catch (error) {
@@ -206,8 +208,10 @@ export const DocumentSelector = ({documentFetch}) => {
             </View>
             <Text>&nbsp;&nbsp;&nbsp;</Text>
             <View>
-                <TouchableOpacity style={styles.downloadButton} onPress={() => removeDocument(item)}>
-                    <Text style={styles.downloadButtonText}>Remove</Text>
+                <TouchableOpacity style={styles.button} onPress={() => removeDocument(item)}>
+                    <Text> Remove Document </Text>
+                    <Text>&nbsp;</Text>
+                    <Foundation name="page-remove" size={24} color="black"/>
                 </TouchableOpacity>
             </View>
         </View>
@@ -346,12 +350,13 @@ const styles = StyleSheet.create({
 
 
     button: {
-        backgroundColor: '#1a73e8', // A pleasant blue tone for the primary button
+        backgroundColor: '#D3D3D3', // A pleasant blue tone for the primary button
         padding: 10,
         borderRadius: 5,
         width: '100%',
         alignItems: 'center',
         marginVertical: 5, // A little vertical margin for aesthetic spacing
+        flexDirection: "row"
     },
     cancelButton: {
         backgroundColor: '#ccc', // A neutral gray for the cancel button

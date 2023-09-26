@@ -21,7 +21,7 @@ import {openBrowserAsync} from "expo-web-browser";
 import {AuthContext} from "../../AuthContext";
 import DropDownPicker from 'react-native-dropdown-picker';
 import {DocumentSelector} from "../../components/DocumentSelector";
-import {fetchDocuments, fetchFolders, fetchTransactions} from "../../utils/documentApi";
+import {fetchDocuments, fetchFolders} from "../../utils/documentApi";
 
 // ICON IMPORTS
 import {AntDesign, Entypo, FontAwesome, MaterialIcons} from '@expo/vector-icons';
@@ -268,7 +268,7 @@ function UploadScreen({navigation}) {
         <SafeAreaView style={styles.container}>
             {/* Wrap the FlatList in a View with border styles */}
             <View style={styles.documentListContainer}>
-                <DocumentSelector documentFetch={fetchDocuments} />
+                <DocumentSelector documentFetch={fetchDocuments}/>
             </View>
             <Text> &nbsp; &nbsp;</Text>
             <View style={styles.documentListContainer}>
@@ -284,18 +284,18 @@ function UploadScreen({navigation}) {
                                     onChangeText={setSearchQuery}
                                 />
                                 <Text> Select your Folder Below: </Text>
-                                <DropDownPicker
-                                    open={isOpen}
-                                    setOpen={setIsOpen}
-                                    value={selectedFolder}
-                                    setValue={setSelectedFolder}
-                                    items={folders.map(folder => ({label: folder.title, value: folder.folderId}))}
-                                    containerStyle={{height: 40}}
-                                    style={{backgroundColor: '#fafafa'}}
-                                    dropDownStyle={{backgroundColor: '#fafafa'}}
-                                    zIndex={3000}
-                                    zIndexInverse={1000}
-                                />
+                                <View style={{zIndex: 5100}}>
+                                    <DropDownPicker
+                                        open={isOpen}
+                                        setOpen={setIsOpen}
+                                        value={selectedFolder}
+                                        setValue={setSelectedFolder}
+                                        items={folders.map(folder => ({label: folder.title, value: folder.folderId}))}
+                                        containerStyle={{height: 40}}
+                                        style={{backgroundColor: '#fafafa'}}
+                                        dropDownStyle={{backgroundColor: '#fafafa'}}
+                                    />
+                                </View>
                                 <Text>&nbsp;</Text>
                                 <View style={styles.iconContainer}>
                                     <TouchableOpacity
