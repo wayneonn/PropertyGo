@@ -331,9 +331,8 @@ const ContactUs = () => {
         .filter((contactus) => contactus.status === "REPLIED")
         .filter(
           (contactus) =>
-            contactus.adminId === localStorage.getItem("loggedInAdmin")
-        );
-
+            contactus.adminId === parseInt(localStorage.getItem("loggedInAdmin")));
+        
       // const repliedAdminContactus = repliedContactus.filter(
       //   (contactus) =>
       //     contactus.adminId === localStorage.getItem("loggedInAdmin")

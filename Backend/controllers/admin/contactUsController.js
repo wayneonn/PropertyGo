@@ -4,7 +4,7 @@ const { ContactUs } = require("../../models");
 const getAllContactUs = async (req, res) => {
     try {
         const contactUss = await ContactUs.findAll({
-            attributes: ['contactUsId', 'title', 'message', 'reason', 'status', 'createdAt', 'updatedAt', 'userId'],
+            attributes: ['contactUsId', 'title', 'message', 'reason', 'status', 'createdAt', 'updatedAt', 'userId', 'adminId'],
         });
 
         const formmatedContactUss = contactUss.map(contactUs => {
@@ -16,7 +16,8 @@ const getAllContactUs = async (req, res) => {
                 status: contactUs.status,
                 createdAt: moment(contactUs.createdAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
                 updatedAt: moment(contactUs.updatedAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
-                userId: contactUs.userId
+                userId: contactUs.userId,
+                adminId: contactUs.adminId
             };
         });
 
