@@ -31,11 +31,15 @@ const Forum = () => {
   const indexOfLastItemForumTopic = currentPageForumTopic * ITEMS_PER_PAGE;
   const indexOfFirstItemForumTopic = indexOfLastItemForumTopic - ITEMS_PER_PAGE;
 
-  const [currentPageFlaggedForumTopic, setCurrentPageFlaggedForumTopic] = useState(1);
-  const [totalPageFlaggedForumTopics, setTotalPageFlaggedForumTopics] = useState(0);
+  const [currentPageFlaggedForumTopic, setCurrentPageFlaggedForumTopic] =
+    useState(1);
+  const [totalPageFlaggedForumTopics, setTotalPageFlaggedForumTopics] =
+    useState(0);
 
-  const indexOfLastItemFlaggedForumTopic = currentPageFlaggedForumTopic * ITEMS_PER_PAGE;
-  const indexOfFirstItemFlaggedForumTopic = indexOfLastItemFlaggedForumTopic - ITEMS_PER_PAGE;
+  const indexOfLastItemFlaggedForumTopic =
+    currentPageFlaggedForumTopic * ITEMS_PER_PAGE;
+  const indexOfFirstItemFlaggedForumTopic =
+    indexOfLastItemFlaggedForumTopic - ITEMS_PER_PAGE;
 
   // toast message
   const [show, setShow] = useState(false);
@@ -79,66 +83,66 @@ const Forum = () => {
     setValidationMessages({});
   };
 
-//   const handleEdit = async () => {
-//     //edit faq in database
-//     const newMessage = {
-//       emptyFaqQuestion: false,
-//       emptyFaqAnswer: false,
-//       faqQuestionUnique: false,
-//     };
+  //   const handleEdit = async () => {
+  //     //edit faq in database
+  //     const newMessage = {
+  //       emptyFaqQuestion: false,
+  //       emptyFaqAnswer: false,
+  //       faqQuestionUnique: false,
+  //     };
 
-//     const questionTrimmed = htmlToPlainText(faqQuestion).trim();
-//     const answerTrimmed = htmlToPlainText(faqAnswer).trim();
+  //     const questionTrimmed = htmlToPlainText(faqQuestion).trim();
+  //     const answerTrimmed = htmlToPlainText(faqAnswer).trim();
 
-//     if (questionTrimmed === "") {
-//       newMessage.emptyFaqQuestion = true;
-//     }
+  //     if (questionTrimmed === "") {
+  //       newMessage.emptyFaqQuestion = true;
+  //     }
 
-//     if (answerTrimmed === "") {
-//       newMessage.emptyFaqAnswer = true;
-//     }
+  //     if (answerTrimmed === "") {
+  //       newMessage.emptyFaqAnswer = true;
+  //     }
 
-//     if (newMessage.emptyFaqQuestion || newMessage.emptyFaqAnswer) {
-//       setValidationMessages(newMessage);
-//       return;
-//     }
+  //     if (newMessage.emptyFaqQuestion || newMessage.emptyFaqAnswer) {
+  //       setValidationMessages(newMessage);
+  //       return;
+  //     }
 
-//     try {
-//       // Save to database
-//       const response = await API.patch(
-//         `/admin/faqs/${faqId}?adminId=${localStorage.getItem("loggedInAdmin")}`,
-//         {
-//           question: faqQuestion,
-//           answer: faqAnswer,
-//           faqType,
-//         }
-//       );
+  //     try {
+  //       // Save to database
+  //       const response = await API.patch(
+  //         `/admin/faqs/${faqId}?adminId=${localStorage.getItem("loggedInAdmin")}`,
+  //         {
+  //           question: faqQuestion,
+  //           answer: faqAnswer,
+  //           faqType,
+  //         }
+  //       );
 
-//       if (response.status === 200) {
-//         setValidationMessages(newMessage);
-//         setFaqType("");
-//         setFaqQuestion("");
-//         setFaqAnswer("");
-//         setShowEditModal(false);
+  //       if (response.status === 200) {
+  //         setValidationMessages(newMessage);
+  //         setFaqType("");
+  //         setFaqQuestion("");
+  //         setFaqAnswer("");
+  //         setShowEditModal(false);
 
-//         showToast("updated");
-//       }
-//     } catch (error) {
-//       const status = error.response.status;
-//       if (status === 409) {
-//         newMessage.faqQuestionUnique = true;
-//       }
+  //         showToast("updated");
+  //       }
+  //     } catch (error) {
+  //       const status = error.response.status;
+  //       if (status === 409) {
+  //         newMessage.faqQuestionUnique = true;
+  //       }
 
-//       setValidationMessages(newMessage);
-//     }
-//   };
+  //       setValidationMessages(newMessage);
+  //     }
+  //   };
 
-//   const handleDelete = async () => {
-//     //delete faq from database. Use the value of the useState deleteFaqId for the faqId
-//     await API.delete(`/admin/faqs/${deleteFaqId}`);
-//     setShowDeleteModal(false);
-//     showToast("deleted");
-//   };
+  //   const handleDelete = async () => {
+  //     //delete faq from database. Use the value of the useState deleteFaqId for the faqId
+  //     await API.delete(`/admin/faqs/${deleteFaqId}`);
+  //     setShowDeleteModal(false);
+  //     showToast("deleted");
+  //   };
 
   const showToast = (action) => {
     setToastAction(action);
@@ -150,25 +154,31 @@ const Forum = () => {
       try {
         const response = await API.get(`/admin/forumTopics`);
         const forumTopics = response.data.forumTopics;
-        const unflaggedForumTopics = forumTopics.filter((forumTopic) => !forumTopic.isInappropriate);
+        const unflaggedForumTopics = forumTopics.filter(
+          (forumTopic) => !forumTopic.isInappropriate
+        );
         setForumTopics(unflaggedForumTopics);
-        const flaggedForumtopics = forumTopics.filter((forumTopic) => forumTopic.isInappropriate);
+        const flaggedForumtopics = forumTopics.filter(
+          (forumTopic) => forumTopic.isInappropriate
+        );
         flaggedForumtopics.sort((a, b) => {
           const timestampA = new Date(a.updatedAt).getTime();
           const timestampB = new Date(b.updatedAt).getTime();
           return timestampB - timestampA;
         });
         setFlaggedForumTopics(flaggedForumtopics);
-        setTotalPageForumTopics(Math.ceil(unflaggedForumTopics.length / ITEMS_PER_PAGE));
-        setTotalPageFlaggedForumTopics(Math.ceil(flaggedForumTopics.length / ITEMS_PER_PAGE));
+        setTotalPageForumTopics(
+          Math.ceil(unflaggedForumTopics.length / ITEMS_PER_PAGE)
+        );
+        setTotalPageFlaggedForumTopics(
+          Math.ceil(flaggedForumTopics.length / ITEMS_PER_PAGE)
+        );
       } catch (error) {
         console.error(error);
       }
     };
     fetchData();
   }, [forumTopics]);
-
- 
 
   return (
     <div className="faq">
@@ -216,7 +226,7 @@ const Forum = () => {
             </h3>
             <div>
               <div>
-                <Table responsive style={{ width: "70em" }}>
+                <Table responsive style={{ width: "51em" }}>
                   <thead
                     style={{
                       textAlign: "center",
@@ -232,7 +242,10 @@ const Forum = () => {
                   {Array.isArray(forumTopics) && forumTopics.length > 0 ? (
                     <tbody>
                       {forumTopics
-                        .slice(indexOfFirstItemForumTopic, indexOfLastItemForumTopic)
+                        .slice(
+                          indexOfFirstItemForumTopic,
+                          indexOfLastItemForumTopic
+                        )
                         .map((forumTopic) => (
                           <tr
                             key={forumTopic.forumTopicId}
@@ -243,8 +256,12 @@ const Forum = () => {
                             <td className="truncate-text">
                               {htmlToPlainText(forumTopic.topicName)}
                             </td>
-                            <td className="truncate-text">{forumTopic.createdAt}</td>
-                            <td className="truncate-text">{forumTopic.updatedAt}</td>
+                            <td className="truncate-text">
+                              {forumTopic.createdAt}
+                            </td>
+                            <td className="truncate-text">
+                              {forumTopic.updatedAt}
+                            </td>
                             <td>
                               <Button
                                 size="sm"
@@ -305,15 +322,17 @@ const Forum = () => {
               </div>
               <div>
                 <Pagination className="faq-paginate">
-                  {Array.from({ length: totalPageForumTopics }).map((_, index) => (
-                    <Pagination.Item
-                      key={index}
-                      active={index + 1 === currentPageForumTopic}
-                      onClick={() => handlePageChangeForumTopic(index + 1)}
-                    >
-                      {index + 1}
-                    </Pagination.Item>
-                  ))}
+                  {Array.from({ length: totalPageForumTopics }).map(
+                    (_, index) => (
+                      <Pagination.Item
+                        key={index}
+                        active={index + 1 === currentPageForumTopic}
+                        onClick={() => handlePageChangeForumTopic(index + 1)}
+                      >
+                        {index + 1}
+                      </Pagination.Item>
+                    )
+                  )}
                 </Pagination>
               </div>
             </div>
@@ -331,7 +350,7 @@ const Forum = () => {
               FLAGGED FORUM TOPIC
             </h3>
             <div>
-              <Table hover responsive style={{ width: "70em" }}>
+              <Table hover responsive style={{ width: "51em" }}>
                 <thead style={{ textAlign: "center" }}>
                   <tr>
                     <th>FORUM TOPIC</th>
@@ -340,10 +359,14 @@ const Forum = () => {
                     <th>ACTION</th>
                   </tr>
                 </thead>
-                {Array.isArray(flaggedForumTopics) && flaggedForumTopics.length > 0 ? (
+                {Array.isArray(flaggedForumTopics) &&
+                flaggedForumTopics.length > 0 ? (
                   <tbody>
                     {flaggedForumTopics
-                      .slice(indexOfFirstItemFlaggedForumTopic, indexOfLastItemFlaggedForumTopic)
+                      .slice(
+                        indexOfFirstItemFlaggedForumTopic,
+                        indexOfLastItemFlaggedForumTopic
+                      )
                       .map((flaggedForumTopic) => (
                         <tr
                           key={flaggedForumTopics.forumTopicId}
@@ -354,8 +377,12 @@ const Forum = () => {
                           <td className="truncate-text">
                             {htmlToPlainText(flaggedForumTopic.topicName)}
                           </td>
-                          <td className="truncate-text">{flaggedForumTopic.createdAt}</td>
-                          <td className="truncate-text">{flaggedForumTopic.updatedAt}</td>
+                          <td className="truncate-text">
+                            {flaggedForumTopic.createdAt}
+                          </td>
+                          <td className="truncate-text">
+                            {flaggedForumTopic.updatedAt}
+                          </td>
                           <td>
                             <Button
                               size="sm"
@@ -365,14 +392,14 @@ const Forum = () => {
                                 border: "0",
                                 marginRight: "10px",
                               }}
-                            //   onClick={() =>
-                            //     toggleEditModal(
-                            //       faq.faqId,
-                            //       htmlToPlainText(faq.question),
-                            //       htmlToPlainText(faq.answer),
-                            //       faq.faqType
-                            //     )
-                            //   }
+                              //   onClick={() =>
+                              //     toggleEditModal(
+                              //       faq.faqId,
+                              //       htmlToPlainText(faq.question),
+                              //       htmlToPlainText(faq.answer),
+                              //       faq.faqType
+                              //     )
+                              //   }
                             >
                               <MdEditSquare
                                 style={{
@@ -389,7 +416,7 @@ const Forum = () => {
                                 backgroundColor: "#FFD700",
                                 border: "0",
                               }}
-                            //   onClick={() => toggleDeleteModal(faq.faqId)}
+                              //   onClick={() => toggleDeleteModal(faq.faqId)}
                             >
                               <MdDelete
                                 style={{
@@ -415,15 +442,19 @@ const Forum = () => {
               </Table>
               <div>
                 <Pagination className="faq-paginate">
-                  {Array.from({ length: totalPageFlaggedForumTopics }).map((_, index) => (
-                    <Pagination.Item
-                      key={index}
-                      active={index + 1 === currentPageFlaggedForumTopic}
-                      onClick={() => handlePageChangeFlaggedForumTopic(index + 1)}
-                    >
-                      {index + 1}
-                    </Pagination.Item>
-                  ))}
+                  {Array.from({ length: totalPageFlaggedForumTopics }).map(
+                    (_, index) => (
+                      <Pagination.Item
+                        key={index}
+                        active={index + 1 === currentPageFlaggedForumTopic}
+                        onClick={() =>
+                          handlePageChangeFlaggedForumTopic(index + 1)
+                        }
+                      >
+                        {index + 1}
+                      </Pagination.Item>
+                    )
+                  )}
                 </Pagination>
               </div>
             </div>
