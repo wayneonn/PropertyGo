@@ -1,5 +1,4 @@
 import { React, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import "./styles/Topbar.css";
 import { IoMdNotificationsOutline, IoIosLogOut } from "react-icons/io";
@@ -7,7 +6,6 @@ import { IoMdNotificationsOutline, IoIosLogOut } from "react-icons/io";
 
 const TopBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
 
   const imageBasePath =
     window.location.protocol + "//" + window.location.host + "/images/";

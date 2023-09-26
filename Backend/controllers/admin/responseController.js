@@ -2,30 +2,27 @@ const moment = require("moment");
 const { ContactUs, Response } = require("../../models");
 
 const getAllResponses = async (req, res) => {
-  const { id: contactUsId } = req.params;
+    const { id: contactUsId } = req.params;
 
-  const responses = await Response.findAll({
-    attributes: ["responseId", "message", "createdAt", "updatedAt", "userId"],
-    where: {
-      contactUsId: contactUsId,
-    },
-  });
+    const responses = await Response.findAll({
+        attributes: ['responseId', 'message', 'createdAt', 'updatedAt', 'userId', 'adminId'],
+        where: {
+            contactUsId: contactUsId,
+        },
+    });
 
-  const formattedResponses = responses.map((response) => {
-    return {
-      responseId: response.responseId,
-      message: response.message,
-      userId: response.userId,
-      createdAt: moment(response.createdAt)
-        .tz("Asia/Singapore")
-        .format("YYYY-MM-DD HH:mm:ss"),
-      updatedAt: moment(response.updatedAt)
-        .tz("Asia/Singapore")
-        .format("YYYY-MM-DD HH:mm:ss"),
-    };
-  });
+    const formattedResponses = responses.map(response => {
+        return {
+            responseId: response.responseId,
+            message: response.message,
+            userId: response.userId,
+            adminId: response.adminId,
+            createdAt: moment(response.createdAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
+            updatedAt: moment(response.updatedAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
+        };
+    });
 
-  res.status(200).json({ responsesList: formattedResponses });
+    res.status(200).json({ responsesList: formattedResponses });
 };
 
 const addResponse = async (req, res) => {
