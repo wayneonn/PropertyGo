@@ -312,46 +312,27 @@ const ContactUs = () => {
         const timestampB = new Date(b.updatedAt).getTime();
         return timestampB - timestampA;
       });
-
       setPendingContactus(pendingContactus);
 
       const repliedContactus = contactUs.filter(
         (contactus) => contactus.status === "REPLIED"
       );
-
-      const adminRepliedContactus = repliedContactus.filter((contactus) =>
-        getResponses(contactus.contactUsId).some(
-          (response) =>
-            response.adminId === localStorage.getItem("loggedInAdmin")
-        )
-      );
-
-      adminRepliedContactus.sort((a, b) => {
+      repliedContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
         const timestampB = new Date(b.updatedAt).getTime();
         return timestampB - timestampA;
       });
-
-      setRepliedContactus(adminRepliedContactus);
+      setRepliedContactus(repliedContactus);
 
       const closedContactus = contactUs.filter(
         (contactus) => contactus.status === "CLOSED"
       );
-
-      const adminClosedContactus = closedContactus.filter((contactus) =>
-        getResponses(contactus.contactUsId).some(
-          (response) =>
-            response.adminId === localStorage.getItem("loggedInAdmin")
-        )
-      );
-
-      adminClosedContactus.sort((a, b) => {
+      closedContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
         const timestampB = new Date(b.updatedAt).getTime();
         return timestampB - timestampA;
       });
-
-      setClosedContactus(adminClosedContactus);
+      setClosedContactus(closedContactus);
 
       setTotalPagePending(Math.ceil(pendingContactus.length / itemsPerPage));
       setTotalPageReplied(Math.ceil(repliedContactus.length / itemsPerPage));
