@@ -7,6 +7,7 @@ import {
   MdEditSquare,
   MdPageview,
   MdCurtainsClosed,
+  MdPreview,
 } from "react-icons/md";
 
 import API from "../services/API";
@@ -37,6 +38,10 @@ const ContactUs = () => {
   const [editResponse, setEditResponse] = useState("");
   const [editResponseId, setEditResponseId] = useState(0);
   const [showResponsesModal, setShowResponsesModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [previewMessage, setPreviewMessage] = useState("");
+  const [previewReason, setPreviewReason] = useState("");
 
   const itemsPerPage = 4;
 
@@ -102,6 +107,17 @@ const ContactUs = () => {
     setEditResponse(response);
     setEditResponseId(id);
     setShowEditModal(!showEditModal);
+  };
+
+  const toggleShowPreviewModal = (title, message, reason) => {
+    setPreviewTitle(title);
+    setPreviewMessage(message);
+    setPreviewReason(reason);
+    setShowPreviewModal(!showPreviewModal);
+  };
+
+  const handleClosePreview = () => {
+    setShowPreviewModal(!showPreviewModal);
   };
 
   const handleCloseRespond = () => {
@@ -263,9 +279,7 @@ const ContactUs = () => {
   };
 
   const getAdminName = async (adminId) => {
-    const response = await API.get(
-      `/admins/${adminId}`
-    );
+    const response = await API.get(`/admins/${adminId}`);
 
     return response.data;
   };
@@ -333,11 +347,6 @@ const ContactUs = () => {
           (contactus) =>
             contactus.adminId === parseInt(localStorage.getItem("loggedInAdmin")));
         
-      // const repliedAdminContactus = repliedContactus.filter(
-      //   (contactus) =>
-      //     contactus.adminId === localStorage.getItem("loggedInAdmin")
-      // );
-
       repliedContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
         const timestampB = new Date(b.updatedAt).getTime();
@@ -346,17 +355,9 @@ const ContactUs = () => {
 
       setRepliedContactus(repliedContactus);
 
-      const closedContactus = contactUs
-        .filter((contactus) => contactus.status === "CLOSED")
-        .filter(
-          (contactus) =>
-            contactus.adminId === localStorage.getItem("loggedInAdmin")
-        );
-
-      // const closedAdminContactus = closedContactus.filter(
-      //   (contactus) =>
-      //     contactus.adminId === localStorage.getItem("loggedInAdmin")
-      // );
+      const closedContactus = contactUs.filter(
+        (contactus) => contactus.status === "CLOSED"
+      );
 
       closedContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
@@ -441,7 +442,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(pendingContactus) &&
-                  pendingContactus.length > 0 ? (
+                pendingContactus.length > 0 ? (
                   <tbody>
                     {pendingContactus
                       .slice(indexOfFirstItemPending, indexOfLastItemPending)
@@ -546,7 +547,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(repliedContactus) &&
-                  repliedContactus.length > 0 ? (
+                repliedContactus.length > 0 ? (
                   <tbody>
                     {repliedContactus
                       .slice(indexOfFirstItemReplied, indexOfLastItemReplied)
@@ -612,6 +613,30 @@ const ContactUs = () => {
                                 }}
                               ></MdCurtainsClosed>
                             </Button>
+                            <Button
+                              size="sm"
+                              title="Preview"
+                              style={{
+                                backgroundColor: "#FFD700",
+                                border: "0",
+                                marginRight: "10px",
+                              }}
+                              onClick={() =>
+                                toggleShowPreviewModal(
+                                  contactus.title,
+                                  contactus.message,
+                                  contactus.reason
+                                )
+                              }
+                            >
+                              <MdPreview
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  color: "black",
+                                }}
+                              ></MdPreview>
+                            </Button>
                           </td>
                         </tr>
                       ))}
@@ -671,7 +696,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(closedContactus) &&
-                  closedContactus.length > 0 ? (
+                closedContactus.length > 0 ? (
                   <tbody>
                     {closedContactus
                       .slice(indexOfFirstItemClosed, indexOfLastItemClosed)
@@ -695,6 +720,30 @@ const ContactUs = () => {
                             {userNames[contactus.userId]}
                           </td>
                           <td>
+                            <Button
+                              size="sm"
+                              title="Preview"
+                              style={{
+                                backgroundColor: "#FFD700",
+                                border: "0",
+                                marginRight: "10px",
+                              }}
+                              onClick={() =>
+                                toggleShowPreviewModal(
+                                  contactus.title,
+                                  contactus.message,
+                                  contactus.reason
+                                )
+                              }
+                            >
+                              <MdPreview
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  color: "black",
+                                }}
+                              ></MdPreview>
+                            </Button>
                             <Button
                               size="sm"
                               title="View Responses"
@@ -800,7 +849,8 @@ const ContactUs = () => {
               Message
             </Form.Label>
             <Form.Control
-              type="text"
+              as="textarea"
+              rows={2}
               name="message"
               value={respondMessage}
               readOnly
@@ -821,7 +871,7 @@ const ContactUs = () => {
                 onChange={setAddedRespond}
                 theme="snow"
                 className={validationMessages.emptyResponse ? "is-invalid" : ""}
-                style={{width: "29em"}}
+                style={{ width: "29em" }}
                 modules={modules}
                 formats={formats}
               />
@@ -864,6 +914,87 @@ const ContactUs = () => {
               onClick={() => handleRespond()}
             >
               Confirm
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal
+          show={showPreviewModal}
+          onHide={handleClosePreview}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Preview</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div style={{ marginBottom: "10px" }}>
+              <Form.Label
+                style={{
+                  color: "black",
+                  font: "Public Sans",
+                  fontWeight: "700",
+                  fontSize: "15px",
+                }}
+              >
+                Reason
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="reason"
+                value={previewReason}
+                readOnly
+              />
+            </div>
+            <Form.Label
+              style={{
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "700",
+                fontSize: "15px",
+              }}
+            >
+              Title
+            </Form.Label>
+            <Form.Control
+              type="text"
+              name="title"
+              value={previewTitle}
+              readOnly
+            />
+            <Form.Label
+              style={{
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "700",
+                fontSize: "15px",
+              }}
+            >
+              Message
+            </Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={2}
+              name="message"
+              value={previewMessage}
+              readOnly
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#F5F6F7",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleClosePreview}
+            >
+              Close
             </Button>
           </Modal.Footer>
         </Modal>
@@ -938,10 +1069,10 @@ const ContactUs = () => {
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                          <span className="muted-text">
-                            updated at: {response.updatedAt}
-                          </span>
-                        )}
+                        <span className="muted-text">
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
                     </div>
                   ) : (
                     <div
@@ -952,7 +1083,7 @@ const ContactUs = () => {
                         maxWidth: "50%",
                       }}
                     >
-                       <span className="muted-text">
+                      <span className="muted-text">
                         {userNames[response.userId]}
                       </span>
                       <TextareaAutosize
@@ -969,10 +1100,10 @@ const ContactUs = () => {
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                          <span className="muted-text">
-                            updated at: {response.updatedAt}
-                          </span>
-                        )}
+                        <span className="muted-text">
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -995,7 +1126,7 @@ const ContactUs = () => {
                 onChange={setAddedRespond}
                 theme="snow"
                 className={validationMessages.emptyResponse ? "is-invalid" : ""}
-                style={{width: "29em"}}
+                style={{ width: "29em" }}
                 modules={modules}
                 formats={formats}
               />
@@ -1069,10 +1200,10 @@ const ContactUs = () => {
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                          <span className="muted-text">
-                            updated at: {response.updatedAt}
-                          </span>
-                        )}
+                        <span className="muted-text">
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
                     </div>
                   ) : (
                     <div
@@ -1098,10 +1229,10 @@ const ContactUs = () => {
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                          <span className="muted-text">
-                            updated at: {response.updatedAt}
-                          </span>
-                        )}
+                        <span className="muted-text">
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1118,6 +1249,7 @@ const ContactUs = () => {
           onHide={handleCloseEditRespond}
           backdrop="static"
           keyboard={false}
+          centered
         >
           <Modal.Header closeButton>
             <Modal.Title>Edit Response</Modal.Title>
@@ -1142,7 +1274,7 @@ const ContactUs = () => {
                   className={
                     validationMessages.emptyResponse ? "is-invalid" : ""
                   }
-                  style={{width: "29em"}}
+                  style={{ width: "29em" }}
                   modules={modules}
                   formats={formats}
                 />
