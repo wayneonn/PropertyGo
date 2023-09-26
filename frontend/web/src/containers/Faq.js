@@ -5,9 +5,10 @@ import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import FaqCreate from "./FaqCreate.js";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import the styles
+import "react-quill/dist/quill.snow.css"; 
 
 import API from "../services/API";
+import { formats, modules } from "../components/Common/RichTextEditor";
 
 import Pagination from "react-bootstrap/Pagination";
 
@@ -271,8 +272,8 @@ const Faq = () => {
                                 onClick={() =>
                                   toggleEditModal(
                                     faq.faqId,
-                                    htmlToPlainText(faq.question),
-                                    htmlToPlainText(faq.answer),
+                                    faq.question,
+                                    faq.answer,
                                     faq.faqType
                                   )
                                 }
@@ -488,17 +489,6 @@ const Faq = () => {
             >
               Question
             </Form.Label>
-            {/* <Form.Control
-              as="textarea"
-              id="question"
-              rows={6}
-              value={faqQuestion}
-              onChange={(e) => setFaqQuestion(e.target.value)}
-              isInvalid={
-                validationMessages.emptyFaqQuestion ||
-                validationMessages.faqQuestionUnique
-              }
-            /> */}
             <Form.Group>
               <ReactQuill
                 value={faqQuestion}
@@ -510,6 +500,8 @@ const Faq = () => {
                     ? "is-invalid"
                     : ""
                 }
+                modules={modules}
+                formats={formats}
               />
               {validationMessages.emptyFaqQuestion && (
                 <Form.Control.Feedback type="invalid">
@@ -532,14 +524,6 @@ const Faq = () => {
             >
               Answer
             </Form.Label>
-            {/* <Form.Control
-              as="textarea"
-              id="answer"
-              rows={6}
-              value={faqAnswer}
-              onChange={(e) => setFaqAnswer(e.target.value)}
-              isInvalid={validationMessages.emptyFaqAnswer}
-            /> */}
             <Form.Group>
               <ReactQuill
                 value={faqAnswer}
@@ -548,6 +532,8 @@ const Faq = () => {
                 className={
                   validationMessages.emptyFaqAnswer ? "is-invalid" : ""
                 }
+                modules={modules}
+                formats={formats}
               />
               {validationMessages.emptyFaqAnswer && (
                 <Form.Control.Feedback type="invalid">

@@ -21,6 +21,12 @@ const getSingleAdmin = async (req, res) => {
   }
 };
 
+const getAllAdmins = async (req, res) => {
+  const admins = await Admin.findAll();
+
+  res.status(200).json({ admins : admins });
+}
+
 const updateAdminUsername = async (req, res) => {
   try {
     const { oldUserName, updatedUserName } = req.body;
@@ -63,10 +69,6 @@ const updateAdminPassword = async (req, res) => {
 
     const currentPassword = admin.password;
 
-    // if (currentPassword === oldPassword) {
-    //   return res.status(200).json({ message: "unchanged" });
-    // }
-
     if (currentPassword !== oldPassword) {
       return res.status(401).json({ message: "Password is incorrect" });
     }
@@ -89,6 +91,7 @@ const updateAdminPassword = async (req, res) => {
 };
 
 module.exports = {
+  getAllAdmins,
   getSingleAdmin,
   updateAdminUsername,
   updateAdminPassword,

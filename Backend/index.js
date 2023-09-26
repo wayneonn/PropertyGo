@@ -32,8 +32,9 @@ const adminUserRouter = require("./routes/admin/userRoutes");
 const responseRouter = require("./routes/admin/responseRoutes");
 const forumTopicAdminRouter = require("./routes/admin/forumTopicRoutes");
 
-// user routes
-const postRouter = require("./routes/user/User");
+
+const userRoute = require("./routes/user/userRoute");
+// const userRoute = require("./routes/user/User");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
@@ -56,7 +57,7 @@ app.use("/admin/forumTopics", forumTopicAdminRouter);
 
 app.use(
   "/user",
-  postRouter,
+  userRoute,
   loginRoute,
   documentRoute,
   folderRoute,
