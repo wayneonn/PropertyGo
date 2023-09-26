@@ -35,7 +35,6 @@ if (__DEV__ && Platform.OS === "web") {
 
 /* CONSTANTS FOR THE WHOLE PAGE */
 const {width} = Dimensions.get("window");
-const responsiveWidth = width * 0.8;
 // This is getting a bit cancer having to go to multiple files to change it.
 
 function UploadScreen({navigation}) {
@@ -107,7 +106,6 @@ function UploadScreen({navigation}) {
         );
         console.log(response)
         const result = await response.json();
-        const doc = result.document;
         console.log(result)
         // The web version is kinda not needed.
         if (Platform.OS === "web") {
@@ -195,7 +193,7 @@ function UploadScreen({navigation}) {
             });
             if (response.ok) {
                 console.log("Document deleted successfully");
-                await fetchDocuments();
+                await fetchData();
             } else {
                 console.log("Error deleting document");
             }
