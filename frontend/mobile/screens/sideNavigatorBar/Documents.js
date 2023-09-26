@@ -286,6 +286,7 @@ function UploadScreen({navigation}) {
                                 <Text> Select your Folder Below: </Text>
                                 <View style={{zIndex: 5100}}>
                                     <DropDownPicker
+                                        listMode={"MODAL"}
                                         open={isOpen}
                                         setOpen={setIsOpen}
                                         value={selectedFolder}
@@ -293,7 +294,7 @@ function UploadScreen({navigation}) {
                                         items={folders.map(folder => ({label: folder.title, value: folder.folderId}))}
                                         containerStyle={{height: 40}}
                                         style={{backgroundColor: '#fafafa'}}
-                                        dropDownStyle={{backgroundColor: '#fafafa'}}
+                                        dropDownStyle={{backgroundColor: '#fafafa', zIndex: 5000}}
                                     />
                                 </View>
                                 <Text>&nbsp;</Text>

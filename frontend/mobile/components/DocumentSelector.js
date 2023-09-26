@@ -167,6 +167,7 @@ export const DocumentSelector = ({documentFetch}) => {
             <View style={{zIndex: 5001}}>
                 <Text style={styles.descriptionText}>Transaction ID: </Text>
                 <DropDownPicker
+                    listMode={"MODAL"}
                     open={isOpen1}
                     setOpen={setIsOpen1}
                     value={documentTransactions[item.name] || defaultTransactionId}
@@ -180,9 +181,9 @@ export const DocumentSelector = ({documentFetch}) => {
                     }))}
                     defaultValue={documentTransactions[item.name]}
                     onChangeItem={(item) => setDocumentTransactions({...documentTransactions, [item.name]: item.value})}
-                    containerStyle={{height: 40}} // Adjust the height as needed
+                    containerStyle={{height: 50}} // Adjust the height as needed
                     style={{paddingHorizontal: 10, paddingVertical: 5,}} // Adjust padding as needed
-                    dropDownStyle={{marginTop: 2,}} // Adjust margin, if needed
+                    dropDownStyle={{marginTop: 2, zIndex: 5000}} // Adjust margin, if needed
                     labelStyle={{fontSize: 12, textAlign: 'left', color: '#000'}} // Adjust label font size and color
                 />
             </View>
@@ -190,6 +191,7 @@ export const DocumentSelector = ({documentFetch}) => {
             <View style={{zIndex: 5000}}>
                 <Text style={styles.descriptionText}>Folder for Document: </Text>
                 <DropDownPicker
+                    listMode={"MODAL"}
                     open={isOpen2}
                     setOpen={setIsOpen2}
                     value={folderSelection[item.name] || defaultFolderId}
@@ -202,7 +204,7 @@ export const DocumentSelector = ({documentFetch}) => {
                     onChangeItem={(item) => setFoldersSelection({...folderSelection, [item.name]: item.value})}
                     containerStyle={{height: 40}} // Adjust the height as needed
                     style={{paddingHorizontal: 10, paddingVertical: 5}} // Adjust padding as needed
-                    dropDownStyle={{marginTop: 2,}} // Adjust margin, if needed
+                    dropDownStyle={{marginTop: 2, zIndex: 5000}} // Adjust margin, if needed
                     labelStyle={{fontSize: 12, textAlign: 'left', color: '#000'}} // Adjust label font size and color
                 />
             </View>
