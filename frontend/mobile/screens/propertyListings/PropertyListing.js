@@ -66,10 +66,29 @@ const PropertyListingScreen = ({ route }) => {
       </View>
 
       <View style={styles.mapContainer}>
-      <Text style={styles.title}>Location</Text>
-        <MapView style={styles.map}>
+        <Text style={styles.title}>Location</Text>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: 1.36922522142582,
+            longitude: 103.848493192474,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        >
+          {/* {postalCodeData.map((data, index) => ( */}
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: 1.36922522142582,
+                longitude: 103.848493192474,
+              }}
+              // title={data.postalCode} // Display postal code as marker title
+            />
+          {/* // ))} */}
         </MapView>
       </View>
+
 
     </ScrollView>
   );
