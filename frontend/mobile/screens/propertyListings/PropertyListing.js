@@ -6,16 +6,21 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import Swiper from 'react-native-swiper';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { StatusBar } from 'expo-status-bar';
+import MapView, { Marker, Callout } from 'react-native-maps';
+import { Ionicons } from '@expo/vector-icons';
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
   const [propertyListing, setPropertyListing] = useState(null);
-  const latitude = 1.36922522142582;
-  const longitude = 103.848493192474;
+  const [region, setRegion] = useState({
+    latitude: 1.36922522142582, // Default latitude
+    longitude: 103.848493192474, // Default longitude
+    latitudeDelta: 0.003, // Adjust these values for initial zoom level
+    longitudeDelta: 0.003,
+  });
 
   useEffect(() => {
     // Fetch property listing details including image IDs using propertyListingId from your API
@@ -30,8 +35,42 @@ const PropertyListingScreen = ({ route }) => {
       const data = await response.json();
 
       setPropertyListing(data); // Update state with the fetched data
+      // Fetch latitude and longitude based on postal code
+      fetchLatitudeLongitudeByPostalCode(data.postalCode);
     } catch (error) {
       console.error('Error fetching property listing:', error);
+    }
+  };
+
+  const fetchLatitudeLongitudeByPostalCode = async (postalCode) => {
+    try {
+      // Make an API call to fetch latitude and longitude based on postal code
+      const response = await fetch(
+        `https://developers.onemap.sg/commonapi/search?searchVal=${postalCode}&returnGeom=Y&getAddrDetails=Y`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.found === 1) {
+          // Extract the latitude and longitude from the API response
+          const latitude = parseFloat(data.results[0].LATITUDE);
+          const longitude = parseFloat(data.results[0].LONGITUDE);
+
+          // Update the region state with obtained values
+          setRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.003, // Adjust these values for initial zoom level
+            longitudeDelta: 0.003,
+          });
+        } else {
+          console.error('No address found for the postal code.');
+        }
+      } else {
+        console.error('API request failed.');
+      }
+    } catch (error) {
+      console.error('Error fetching latitude and longitude:', error);
     }
   };
 
@@ -46,7 +85,7 @@ const PropertyListingScreen = ({ route }) => {
           {propertyListing.images.map((image, index) => (
             <View key={index} style={styles.slide}>
               <Image
-                source={{ uri: `http://localhost:3000/image/${image.imageId}` }} // Replace with your image route
+                source={{ uri: `http://localhost:3000/image/${image.imageId}` }}
                 style={styles.image}
               />
             </View>
@@ -62,34 +101,62 @@ const PropertyListingScreen = ({ route }) => {
         <Text style={styles.label}>Price: ${propertyListing.price}</Text>
         <Text style={styles.label}>Address: {propertyListing.address}</Text>
         <Text style={styles.label}>Postal Code: {propertyListing.postalCode}</Text>
-        {/* Add more property details here */}
       </View>
 
       <View style={styles.mapContainer}>
         <Text style={styles.title}>Location</Text>
         <MapView
           style={styles.map}
-          initialRegion={{
-            latitude: 1.36922522142582,
-            longitude: 103.848493192474,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
+          region={region} // Use the region state here
         >
-          {/* {postalCodeData.map((data, index) => ( */}
-            <Marker
-              key={index}
-              coordinate={{
-                latitude: 1.36922522142582,
-                longitude: 103.848493192474,
-              }}
-              // title={data.postalCode} // Display postal code as marker title
-            />
-          {/* // ))} */}
+          <Marker
+            coordinate={{
+              latitude: region.latitude,
+              longitude: region.longitude,
+              latitudeDelta: region.latitudeDelta,
+              longitudeDelta: region.longitudeDelta,
+            }}
+          >
+            <Callout>
+              <View style={styles.infoWindowContainer}>
+                <Text style={styles.infoWindowTitle}>Address:</Text>
+                <Text style={styles.infoWindowText}>{propertyListing.address}</Text>
+              </View>
+            </Callout>
+          </Marker>
         </MapView>
       </View>
 
-
+      <View style={styles.zoomButtonContainer}>
+        <TouchableOpacity
+          style={styles.zoomButton}
+          onPress={() => {
+            // Zoom in by decreasing the latitudeDelta and longitudeDelta
+            const zoomInRegion = {
+              ...region,
+              latitudeDelta: region.latitudeDelta / 2,
+              longitudeDelta: region.longitudeDelta / 2,
+            };
+            setRegion(zoomInRegion);
+          }}
+        >
+          <Ionicons name="add-circle" size={24} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.zoomButton}
+          onPress={() => {
+            // Zoom out by increasing the latitudeDelta and longitudeDelta
+            const zoomOutRegion = {
+              ...region,
+              latitudeDelta: region.latitudeDelta * 2,
+              longitudeDelta: region.longitudeDelta * 2,
+            };
+            setRegion(zoomOutRegion);
+          }}
+        >
+          <Ionicons name="remove-circle" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -135,16 +202,43 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   map: {
-    width: '90%',
-    height: '90%'
+    width: '100%',
+    height: 300,
   },
   mapContainer: {
-    height: 300, // Set a fixed height for the map container, e.g., 300 pixels
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 20,
-  }
+  },
+  zoomButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 5,
+    paddingBottom: 16,
+  },
+  zoomButton: {
+    backgroundColor: 'grey',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginHorizontal: 8,
+    borderRadius: 10,
+  },
+  infoWindowContainer: {
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 8,
+  },
+  infoWindowTitle: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  infoWindowText: {
+    fontSize: 12,
+    width: '100%',
+  },
 });
 
 export default PropertyListingScreen;

@@ -12,7 +12,7 @@ const PropertyListingsStackGroup = () => {
 
         <PropertyListingsStack.Navigator screenOptions={{ headerShown: false }}>
             {/* Adjust accordingly */}
-            <PropertyListingsStack.Screen name="Map" component={Map}/>
+            {/* <PropertyListingsStack.Screen name="Map" component={Map}/> */}
             <PropertyListingsStack.Screen name="List Property" component={ListProperty}/>
             <PropertyListingsStack.Screen name="Property Listing" component={PropertyListing}/>
         </PropertyListingsStack.Navigator>
