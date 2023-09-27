@@ -43,6 +43,8 @@ export default function PropertyListing() {
     propertyStatus: 'ACTIVE',
     userId: user.user.userId,
     postalCode: '822126',
+    address: '',
+    unitNumber: '17-360',
   });
 
   const [images, setImages] = useState([]);
@@ -120,6 +122,54 @@ export default function PropertyListing() {
     updatedImages.splice(index, 1);
     setImages(updatedImages);
   };
+
+  // Function to fetch address based on postal code
+  const fetchAddressByPostalCode = async (postalCode) => {
+    if (postalCode.length === 6) { // Only fetch address when 6 digits are entered
+      try {
+        const response = await fetch(
+          `https://developers.onemap.sg/commonapi/search?searchVal=${postalCode}&returnGeom=Y&getAddrDetails=Y`
+        );
+  
+        if (response.ok) {
+          const data = await response.json();
+          if (data.found === 1) {
+            // Extract the address from the API response
+            const address = data.results[0].ADDRESS;
+  
+            // Update the address in the property state
+            setProperty({ ...property, address, postalCode });
+          } else {
+            // No address found, alert the user and clear the address field
+            Alert.alert('Invalid Postal Code', 'No address found for the postal code.');
+            setProperty({ ...property, address: '', postalCode});
+          }
+        } else {
+          console.error('API request failed.');
+        }
+      } catch (error) {
+        console.error('Error fetching address:', error);
+      }
+    }
+  };
+  
+
+  // Event listener for postal code input
+  const handlePostalCodeChange = (text) => {
+    // Restrict input to a maximum of 6 digits
+    if (/^\d{0,6}$/.test(text)) {
+      // Update the postalCode field in the property state
+      setProperty({ ...property, postalCode: text });
+
+      // Call the function to fetch the address
+      if (text.length === 6) {
+        fetchAddressByPostalCode(text);
+        postalCode = text;
+      }
+    }
+  };
+
+
 
   const handleSubmit = async () => {
     if (images.length === 0) {
@@ -236,11 +286,35 @@ export default function PropertyListing() {
           <Text style={styles.label}>Postal Code</Text>
           <TextInput
             placeholder="Postal Code"
+            maxLength={6} // Restrict input to 6 characters
+            keyboardType="numeric" // Show numeric keyboard
             value={property.postalCode}
+            onChangeText={handlePostalCodeChange} // Handle postal code changes
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Address</Text>
+          <TextInput
+            placeholder="Address"
+            value={property.address}
             onChangeText={(text) => setProperty({ ...property, size: text })}
             style={styles.input}
           />
         </View>
+
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Unit Number</Text>
+          <TextInput
+            placeholder="Unit Number"
+            value={property.unitNumber}
+            onChangeText={(text) => setProperty({ ...property, size: text })}
+            style={styles.input}
+          />
+        </View>
+
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Description</Text>

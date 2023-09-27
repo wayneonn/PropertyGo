@@ -56,6 +56,8 @@ const PropertyListingScreen = ({ route }) => {
         <Text style={styles.label}>Bed: {propertyListing.bed}</Text>
         <Text style={styles.label}>Bathroom: {propertyListing.bathroom}</Text>
         <Text style={styles.label}>Price: ${propertyListing.price}</Text>
+        <Text style={styles.label}>Address: {propertyListing.address}</Text>
+        <Text style={styles.label}>Postal Code: {propertyListing.postalCode}</Text>
         {/* Add more property details here */}
       </View>
     </ScrollView>

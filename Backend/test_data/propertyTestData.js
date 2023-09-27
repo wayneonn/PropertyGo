@@ -22,6 +22,8 @@ module.exports = [
 
     transactionId: 1,
     postalCode: 123456,
+    unitNumber: "17-360",
+    address: "123, ABC Street",
   },
 
   {
@@ -45,6 +47,8 @@ module.exports = [
     sellerId: 5,
     transactionId: 2,
     postalCode: 123456,
+    unitNumber: "17-360",
+    address: "123, ABC Street",
   },
 
   {
@@ -68,5 +72,7 @@ module.exports = [
     sellerId: 5,
     transactionId: 3,
     postalCode: 123456,
+    unitNumber: "17-360",
+    address: "123, ABC Street",
   },
 ];
