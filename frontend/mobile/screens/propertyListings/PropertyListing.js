@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, TextInput, StyleSheet, ScrollView } from 'react-native';
+import Swiper from 'react-native-swiper';
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -7,19 +8,14 @@ const PropertyListingScreen = ({ route }) => {
 
   useEffect(() => {
     // Fetch property listing details using propertyListingId from your API
-    // You can make an API call here to retrieve the property details
-    // and update the state with the fetched data
-    // For example, you can use the propertyListingId to fetch the data
-
-    // Replace the following example with your actual API call
+    // Make an API call to retrieve the property details
     fetchPropertyListing(propertyListingId);
   }, [propertyListingId]);
 
   const fetchPropertyListing = async (id) => {
     try {
       // Make an API call to fetch property listing details by id
-      // For example:
-      const response = await fetch(`YOUR_API_ENDPOINT/${id}`);
+      const response = await fetch(`http://localhost:3000/property/${id}`);
       const data = await response.json();
 
       setPropertyListing(data); // Update state with the fetched data
@@ -33,34 +29,75 @@ const PropertyListingScreen = ({ route }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{propertyListing.title}</Text>
-      <Image
-        source={{ uri: propertyListing.imageUrl }} // Replace with your image URL
-        style={styles.image}
-      />
-      {/* Display other property listing details here */}
-    </View>
+    <ScrollView style={styles.container}>
+      <View style={styles.imageGallery}>
+        <Swiper style={styles.wrapper} showsButtons={false}>
+          {propertyListing.images.map((image, index) => (
+            <View key={index} style={styles.slide}>
+              <Image source={{ uri: image.uri }} style={styles.image} />
+            </View>
+          ))}
+        </Swiper>
+      </View>
+
+      <View style={styles.propertyDetails}>
+        <Text style={styles.title}>{propertyListing.title}</Text>
+        <Text style={styles.description}>{propertyListing.description}</Text>
+        <Text style={styles.label}>Bed: {propertyListing.bed}</Text>
+        <Text style={styles.label}>Bathroom: {propertyListing.bathroom}</Text>
+        <Text style={styles.label}>Price: ${propertyListing.price}</Text>
+        {/* Add more property details here */}
+      </View>
+
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  imageGallery: {
+    height: 300,
+  },
+  wrapper: {},
+  slide: {
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    flex: 1,
+    width: '100%',
+    resizeMode: 'contain',
+  },
+  propertyDetails: {
+    padding: 16,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
   },
-  image: {
-    width: 200,
-    height: 200,
+  description: {
+    fontSize: 16,
     marginBottom: 16,
   },
-  // Add styles for other property details here
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  textInputContainer: {
+    padding: 16,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 5,
+    padding: 8,
+    minHeight: 100,
+  },
 });
 
 export default PropertyListingScreen;

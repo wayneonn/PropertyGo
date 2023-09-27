@@ -94,8 +94,44 @@ async function updateProperty(req, res) {
     }
 }
 
+// Get a property by ID
+async function getPropertyById(req, res) {
+    try {
+        const { propertyListingId } = req.params;
+        
+        // Find the property by ID
+        const property = await Property.findByPk(propertyListingId);
+
+        if (!property) {
+            return res.status(404).json({ error: 'Property not found' });
+        }
+
+        // Fetch associated images
+        const images = await Image.findAll({ where: { propertyId: propertyListingId } });
+
+        // Map image URLs
+        const imageUrls = images.map(image => ({
+            imageUrl: `http://localhost:3000/images/${image.imageId}`, // Replace 'YOUR_BASE_URL'
+        }));
+
+        // Create a property object with image URLs
+        const propertyWithImages = {
+            ...property.toJSON(),
+            images: imageUrls,
+        };
+
+        // Respond with the property data
+        res.json(propertyWithImages);
+    } catch (error) {
+        console.error('Error fetching property:', error);
+        res.status(500).json({ error: 'Error fetching property' });
+    }
+}
+
+  
 module.exports = {
     getAllProperties,
     createProperty,
-    updateProperty
+    updateProperty,
+    getPropertyById
 };

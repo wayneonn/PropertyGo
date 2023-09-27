@@ -43,7 +43,7 @@ const propertyRoute = require("./routes/user/propertyRoute");
 
 // user routes
 const userRoute = require("./routes/user/userRoute");
-// const userRoute = require("./routes/user/User");
+const imageRoute = require("./routes/user/imageRoute");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
@@ -79,7 +79,13 @@ app.use(
 app.use(
   "/property",
   propertyRoute,
-  );
+);
+
+app.use(
+  "/image",
+  imageRoute,
+);
+
 
 db.sequelize
   .sync()
