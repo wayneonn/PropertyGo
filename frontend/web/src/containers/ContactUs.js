@@ -173,7 +173,7 @@ const ContactUs = () => {
       emptyAddResponse: false
     };
 
-    const responseTrimmed = htmlToPlainText(editResponse).trim();
+    const responseTrimmed = editResponse.trim();
 
     if (responseTrimmed === "") {
       newMessage.emptyEditResponse = true;
@@ -208,7 +208,7 @@ const ContactUs = () => {
       emptyResponse: false,
     };
 
-    const addedRespondTrimmed = htmlToPlainText(addedRespond).trim();
+    const addedRespondTrimmed = addedRespond.trim();
 
     if (addedRespondTrimmed === "") {
       newMessage.emptyResponse = true;
@@ -244,7 +244,7 @@ const ContactUs = () => {
       emptyEditResponse: false
     };
 
-    const addedRespondTrimmed = htmlToPlainText(addedRespond).trim();
+    const addedRespondTrimmed = addedRespond.trim();
 
     if (addedRespondTrimmed === "") {
       newMessage.emptyAddResponse = true;
@@ -302,12 +302,6 @@ const ContactUs = () => {
     );
   };
 
-  function htmlToPlainText(html) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    return doc.body.textContent || "";
-  }
-
   const fetchData = async () => {
     try {
       const response = await API.get(`http://localhost:3000/admin/contactUs`);
@@ -349,7 +343,7 @@ const ContactUs = () => {
         .filter(
           (contactus) =>
             contactus.adminId === parseInt(localStorage.getItem("loggedInAdmin")));
-        
+
       repliedContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
         const timestampB = new Date(b.updatedAt).getTime();
@@ -445,7 +439,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(pendingContactus) &&
-                pendingContactus.length > 0 ? (
+                  pendingContactus.length > 0 ? (
                   <tbody>
                     {pendingContactus
                       .slice(indexOfFirstItemPending, indexOfLastItemPending)
@@ -550,7 +544,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(repliedContactus) &&
-                repliedContactus.length > 0 ? (
+                  repliedContactus.length > 0 ? (
                   <tbody>
                     {repliedContactus
                       .slice(indexOfFirstItemReplied, indexOfLastItemReplied)
@@ -699,7 +693,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(closedContactus) &&
-                closedContactus.length > 0 ? (
+                  closedContactus.length > 0 ? (
                   <tbody>
                     {closedContactus
                       .slice(indexOfFirstItemClosed, indexOfLastItemClosed)
@@ -1034,7 +1028,19 @@ const ContactUs = () => {
                         {adminNames[response.adminId]}
                       </span>
                       <div className="adminResponse">
-                        <TextareaAutosize
+                        <div
+                          style={{
+                            borderRadius: "10px",
+                            borderColor: "#F5F6F7",
+                            backgroundColor: "#FFD88D",
+                            resize: "none",
+                            overflowY: "auto",
+                            padding: "5px",
+                            margin: "0.5em"
+                          }}
+                          dangerouslySetInnerHTML={{ __html: response.message }}
+                        ></div>
+                        {/* <TextareaAutosize
                           readOnly
                           style={{
                             borderRadius: "10px",
@@ -1045,7 +1051,7 @@ const ContactUs = () => {
                             padding: "5px",
                           }}
                           value={response.message}
-                        />
+                        /> */}
                         <Button
                           size="sm"
                           title="Edit Response"
@@ -1072,10 +1078,10 @@ const ContactUs = () => {
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text">
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   ) : (
                     <div
@@ -1103,10 +1109,10 @@ const ContactUs = () => {
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text">
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   )}
                 </div>
@@ -1203,10 +1209,10 @@ const ContactUs = () => {
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text">
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   ) : (
                     <div
@@ -1232,10 +1238,10 @@ const ContactUs = () => {
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text">
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   )}
                 </div>
