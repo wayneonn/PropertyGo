@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TextInput, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import Swiper from 'react-native-swiper';
 
 const PropertyListingScreen = ({ route }) => {
@@ -7,7 +14,7 @@ const PropertyListingScreen = ({ route }) => {
   const [propertyListing, setPropertyListing] = useState(null);
 
   useEffect(() => {
-    // Fetch property listing details using propertyListingId from your API
+    // Fetch property listing details including image IDs using propertyListingId from your API
     // Make an API call to retrieve the property details
     fetchPropertyListing(propertyListingId);
   }, [propertyListingId]);
@@ -25,7 +32,7 @@ const PropertyListingScreen = ({ route }) => {
   };
 
   if (!propertyListing) {
-    return <Text>Loading...</Text>;
+    return <ActivityIndicator style={styles.loadingIndicator} />;
   }
 
   return (
@@ -34,7 +41,10 @@ const PropertyListingScreen = ({ route }) => {
         <Swiper style={styles.wrapper} showsButtons={false}>
           {propertyListing.images.map((image, index) => (
             <View key={index} style={styles.slide}>
-              <Image source={{ uri: image.uri }} style={styles.image} />
+              <Image
+                source={{ uri: `http://localhost:3000/image/${image.imageId}` }} // Replace with your image route
+                style={styles.image}
+              />
             </View>
           ))}
         </Swiper>
@@ -48,7 +58,6 @@ const PropertyListingScreen = ({ route }) => {
         <Text style={styles.label}>Price: ${propertyListing.price}</Text>
         {/* Add more property details here */}
       </View>
-
     </ScrollView>
   );
 };
@@ -57,6 +66,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  loadingIndicator: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageGallery: {
     height: 300,
@@ -87,16 +101,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
-  },
-  textInputContainer: {
-    padding: 16,
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 5,
-    padding: 8,
-    minHeight: 100,
   },
 });
 

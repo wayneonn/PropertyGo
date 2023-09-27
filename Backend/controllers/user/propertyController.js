@@ -110,14 +110,14 @@ async function getPropertyById(req, res) {
         const images = await Image.findAll({ where: { propertyId: propertyListingId } });
 
         // Map image URLs
-        const imageUrls = images.map(image => ({
-            imageUrl: `http://localhost:3000/images/${image.imageId}`, // Replace 'YOUR_BASE_URL'
+        const imageId = images.map(image => ({
+            imageId: `${image.imageId}`, 
         }));
 
         // Create a property object with image URLs
         const propertyWithImages = {
             ...property.toJSON(),
-            images: imageUrls,
+            images: imageId,
         };
 
         // Respond with the property data
