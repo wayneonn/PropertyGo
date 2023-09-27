@@ -8,10 +8,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Swiper from 'react-native-swiper';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { StatusBar } from 'expo-status-bar';
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
   const [propertyListing, setPropertyListing] = useState(null);
+  const latitude = 1.36922522142582;
+  const longitude = 103.848493192474;
 
   useEffect(() => {
     // Fetch property listing details including image IDs using propertyListingId from your API
@@ -60,6 +64,13 @@ const PropertyListingScreen = ({ route }) => {
         <Text style={styles.label}>Postal Code: {propertyListing.postalCode}</Text>
         {/* Add more property details here */}
       </View>
+
+      <View style={styles.mapContainer}>
+      <Text style={styles.title}>Location</Text>
+        <MapView style={styles.map}>
+        </MapView>
+      </View>
+
     </ScrollView>
   );
 };
@@ -104,6 +115,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
+  map: {
+    width: '90%',
+    height: '90%'
+  },
+  mapContainer: {
+    height: 300, // Set a fixed height for the map container, e.g., 300 pixels
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 20,
+  }
 });
 
 export default PropertyListingScreen;
