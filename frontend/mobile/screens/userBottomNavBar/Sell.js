@@ -17,6 +17,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { createProperty } from '../../utils/api';
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from the correct library
 import { AuthContext } from '../../AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import PropertyListingScreen from '../propertyListings/PropertyListing';
 
 const propertyTypes = [
   { label: 'Select Property Type', value: '' },
@@ -26,6 +28,7 @@ const propertyTypes = [
 
 export default function PropertyListing() {
   const { user } = useContext(AuthContext);
+  const navigation = useNavigation();
   const [property, setProperty] = useState({
     title: 'Sample Title',
     description:
@@ -144,10 +147,13 @@ export default function PropertyListing() {
       );
 
       if (success) {
+        const propertyListingId = data.propertyListingId;
+        console.log('Property created successfully:', propertyListingId);
         Alert.alert(
           'Property Created',
           'The property listing has been created successfully.'
         );
+        navigation.navigate('Property Listing', { propertyListingId });
       } else {
         Alert.alert('Error', `Failed to create property: ${message}`);
       }
@@ -310,7 +316,7 @@ export default function PropertyListing() {
 
       <TouchableOpacity style={styles.saveChangesButton} onPress={handleSubmit}>
         <Ionicons name="save-outline" size={18} color="white" />
-        <Text style={styles.saveChangesButtonText}>Save Changes</Text>
+        <Text style={styles.saveChangesButtonText}>Submit</Text>
       </TouchableOpacity>
 
     </View>

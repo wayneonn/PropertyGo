@@ -60,6 +60,7 @@
     "react-native-unimodules": "^0.14.10",
     "react-native-web": "~0.19.6",
     "react-navigation": "^4.4.4",
+    "react-navigation-redux-helpers": "^4.0.1",
     "react-navigation-stack": "^2.10.4",
     "sharp": "^0.32.6"
   },

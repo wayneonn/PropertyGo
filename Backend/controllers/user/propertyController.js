@@ -56,7 +56,7 @@ async function createProperty(req, res) {
             })
         );
 
-        res.json(createdProperty);
+        res.json({ propertyListingId: createdProperty.propertyListingId });
     } catch (error) {
         console.error('Error creating property:', error);
         res.status(500).json({ error: 'Error creating property' });

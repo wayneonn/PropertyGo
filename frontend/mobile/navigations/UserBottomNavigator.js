@@ -8,6 +8,7 @@ import Activity from '../screens/userBottomNavBar/Activity';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import PropertyListingsStackGroup from './PropertyListingsStackGroup';
 
 
 const Tab = createBottomTabNavigator();
@@ -53,7 +54,7 @@ const UserBottomNavigator = () => {
         >
             <Tab.Screen name="Home" component={HomePage} />
             <Tab.Screen name="Favourite" component={Favourite} />
-            <Tab.Screen name="Sell" component={Sell} />
+            <Tab.Screen name="Sell" component={PropertyListingsStackGroup} />
             <Tab.Screen name="Forum" component={Forum} />
             <Tab.Screen name="Activity" component={Activity} />
         </Tab.Navigator>

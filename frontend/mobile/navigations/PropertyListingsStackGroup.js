@@ -1,5 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import propertyListings from "../screens/propertyListings/PropertyListings";
+// import PropertyListing from "../screens/propertyListings/PropertyListings";
+import ListProperty from "../screens/userBottomNavBar/Sell";
+import PropertyListing from "../screens/propertyListings/PropertyListing";
 
 const PropertyListingsStack = createNativeStackNavigator();
 
@@ -9,7 +11,8 @@ const PropertyListingsStackGroup = () => {
 
         <PropertyListingsStack.Navigator screenOptions={{ headerShown: false }}>
             {/* Adjust accordingly */}
-            <PropertyListingsStack.Screen name="property Listings" component={propertyListings}/>
+            <PropertyListingsStack.Screen name="List Property" component={ListProperty}/>
+            <PropertyListingsStack.Screen name="Property Listing" component={PropertyListing}/>
         </PropertyListingsStack.Navigator>
     );
 };
