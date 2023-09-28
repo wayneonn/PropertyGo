@@ -10,12 +10,10 @@ import {
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
-import { Ionicons } from '@expo/vector-icons';
-import { getPropertyListing, getImageUriById, getUserById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites, } from '../../utils/api';
+import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; // New imports for icons
+import { getPropertyListing, getImageUriById, getUserById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites } from '../../utils/api';
 import base64 from 'react-native-base64';
 import { useNavigation } from '@react-navigation/native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -24,10 +22,10 @@ const PropertyListingScreen = ({ route }) => {
   const [propertyListing, setPropertyListing] = useState(null);
   const [userDetails, setUser] = useState(null);
   const [region, setRegion] = useState({
-    latitude: 1.36922522142582, // Default latitude
-    longitude: 103.848493192474, // Default longitude
-    latitudeDelta: 0.003, // Adjust these values for initial zoom level
-    longitudeDelta: 0.003,
+    latitude: 1.36922522142582,
+    longitude: 103.848493192474,
+    latitudeDelta: 0.005, // Adjust initial zoom level
+    longitudeDelta: 0.005,
   });
 
   const fetchUser = async (userId) => {
@@ -125,8 +123,8 @@ const PropertyListingScreen = ({ route }) => {
           setRegion({
             latitude,
             longitude,
-            latitudeDelta: 0.003, // Adjust these values for initial zoom level
-            longitudeDelta: 0.003,
+            latitudeDelta: 0.005, // Adjust these values for initial zoom level
+            longitudeDelta: 0.005,
           });
         } else {
           console.error('No address found for the postal code.');
@@ -148,131 +146,141 @@ const PropertyListingScreen = ({ route }) => {
     profileImageBase64 = base64.encodeFromByteArray(userDetails.profileImage.data);
   }
 
+  const formatPriceWithCommas = (price) => {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
+  const formatPricePerSqm = (price, size) => {
+    const pricePerSqm = (price / size).toFixed(2); // Format to 2 decimal places
+    return pricePerSqm;
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.imageGallery}>
-        <Swiper style={styles.wrapper} showsButtons={false}>
-          {propertyListing.images.map((image, index) => (
-            <View key={index} style={styles.slide}>
-              <Image
-                source={{ uri: getImageUriById(image.imageId) }}
-                style={styles.image}
-              />
-            </View>
-          ))}
-        </Swiper>
-      </View>
-
-
-
-      {userDetails && (
-        <View style={styles.userInfoContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              if (userDetails) {
-                navigation.navigate('View Profile', { userId: userDetails.userId }); // Pass the userId parameter
-              }
-            }}
-          >
-            {profileImageBase64 ? (
-              <Image
-                source={{ uri: `data:image/jpeg;base64,${profileImageBase64}` }}
-                style={styles.userProfileImage}
-              />
-            ) : (
-              <Image
-                source={require('../../assets/Default-Profile-Picture-Icon.png')}
-                style={styles.userProfileImage}
-              />
-            )}
-          </TouchableOpacity>
-          <Text style={styles.userName}>{userDetails?.name}</Text>
-        </View>
-      )}
-
-      <TouchableOpacity
-        style={[styles.favoriteButton, isFavorite ? styles.favoriteActive : null]}
-        onPress={handleFavoriteButtonPress}
-      >
-        <Ionicons
-          name={isFavorite ? 'heart' : 'heart-outline'}
-          size={24}
-          color={isFavorite ? 'red' : 'black'} // Adjust the color as needed
-        />
-        <Text style={styles.favoriteButtonText}>
-          {isFavorite ? 'Remove from Favorite' : 'Add to Favorite'}
-        </Text>
-      </TouchableOpacity>
-
-
-
-      <View style={styles.propertyDetails}>
-        <Text style={styles.title}>{propertyListing.title}</Text>
-        <Text style={styles.description}>{propertyListing.description}</Text>
-        <Text style={styles.label}>Bed: {propertyListing.bed}</Text>
-        <Text style={styles.label}>Bathroom: {propertyListing.bathroom}</Text>
-        <Text style={styles.label}>Price: ${propertyListing.price}</Text>
-        <Text style={styles.label}>Address: {propertyListing.address}</Text>
-        <Text style={styles.label}>Postal Code: {propertyListing.postalCode}</Text>
-      </View>
-      <Text style={styles.locationTitle}>    Location</Text>
-      <View style={styles.mapContainer}>
-        <MapView
-          style={styles.map}
-          region={region} // Use the region state here
-        >
-          <Marker
-            coordinate={{
-              latitude: region.latitude,
-              longitude: region.longitude,
-              latitudeDelta: region.latitudeDelta,
-              longitudeDelta: region.longitudeDelta,
-            }}
-          >
-            <Callout>
-              <View style={styles.infoWindowContainer}>
-                <Text style={styles.infoWindowTitle}>Address:</Text>
-                <Text style={styles.infoWindowText}>{propertyListing.address}</Text>
+    <View style={styles.mainContainer}>
+      <ScrollView style={styles.container}>
+        {/* Image Gallery */}
+        <View style={styles.imageGallery}>
+          <Swiper style={styles.wrapper} showsButtons={false} loop={false} autoplay={true} autoplayTimeout={5}>
+            {propertyListing.images.map((image, index) => (
+              <View key={index} style={styles.slide}>
+                <Image
+                  source={{ uri: getImageUriById(image.imageId) }}
+                  style={styles.image}
+                />
               </View>
-            </Callout>
-          </Marker>
-        </MapView>
-      </View>
+            ))}
+          </Swiper>
+          {/* Add your square boxes for images here. You might need another package or custom UI for this. */}
+        </View>
 
-      <View style={styles.zoomButtonContainer}>
-        <TouchableOpacity
-          style={styles.zoomButton}
-          onPress={() => {
-            // Zoom in by decreasing the latitudeDelta and longitudeDelta
-            const zoomInRegion = {
-              ...region,
-              latitudeDelta: region.latitudeDelta / 2,
-              longitudeDelta: region.longitudeDelta / 2,
-            };
-            setRegion(zoomInRegion);
-            console.log("This is the line: ", userDetails)
-          }}
-        >
-          <Ionicons name="add-circle" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.zoomButton}
-          onPress={() => {
-            // Zoom out by increasing the latitudeDelta and longitudeDelta
-            const zoomOutRegion = {
-              ...region,
-              latitudeDelta: region.latitudeDelta * 2,
-              longitudeDelta: region.longitudeDelta * 2,
-            };
-            setRegion(zoomOutRegion);
-          }}
-        >
-          <Ionicons name="remove-circle" size={24} color="white" />
-        </TouchableOpacity>
+        <View style={styles.propertyDetailsTop}>
+          <View style={styles.propertyDetailsTopLeft}>
+            <Text style={styles.forSaleText}>For Sales</Text>
+            <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
+            <Text style={styles.pricePerSqm}>
+              ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
+            </Text>
+            <Text style={styles.roomsAndSize}>
+              {propertyListing.bed} <Ionicons name="bed" size={16} color="#333" />  |
+              {'  '}{propertyListing.bathroom} <Ionicons name="water" size={16} color="#333" />  |
+              {'  '}{propertyListing.size} sqm  <Ionicons name="cube-outline" size={16} color="#333" /> {/* Added cube icon */}
+            </Text>
+          </View>
+
+          <View style={styles.propertyDetailsTopRight}>
+            <TouchableOpacity style={styles.favoriteButton} onPress={handleFavoriteButtonPress}>
+              <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={24} color={isFavorite ? '#f00' : '#333'} />
+            </TouchableOpacity>
+            {userDetails && (
+              <View style={styles.userInfoContainer}>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (userDetails) {
+                      navigation.navigate('View Profile', { userId: userDetails.userId }); // Pass the userId parameter
+                    }
+                  }}
+                >
+                  {profileImageBase64 ? (
+                    <Image
+                      source={{ uri: `data:image/jpeg;base64,${profileImageBase64}` }}
+                      style={styles.userProfileImage}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../../assets/Default-Profile-Picture-Icon.png')}
+                      style={styles.userProfileImage}
+                    />
+                  )}
+                </TouchableOpacity>
+                {/* <Text style={styles.userName}>{userDetails?.name}</Text> */}
+              </View>
+            )}
+          </View>
+        </View>
+
+        <Text style={styles.descriptionHeader}>Description:</Text>
+        <Text style={styles.description}>{propertyListing.description}</Text>
+
+        {/* Location Details */}
+        <Text style={styles.locationTitle}>Location</Text>
+        <Text style={styles.locationDetails}>{propertyListing.address}</Text>
+        <View style={styles.mapContainer}>
+          <MapView style={styles.map} region={region}>
+            <Marker coordinate={{ latitude: region.latitude, longitude: region.longitude }}>
+              <Callout>
+                <View style={styles.infoWindowContainer}>
+                  <Text style={styles.infoWindowTitle}>Address:</Text>
+                  <Text style={styles.infoWindowText}>{propertyListing.address}</Text>
+                </View>
+              </Callout>
+            </Marker>
+          </MapView>
+        </View>
+
+        <View style={styles.zoomButtonContainer}>
+          <TouchableOpacity
+            style={styles.zoomButton}
+            onPress={() => {
+              // Zoom in by decreasing the latitudeDelta and longitudeDelta
+              const zoomInRegion = {
+                ...region,
+                latitudeDelta: region.latitudeDelta / 2,
+                longitudeDelta: region.longitudeDelta / 2,
+              };
+              setRegion(zoomInRegion);
+              console.log("This is the line: ", userDetails)
+            }}
+          >
+            <Ionicons name="add-circle" size={24} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.zoomButton}
+            onPress={() => {
+              // Zoom out by increasing the latitudeDelta and longitudeDelta
+              const zoomOutRegion = {
+                ...region,
+                latitudeDelta: region.latitudeDelta * 2,
+                longitudeDelta: region.longitudeDelta * 2,
+              };
+              setRegion(zoomOutRegion);
+            }}
+          >
+            <Ionicons name="remove-circle" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+
+      </ScrollView>
+
+      {/* Fixed Bottom Buttons */}
+      <View style={styles.bottomButtonsContainer}>
+        <TouchableOpacity style={styles.chatWithSellerButton}><Text style={styles.buttonText}>Chat With Seller</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.viewScheduleButton}><Text style={styles.buttonText}>View Schedule</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.buyButton}><Text style={styles.buttonText}>Buy</Text></TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -296,7 +304,7 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     width: '100%',
-    resizeMode: 'contain',
+    resizeMode: 'cover', // Use 'cover' for better image fitting
   },
   propertyDetails: {
     padding: 16,
@@ -362,7 +370,97 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
-    alignContent: 'left',
+    paddingLeft: 16, // Add left padding for better alignment
+  },
+  descriptionHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    paddingLeft: 16,
+    marginBottom: 10,
+  },
+  description: {
+    paddingLeft: 16,
+    marginBottom: 20,
+  },
+
+  // Styles for fixed bottom buttons
+  bottomButtonsContainer: {
+    flexDirection: 'row',
+    borderTopWidth: 0.5,
+    borderTopColor: '#eee',
+    justifyContent: 'space-between', // Added for spacing between buttons
+    paddingHorizontal: 10, // Padding to give space from the screen edge
+  },
+
+  chatWithSellerButton: {
+    flex: 1,
+    padding: 12,
+    backgroundColor: 'white', // Choose your color
+    alignItems: 'center',
+    borderWidth: 1,       // Add border
+    borderColor: '#000',  // Border color
+    borderRadius: 10,     // Make it rounded
+    margin: 2,  // Margin for spacing between buttons
+  },
+
+  viewScheduleButton: {
+    flex: 1,
+    padding: 12,
+    backgroundColor: 'white', // Choose your color
+    alignItems: 'center',
+    borderWidth: 1,       // Add border
+    borderColor: '#000',  // Border color
+    borderRadius: 10,     // Make it rounded
+    margin: 2,  // Margin for spacing between buttons
+  },
+
+  buyButton: {
+    flex: 1,
+    padding: 12,
+    backgroundColor: '#FFD700', // Yellow color
+    alignItems: 'center',
+    borderWidth: 1,        // Add border
+    borderColor: '#000',   // Border color
+    borderRadius: 10,      // Make it rounded
+    margin: 2,  // Margin for spacing between buttons
+  },
+
+  buttonText: {
+    fontSize: 12,
+    color: '#000',           // Black text color for all buttons
+  },
+
+  mainContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+
+  // For the top property details
+  propertyDetailsTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+  },
+
+  propertyDetailsTopLeft: {
+    flex: 3,
+  },
+  propertyDetailsTopRight: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  forSaleText: {
+    fontSize: 20,
+    color: '#333',
+    letterSpacing: 2,
+    marginBottom: 5,
+  },
+  priceLabel: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#333',
+    letterSpacing: 2,
   },
 });
 
