@@ -14,7 +14,8 @@ module.exports = [
         "startTime": null,
         "endTime": null,
         "contractorSpecialization": null,
-        "userType": "BUYER"
+        "userType": "BUYER",
+        "rating": 4.5,
     },
     {
         "userName": "lawyer",
@@ -64,7 +65,7 @@ module.exports = [
         "startTime": "09:00:00",
         "endTime": "18:00:00",
         "contractorSpecialization": null,
-        "userType": "PROPERTY AGENT"
+        "userType": "PROPERTY AGENT",
     },
     {
         "userName": "seller",

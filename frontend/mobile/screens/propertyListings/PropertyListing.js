@@ -44,6 +44,7 @@ const PropertyListingScreen = ({ route }) => {
   useEffect(() => {
     // Fetch property listing details including image IDs using propertyListingId from your API
     // Make an API call to retrieve the property details
+    console.log('Received propertyListingId:', propertyListingId);
     fetchPropertyListing(propertyListingId);
     checkIfPropertyIsFavorite();
   }, [propertyListingId]);
@@ -151,9 +152,14 @@ const PropertyListingScreen = ({ route }) => {
   };
 
   const formatPricePerSqm = (price, size) => {
-    const pricePerSqm = (price / size).toFixed(2); // Format to 2 decimal places
-    return pricePerSqm;
+    if (price !== null && size !== null && !isNaN(price) && !isNaN(size) && size !== 0) {
+      const pricePerSqm = (price / size).toFixed(2); // Format to 2 decimal places
+      return pricePerSqm;
+    } else {
+      return 'N/A'; // Handle the case when price or size is null, undefined, or 0
+    }
   };
+  
 
   return (
     <View style={styles.mainContainer}>
@@ -465,7 +471,11 @@ const styles = StyleSheet.create({
   favoriteButton: {
     marginRight: 10,
     paddingBottom: 10,
-  }
+  },
+  locationDetails: {
+    paddingLeft: 16,
+    marginBottom: 20,
+  },
 });
 
 export default PropertyListingScreen;

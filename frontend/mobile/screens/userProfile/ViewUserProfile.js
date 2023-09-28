@@ -97,7 +97,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
           <StarRating
             disabled={true} // Set to true if you don't want users to interact with the rating
             maxStars={5} // Maximum number of stars
-            rating={userDetails.rating} // The rating value (e.g., 4.5)
+            rating={userDetails.rating !== null ? userDetails.rating : 0}// The rating value (e.g., 4.5)
             fullStarColor="gold" // Color for full stars
             emptyStarColor="gold" // Color for empty stars
             starSize={24} // Size of the stars
