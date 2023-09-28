@@ -64,7 +64,8 @@ const ContactUs = () => {
   const indexOfFirstItemClosed = indexOfLastItemClosed - itemsPerPage;
 
   const [validationMessages, setValidationMessages] = useState({
-    emptyResponse: false,
+    emptyEditResponse: false,
+    emptyAddResponse: false
   });
 
   // toast message
@@ -168,13 +169,14 @@ const ContactUs = () => {
   const handleEdit = async () => {
     //edit contact us in backend, use the contactusid of the editId, response
     const newMessage = {
-      emptyResponse: false,
+      emptyEditResponse: false,
+      emptyAddResponse: false
     };
 
     const responseTrimmed = htmlToPlainText(editResponse).trim();
 
     if (responseTrimmed === "") {
-      newMessage.emptyResponse = true;
+      newMessage.emptyEditResponse = true;
       setValidationMessages(newMessage);
       return;
     }
@@ -238,13 +240,14 @@ const ContactUs = () => {
 
   const handleAddRespond = async () => {
     const newMessage = {
-      emptyResponse: false,
+      emptyAddResponse: false,
+      emptyEditResponse: false
     };
 
     const addedRespondTrimmed = htmlToPlainText(addedRespond).trim();
 
     if (addedRespondTrimmed === "") {
-      newMessage.emptyResponse = true;
+      newMessage.emptyAddResponse = true;
       setValidationMessages(newMessage);
       return;
     }
@@ -1131,12 +1134,12 @@ const ContactUs = () => {
                 value={addedRespond}
                 onChange={setAddedRespond}
                 theme="snow"
-                className={validationMessages.emptyResponse ? "is-invalid" : ""}
+                className={validationMessages.emptyAddResponse ? "is-invalid" : ""}
                 style={{ width: "29em" }}
                 modules={modules}
                 formats={formats}
               />
-              {validationMessages.emptyResponse && (
+              {validationMessages.emptyAddResponse && (
                 <Form.Control.Feedback type="invalid">
                   Response is required.
                 </Form.Control.Feedback>
@@ -1278,13 +1281,13 @@ const ContactUs = () => {
                   onChange={setEditResponse}
                   theme="snow"
                   className={
-                    validationMessages.emptyResponse ? "is-invalid" : ""
+                    validationMessages.emptyEditResponse ? "is-invalid" : ""
                   }
                   style={{ width: "29em" }}
                   modules={modules}
                   formats={formats}
                 />
-                {validationMessages.emptyResponse && (
+                {validationMessages.emptyEditResponse && (
                   <Form.Control.Feedback type="invalid">
                     Response is required.
                   </Form.Control.Feedback>
