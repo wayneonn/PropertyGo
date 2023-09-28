@@ -1,122 +1,115 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    StyleSheet,
+    Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getImageUriById } from '../../utils/api';
 
 const PropertyCard = ({ property, onPress, onFavoritePress }) => {
-  const [propertyImageUri, setPropertyImageUri] = useState('');
+    const [propertyImageUri, setPropertyImageUri] = useState('');
 
-  useEffect(() => {
-    // Retrieve and set the image URI based on the smallest imageId
-    console.log('property.images:', property.images);
-    if (property.images && property.images.length > 0) {
-      // Use the first image ID directly since it's an array of IDs
-      const smallestImageId = property.images[0]; // Assuming the first image is the smallest
-      console.log('smallestImageId:', smallestImageId);
-      const imageUri = getImageUriById(smallestImageId); // Replace with your function to get image URI
-      setPropertyImageUri(imageUri);
-    }
-  }, [property]);
-  
-  
-  
-  
-  
+    const cardSize = Dimensions.get('window').width; // Make it equal to the screen width
 
-  return (
-    <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
-      <View style={styles.imageContainer}>
-        {propertyImageUri ? (
-          <Image source={{ uri: propertyImageUri }} style={styles.propertyImage} />
-        ) : (
-          <View style={styles.placeholderImage}>
-            <Text>No Image</Text>
-          </View>
-        )}
-      </View>
-      <View style={styles.propertyDetails}>
-        <Text style={styles.propertyTitle}>{property.title}</Text>
-        <Text style={styles.propertyPrice}>${property.price}</Text>
-        <Text style={styles.propertyInfo}>
-          {property.bed} <Ionicons name="bed" size={16} color="#333" /> |
-          {property.bathroom} <Ionicons name="water" size={16} color="#333" /> |
-          {property.size} sqm <Ionicons name="cube-outline" size={16} color="#333" />
-        </Text>
-      </View>
-      <TouchableOpacity
-        style={styles.favoriteButton}
-        onPress={() => onFavoritePress(property.propertyId)}
-      >
-        <Ionicons
-          name={property.isFavorite ? 'heart' : 'heart-outline'}
-          size={24}
-          color={property.isFavorite ? '#f00' : '#333'}
-        />
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
+    useEffect(() => {
+        if (property.images && property.images.length > 0) {
+            const smallestImageId = property.images[0];
+            const imageUri = getImageUriById(smallestImageId);
+            setPropertyImageUri(imageUri);
+        }
+    }, [property]);
+
+    return (
+        <TouchableOpacity style={[styles.card, { width: cardSize * 0.85, height: cardSize * 0.8}]} onPress={() => onPress(property.propertyId)}>
+            <View style={styles.imageContainer}>
+                {propertyImageUri ? (
+                    <Image source={{ uri: propertyImageUri }} style={[styles.propertyImage, { borderRadius: 10 }]} />
+                ) : (
+                    <View style={styles.placeholderImage}>
+                        <Text>No Image</Text>
+                    </View>
+                )}
+            </View>
+            <View style={styles.propertyDetails}>
+                <Text style={styles.propertyTitle}>{property.title}</Text>
+                <Text style={styles.propertyPrice}>${property.price}</Text>
+                <Text style={styles.propertyInfo}>
+                    {property.bed} <Ionicons name="bed" size={16} color="#333" /> |
+                    {property.bathroom} <Ionicons name="water" size={16} color="#333" /> |
+                    {property.size} sqm <Ionicons name="cube-outline" size={16} color="#333" />
+                </Text>
+                <TouchableOpacity
+                    style={styles.favoriteButton}
+                    onPress={() => onFavoritePress(property.propertyId)}
+                >
+                    <Ionicons
+                        name={property.isFavorite ? 'heart' : 'heart-outline'}
+                        size={24}
+                        color={property.isFavorite ? '#f00' : '#333'}
+                    />
+                </TouchableOpacity>
+            </View>
+        </TouchableOpacity>
+    );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    margin: 10,
-    padding: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
+    card: {
+      backgroundColor: '#fff',
+      alignSelf: 'center', // Center the card
+      marginVertical: 10, // A little margin top and bottom for spacing between cards
+      borderRadius: 10,
+      borderWidth: 0.5, // Light border
+      borderColor: '#ddd', // Light gray color
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 5,
+      },
+      shadowOpacity: 0.3,
+      shadowRadius: 4.65,
+      elevation: 7,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  imageContainer: {
-    flex: 1,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  propertyImage: {
-    width: '100%',
-    aspectRatio: 1,
-  },
-  placeholderImage: {
-    width: '100%',
-    aspectRatio: 1,
-    backgroundColor: '#ccc', // Background color for placeholder image
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  propertyDetails: {
-    flex: 3,
-    paddingLeft: 10,
-  },
-  propertyTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  propertyPrice: {
-    fontSize: 16,
-    color: '#333',
-  },
-  propertyInfo: {
-    fontSize: 12,
-    color: '#555',
-  },
-  favoriteButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+    imageContainer: {
+      width: '100%',
+      height: '60%',
+      overflow: 'hidden', // Hide overflow
+    },
+    propertyImage: {
+      width: '100%',
+      height: '100%',
+    },
+    placeholderImage: {
+      width: '100%',
+      height: '100%',
+      backgroundColor: '#ccc',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    propertyDetails: {
+      padding: 10,
+      flex: 1, 
+      justifyContent: 'space-between',
+    },
+    propertyTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    propertyPrice: {
+      fontSize: 16,
+      color: '#333',
+    },
+    propertyInfo: {
+      fontSize: 12,
+      color: '#555',
+    },
+    favoriteButton: {
+      alignSelf: 'flex-end',
+    },
+  });
 
 export default PropertyCard;
