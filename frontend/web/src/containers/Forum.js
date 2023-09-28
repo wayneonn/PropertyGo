@@ -3,6 +3,7 @@ import { Button, Table, Modal, Form, Toast, Row, Col } from "react-bootstrap";
 import "./styles/Forum.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
+import { IoMdFlag } from "react-icons/io";
 import ForumTopicCreate from "./ForumTopicCreate";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import the styles
@@ -377,7 +378,7 @@ const Forum = () => {
                           }}
                         >
                           <td className="truncate-text">
-                            {htmlToPlainText(flaggedForumTopic.topicName)}
+                            {flaggedForumTopic.topicName}
                           </td>
                           <td className="truncate-text">
                             {flaggedForumTopic.createdAt}
@@ -388,7 +389,7 @@ const Forum = () => {
                           <td>
                             <Button
                               size="sm"
-                              title="Edit"
+                              title="Unflag Inappropriate Forum Topic"
                               style={{
                                 backgroundColor: "#FFD700",
                                 border: "0",
@@ -398,13 +399,13 @@ const Forum = () => {
                                 toggleEditStatusModal(flaggedForumTopic.forumTopicId)
                               }
                             >
-                              <MdEditSquare
+                              <IoMdFlag
                                 style={{
                                   width: "18px",
                                   height: "18px",
                                   color: "black",
                                 }}
-                              ></MdEditSquare>
+                              ></IoMdFlag>
                             </Button>
                             <Button
                               size="sm"
