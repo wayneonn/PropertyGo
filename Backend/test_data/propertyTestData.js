@@ -24,6 +24,8 @@ module.exports = [
     postalCode: 123456,
     unitNumber: "17-360",
     address: "123, ABC Street",
+    region: "North-East",
+    area: "Punggol",
   },
 
   {
@@ -49,6 +51,8 @@ module.exports = [
     postalCode: 123456,
     unitNumber: "17-360",
     address: "123, ABC Street",
+    region: "North-East",
+    area: "Punggol",
   },
 
   {
@@ -74,5 +78,7 @@ module.exports = [
     postalCode: 123456,
     unitNumber: "17-360",
     address: "123, ABC Street",
+    region: "North-East",
+    area: "Punggol",
   },
 ];

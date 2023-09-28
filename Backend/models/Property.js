@@ -74,6 +74,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        area: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        region: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
     }, {
         freezeTableName: true
     });
