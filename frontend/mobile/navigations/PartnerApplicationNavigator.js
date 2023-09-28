@@ -12,6 +12,7 @@ import creditCardInfoScreen from "../screens/partnerApplication/CreditCardInfoSc
 
 const Stack = createStackNavigator();
 
+// This needs to change depending on status.
 export default function App() {
     return (
         <NavigationContainer>

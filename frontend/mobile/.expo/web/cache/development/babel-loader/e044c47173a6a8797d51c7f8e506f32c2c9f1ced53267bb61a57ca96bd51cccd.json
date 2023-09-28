@@ -1,1 +1,56 @@
-{"ast":null,"code":"import React from 'react';\nimport StyleSheet from \"react-native-web/dist/exports/StyleSheet\";\nimport View from \"react-native-web/dist/exports/View\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport Image from \"react-native-web/dist/exports/Image\";\nimport TouchableOpacity from \"react-native-web/dist/exports/TouchableOpacity\";\nimport SafeAreaView from \"react-native-web/dist/exports/SafeAreaView\";\nimport TopBar from \"../../components/Common/TopNavBar\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nimport { jsxs as _jsxs } from \"react/jsx-runtime\";\nvar ContactUsDetails = function ContactUsDetails(_ref) {\n  var navigation = _ref.navigation;\n  var navigateToContactUs = function navigateToContactUs() {\n    navigation.navigate('ContactUs');\n  };\n  return _jsxs(SafeAreaView, {\n    style: styles.container,\n    children: [_jsx(TopBar, {}), _jsx(Text, {\n      style: styles.screenTitle,\n      children: \"ContactUsDetailsScreen\"\n    }), _jsx(TouchableOpacity, {\n      style: styles.button,\n      onPress: navigateToContactUs,\n      children: _jsx(Text, {\n        style: styles.buttonText,\n        children: \"Contact Us Form\"\n      })\n    })]\n  });\n};\nvar styles = StyleSheet.create({\n  container: {\n    flex: 1,\n    alignItems: 'center',\n    justifyContent: 'center'\n  },\n  screenTitle: {\n    fontSize: 20,\n    fontWeight: 'bold',\n    marginBottom: 20\n  },\n  button: {\n    backgroundColor: '#FFD700',\n    padding: 10,\n    borderRadius: 5\n  },\n  buttonText: {\n    color: 'black',\n    fontWeight: 'bold',\n    textAlign: 'center'\n  }\n});\nexport default ContactUsDetails;","map":{"version":3,"names":["React","StyleSheet","View","Text","Image","TouchableOpacity","SafeAreaView","TopBar","jsx","_jsx","jsxs","_jsxs","ContactUsDetails","_ref","navigation","navigateToContactUs","navigate","style","styles","container","children","screenTitle","button","onPress","buttonText","create","flex","alignItems","justifyContent","fontSize","fontWeight","marginBottom","backgroundColor","padding","borderRadius","color","textAlign"],"sources":["/Users/wayneonn/Code/PropertyGo/frontend/mobile/screens/sideNavigatorBar/ContactUsDetails.js"],"sourcesContent":["import React from 'react';\nimport { StyleSheet, View, Text, Image, TouchableOpacity, SafeAreaView } from 'react-native';\nimport TopBar from '../../components/Common/TopNavBar';\n\nconst ContactUsDetails = ({ navigation }) => {\n  const navigateToContactUs = () => {\n    navigation.navigate('ContactUs');\n  };\n\n  return (\n    <SafeAreaView style={styles.container}>\n      <TopBar />\n      <Text style={styles.screenTitle}>ContactUsDetailsScreen</Text>\n      <TouchableOpacity\n        style={styles.button}\n        onPress={navigateToContactUs}\n      >\n        <Text style={styles.buttonText}>Contact Us Form</Text>\n      </TouchableOpacity>\n    </SafeAreaView>\n  );\n};\n\nconst styles = StyleSheet.create({\n  container: {\n    flex: 1,\n    alignItems: 'center',\n    justifyContent: 'center',\n  },\n  screenTitle: {\n    fontSize: 20,\n    fontWeight: 'bold',\n    marginBottom: 20,\n  },\n  button: {\n    backgroundColor: '#FFD700',\n    padding: 10,\n    borderRadius: 5,\n  },\n  buttonText: {\n    color: 'black',\n    fontWeight: 'bold',\n    textAlign: 'center',\n  },\n});\n\nexport default ContactUsDetails;\n"],"mappings":"AAAA,OAAOA,KAAK,MAAM,OAAO;AAAC,OAAAC,UAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,KAAA;AAAA,OAAAC,gBAAA;AAAA,OAAAC,YAAA;AAE1B,OAAOC,MAAM;AAA0C,SAAAC,GAAA,IAAAC,IAAA;AAAA,SAAAC,IAAA,IAAAC,KAAA;AAEvD,IAAMC,gBAAgB,GAAG,SAAnBA,gBAAgBA,CAAAC,IAAA,EAAuB;EAAA,IAAjBC,UAAU,GAAAD,IAAA,CAAVC,UAAU;EACpC,IAAMC,mBAAmB,GAAG,SAAtBA,mBAAmBA,CAAA,EAAS;IAChCD,UAAU,CAACE,QAAQ,CAAC,WAAW,CAAC;EAClC,CAAC;EAED,OACEL,KAAA,CAACL,YAAY;IAACW,KAAK,EAAEC,MAAM,CAACC,SAAU;IAAAC,QAAA,GACpCX,IAAA,CAACF,MAAM,IAAE,CAAC,EACVE,IAAA,CAACN,IAAI;MAACc,KAAK,EAAEC,MAAM,CAACG,WAAY;MAAAD,QAAA,EAAC;IAAsB,CAAM,CAAC,EAC9DX,IAAA,CAACJ,gBAAgB;MACfY,KAAK,EAAEC,MAAM,CAACI,MAAO;MACrBC,OAAO,EAAER,mBAAoB;MAAAK,QAAA,EAE7BX,IAAA,CAACN,IAAI;QAACc,KAAK,EAAEC,MAAM,CAACM,UAAW;QAAAJ,QAAA,EAAC;MAAe,CAAM;IAAC,CACtC,CAAC;EAAA,CACP,CAAC;AAEnB,CAAC;AAED,IAAMF,MAAM,GAAGjB,UAAU,CAACwB,MAAM,CAAC;EAC/BN,SAAS,EAAE;IACTO,IAAI,EAAE,CAAC;IACPC,UAAU,EAAE,QAAQ;IACpBC,cAAc,EAAE;EAClB,CAAC;EACDP,WAAW,EAAE;IACXQ,QAAQ,EAAE,EAAE;IACZC,UAAU,EAAE,MAAM;IAClBC,YAAY,EAAE;EAChB,CAAC;EACDT,MAAM,EAAE;IACNU,eAAe,EAAE,SAAS;IAC1BC,OAAO,EAAE,EAAE;IACXC,YAAY,EAAE;EAChB,CAAC;EACDV,UAAU,EAAE;IACVW,KAAK,EAAE,OAAO;IACdL,UAAU,EAAE,MAAM;IAClBM,SAAS,EAAE;EACb;AACF,CAAC,CAAC;AAEF,eAAexB,gBAAgB"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "import React from 'react';\nimport StyleSheet from \"react-native-web/dist/exports/StyleSheet\";\nimport View from \"react-native-web/dist/exports/View\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport Image from \"react-native-web/dist/exports/Image\";\nimport TouchableOpacity from \"react-native-web/dist/exports/TouchableOpacity\";\nimport SafeAreaView from \"react-native-web/dist/exports/SafeAreaView\";\nimport TopBar from \"../../components/Common/TopNavBar\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nimport { jsxs as _jsxs } from \"react/jsx-runtime\";\nvar ContactUsDetails = function ContactUsDetails(_ref) {\n  var navigation = _ref.navigation;\n  var navigateToContactUs = function navigateToContactUs() {\n    navigation.navigate('ContactUs');\n  };\n  return _jsxs(SafeAreaView, {\n    style: styles.container,\n    children: [_jsx(TopBar, {}), _jsx(Text, {\n      style: styles.screenTitle,\n      children: \"ContactUsDetailsScreen\"\n    }), _jsx(TouchableOpacity, {\n      style: styles.button,\n      onPress: navigateToContactUs,\n      children: _jsx(Text, {\n        style: styles.buttonText,\n        children: \"Contact Us Form\"\n      })\n    })]\n  });\n};\nvar styles = StyleSheet.create({\n  container: {\n    flex: 1,\n    alignItems: 'center',\n    justifyContent: 'center'\n  },\n  screenTitle: {\n    fontSize: 20,\n    fontWeight: 'bold',\n    marginBottom: 20\n  },\n  button: {\n    backgroundColor: '#FFD700',\n    padding: 10,\n    borderRadius: 5\n  },\n  buttonText: {\n    color: 'black',\n    fontWeight: 'bold',\n    textAlign: 'center'\n  }\n});\nexport default ContactUsDetails;",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "StyleSheet",
+      "View",
+      "Text",
+      "Image",
+      "TouchableOpacity",
+      "SafeAreaView",
+      "TopBar",
+      "jsx",
+      "_jsx",
+      "jsxs",
+      "_jsxs",
+      "ContactUsDetails",
+      "_ref",
+      "navigation",
+      "navigateToContactUs",
+      "navigate",
+      "style",
+      "styles",
+      "container",
+      "children",
+      "screenTitle",
+      "button",
+      "onPress",
+      "buttonText",
+      "create",
+      "flex",
+      "alignItems",
+      "justifyContent",
+      "fontSize",
+      "fontWeight",
+      "marginBottom",
+      "backgroundColor",
+      "padding",
+      "borderRadius",
+      "color",
+      "textAlign"
+    ],
+    "sources": [
+      "/Users/wayneonn/Code/PropertyGo/frontend/mobile/screens/sideNavigatorBar/ContactUsDetails.js"
+    ],
+    "sourcesContent": [
+      "import React from 'react';\nimport { StyleSheet, View, Text, Image, TouchableOpacity, SafeAreaView } from 'react-native';\nimport TopBar from '../../components/Common/TopNavBar';\n\nconst ContactUsDetails = ({ navigation }) => {\n  const navigateToContactUs = () => {\n    navigation.navigate('ContactUs');\n  };\n\n  return (\n    <SafeAreaView style={styles.container}>\n      <TopBar />\n      <Text style={styles.screenTitle}>ContactUsDetailsScreen</Text>\n      <TouchableOpacity\n        style={styles.button}\n        onPress={navigateToContactUs}\n      >\n        <Text style={styles.buttonText}>Contact Us Form</Text>\n      </TouchableOpacity>\n    </SafeAreaView>\n  );\n};\n\nconst styles = StyleSheet.create({\n  container: {\n    flex: 1,\n    alignItems: 'center',\n    justifyContent: 'center',\n  },\n  screenTitle: {\n    fontSize: 20,\n    fontWeight: 'bold',\n    marginBottom: 20,\n  },\n  button: {\n    backgroundColor: '#FFD700',\n    padding: 10,\n    borderRadius: 5,\n  },\n  buttonText: {\n    color: 'black',\n    fontWeight: 'bold',\n    textAlign: 'center',\n  },\n});\n\nexport default ContactUsDetails;\n"
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,MAAM,OAAO;AAAC,OAAAC,UAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,KAAA;AAAA,OAAAC,gBAAA;AAAA,OAAAC,YAAA;AAE1B,OAAOC,MAAM;AAA0C,SAAAC,GAAA,IAAAC,IAAA;AAAA,SAAAC,IAAA,IAAAC,KAAA;AAEvD,IAAMC,gBAAgB,GAAG,SAAnBA,gBAAgBA,CAAAC,IAAA,EAAuB;EAAA,IAAjBC,UAAU,GAAAD,IAAA,CAAVC,UAAU;EACpC,IAAMC,mBAAmB,GAAG,SAAtBA,mBAAmBA,CAAA,EAAS;IAChCD,UAAU,CAACE,QAAQ,CAAC,WAAW,CAAC;EAClC,CAAC;EAED,OACEL,KAAA,CAACL,YAAY;IAACW,KAAK,EAAEC,MAAM,CAACC,SAAU;IAAAC,QAAA,GACpCX,IAAA,CAACF,MAAM,IAAE,CAAC,EACVE,IAAA,CAACN,IAAI;MAACc,KAAK,EAAEC,MAAM,CAACG,WAAY;MAAAD,QAAA,EAAC;IAAsB,CAAM,CAAC,EAC9DX,IAAA,CAACJ,gBAAgB;MACfY,KAAK,EAAEC,MAAM,CAACI,MAAO;MACrBC,OAAO,EAAER,mBAAoB;MAAAK,QAAA,EAE7BX,IAAA,CAACN,IAAI;QAACc,KAAK,EAAEC,MAAM,CAACM,UAAW;QAAAJ,QAAA,EAAC;MAAe,CAAM;IAAC,CACtC,CAAC;EAAA,CACP,CAAC;AAEnB,CAAC;AAED,IAAMF,MAAM,GAAGjB,UAAU,CAACwB,MAAM,CAAC;EAC/BN,SAAS,EAAE;IACTO,IAAI,EAAE,CAAC;IACPC,UAAU,EAAE,QAAQ;IACpBC,cAAc,EAAE;EAClB,CAAC;EACDP,WAAW,EAAE;IACXQ,QAAQ,EAAE,EAAE;IACZC,UAAU,EAAE,MAAM;IAClBC,YAAY,EAAE;EAChB,CAAC;EACDT,MAAM,EAAE;IACNU,eAAe,EAAE,SAAS;IAC1BC,OAAO,EAAE,EAAE;IACXC,YAAY,EAAE;EAChB,CAAC;EACDV,UAAU,EAAE;IACVW,KAAK,EAAE,OAAO;IACdL,UAAU,EAAE,MAAM;IAClBM,SAAS,EAAE;EACb;AACF,CAAC,CAAC;AAEF,eAAexB,gBAAgB"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

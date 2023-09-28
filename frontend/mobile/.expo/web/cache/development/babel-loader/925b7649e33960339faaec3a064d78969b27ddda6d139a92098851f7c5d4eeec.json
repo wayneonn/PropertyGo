@@ -1,1 +1,32 @@
-{"ast":null,"code":"import { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport propertyListings from \"../screens/propertyListings/PropertyListings\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar PropertyListingsStack = createNativeStackNavigator();\nvar PropertyListingsStackGroup = function PropertyListingsStackGroup() {\n  return _jsx(PropertyListingsStack.Navigator, {\n    screenOptions: {\n      headerShown: false\n    },\n    children: _jsx(PropertyListingsStack.Screen, {\n      name: \"property Listings\",\n      component: propertyListings\n    })\n  });\n};\nexport default PropertyListingsStackGroup;","map":{"version":3,"names":["createNativeStackNavigator","propertyListings","jsx","_jsx","PropertyListingsStack","PropertyListingsStackGroup","Navigator","screenOptions","headerShown","children","Screen","name","component"],"sources":["/workspaces/PropertyGo/frontend/mobile/navigations/PropertyListingsStackGroup.js"],"sourcesContent":["import { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport propertyListings from \"../screens/propertyListings/PropertyListings\";\n\nconst PropertyListingsStack = createNativeStackNavigator();\n\nconst PropertyListingsStackGroup = () => {\n\n    return (\n\n        <PropertyListingsStack.Navigator screenOptions={{ headerShown: false }}>\n            {/* Adjust accordingly */}\n            <PropertyListingsStack.Screen name=\"property Listings\" component={propertyListings}/>\n        </PropertyListingsStack.Navigator>\n    );\n};\nexport default PropertyListingsStackGroup;"],"mappings":"AAAA,SAASA,0BAA0B,QAAQ,gCAAgC;AAC3E,OAAOC,gBAAgB;AAAqD,SAAAC,GAAA,IAAAC,IAAA;AAE5E,IAAMC,qBAAqB,GAAGJ,0BAA0B,CAAC,CAAC;AAE1D,IAAMK,0BAA0B,GAAG,SAA7BA,0BAA0BA,CAAA,EAAS;EAErC,OAEIF,IAAA,CAACC,qBAAqB,CAACE,SAAS;IAACC,aAAa,EAAE;MAAEC,WAAW,EAAE;IAAM,CAAE;IAAAC,QAAA,EAEnEN,IAAA,CAACC,qBAAqB,CAACM,MAAM;MAACC,IAAI,EAAC,mBAAmB;MAACC,SAAS,EAAEX;IAAiB,CAAC;EAAC,CACxD,CAAC;AAE1C,CAAC;AACD,eAAeI,0BAA0B"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "import { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport propertyListings from \"../screens/propertyListings/PropertyListings\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar PropertyListingsStack = createNativeStackNavigator();\nvar PropertyListingsStackGroup = function PropertyListingsStackGroup() {\n  return _jsx(PropertyListingsStack.Navigator, {\n    screenOptions: {\n      headerShown: false\n    },\n    children: _jsx(PropertyListingsStack.Screen, {\n      name: \"property Listings\",\n      component: propertyListings\n    })\n  });\n};\nexport default PropertyListingsStackGroup;",
+  "map": {
+    "version": 3,
+    "names": [
+      "createNativeStackNavigator",
+      "propertyListings",
+      "jsx",
+      "_jsx",
+      "PropertyListingsStack",
+      "PropertyListingsStackGroup",
+      "Navigator",
+      "screenOptions",
+      "headerShown",
+      "children",
+      "Screen",
+      "name",
+      "component"
+    ],
+    "sources": [
+      "/workspaces/PropertyGo/frontend/mobile/navigations/PropertyListingsStackGroup.js"
+    ],
+    "sourcesContent": [
+      "import { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport propertyListings from \"../screens/propertyListings/PropertyListings\";\n\nconst PropertyListingsStack = createNativeStackNavigator();\n\nconst PropertyListingsStackGroup = () => {\n\n    return (\n\n        <PropertyListingsStack.Navigator screenOptions={{ headerShown: false }}>\n            {/* Adjust accordingly */}\n            <PropertyListingsStack.Screen name=\"property Listings\" component={propertyListings}/>\n        </PropertyListingsStack.Navigator>\n    );\n};\nexport default PropertyListingsStackGroup;"
+    ],
+    "mappings": "AAAA,SAASA,0BAA0B,QAAQ,gCAAgC;AAC3E,OAAOC,gBAAgB;AAAqD,SAAAC,GAAA,IAAAC,IAAA;AAE5E,IAAMC,qBAAqB,GAAGJ,0BAA0B,CAAC,CAAC;AAE1D,IAAMK,0BAA0B,GAAG,SAA7BA,0BAA0BA,CAAA,EAAS;EAErC,OAEIF,IAAA,CAACC,qBAAqB,CAACE,SAAS;IAACC,aAAa,EAAE;MAAEC,WAAW,EAAE;IAAM,CAAE;IAAAC,QAAA,EAEnEN,IAAA,CAACC,qBAAqB,CAACM,MAAM;MAACC,IAAI,EAAC,mBAAmB;MAACC,SAAS,EAAEX;IAAiB,CAAC;EAAC,CACxD,CAAC;AAE1C,CAAC;AACD,eAAeI,0BAA0B"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

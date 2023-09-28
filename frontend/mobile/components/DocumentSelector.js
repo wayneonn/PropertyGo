@@ -160,6 +160,7 @@ export const DocumentSelector = ({documentFetch, folderState, setFolderState}) =
     };
 
     // This is for the Select Documents
+    // Honestly this needs to change depending on what is the current status.
     const renderDocumentItem = ({item}) => (
         <View style={styles.documentItem}>
             <Text style={styles.documentText}>{item.name}</Text>

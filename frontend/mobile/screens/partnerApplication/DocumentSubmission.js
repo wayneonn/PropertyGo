@@ -18,10 +18,17 @@ const DocumentSubmissionScreen = () => {
         navigation.navigate('NextScreen'); // Replace with your actual next screen
     };
 
+    const uploadSucceed = () => {
+        console.log("Upload done.")
+    }
+
+    // Do we still need to fetch data???
+    // I think it just ignores it if it does not exist.
+    // Probably just turn it into a free signal.
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Upload Documents</Text>
-            <DocumentSelector /> {/* Replace onSelect with your actual prop if different */}
+            <DocumentSelector documentFetch={uploadSucceed}/> {/* Replace onSelect with your actual prop if different */}
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Next</Text>
             </TouchableOpacity>

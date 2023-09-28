@@ -1,13 +1,12 @@
 const {PartnerApplication, Folder} = require("../../models")
 
 
-exports.getPartnerApplicationsByUserID = async (res, req) => {
+exports.getPartnerApplicationsByUserID = async (req, res) => {
     try {
-        const folders = await PartnerApplication.findAll({where: {userId: req.params.id}});
-        res.json({folders});
+        const partnerApp = await PartnerApplication.findAll({where: {userId: req.params.id}});
+        res.json({partnerApp});
     } catch (error) {
-        res
-            .status(500)
+        res.status(500)
             .json({message: "Error fetching Partner Applications: ", error: error.message});
     }
 }
