@@ -345,8 +345,10 @@ const ContactUs = () => {
         .filter((contactus) => contactus.status === "REPLIED")
         .filter(
           (contactus) =>
-            contactus.adminId === parseInt(localStorage.getItem("loggedInAdmin")));
-        
+            contactus.adminId ===
+            parseInt(localStorage.getItem("loggedInAdmin"))
+        );
+
       repliedContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
         const timestampB = new Date(b.updatedAt).getTime();
@@ -355,9 +357,13 @@ const ContactUs = () => {
 
       setRepliedContactus(repliedContactus);
 
-      const closedContactus = contactUs.filter(
-        (contactus) => contactus.status === "CLOSED"
-      );
+      const closedContactus = contactUs
+        .filter((contactus) => contactus.status === "CLOSED")
+        .filter(
+          (contactus) =>
+            contactus.adminId ===
+            parseInt(localStorage.getItem("loggedInAdmin"))
+        );
 
       closedContactus.sort((a, b) => {
         const timestampA = new Date(a.updatedAt).getTime();
