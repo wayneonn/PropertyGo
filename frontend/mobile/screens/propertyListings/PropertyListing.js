@@ -11,13 +11,16 @@ import {
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
-import { getPropertyListing, getImageUriById, getUserById } from '../../utils/api';
+import { getPropertyListing, getImageUriById, getUserById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites, } from '../../utils/api';
 import base64 from 'react-native-base64';
 import { useNavigation } from '@react-navigation/native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
   const navigation = useNavigation();
+  const [isFavorite, setIsFavorite] = useState(false);
   const [propertyListing, setPropertyListing] = useState(null);
   const [userDetails, setUser] = useState(null);
   const [region, setRegion] = useState({
@@ -44,7 +47,50 @@ const PropertyListingScreen = ({ route }) => {
     // Fetch property listing details including image IDs using propertyListingId from your API
     // Make an API call to retrieve the property details
     fetchPropertyListing(propertyListingId);
+    checkIfPropertyIsFavorite();
   }, [propertyListingId]);
+
+  const checkIfPropertyIsFavorite = async () => {
+    // Check if the property is in favorites and update the isFavorite state
+    const { success, data, message } = await isPropertyInFavorites(
+      userDetails.userId, // Pass the user ID
+      propertyListingId // Pass the property ID
+    );
+
+    if (success) {
+      setIsFavorite(data.isLiked);
+    } else {
+      console.error('Error checking if property is in favorites:', message);
+    }
+  };
+
+  const handleFavoriteButtonPress = async () => {
+    if (isFavorite) {
+      // Remove the property from favorites
+      const { success, message } = await removeFavoriteProperty(
+        userDetails.userId, // Pass the user ID
+        propertyListingId // Pass the property ID
+      );
+
+      if (success) {
+        setIsFavorite(false);
+      } else {
+        console.error('Error removing property from favorites:', message);
+      }
+    } else {
+      // Add the property to favorites
+      const { success, message } = await addFavoriteProperty(
+        userDetails.userId, // Pass the user ID
+        propertyListingId // Pass the property ID
+      );
+
+      if (success) {
+        setIsFavorite(true);
+      } else {
+        console.error('Error adding property to favorites:', message);
+      }
+    }
+  };
 
   const fetchPropertyListing = async (id) => {
     try {
@@ -117,6 +163,8 @@ const PropertyListingScreen = ({ route }) => {
         </Swiper>
       </View>
 
+
+
       {userDetails && (
         <View style={styles.userInfoContainer}>
           <TouchableOpacity
@@ -141,6 +189,22 @@ const PropertyListingScreen = ({ route }) => {
           <Text style={styles.userName}>{userDetails?.name}</Text>
         </View>
       )}
+
+      <TouchableOpacity
+        style={[styles.favoriteButton, isFavorite ? styles.favoriteActive : null]}
+        onPress={handleFavoriteButtonPress}
+      >
+        <Ionicons
+          name={isFavorite ? 'heart' : 'heart-outline'}
+          size={24}
+          color={isFavorite ? 'red' : 'black'} // Adjust the color as needed
+        />
+        <Text style={styles.favoriteButtonText}>
+          {isFavorite ? 'Remove from Favorite' : 'Add to Favorite'}
+        </Text>
+      </TouchableOpacity>
+
+
 
       <View style={styles.propertyDetails}>
         <Text style={styles.title}>{propertyListing.title}</Text>
