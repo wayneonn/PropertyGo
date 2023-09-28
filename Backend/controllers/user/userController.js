@@ -130,9 +130,31 @@ async function uploadProfilePicture(req, res) {
   }
 }
 
+async function getUserById(req, res) {
+  const userId = req.params.userId;
+
+  try {
+    const user = await User.findByPk(userId, {
+      attributes: {
+        exclude: ['password'], // Exclude sensitive data like password
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ error: 'Error fetching user' });
+  }
+}
+
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
-  uploadProfilePicture
+  uploadProfilePicture,
+  getUserById
 };
