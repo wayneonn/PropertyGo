@@ -1,5 +1,8 @@
-function getAreaAndRegion(postalCode) {
+export const getAreaAndRegion = async (postalCode) => {
     // Define a lookup table for postal code ranges and their corresponding areas and regions
+    
+    console.log("area and region: ",postalCode);
+    const firstTwoDigits = postalCode.substring(0, 2);
     const postalCodeLookup = [
       { range: [1, 6], area: 'Raffles Place, Cecil, Marina, People’s Park', region: 'Central' },
       { range: [7, 8], area: 'Anson, Tanjong Pagar', region: 'Central' },
@@ -32,14 +35,16 @@ function getAreaAndRegion(postalCode) {
     ];
   
     // Convert the postal code to a number (assuming postalCode is a string)
-    const code = parseInt(postalCode);
+    const code = parseInt(firstTwoDigits);
   
     // Find the matching range and return the corresponding area and region
+    console.log("code: ",code);
     const match = postalCodeLookup.find(({ range }) => {
       return code >= range[0] && code <= range[range.length - 1];
     });
   
     if (match) {
+        console.log("match: ",match);
       return {
         area: match.area,
         region: match.region,
@@ -50,10 +55,6 @@ function getAreaAndRegion(postalCode) {
         region: 'Unknown',
       };
     }
-  }
+  };
   
-//   // Example usage:
-//   const postalCode = '822126';
-//   const { area, region } = getAreaAndRegion(postalCode);
-//   console.log(`Postal Code ${postalCode} belongs to ${area} in the ${region} region.`);
   

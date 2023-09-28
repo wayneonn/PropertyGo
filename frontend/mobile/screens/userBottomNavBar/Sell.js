@@ -19,16 +19,22 @@ import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from the corre
 import { AuthContext } from '../../AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import PropertyListingScreen from '../propertyListings/PropertyListing';
+import { getAreaAndRegion } from '../../services/GetAreaAndRegion';
 
 const propertyTypes = [
   { label: 'Select Property Type', value: '' },
   { label: 'Resale', value: 'Resale' },
   { label: 'New Launch', value: 'New Launch' },
-];
+]
 
 export default function PropertyListing() {
   const { user } = useContext(AuthContext);
   const navigation = useNavigation();
+  const updateAreaAndRegion = async (postalCode) => {
+    const { area, region } = await getAreaAndRegion(postalCode);
+    setProperty({ ...property, area, region });
+  };
+
   const [property, setProperty] = useState({
     title: 'Sample Title',
     description:
@@ -45,6 +51,8 @@ export default function PropertyListing() {
     postalCode: '822126',
     address: '',
     unitNumber: '17-360',
+    area: '',
+    region: '',
   });
 
   const [images, setImages] = useState([]);
@@ -130,19 +138,21 @@ export default function PropertyListing() {
         const response = await fetch(
           `https://developers.onemap.sg/commonapi/search?searchVal=${postalCode}&returnGeom=Y&getAddrDetails=Y`
         );
-  
+
         if (response.ok) {
           const data = await response.json();
           if (data.found === 1) {
             // Extract the address from the API response
             const address = data.results[0].ADDRESS;
-  
+            const { area, region } = await getAreaAndRegion(postalCode);
+
             // Update the address in the property state
-            setProperty({ ...property, address, postalCode });
+            setProperty({ ...property, address, postalCode, area, region });
+            console.log("address: ", address);
           } else {
             // No address found, alert the user and clear the address field
             Alert.alert('Invalid Postal Code', 'No address found for the postal code.');
-            setProperty({ ...property, address: '', postalCode});
+            setProperty({ ...property, address: '', postalCode });
           }
         } else {
           console.error('API request failed.');
@@ -152,7 +162,7 @@ export default function PropertyListing() {
       }
     }
   };
-  
+
 
   // Event listener for postal code input
   const handlePostalCodeChange = (text) => {
