@@ -151,9 +151,8 @@ const PropertyListingScreen = ({ route }) => {
         <Text style={styles.label}>Address: {propertyListing.address}</Text>
         <Text style={styles.label}>Postal Code: {propertyListing.postalCode}</Text>
       </View>
-
+      <Text style={styles.locationTitle}>    Location</Text>
       <View style={styles.mapContainer}>
-        <Text style={styles.title}>Location</Text>
         <MapView
           style={styles.map}
           region={region} // Use the region state here
@@ -294,6 +293,12 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     alignContent: 'center',
+  },
+  locationTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    alignContent: 'left',
   },
 });
 

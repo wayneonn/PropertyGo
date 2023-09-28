@@ -158,6 +158,12 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'imageId',
             as: 'propertyImages',
         });
+        Property.belongsToMany(models.User, {
+            through: 'UserFavourites', // This is the name of the join table
+            foreignKey: 'propertyId',
+            otherKey: 'userId',
+            as: 'favouritedByUsers',
+        });
     };
 
     return Property;

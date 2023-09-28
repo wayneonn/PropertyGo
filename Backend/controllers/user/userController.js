@@ -1,4 +1,4 @@
-const { User } = require('../../models');
+const { User, Property } = require('../../models');
 const sharp = require('sharp');
 
 async function getAllUsers(req, res) {
@@ -151,10 +151,94 @@ async function getUserById(req, res) {
   }
 }
 
+async function addFavoriteProperty(req, res) {
+  try {
+    const { userId, propertyId } = req.params;
+
+    // Find the user by ID
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Find the property by ID
+    const property = await Property.findByPk(propertyId);
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
+    }
+
+    // Add the property to the user's favorites
+    await user.addFavouriteProperty(property);
+
+    res.status(201).json({ message: 'Property added to favorites' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+async function removeFavoriteProperty(req, res) {
+  try {
+    const { userId, propertyId } = req.params;
+
+    // Find the user by ID
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Find the property by ID
+    const property = await Property.findByPk(propertyId);
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
+    }
+
+    // Remove the property from the user's favorites
+    await user.removeFavouriteProperty(property);
+
+    res.status(200).json({ message: 'Property removed from favorites' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+async function getUserFavorites(req, res) {
+  try {
+    const { userId } = req.params;
+
+    // Find the user by ID and include their favorite properties
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Property,
+          as: 'favouriteProperties',
+        },
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user.favouriteProperties);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
   uploadProfilePicture,
-  getUserById
+  getUserById,
+  addFavoriteProperty,
+  removeFavoriteProperty,
+  getUserFavorites,
 };
