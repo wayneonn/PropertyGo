@@ -5,6 +5,7 @@ const BASE_URL = "http://localhost:3000";
 const BASE_URL_WAYNE = "http://10.0.0.17:3000";
 const USER_ENDPOINT = "user";
 const PROPERTY_ENDPOINT = "property";
+const IMAGE_ENDPOINT = "image";
 
 export const loginUser = async (userName, password) => {
   try {
@@ -143,4 +144,12 @@ export const createProperty = async (propertyData, images) => {
   } catch (error) {
     return { success: false, message: error.message };
   }
+};
+
+export const getPropertyListing = (propertyId) => {
+  return `${BASE_URL}/${PROPERTY_ENDPOINT}/${propertyId}`;
+};
+
+export const getImageUriById = (imageId) => {
+  return `${BASE_URL}/${IMAGE_ENDPOINT}/${imageId}`;
 };

@@ -11,6 +11,7 @@ import {
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
+import { getPropertyListing, getImageUriById } from '../../utils/api';
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -31,7 +32,7 @@ const PropertyListingScreen = ({ route }) => {
   const fetchPropertyListing = async (id) => {
     try {
       // Make an API call to fetch property listing details by id
-      const response = await fetch(`http://localhost:3000/property/${id}`);
+      const response = await fetch(getPropertyListing(id));
       const data = await response.json();
 
       setPropertyListing(data); // Update state with the fetched data
@@ -85,7 +86,7 @@ const PropertyListingScreen = ({ route }) => {
           {propertyListing.images.map((image, index) => (
             <View key={index} style={styles.slide}>
               <Image
-                source={{ uri: `http://localhost:3000/image/${image.imageId}` }}
+                source={{ uri: getImageUriById(image.imageId) }}
                 style={styles.image}
               />
             </View>
