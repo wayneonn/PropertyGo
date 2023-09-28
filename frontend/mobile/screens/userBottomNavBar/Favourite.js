@@ -22,10 +22,8 @@ const Favourite = ({ navigation }) => {
   const fetchFavorites = async () => {
     // Fetch user's favorite properties
     const userId = user.user.userId; // Replace with the user's actual ID
-    console.log('userId:', userId);
     const { success, data } = await getUserFavorites(userId);
-    console.log('data:', data);
-
+    
     if (success) {
       // Check if each property is in favorites and update the isFavorite property
       const updatedFavorites = await Promise.all(

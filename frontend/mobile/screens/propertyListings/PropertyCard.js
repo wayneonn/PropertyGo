@@ -16,11 +16,18 @@ const PropertyCard = ({ property, onPress, onFavoritePress }) => {
     // Retrieve and set the image URI based on the smallest imageId
     console.log('property.images:', property.images);
     if (property.images && property.images.length > 0) {
-      const smallestImageId = property.images[0].imageId; // Assuming the first image is the smallest
+      // Use the first image ID directly since it's an array of IDs
+      const smallestImageId = property.images[0]; // Assuming the first image is the smallest
+      console.log('smallestImageId:', smallestImageId);
       const imageUri = getImageUriById(smallestImageId); // Replace with your function to get image URI
       setPropertyImageUri(imageUri);
     }
   }, [property]);
+  
+  
+  
+  
+  
 
   return (
     <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
