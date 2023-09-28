@@ -11,17 +11,34 @@ import {
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
-import { getPropertyListing, getImageUriById } from '../../utils/api';
+import { getPropertyListing, getImageUriById, getUserById } from '../../utils/api';
+import base64 from 'react-native-base64';
+import { useNavigation } from '@react-navigation/native';
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
+  const navigation = useNavigation();
   const [propertyListing, setPropertyListing] = useState(null);
+  const [userDetails, setUser] = useState(null);
   const [region, setRegion] = useState({
     latitude: 1.36922522142582, // Default latitude
     longitude: 103.848493192474, // Default longitude
     latitudeDelta: 0.003, // Adjust these values for initial zoom level
     longitudeDelta: 0.003,
   });
+
+  const fetchUser = async (userId) => {
+    const { success, data, message } = await getUserById(userId);
+
+    if (success) {
+      // Handle the user data here
+      console.log('User Data:', data);
+      return data;
+    } else {
+      // Handle the error here
+      console.error('Error fetching user:', message);
+    }
+  };
 
   useEffect(() => {
     // Fetch property listing details including image IDs using propertyListingId from your API
@@ -34,7 +51,8 @@ const PropertyListingScreen = ({ route }) => {
       // Make an API call to fetch property listing details by id
       const response = await fetch(getPropertyListing(id));
       const data = await response.json();
-
+      const userDetailsData = await fetchUser(data.userId);
+      setUser(userDetailsData); // Update user details state
       setPropertyListing(data); // Update state with the fetched data
       // Fetch latitude and longitude based on postal code
       fetchLatitudeLongitudeByPostalCode(data.postalCode);
@@ -79,6 +97,11 @@ const PropertyListingScreen = ({ route }) => {
     return <ActivityIndicator style={styles.loadingIndicator} />;
   }
 
+  let profileImageBase64;
+  if (userDetails && userDetails.profileImage && userDetails.profileImage.data) {
+    profileImageBase64 = base64.encodeFromByteArray(userDetails.profileImage.data);
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imageGallery}>
@@ -93,6 +116,31 @@ const PropertyListingScreen = ({ route }) => {
           ))}
         </Swiper>
       </View>
+
+      {userDetails && (
+        <View style={styles.userInfoContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              if (userDetails) {
+                navigation.navigate('View Profile', { userId: userDetails.userId }); // Pass the userId parameter
+              }
+            }}
+          >
+            {profileImageBase64 ? (
+              <Image
+                source={{ uri: `data:image/jpeg;base64,${profileImageBase64}` }}
+                style={styles.userProfileImage}
+              />
+            ) : (
+              <Image
+                source={require('../../assets/Default-Profile-Picture-Icon.png')}
+                style={styles.userProfileImage}
+              />
+            )}
+          </TouchableOpacity>
+          <Text style={styles.userName}>{userDetails?.name}</Text>
+        </View>
+      )}
 
       <View style={styles.propertyDetails}>
         <Text style={styles.title}>{propertyListing.title}</Text>
@@ -139,6 +187,7 @@ const PropertyListingScreen = ({ route }) => {
               longitudeDelta: region.longitudeDelta / 2,
             };
             setRegion(zoomInRegion);
+            console.log("This is the line: ", userDetails)
           }}
         >
           <Ionicons name="add-circle" size={24} color="white" />
@@ -239,6 +288,12 @@ const styles = StyleSheet.create({
   infoWindowText: {
     fontSize: 12,
     width: '100%',
+  },
+  userProfileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    alignContent: 'center',
   },
 });
 
