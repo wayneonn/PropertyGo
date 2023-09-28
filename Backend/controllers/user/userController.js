@@ -1,4 +1,4 @@
-const { User, Property } = require('../../models');
+const { User, Property, Image } = require('../../models');
 const sharp = require('sharp');
 
 async function getAllUsers(req, res) {
@@ -225,12 +225,35 @@ async function getUserFavorites(req, res) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json(user.favouriteProperties);
+    // Create an array to store user's favorite properties with image IDs
+    const favoritePropertiesWithImages = [];
+
+    // Loop through the user's favorite properties
+    for (const property of user.favouriteProperties) {
+      // Find the associated images for the property
+      const images = await Image.findAll({ where: { propertyId: property.propertyListingId } });
+
+      // Map image IDs
+      const imageIds = images.map((image) => image.imageId);
+
+      // Create a property object with image IDs
+      const propertyWithImages = {
+        ...property.toJSON(),
+        images: imageIds,
+      };
+
+      // Add the property object to the array
+      favoritePropertiesWithImages.push(propertyWithImages);
+    }
+
+    // Respond with the user's favorite properties including image IDs
+    res.json(favoritePropertiesWithImages);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 }
+
 
 async function isPropertyInFavorites(req, res) {
   try {
