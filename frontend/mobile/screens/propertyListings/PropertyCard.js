@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     View,
     Text,
@@ -8,12 +8,14 @@ import {
     Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getImageUriById } from '../../utils/api';
+import { getImageUriById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites } from '../../utils/api';
+import { AuthContext } from '../../AuthContext';
 
-const PropertyCard = ({ property, onPress, onFavoritePress }) => {
+const PropertyCard = ({ property, onPress }) => {
     const [propertyImageUri, setPropertyImageUri] = useState('');
-
-    const cardSize = Dimensions.get('window').width; // Make it equal to the screen width
+    const [isFavorite, setIsFavorite] = useState(false);
+    const { user } = useContext(AuthContext);
+    const cardSize = Dimensions.get('window').width;
 
     useEffect(() => {
         if (property.images && property.images.length > 0) {
@@ -21,10 +23,61 @@ const PropertyCard = ({ property, onPress, onFavoritePress }) => {
             const imageUri = getImageUriById(smallestImageId);
             setPropertyImageUri(imageUri);
         }
+        
+        // Check if the property is in favorites and update the isFavorite state
+        checkIfPropertyIsFavorite();
     }, [property]);
 
+    const checkIfPropertyIsFavorite = async () => {
+        const userId = user.user.userId; 
+        try {
+            const { success, data } = await isPropertyInFavorites(userId, property.propertyListingId);
+
+            if (success) {
+                setIsFavorite(data.isLiked);
+            } else {
+                console.error('Error checking if property is in favorites:', data.message);
+            }
+        } catch (error) {
+            console.error('Error checking if property is in favorites:', error);
+        }
+    };
+
+    const handleFavoriteToggle = async () => {
+        const userId = user.user.userId; 
+        try {
+            if (isFavorite) {
+                // Remove the property from favorites
+                console.log('Removing property from favorites...');
+                const { success } = await removeFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
+    
+                if (success) {
+                    setIsFavorite(false);
+                    console.log('Property removed from favorites.');
+                } else {
+                    console.error('Error removing property from favorites.');
+                }
+            } else {
+                // Add the property to favorites
+                console.log('Adding property to favorites...');
+                const { success } = await addFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
+    
+                if (success) {
+                    setIsFavorite(true);
+                    console.log('Property added to favorites.');
+                } else {
+                    console.error('Error adding property to favorites.');
+                }
+            }
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+        }
+    };
+    
+    
+
     return (
-        <TouchableOpacity style={[styles.card, { width: cardSize * 0.85, height: cardSize * 0.8}]} onPress={() => onPress(property.propertyId)}>
+        <TouchableOpacity style={[styles.card, { width: cardSize * 0.85, height: cardSize * 0.8 }]} onPress={() => onPress(property.propertyId)}>
             <View style={styles.imageContainer}>
                 {propertyImageUri ? (
                     <Image source={{ uri: propertyImageUri }} style={[styles.propertyImage, { borderRadius: 10 }]} />
@@ -44,12 +97,12 @@ const PropertyCard = ({ property, onPress, onFavoritePress }) => {
                 </Text>
                 <TouchableOpacity
                     style={styles.favoriteButton}
-                    onPress={() => onFavoritePress(property.propertyId)}
+                    onPress={handleFavoriteToggle}
                 >
                     <Ionicons
-                        name={property.isFavorite ? 'heart' : 'heart-outline'}
+                        name={isFavorite ? 'heart' : 'heart-outline'}
                         size={24}
-                        color={property.isFavorite ? '#f00' : '#333'}
+                        color={isFavorite ? 'red' : '#333'}
                     />
                 </TouchableOpacity>
             </View>

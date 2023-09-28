@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons } from '@expo/ve
 import { getPropertyListing, getImageUriById, getUserById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites } from '../../utils/api';
 import base64 from 'react-native-base64';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../AuthContext';
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -21,6 +22,7 @@ const PropertyListingScreen = ({ route }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [propertyListing, setPropertyListing] = useState(null);
   const [userDetails, setUser] = useState(null);
+  const { user } = useContext(AuthContext);
   const [region, setRegion] = useState({
     latitude: 1.36922522142582,
     longitude: 103.848493192474,
@@ -29,6 +31,7 @@ const PropertyListingScreen = ({ route }) => {
   });
 
   const fetchUser = async (userId) => {
+    console.log('Fetching user with ID:', userId);
     const { success, data, message } = await getUserById(userId);
 
     if (success) {
@@ -50,11 +53,14 @@ const PropertyListingScreen = ({ route }) => {
   }, [propertyListingId]);
 
   const checkIfPropertyIsFavorite = async () => {
+    const userId = user.user.userId;
     // Check if the property is in favorites and update the isFavorite state
     const { success, data, message } = await isPropertyInFavorites(
-      userDetails.userId, // Pass the user ID
+      userId, // Pass the user ID
       propertyListingId // Pass the property ID
     );
+
+    console.log('isPropertyInFavorites:', success, data, message);
 
     if (success) {
       setIsFavorite(data.isLiked);

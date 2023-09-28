@@ -259,25 +259,24 @@ async function isPropertyInFavorites(req, res) {
   try {
     const { userId, propertyId } = req.params;
 
-    // Find the user by ID
-    const user = await User.findByPk(userId);
+    // Find the user by ID and include their favorite properties
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Property,
+          as: 'favouriteProperties',
+          where: { propertyListingId: propertyId }, // Check if the property with the given ID exists in favorites
+          required: false, // Use "required: false" to perform a left join
+        },
+      ],
+    });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Find the property by ID
-    const property = await Property.findByPk(propertyId);
-
-    if (!property) {
-      return res.status(404).json({ message: 'Property not found' });
-    }
-
     // Check if the property exists in the user's favorite properties
-    const userFavorites = await user.getFavouriteProperties(); // Assuming you have a "getFavouriteProperties" association
-
-    // Check if the property is in the user's favorites
-    const isLiked = userFavorites.some((favProperty) => favProperty.id === property.id);
+    const isLiked = user.favouriteProperties.length > 0;
 
     res.json({ isLiked });
   } catch (error) {
@@ -285,6 +284,7 @@ async function isPropertyInFavorites(req, res) {
     res.status(500).json({ message: 'Server error' });
   }
 }
+
 
 
 module.exports = {
