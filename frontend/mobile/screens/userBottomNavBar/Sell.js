@@ -261,6 +261,26 @@ export default function PropertyListing() {
         </View>
 
         <View style={styles.inputContainer}>
+          <Text style={styles.label}>Price</Text>
+          <TextInput
+            placeholder="$ Price"
+            value={property.price}
+            onChangeText={(text) => setProperty({ ...property, price: text })}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Size</Text>
+          <TextInput
+            placeholder="Size (sqm)"
+            value={property.size}
+            onChangeText={(text) => setProperty({ ...property, size: text })}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
           <Text style={styles.label}>Bed</Text>
           <TextInput
             placeholder="Bed"
@@ -340,15 +360,7 @@ export default function PropertyListing() {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Price</Text>
-          <TextInput
-            placeholder="$ Price"
-            value={property.price}
-            onChangeText={(text) => setProperty({ ...property, price: text })}
-            style={styles.input}
-          />
-        </View>
+
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Property Type</Text>

@@ -189,7 +189,7 @@ const PropertyListingScreen = ({ route }) => {
 
           <View style={styles.propertyDetailsTopRight}>
             <TouchableOpacity style={styles.favoriteButton} onPress={handleFavoriteButtonPress}>
-              <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={24} color={isFavorite ? '#f00' : '#333'} />
+              <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={30} color={isFavorite ? '#f00' : '#333'} />
             </TouchableOpacity>
             {userDetails && (
               <View style={styles.userInfoContainer}>
@@ -462,6 +462,10 @@ const styles = StyleSheet.create({
     color: '#333',
     letterSpacing: 2,
   },
+  favoriteButton: {
+    marginRight: 10,
+    paddingBottom: 10,
+  }
 });
 
 export default PropertyListingScreen;
