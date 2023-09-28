@@ -1,6 +1,4 @@
 // This is all the API calls for Documents.
-import {AuthContext} from "../AuthContext";
-import {useContext} from "react";
 
 export const BASE_URL = "http://172.20.10.2:3000"; // Change this according to Wifi.
 // Dumping all my API's here.

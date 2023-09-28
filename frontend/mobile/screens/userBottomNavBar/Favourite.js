@@ -1,13 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
-import TopBar from '../../components/Common/TopNavBar';
+import {SafeAreaView, Text} from 'react-native';
 
 const Favourite = () => {
     return (
-      <SafeAreaView >
-        <Text>FavouriteScreen</Text>
-      </SafeAreaView>
+        <SafeAreaView>
+            <Text>FavouriteScreen</Text>
+        </SafeAreaView>
     );
-  };
+};
 
-  export default Favourite;
+export default Favourite;

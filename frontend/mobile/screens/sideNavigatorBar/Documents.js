@@ -21,7 +21,7 @@ import {openBrowserAsync} from "expo-web-browser";
 import {AuthContext} from "../../AuthContext";
 import DropDownPicker from 'react-native-dropdown-picker';
 import {DocumentSelector} from "../../components/DocumentSelector";
-import {fetchDocuments, fetchFolders, BASE_URL} from "../../utils/documentApi";
+import {BASE_URL, fetchDocuments, fetchFolders} from "../../utils/documentApi";
 
 // ICON IMPORTS
 import {AntDesign, Entypo, FontAwesome, MaterialIcons} from '@expo/vector-icons';
@@ -35,6 +35,7 @@ if (Platform.OS === "web") {
 
 /* CONSTANTS FOR THE WHOLE PAGE */
 const {width} = Dimensions.get("window");
+
 // This is getting a bit cancer having to go to multiple files to change it.
 
 function UploadScreen({navigation}) {

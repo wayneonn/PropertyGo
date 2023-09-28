@@ -5,7 +5,7 @@ import {AntDesign, Foundation, MaterialIcons} from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import {AuthContext} from "../AuthContext";
 import DropDownPicker from "react-native-dropdown-picker";
-import {fetchFolders, fetchTransactions, BASE_URL} from "../utils/documentApi";
+import {BASE_URL, fetchFolders, fetchTransactions} from "../utils/documentApi";
 
 export const DocumentSelector = ({documentFetch, folderState, setFolderState}) => {
     const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload

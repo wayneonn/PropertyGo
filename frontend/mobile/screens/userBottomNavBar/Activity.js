@@ -1,16 +1,15 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
-import TopBar from '../../components/Common/TopNavBar';
+import {SafeAreaView, Text} from 'react-native';
 
 
 const Activity = () => {
 
 
     return (
-      <SafeAreaView >
-        <Text>ActivityScreen</Text>
-      </SafeAreaView>
+        <SafeAreaView>
+            <Text>ActivityScreen</Text>
+        </SafeAreaView>
     );
-  };
+};
 
-  export default Activity;
+export default Activity;
