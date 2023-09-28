@@ -232,6 +232,38 @@ async function getUserFavorites(req, res) {
   }
 }
 
+async function isPropertyInFavorites(req, res) {
+  try {
+    const { userId, propertyId } = req.params;
+
+    // Find the user by ID
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Find the property by ID
+    const property = await Property.findByPk(propertyId);
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
+    }
+
+    // Check if the property exists in the user's favorite properties
+    const userFavorites = await user.getFavouriteProperties(); // Assuming you have a "getFavouriteProperties" association
+
+    // Check if the property is in the user's favorites
+    const isLiked = userFavorites.some((favProperty) => favProperty.id === property.id);
+
+    res.json({ isLiked });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -241,4 +273,5 @@ module.exports = {
   addFavoriteProperty,
   removeFavoriteProperty,
   getUserFavorites,
+  isPropertyInFavorites,
 };

@@ -174,3 +174,88 @@ export const getUserById = async (userId) => {
     return { success: false, message: error.message };
   }
 };
+
+export const addFavoriteProperty = async (userId, propertyId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${USER_ENDPOINT}/${userId}/addFavorite/${propertyId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.message };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const removeFavoriteProperty = async (userId, propertyId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${USER_ENDPOINT}/${userId}/removeFavorite/${propertyId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.message };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const getUserFavorites = async (userId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${USER_ENDPOINT}/${userId}/favorites`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.message };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const isPropertyInFavorites = async (userId, propertyId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${USER_ENDPOINT}/${userId}/isPropertyInFavorites/${propertyId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.message };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
