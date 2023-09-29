@@ -6,8 +6,9 @@ import IntroScreen from "../../screens/partnerApplication/InfoScreen";
 import CompanyInfoScreen from '../../screens/partnerApplication/CompanyInfo';
 import UserRoleScreen from '../../screens/partnerApplication/UserRole';
 import CreditCardInfoScreen from "../partnerApplication/CreditCardInfoScreen";
-import {FormDataProvider} from '../../contexts/PartnerApplicationFormDataContext'
 import DocumentSubmission from "../partnerApplication/DocumentSubmission";
+import EndingScreen from "../partnerApplication/EndingScreen";
+import {FormDataProvider} from '../../contexts/PartnerApplicationFormDataContext'
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ export default function App() {
                     <Stack.Screen name="User Role" component={UserRoleScreen}/>
                     <Stack.Screen name="Credit Card Info" component={CreditCardInfoScreen}/>
                     <Stack.Screen name="Document Selection" component={DocumentSubmission}/>
+                    <Stack.Screen name="Ending" component={EndingScreen}/>
                 </Stack.Navigator>
             </FormDataProvider>
         </NavigationContainer>

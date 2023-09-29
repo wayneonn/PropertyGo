@@ -15,7 +15,7 @@ const DocumentSubmissionScreen = () => {
         // Update the context with the new values
         setFormData({ ...formData, documents: selectedDocuments });
         // Navigate to the next screen or submit the form
-        navigation.navigate('NextScreen'); // Replace with your actual next screen
+        navigation.navigate('Ending'); // Replace with your actual next screen
     };
 
     const uploadSucceed = () => {
@@ -28,7 +28,7 @@ const DocumentSubmissionScreen = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Upload Documents</Text>
-            <DocumentSelector documentFetch={uploadSucceed}/> {/* Replace onSelect with your actual prop if different */}
+            <DocumentSelector documentFetch={uploadSucceed} isTransaction={false}/> {/* Replace onSelect with your actual prop if different */}
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Next</Text>
             </TouchableOpacity>

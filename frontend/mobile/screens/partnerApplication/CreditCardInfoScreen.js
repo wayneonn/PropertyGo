@@ -1,15 +1,15 @@
-import React, {useState} from 'react';
-import { Platform } from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {Platform, ScrollView} from 'react-native';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { Formik, useField } from 'formik';
 import { useNavigation } from '@react-navigation/native';
 import { useFormData } from '../../contexts/PartnerApplicationFormDataContext';
 import * as Yup from 'yup';
-import { isFuture, parse } from 'date-fns';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import {AntDesign} from "@expo/vector-icons";
+import {sendPartnerApplication} from "../../utils/partnerApplicationApi";
+import {AuthContext} from "../../AuthContext";
 
 Yup.addMethod(Yup.string, 'luhn', function (message) {
     return this.test('luhn', message || 'Invalid credit card number', function (value) {
@@ -31,6 +31,22 @@ Yup.addMethod(Yup.string, 'luhn', function (message) {
     });
 });
 
+const getCardType = (cardNumber) => {
+    if (/^4[0-9]{12}(?:[0-9]{3})?$/.test(cardNumber)) {
+        return 'Visa';
+    } else if (/^5[1-5][0-9]{14}$/.test(cardNumber)) {
+        return 'MasterCard';
+    } else if (/^3[47][0-9]{13}$/.test(cardNumber)) {
+        return 'AmericanExpress';
+    } else if (/^6(?:011|5[0-9]{2})[0-9]{12}$/.test(cardNumber)) {
+        return 'Discover';
+    } else if (/^(?:2131|1800|35\d{3})\d{11}$/.test(cardNumber)) {
+        return 'JCB';
+    } else {
+        return 'Unknown';
+    }
+};
+
 const validationSchema = Yup.object().shape({
     cardNumber: Yup.string()
         .required('Card Number is required')
@@ -41,14 +57,27 @@ const validationSchema = Yup.object().shape({
         .matches(/^[a-zA-Z\s]*$/, 'Only alphabets are allowed'),
     cvc: Yup.string()
         .required('CVC is required')
-        .matches(/^[0-9]{3,4}$/, 'CVC must be 3 or 4 digits'),
+        .matches(/^[0-9]{3,4}$/, 'CVC must be 3 or 4 digits')
+        .test('cvc-compatibility', 'Invalid CVC', function (value) {
+            const cardNumber = this.parent.cardNumber;
+            // Determine card type based on card number (you can use regex or any other method)
+            const cardType = getCardType(cardNumber); // Implement this function
+            if (cardType === 'AmericanExpress') {
+                return /^[0-9]{4}$/.test(value);
+            } else {
+                return /^[0-9]{3}$/.test(value);
+            }
+        }),
     expiryDate: Yup.string()
         .required('Expiry Date is required')
         .matches(/^(0[1-9]|1[0-2])\/([0-9]{4})$/, 'Invalid expiry date format')
         .test('is-future', 'The card has expired', (value) => {
+            console.log(value)
             if (!value) return false;
             const [month, year] = value.split('/');
-            const expiryDate = new Date(year, month - 1);
+            const yearNum = Number.parseInt(year)
+            const monthNum = Number.parseInt(month)
+            const expiryDate = new Date(yearNum, monthNum - 1);
             return expiryDate > new Date();
         }),
 });
@@ -58,32 +87,65 @@ const AnimatedInput = ({ fieldName, keyboardType, isDatePicker }) => {
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
     const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
 
-    const onChangeMonthYear = (month, year) => {
-        helpers.setValue(`${month}/${year}`);
+    const [openMonth, setOpenMonth] = useState(false);
+    const [valueMonth, setValueMonth] = useState('');
+
+    const [openYear, setOpenYear] = useState(false);
+    const [valueYear, setValueYear] = useState('');
+
+
+    const onChangeMonthYear = (year, month) => {
+        helpers.setValue(`${month}/${year}`)
+        console.log("Month/Year changed.")
     };
+
+    console.log(meta.error, meta.touched)
 
     return (
         <>
+
             {isDatePicker ? (
                 <View style={{ flexDirection: 'row' }}>
-                    <Picker
-                        selectedValue={field.value ? field.value.split('/')[0] : ''}
-                        onValueChange={(itemValue) => onChangeMonthYear(itemValue, field.value ? field.value.split('/')[1] : '')}
-                    >
-                        <Picker.Item label="Month" value="" />
-                        {months.map((month) => (
-                            <Picker.Item key={month} label={String(month)} value={String(month)} />
-                        ))}
-                    </Picker>
-                    <Picker
-                        selectedValue={field.value ? field.value.split('/')[1] : ''}
-                        onValueChange={(itemValue) => onChangeMonthYear(field.value ? field.value.split('/')[0] : '', itemValue)}
-                    >
-                        <Picker.Item label="Year" value="" />
-                        {years.map((year) => (
-                            <Picker.Item key={year} label={String(year)} value={String(year)} />
-                        ))}
-                    </Picker>
+                    <DropDownPicker
+                        listMode={"MODAL"}
+                        open={openMonth}
+                        value={valueMonth}
+                        items={months.map((month) => ({ label: String(month), value: String(month) }))}
+                        setOpen={setOpenMonth}
+                        setValue={setValueMonth}
+                        defaultValue={field.value ? field.value.split('/')[0] : ''}
+                        containerStyle={{ height: 50, width: 100 }}
+                        style={{ backgroundColor: '#fafafa' }}
+                        itemStyle={{
+                            justifyContent: 'flex-start'
+                        }}
+                        dropDownStyle={{ backgroundColor: '#fafafa' }}
+                        onChangeItem={(item) => {
+                            console.log("Month Picker Changed:", item);
+                            setValueMonth(item.value);
+                            onChangeMonthYear(item.value, valueYear);
+                        }}
+                    />
+                    <DropDownPicker
+                        listMode={"MODAL"}
+                        open={openYear}
+                        value={valueYear}
+                        items={years.map((year) => ({ label: String(year), value: String(year) }))}
+                        setOpen={setOpenYear}
+                        setValue={setValueYear}
+                        defaultValue={field.value ? field.value.split('/')[1] : ''}
+                        containerStyle={{ height: 50, width: 100 }}
+                        style={{ backgroundColor: '#fafafa' }}
+                        itemStyle={{
+                            justifyContent: 'flex-start'
+                        }}
+                        dropDownStyle={{ backgroundColor: '#fafafa' }}
+                        onChangeItem={(item) => {
+                            console.log("Year Picker Changed:", item);
+                            setValueYear(item.value);
+                            onChangeMonthYear(valueMonth, item.value);
+                        }}
+                    />
                 </View>
             ) : (
                 <TextInput
@@ -103,17 +165,23 @@ const AnimatedInput = ({ fieldName, keyboardType, isDatePicker }) => {
 const CreditCardInfoScreen = () => {
     const navigation = useNavigation();
     const { formData, setFormData } = useFormData(); // Using the context
+    const {user} = useContext(AuthContext);
+    const USER_ID = user.user.userId;
 
-    const handleSubmit = (values) => {
+    const handleSubmit = async (values) => {
         // Update the context with the new values
         setFormData({ ...formData, ...values });
         console.log(formData);
+        // Submit the thing to create the Partner Application.
+        const res = await sendPartnerApplication(formData, USER_ID)
+        // If submission is successful, pass it on to the next screen, or just store it in the form data.
+        console.log(res)
         navigation.navigate('Document Submission')
         // Here you can add your final submission logic or navigate to another screen
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>Credit Card Information</Text>
             <Formik
                 initialValues={{
@@ -138,7 +206,7 @@ const CreditCardInfoScreen = () => {
 
                         <Text style={styles.label}>Expiry Date</Text>
                         <AnimatedInput fieldName="expiryDate" isDatePicker={true} />
-                        <Text>&nbsp;</Text>
+                        <Text>&nbsp;&nbsp;</Text>
                         <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={!isValid}>
                             <Text style={styles.buttonText}>Next</Text>
                             <AntDesign name="arrowright" size={20} color="black" />
@@ -146,16 +214,17 @@ const CreditCardInfoScreen = () => {
                     </View>
                 )}
             </Formik>
-        </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#f2f2f2',
+        paddingBottom: 20,
     },
     title: {
         fontSize: 32,
@@ -187,9 +256,8 @@ const styles = StyleSheet.create({
     },
     errorText: {
         color: 'red',
-        fontSize: 14,
+        fontSize: 12,
         marginBottom: 8,
-        marginLeft: 4,
     },
     buttonText: {
         color: '#fff',
