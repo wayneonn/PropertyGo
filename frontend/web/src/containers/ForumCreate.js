@@ -1,13 +1,12 @@
 import { React, useState } from "react";
 import { Card, Button, Form } from "react-bootstrap";
-import "./styles/Faq.css";
+import "./styles/Forum.css";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import the styles
 
 import API from "../services/API";
-import { formats, modules } from "../components/Common/RichTextEditor";
 
-const FaqCreate = ({ showToast }) => {
+const ForumCreate = ({ showToast }) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [faqType, setFaqType] = useState("");
@@ -88,7 +87,7 @@ const FaqCreate = ({ showToast }) => {
 
   return (
     <div>
-      <Card style={{ width: "26rem", height: "38rem", border: "0" }}>
+      <Card style={{ width: "26rem", height: "38rem", border: "0", marginLeft: "50em" }}>
         <Card.Body>
           <div className="title">
             <Card.Title>Create a FAQ</Card.Title>
@@ -119,12 +118,10 @@ const FaqCreate = ({ showToast }) => {
                   theme="snow"
                   className={
                     validationMessages.emptyFaqQuestion ||
-                      validationMessages.faqQuestionUnique
+                    validationMessages.faqQuestionUnique
                       ? "is-invalid"
                       : ""
                   }
-                  modules={modules}
-                  formats={formats}
                 />
                 {validationMessages.emptyFaqQuestion && (
                   <Form.Control.Feedback type="invalid">
@@ -148,8 +145,6 @@ const FaqCreate = ({ showToast }) => {
                   className={
                     validationMessages.emptyFaqAnswer ? "is-invalid" : ""
                   }
-                  modules={modules}
-                  formats={formats}
                 />
                 {validationMessages.emptyFaqAnswer && (
                   <Form.Control.Feedback type="invalid">
@@ -183,4 +178,4 @@ const FaqCreate = ({ showToast }) => {
   );
 };
 
-export default FaqCreate;
+export default ForumCreate;

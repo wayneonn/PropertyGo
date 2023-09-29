@@ -10,7 +10,7 @@
 
 .sellerfaq {
   background-color: #FFFFFF;
-  width: 810px;
+  width: 70em;
   height: 340px;
   margin-bottom: 20px;
   border-radius: 5px;
@@ -18,7 +18,7 @@
 
 .buyerfaq {
   background-color: #FFFFFF;
-  width: 810px;
+  width: 70em;
   height: 340px;
   border-radius: 5px;
 }

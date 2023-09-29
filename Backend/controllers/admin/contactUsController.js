@@ -4,7 +4,7 @@ const { ContactUs } = require("../../models");
 const getAllContactUs = async (req, res) => {
     try {
         const contactUss = await ContactUs.findAll({
-            attributes: ['contactUsId', 'title', 'message', 'reason', 'status', 'response', 'createdAt', 'updatedAt', 'userId'],
+            attributes: ['contactUsId', 'title', 'message', 'reason', 'status', 'createdAt', 'updatedAt', 'userId', 'adminId'],
         });
 
         const formmatedContactUss = contactUss.map(contactUs => {
@@ -14,10 +14,10 @@ const getAllContactUs = async (req, res) => {
                 message: contactUs.message,
                 reason: contactUs.reason,
                 status: contactUs.status,
-                response: contactUs.response,
                 createdAt: moment(contactUs.createdAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
                 updatedAt: moment(contactUs.updatedAt).tz('Asia/Singapore').format('YYYY-MM-DD HH:mm:ss'),
-                userId: contactUs.userId
+                userId: contactUs.userId,
+                adminId: contactUs.adminId
             };
         });
 
@@ -43,13 +43,13 @@ const getSingleContactUs = async (req, res) => {
     }
 };
 
-const respondContactUs = async (req, res) => {
+const closeContactUs = async (req, res) => {
     const { id: contactUsId } = req.params;
 
     try {
         const contactUs = await ContactUs.findByPk(contactUsId);
 
-        req.body.status = "REPLIED";
+        req.body.status = "CLOSED";
         req.body.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
         await contactUs.update(req.body);
@@ -66,5 +66,5 @@ const respondContactUs = async (req, res) => {
 module.exports = {
     getAllContactUs,
     getSingleContactUs,
-    respondContactUs
+    closeContactUs
 }
