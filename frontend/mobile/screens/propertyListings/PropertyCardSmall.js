@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.3,
       shadowRadius: 4.65,
       elevation: 7,
+      marginLeft: 10,
     },
     imageContainer: {
       width: '100%',
@@ -117,6 +118,13 @@ const styles = StyleSheet.create({
       fontSize: 12,
       color: '#555',
     },
+    propertyListing: {
+        flexDirection: 'row',
+        marginBottom: 20, // Adjust this value to control the spacing between cards
+        padding: 10,
+        borderRadius: 10,
+        backgroundColor: '#fff',
+      },
   });
 
 export default PropertyCard;
