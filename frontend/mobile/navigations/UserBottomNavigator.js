@@ -10,7 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import PropertyListingsStackGroup from './PropertyListingsStackGroup';
 import FavouriteStackGroup from './FavouriteStackGroup';
-
+import HomeStackGroup from './HomeStackGroup';
 
 const Tab = createBottomTabNavigator();
 
@@ -53,7 +53,7 @@ const UserBottomNavigator = () => {
                 },
             })}
         >
-            <Tab.Screen name="Home" component={HomePage} />
+            <Tab.Screen name="Home" component={HomeStackGroup} />
             <Tab.Screen name="Favourite" component={FavouriteStackGroup} />
             <Tab.Screen name="Sell" component={PropertyListingsStackGroup} />
             <Tab.Screen name="Forum" component={Forum} />

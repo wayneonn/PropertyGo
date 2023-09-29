@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const { sequelize } = require('../../models');
-const { getAllProperties, createProperty, updateProperty, getPropertyById, countUsersFavoritedProperty, getPropertiesByFavoriteCount, getPropertiesByRegion} = require('../../controllers/user/propertyController');
+const { getAllProperties, createProperty, updateProperty, getPropertyById, countUsersFavoritedProperty, getPropertiesByFavoriteCount, getPropertiesByRegion, getRecentlyAddedProperties} = require('../../controllers/user/propertyController');
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 router.get('/:propertyId/numOfFavorite', countUsersFavoritedProperty);
 router.get('/topFavoritedProperty', getPropertiesByFavoriteCount);
+router.get('/recently-added', getRecentlyAddedProperties);
 router.get('/propertiesByRegion/:region', getPropertiesByRegion);
 router.get('/', getAllProperties);
 router.post('/', upload.array('images', 15), createProperty);

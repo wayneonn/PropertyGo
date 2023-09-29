@@ -163,24 +163,53 @@ async function getPropertiesByRegion(req, res) {
     try {
         const { region } = req.params;
 
-        // Find properties based on the region parameter
+        // Find properties based on the specified region parameter, including only image IDs
         const properties = await Property.findAll({
             where: {
                 region: region,
             },
+            include: [
+                {
+                    model: Image,
+                    as: 'propertyImages', // Use the correct association name
+                    attributes: ['imageId', 'propertyId'], // Include both imageId and propertyId
+                },
+            ],
         });
 
-        if (!properties || properties.length === 0) {
-            return res.status(404).json({ message: 'No properties found in the specified region' });
-        }
+        // Create an object to store image IDs mapped to property IDs
+        const imageIdToPropertyIdMap = {};
 
-        // Respond with properties from the specified region
-        res.json(properties);
+        // Populate the mapping of image IDs to property IDs
+        properties.forEach(property => {
+            property.propertyImages.forEach(image => {
+                const propertyId = image.propertyId;
+                const imageId = image.imageId;
+                if (!imageIdToPropertyIdMap[propertyId]) {
+                    imageIdToPropertyIdMap[propertyId] = [];
+                }
+                imageIdToPropertyIdMap[propertyId].push(imageId);
+            });
+        });
+
+        // Create an array to store property data along with image IDs
+        const recentlyAddedPropertiesWithImageIds = properties.map(property => {
+            const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
+            return {
+                ...property.toJSON(),
+                images: imageIds,
+            };
+        });
+
+        // Respond with the sorted list of properties including image IDs
+        res.json(recentlyAddedPropertiesWithImageIds);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 }
+
+
 
 // Add a new route to get properties sorted by favorite count in descending order
 async function getPropertiesByFavoriteCount(req, res) {
@@ -192,32 +221,105 @@ async function getPropertiesByFavoriteCount(req, res) {
                     model: User,
                     as: 'favouritedByUsers',
                 },
+                {
+                    model: Image,
+                    as: 'propertyImages',
+                    attributes: ['imageId', 'propertyId'], // Include both imageId and propertyId
+                },
             ],
         });
 
-        // Create an array to store property data along with favorite counts
-        const propertiesWithFavoriteCount = properties.map(property => {
+        // Check if properties is undefined or empty
+        if (!properties || properties.length === 0) {
+            return res.status(404).json({ message: 'No properties found' });
+        }
+
+        // Create an object to store image IDs mapped to property IDs
+        const imageIdToPropertyIdMap = {};
+
+        // Populate the mapping of image IDs to property IDs
+        properties.forEach(property => {
+            property.propertyImages.forEach(image => {
+                const propertyId = image.propertyId;
+                const imageId = image.imageId;
+                if (!imageIdToPropertyIdMap[propertyId]) {
+                    imageIdToPropertyIdMap[propertyId] = [];
+                }
+                imageIdToPropertyIdMap[propertyId].push(imageId);
+            });
+        });
+
+        // Create an array to store property data along with favorite counts and image IDs
+        const propertiesWithFavoriteCountAndImages = properties.map(property => {
             const favoriteCount = property.favouritedByUsers.length;
+            const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
             return {
-                propertyData: property.toJSON(),
+                ...property.toJSON(),
+                images: imageIds,
                 favoriteCount,
             };
         });
 
         // Sort properties by favorite count in descending order
-        propertiesWithFavoriteCount.sort((a, b) => b.favoriteCount - a.favoriteCount);
+        propertiesWithFavoriteCountAndImages.sort((a, b) => b.favoriteCount - a.favoriteCount);
 
-        if (propertiesWithFavoriteCount.length === 0) {
-            return res.status(404).json({ message: 'No properties found' });
-        }
-
-        // Respond with the sorted list of properties
-        res.json(propertiesWithFavoriteCount.map(item => item.propertyData));
+        // Respond with the sorted list of properties including image IDs
+        res.json(propertiesWithFavoriteCountAndImages);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 }
+
+
+
+// Get recently added properties sorted by postedAt datetime
+async function getRecentlyAddedProperties(req, res) {
+    try {
+        // Find all properties and sort them by postedAt datetime in descending order
+        const properties = await Property.findAll({
+            order: [['postedAt', 'DESC']],
+            include: [
+                {
+                    model: Image,
+                    as: 'propertyImages', // Use the correct association name
+                    attributes: ['imageId', 'propertyId'], // Include both imageId and propertyId
+                },
+            ],
+        });
+
+        // Create an object to store image IDs mapped to property IDs
+        const imageIdToPropertyIdMap = {};
+
+        // Populate the mapping of image IDs to property IDs
+        properties.forEach(property => {
+            property.propertyImages.forEach(image => {
+                const propertyId = image.propertyId;
+                const imageId = image.imageId;
+                if (!imageIdToPropertyIdMap[propertyId]) {
+                    imageIdToPropertyIdMap[propertyId] = [];
+                }
+                imageIdToPropertyIdMap[propertyId].push(imageId);
+            });
+        });
+
+        // Create an array to store property data along with image IDs
+        const recentlyAddedPropertiesWithImageIds = properties.map(property => {
+            const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
+            return {
+                ...property.toJSON(),
+                images: imageIds,
+            };
+        });
+
+        // Respond with the sorted list of properties including image IDs
+        res.json(recentlyAddedPropertiesWithImageIds);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
 
   
 module.exports = {
@@ -227,5 +329,6 @@ module.exports = {
     getPropertyById,
     countUsersFavoritedProperty,
     getPropertiesByFavoriteCount,
-    getPropertiesByRegion
+    getPropertiesByRegion,
+    getRecentlyAddedProperties,
 };
