@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {Platform, ScrollView} from 'react-native';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Formik, useField } from 'formik';
 import { useNavigation } from '@react-navigation/native';
@@ -71,6 +72,7 @@ const validationSchema = Yup.object().shape({
     expiryDate: Yup.string()
         .required('Expiry Date is required')
         .matches(/^(0[1-9]|1[0-2])\/([0-9]{4})$/, 'Invalid expiry date format')
+        // I strongly suspect that the test is screwed up.
         .test('is-future', 'The card has expired', (value) => {
             console.log(value)
             if (!value) return false;
@@ -81,71 +83,33 @@ const validationSchema = Yup.object().shape({
             return expiryDate > new Date();
         }),
 });
+
+// Slight issues with DatePicker. I need a DatePicker for it work.
 const AnimatedInput = ({ fieldName, keyboardType, isDatePicker }) => {
     const [field, meta, helpers] = useField(fieldName);
+    const [show, setShow] = useState(false);
 
-    const months = Array.from({ length: 12 }, (_, i) => i + 1);
-    const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
-
-    const [openMonth, setOpenMonth] = useState(false);
-    const [valueMonth, setValueMonth] = useState('');
-
-    const [openYear, setOpenYear] = useState(false);
-    const [valueYear, setValueYear] = useState('');
-
-
-    const onChangeMonthYear = (year, month) => {
-        helpers.setValue(`${month}/${year}`)
-        console.log("Month/Year changed.")
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate || new Date();
+        setShow(false);
+        helpers.setValue(currentDate);
     };
-
-    console.log(meta.error, meta.touched)
 
     return (
         <>
-
             {isDatePicker ? (
-                <View style={{ flexDirection: 'row' }}>
-                    <DropDownPicker
-                        listMode={"MODAL"}
-                        open={openMonth}
-                        value={valueMonth}
-                        items={months.map((month) => ({ label: String(month), value: String(month) }))}
-                        setOpen={setOpenMonth}
-                        setValue={setValueMonth}
-                        defaultValue={field.value ? field.value.split('/')[0] : ''}
-                        containerStyle={{ height: 50, width: 100 }}
-                        style={{ backgroundColor: '#fafafa' }}
-                        itemStyle={{
-                            justifyContent: 'flex-start'
-                        }}
-                        dropDownStyle={{ backgroundColor: '#fafafa' }}
-                        onChangeItem={(item) => {
-                            console.log("Month Picker Changed:", item);
-                            setValueMonth(item.value);
-                            onChangeMonthYear(item.value, valueYear);
-                        }}
-                    />
-                    <DropDownPicker
-                        listMode={"MODAL"}
-                        open={openYear}
-                        value={valueYear}
-                        items={years.map((year) => ({ label: String(year), value: String(year) }))}
-                        setOpen={setOpenYear}
-                        setValue={setValueYear}
-                        defaultValue={field.value ? field.value.split('/')[1] : ''}
-                        containerStyle={{ height: 50, width: 100 }}
-                        style={{ backgroundColor: '#fafafa' }}
-                        itemStyle={{
-                            justifyContent: 'flex-start'
-                        }}
-                        dropDownStyle={{ backgroundColor: '#fafafa' }}
-                        onChangeItem={(item) => {
-                            console.log("Year Picker Changed:", item);
-                            setValueYear(item.value);
-                            onChangeMonthYear(valueMonth, item.value);
-                        }}
-                    />
+                <View>
+                    <Button title="Select Date" onPress={() => setShow(true)} />
+                    {show && (
+                        <DateTimePicker
+                            testID="dateTimePicker"
+                            value={field.value ? new Date(field.value) : new Date()}
+                            mode="date"
+                            is24Hour={true}
+                            display="default"
+                            onChange={onChange}
+                        />
+                    )}
                 </View>
             ) : (
                 <TextInput
@@ -160,6 +124,7 @@ const AnimatedInput = ({ fieldName, keyboardType, isDatePicker }) => {
         </>
     );
 };
+
 
 
 const CreditCardInfoScreen = () => {
