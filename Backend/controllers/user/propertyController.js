@@ -130,8 +130,9 @@ async function getPropertyById(req, res) {
 
 async function countUsersFavoritedProperty(req, res) {
     try {
+        
       const { propertyId } = req.params;
-  
+      console.log('Counting users who favorited property...', propertyId);
       // Find the property by ID
       const property = await Property.findByPk(propertyId);
   

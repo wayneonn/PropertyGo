@@ -11,7 +11,7 @@ import {
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; // New imports for icons
-import { getPropertyListing, getImageUriById, getUserById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites } from '../../utils/api';
+import { getPropertyListing, getImageUriById, getUserById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites, countUsersFavoritedProperty } from '../../utils/api';
 import base64 from 'react-native-base64';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
@@ -23,12 +23,24 @@ const PropertyListingScreen = ({ route }) => {
   const [propertyListing, setPropertyListing] = useState(null);
   const [userDetails, setUser] = useState(null);
   const { user } = useContext(AuthContext);
+  const [favoriteCount, setFavoriteCount] = useState(0);
   const [region, setRegion] = useState({
     latitude: 1.36922522142582,
     longitude: 103.848493192474,
     latitudeDelta: 0.005, // Adjust initial zoom level
     longitudeDelta: 0.005,
   });
+
+  // Fetch the number of users who have favorited the property
+  const fetchFavoriteCount = async () => {
+    const { success, data, message } = await countUsersFavoritedProperty(propertyListingId);
+    console.log('countUsersFavoritedProperty:', success, data, message);
+    if (success) {
+      setFavoriteCount(data.count); // Assuming the count is in data.count
+    } else {
+      console.error('Error fetching favorite count:', message);
+    }
+  };
 
   const fetchUser = async (userId) => {
     console.log('Fetching user with ID:', userId);
@@ -50,6 +62,7 @@ const PropertyListingScreen = ({ route }) => {
     console.log('Received propertyListingId:', propertyListingId);
     fetchPropertyListing(propertyListingId);
     checkIfPropertyIsFavorite();
+    fetchFavoriteCount();
   }, [propertyListingId]);
 
   const checkIfPropertyIsFavorite = async () => {
@@ -79,6 +92,7 @@ const PropertyListingScreen = ({ route }) => {
 
       if (success) {
         setIsFavorite(false);
+        setFavoriteCount((prevCount) => prevCount - 1);
       } else {
         console.error('Error removing property from favorites:', message);
       }
@@ -91,6 +105,7 @@ const PropertyListingScreen = ({ route }) => {
 
       if (success) {
         setIsFavorite(true);
+        setFavoriteCount((prevCount) => prevCount + 1);
       } else {
         console.error('Error adding property to favorites:', message);
       }
@@ -165,7 +180,7 @@ const PropertyListingScreen = ({ route }) => {
       return 'N/A'; // Handle the case when price or size is null, undefined, or 0
     }
   };
-  
+
 
   return (
     <View style={styles.mainContainer}>
@@ -200,9 +215,12 @@ const PropertyListingScreen = ({ route }) => {
           </View>
 
           <View style={styles.propertyDetailsTopRight}>
-            <TouchableOpacity style={styles.favoriteButton} onPress={handleFavoriteButtonPress}>
-              <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={30} color={isFavorite ? '#f00' : '#333'} />
-            </TouchableOpacity>
+            <View style={styles.favoriteButtonContainer}>
+              <TouchableOpacity style={styles.favoriteButton} onPress={handleFavoriteButtonPress}>
+                <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={30} color={isFavorite ? 'red' : '#333'} />
+              </TouchableOpacity>
+              <Text style={{ color: isFavorite ? 'red' : '#333', marginRight: 6, marginTop: -12, fontSize: 16, fontWeight: 'bold' }}>{favoriteCount}</Text>
+            </View>
             {userDetails && (
               <View style={styles.userInfoContainer}>
                 <TouchableOpacity
@@ -482,6 +500,11 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     marginBottom: 20,
   },
+  favoriteButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
 });
 
 export default PropertyListingScreen;
