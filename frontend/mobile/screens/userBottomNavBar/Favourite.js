@@ -1,30 +1,22 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import PropertyCard from '../propertyListings/PropertyCard'; // Import the PropertyCard component
-import PropertyCardRectangle from '../propertyListings/PropertyCardRectangle'; // Import the PropertyCardRectangle component
+import PropertyCard from '../propertyListings/PropertyCard';
+import PropertyCardRectangle from '../propertyListings/PropertyCardRectangle';
 import { getUserFavorites, removeFavoriteProperty, isPropertyInFavorites } from '../../utils/api';
 import { AuthContext } from '../../AuthContext';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 
 const Favourite = ({ navigation }) => {
   const [favorites, setFavorites] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [isSquareLayout, setIsSquareLayout] = useState(true); // State for card layout
-
-  // Access the user context within the functional component
+  const [isSquareLayout, setIsSquareLayout] = useState(true);
   const { user } = useContext(AuthContext);
 
-  useEffect(() => {
-    fetchFavorites();
-  }, []);
-
   const fetchFavorites = async () => {
-    // Fetch user's favorite properties
-    const userId = user.user.userId; // Replace with the user's actual ID
+    const userId = user.user.userId;
     const { success, data } = await getUserFavorites(userId);
-
     if (success) {
-      // Check if each property is in favorites and update the isFavorite property
       const updatedFavorites = await Promise.all(
         data.map(async (property) => {
           const { success, data } = await isPropertyInFavorites(
@@ -42,14 +34,11 @@ const Favourite = ({ navigation }) => {
   };
 
   const handleFavoritePress = async (propertyId) => {
-    const userId = user.user.userId; // Replace with the user's actual ID
-
-    // Remove or add property to favorites
+    const userId = user.user.userId;
     const property = favorites.find((p) => p.propertyId === propertyId);
     if (property) {
       const { success } = await removeFavoriteProperty(userId, propertyId);
       if (success) {
-        // Update the isFavorite property in the local state
         setFavorites((prevFavorites) =>
           prevFavorites.map((p) =>
             p.propertyId === propertyId ? { ...p, isFavorite: false } : p
@@ -66,6 +55,13 @@ const Favourite = ({ navigation }) => {
   const toggleCardLayout = () => {
     setIsSquareLayout((prevIsSquareLayout) => !prevIsSquareLayout);
   };
+
+  // Use useFocusEffect to refresh the screen when it gains focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchFavorites();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
