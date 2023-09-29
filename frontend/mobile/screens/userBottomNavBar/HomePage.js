@@ -68,6 +68,10 @@ const HomePage = ({ navigation }) => {
     navigation.navigate('PropertyList', { properties, title });
   };
 
+  const handleTitlePress = (title, properties) => {
+    navigation.navigate('Properties List', { title: title, properties: properties, navigation: navigation});
+  };
+
   return (
     <ScrollView style={styles.container}>
       {/* Search bar */}
@@ -76,39 +80,37 @@ const HomePage = ({ navigation }) => {
       {/* <Image source={require('../../assets/Home-Image.jpeg')} style={styles.mainContentImage} /> */}
       {/* Popular Properties Section */}
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Popular Properties</Text>
+      <TouchableOpacity onPress={() => handleTitlePress('Popular Properties', popularProperties)}>
+          <Text style={styles.sectionTitle}>Popular Properties</Text>
+        </TouchableOpacity>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {popularProperties.map((property) => (
             <PropertyCard key={property.propertyId} property={property} onPress={() => navigation.navigate('Property Listing', { propertyListingId: property.propertyListingId })} />
           ))}
         </ScrollView>
-        <TouchableOpacity style={styles.viewAllButton} onPress={() => viewAllProperties(popularProperties, 'Popular Properties')}>
-          <Text style={styles.viewAllText}>View All</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Recently Added Properties Section */}
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Recently Added Properties</Text>
+        <TouchableOpacity onPress={() => handleTitlePress('Recently Added Properties', recentlyAddedProperties)}>
+          <Text style={styles.sectionTitle}>Recently Added Properties</Text>
+        </TouchableOpacity>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {recentlyAddedProperties.map((property) => (
             <PropertyCard key={property.propertyId} property={property} onPress={() => navigation.navigate('Property Listing', { propertyListingId: property.propertyListingId })} />
           ))}
         </ScrollView>
-        <TouchableOpacity style={styles.viewAllButton} onPress={() => viewAllProperties(recentlyAddedProperties, 'Recently Added Properties')}>
-          <Text style={styles.viewAllText}>View All</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Regions Section */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Regions</Text>
-        <RegionPropertyList region="North" onPropertyPress={handlePropertyPress}/>
-        <RegionPropertyList region="North-East" onPropertyPress={handlePropertyPress}/>
-        <RegionPropertyList region="South" onPropertyPress={handlePropertyPress}/>
-        <RegionPropertyList region="East" onPropertyPress={handlePropertyPress}/>
-        <RegionPropertyList region="West" onPropertyPress={handlePropertyPress}/>
-        <RegionPropertyList region="Central" onPropertyPress={handlePropertyPress}/>
+        <RegionPropertyList region="North" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress}/>
+        <RegionPropertyList region="North-East" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress}/>
+        <RegionPropertyList region="South" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress}/>
+        <RegionPropertyList region="East" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress}/>
+        <RegionPropertyList region="West" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress}/>
+        <RegionPropertyList region="Central" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress}/>
       </View>
     </ScrollView>
   );

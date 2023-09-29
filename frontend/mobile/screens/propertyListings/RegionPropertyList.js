@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ScrollView} from 'react-native';
+import { View, Text, FlatList, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import PropertyCard from './PropertyCardSmall'; // Import your PropertyCard component
 import { getPropertiesByRegion } from '../../utils/api';
 
-const RegionPropertyList = ({ region, onPropertyPress }) => {
+const RegionPropertyList = ({ region, onPropertyPress, handleTitlePress }) => {
   const [properties, setProperties] = useState([]);
 
   useEffect(() => {
@@ -26,24 +26,14 @@ const RegionPropertyList = ({ region, onPropertyPress }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>{region} Properties</Text>
+      <TouchableOpacity onPress={() => handleTitlePress(region, properties)}>
+        <Text style={styles.sectionTitle}>{region} Properties</Text>
+      </TouchableOpacity>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {properties.map((property) => (
           <PropertyCard key={property.propertyId} property={property} onPress={() => onPropertyPress(property.propertyListingId)} />
         ))}
       </ScrollView>
-      {/* <FlatList
-        data={properties}
-        keyExtractor={(item) => item.propertyId.toString()}
-        renderItem={({ item }) => (
-          <PropertyCard
-            property={item}
-            onPress={() => {
-              // Handle navigation to property details page
-            }}
-          />
-        )}
-      /> */}
     </View>
   );
 };
