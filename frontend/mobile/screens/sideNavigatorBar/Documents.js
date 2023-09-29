@@ -266,7 +266,7 @@ function UploadScreen({navigation}) {
         <SafeAreaView style={styles.container}>
             {/* Wrap the FlatList in a View with border styles */}
             <View style={styles.documentListContainer}>
-                <DocumentSelector documentFetch={fetchData} folderState={folders} setFolderState={setFolders}/>
+                <DocumentSelector documentFetch={fetchData} folderState={folders} isTransaction={true}/>
             </View>
             <Text> &nbsp; &nbsp;</Text>
             <View style={styles.documentListContainer}>

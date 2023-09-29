@@ -7,7 +7,7 @@ import {AuthContext} from "../AuthContext";
 import DropDownPicker from "react-native-dropdown-picker";
 import {BASE_URL, fetchFolders, fetchTransactions} from "../utils/documentApi";
 
-export const DocumentSelector = ({documentFetch, folderState, setFolderState}) => {
+export const DocumentSelector = ({documentFetch, folderState, isTransaction}) => {
     const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
     const [descriptions, setDescriptions] = useState(""); // Description text
     const [length, setLength] = useState(200); // Description text length
@@ -161,10 +161,12 @@ export const DocumentSelector = ({documentFetch, folderState, setFolderState}) =
 
     // This is for the Select Documents
     // Honestly this needs to change depending on what is the current status.
+    // Conditional changes depending on whether it is partner app or not -> If it is an Application, then don't show.
     const renderDocumentItem = ({item}) => (
         <View style={styles.documentItem}>
             <Text style={styles.documentText}>{item.name}</Text>
-            <View style={{zIndex: 5001}}>
+
+            {isTransaction && <View style={{zIndex: 5001}}>
                 <Text style={styles.descriptionText}>Transaction ID: </Text>
                 <DropDownPicker
                     listMode={"MODAL"}
@@ -186,7 +188,7 @@ export const DocumentSelector = ({documentFetch, folderState, setFolderState}) =
                     dropDownStyle={{marginTop: 2, zIndex: 5000}} // Adjust margin, if needed
                     labelStyle={{fontSize: 12, textAlign: 'left', color: '#000'}} // Adjust label font size and color
                 />
-            </View>
+            </View>}
             <Text> &nbsp; &nbsp; </Text>
             <View style={{zIndex: 5000}}>
                 <Text style={styles.descriptionText}>Folder for Document: </Text>
