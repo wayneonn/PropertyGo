@@ -262,7 +262,7 @@ export const isPropertyInFavorites = async (userId, propertyId) => {
 // Add a new route to filter properties by region
 export const getPropertiesByRegion = async (region) => {
   try {
-    const response = await fetch(`${BASE_URL}/${PROPERTY_ENDPOINT}/byRegion/${region}`, {
+    const response = await fetch(`${BASE_URL}/${PROPERTY_ENDPOINT}/propertiesByRegion/${region}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

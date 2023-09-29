@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Image, TextInput} from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Image, TextInput } from 'react-native';
 import PropertyCard from '../propertyListings/PropertyCardSmall';
 import { getPropertiesByFavoriteCount, getRecentlyAddedProperties, getPropertiesByRegion } from '../../utils/api';
 import { AuthContext } from '../../AuthContext';
+import RegionPropertyList from '../propertyListings/RegionPropertyList';
 
 const SearchBar = () => {
   return (
@@ -20,6 +21,10 @@ const HomePage = ({ navigation }) => {
   const [recentlyAddedProperties, setRecentlyAddedProperties] = useState([]);
   const { user } = useContext(AuthContext);
   const userId = user.user.userId;
+  const handlePropertyPress = (propertyListingId) => {
+    // Navigate to the Property Listing screen with the given propertyListingId
+    navigation.navigate('Property Listing', { propertyListingId });
+  };
 
   useEffect(() => {
     // Load popular properties
@@ -98,7 +103,12 @@ const HomePage = ({ navigation }) => {
       {/* Regions Section */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Regions</Text>
-        {/* Include your region buttons here */}
+        <RegionPropertyList region="North" onPropertyPress={handlePropertyPress}/>
+        <RegionPropertyList region="North-East" onPropertyPress={handlePropertyPress}/>
+        <RegionPropertyList region="South" onPropertyPress={handlePropertyPress}/>
+        <RegionPropertyList region="East" onPropertyPress={handlePropertyPress}/>
+        <RegionPropertyList region="West" onPropertyPress={handlePropertyPress}/>
+        <RegionPropertyList region="Central" onPropertyPress={handlePropertyPress}/>
       </View>
     </ScrollView>
   );
@@ -135,8 +145,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#fff',
-    borderWidth: 1,               
-    borderColor: 'grey', 
+    borderWidth: 1,
+    borderColor: 'grey',
   },
   searchInput: {
     flex: 1,
