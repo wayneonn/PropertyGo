@@ -53,7 +53,6 @@ const PropertyCard = ({ property, onPress }) => {
     
                 if (success) {
                     setIsFavorite(false);
-                    console.log('Property removed from favorites.');
                 } else {
                     console.error('Error removing property from favorites.');
                 }
@@ -64,7 +63,6 @@ const PropertyCard = ({ property, onPress }) => {
     
                 if (success) {
                     setIsFavorite(true);
-                    console.log('Property added to favorites.');
                 } else {
                     console.error('Error adding property to favorites.');
                 }

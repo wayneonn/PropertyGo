@@ -1,4 +1,4 @@
-const { Property, Image } = require('../../models');
+const { Property, Image, User } = require('../../models');
 const sharp = require('sharp');
 
 // Get all properties
@@ -128,10 +128,40 @@ async function getPropertyById(req, res) {
     }
 }
 
+async function countUsersFavoritedProperty(req, res) {
+    try {
+      const { propertyId } = req.params;
+  
+      // Find the property by ID
+      const property = await Property.findByPk(propertyId);
+  
+      if (!property) {
+        return res.status(404).json({ message: 'Property not found' });
+      }
+  
+      // Count the number of users who have favorited this property
+      const count = await User.count({
+        include: [
+          {
+            model: Property,
+            as: 'favouriteProperties',
+            where: { propertyListingId: propertyId },
+          },
+        ],
+      });
+  
+      res.json({ count });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+
   
 module.exports = {
     getAllProperties,
     createProperty,
     updateProperty,
-    getPropertyById
+    getPropertyById,
+    countUsersFavoritedProperty,
 };
