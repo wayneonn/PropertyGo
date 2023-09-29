@@ -157,6 +157,67 @@ async function countUsersFavoritedProperty(req, res) {
     }
   }
 
+// Add a new route to filter properties by region
+async function getPropertiesByRegion(req, res) {
+    try {
+        const { region } = req.params;
+
+        // Find properties based on the region parameter
+        const properties = await Property.findAll({
+            where: {
+                region: region,
+            },
+        });
+
+        if (!properties || properties.length === 0) {
+            return res.status(404).json({ message: 'No properties found in the specified region' });
+        }
+
+        // Respond with properties from the specified region
+        res.json(properties);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+// Add a new route to get properties sorted by favorite count in descending order
+async function getPropertiesByFavoriteCount(req, res) {
+    try {
+        // Find all properties and include the associated users who favorited them
+        const properties = await Property.findAll({
+            include: [
+                {
+                    model: User,
+                    as: 'favouritedByUsers',
+                },
+            ],
+        });
+
+        // Create an array to store property data along with favorite counts
+        const propertiesWithFavoriteCount = properties.map(property => {
+            const favoriteCount = property.favouritedByUsers.length;
+            return {
+                propertyData: property.toJSON(),
+                favoriteCount,
+            };
+        });
+
+        // Sort properties by favorite count in descending order
+        propertiesWithFavoriteCount.sort((a, b) => b.favoriteCount - a.favoriteCount);
+
+        if (propertiesWithFavoriteCount.length === 0) {
+            return res.status(404).json({ message: 'No properties found' });
+        }
+
+        // Respond with the sorted list of properties
+        res.json(propertiesWithFavoriteCount.map(item => item.propertyData));
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
   
 module.exports = {
     getAllProperties,
@@ -164,4 +225,6 @@ module.exports = {
     updateProperty,
     getPropertyById,
     countUsersFavoritedProperty,
+    getPropertiesByFavoriteCount,
+    getPropertiesByRegion
 };
