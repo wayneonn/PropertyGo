@@ -15,7 +15,7 @@ import { getPropertyListing, getImageUriById, getUserById, addFavoriteProperty, 
 import base64 from 'react-native-base64';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
-import DefaultImage from '../../assets/No-Image-Available.webp'; 
+import DefaultImage from '../../assets/No-Image-Available.webp';
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -65,6 +65,7 @@ const PropertyListingScreen = ({ route }) => {
     fetchPropertyListing(propertyListingId);
     checkIfPropertyIsFavorite();
     fetchFavoriteCount();
+    console.log('User:', user);
   }, [propertyListingId, user.user.userId]);
 
   const checkIfPropertyIsFavorite = async () => {
@@ -124,6 +125,7 @@ const PropertyListingScreen = ({ route }) => {
       setPropertyListing(data); // Update state with the fetched data
       // Fetch latitude and longitude based on postal code
       fetchLatitudeLongitudeByPostalCode(data.postalCode);
+      console.log('Property Listing Data:', data)
     } catch (error) {
       console.error('Error fetching property listing:', error);
     }
@@ -191,14 +193,14 @@ const PropertyListingScreen = ({ route }) => {
         <View style={styles.imageGallery}>
           <Swiper style={styles.wrapper} showsButtons={false} loop={false} autoplay={true} autoplayTimeout={5}>
             {propertyListing.images.length > 0 ? (
-              propertyListing.images.map((image, index) => (
-                <View key={index} style={styles.slide}>
-                  <Image
-                    source={{ uri: getImageUriById(image.imageId) }}
-                    style={styles.image}
-                  />
-                </View>
-              ))
+              propertyListing.images.map((imageId, index) => {
+                const imageUri = getImageUriById(imageId);
+                return (
+                  <View key={index} style={styles.slide}>
+                    <Image source={{ uri: imageUri }} style={styles.image} />
+                  </View>
+                );
+              })              
             ) : (
               <View style={styles.slide}>
                 <Image
@@ -208,6 +210,7 @@ const PropertyListingScreen = ({ route }) => {
               </View>
             )}
           </Swiper>
+
 
           {/* Add your square boxes for images here. You might need another package or custom UI for this. */}
         </View>

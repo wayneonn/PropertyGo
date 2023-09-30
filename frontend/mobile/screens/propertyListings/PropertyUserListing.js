@@ -190,16 +190,16 @@ const PropertyUserListingScreen = ({ route }) => {
       <ScrollView style={styles.container}>
         {/* Image Gallery */}
         <View style={styles.imageGallery}>
-          <Swiper style={styles.wrapper} showsButtons={false} loop={false} autoplay={true} autoplayTimeout={5}>
+        <Swiper style={styles.wrapper} showsButtons={false} loop={false} autoplay={true} autoplayTimeout={5}>
             {propertyListing.images.length > 0 ? (
-              propertyListing.images.map((image, index) => (
-                <View key={index} style={styles.slide}>
-                  <Image
-                    source={{ uri: getImageUriById(image.imageId) }}
-                    style={styles.image}
-                  />
-                </View>
-              ))
+              propertyListing.images.map((imageId, index) => {
+                const imageUri = getImageUriById(imageId);
+                return (
+                  <View key={index} style={styles.slide}>
+                    <Image source={{ uri: imageUri }} style={styles.image} />
+                  </View>
+                );
+              })              
             ) : (
               <View style={styles.slide}>
                 <Image
