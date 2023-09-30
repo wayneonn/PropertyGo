@@ -6,6 +6,7 @@ import * as DocumentPicker from "expo-document-picker";
 import {AuthContext} from "../AuthContext";
 import DropDownPicker from "react-native-dropdown-picker";
 import {BASE_URL, fetchFolders, fetchTransactions} from "../utils/documentApi";
+import {fetchPartnerApplication} from "../utils/partnerApplicationApi";
 
 export const DocumentSelector = ({documentFetch, folderState, isTransaction}) => {
     const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
@@ -18,7 +19,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
     const [defaultTransactionId, setDefaultTransactionId] = useState(1); // Default transaction id
     const [defaultFolderId, setDefaultFolderId] = useState(1); // Default folder id
     const [selectedFolder, setSelectedFolder] = useState(); // Add state for selected folder
-
+    const [partnerApp, setPartnerApp] = useState([]);
     const [isOpen1, setIsOpen1] = useState(false);
     const [isOpen2, setIsOpen2] = useState(false);
 
@@ -47,10 +48,19 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
         setTransactions(transactions);
     }, [transactions]);
 
+    useEffect(() => {
+        fetchPartnerAppFromServer().then(r => console.log("Fetch partner application successful."))
+    }, []);
+
+    useEffect(() => {
+        console.log(partnerApp);
+        setPartnerApp(partnerApp)
+    }, [partnerApp]);
+
     const fetchFoldersFromServer = async () => {
         try {
             const folders = await fetchFolders(USER_ID)
-            console.log(folders)
+            console.log("Fetched Folders: ", folders)
             setFolders(folders);
             setDefaultFolderId(folders[0].folderId);
             setSelectedFolder(folders[0].folderId);
@@ -62,13 +72,23 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
     const fetchTransactionsFromServer = async () => {
         try {
             const transactions = await fetchTransactions(USER_ID)
-            console.log(transactions)
+            console.log("Fetched Transactions: ", transactions)
             setTransactions(transactions);
             setDefaultTransactionId(transactions[0].transactionId);
         } catch (error) {
             console.error(error);
         }
     };
+
+    const fetchPartnerAppFromServer = async () => {
+        try {
+            const partnerApp = await fetchPartnerApplication(USER_ID)
+            console.log("Fetched Applications: ", partnerApp)
+            setPartnerApp(partnerApp);
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     // This is supposed to show all the documents that you selected.
     const selectDocuments = async () => {
@@ -133,7 +153,11 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
                     });
                 }
                 fileData.append("description", descriptions);
-                fileData.append("transactionId", transactionId);
+                if(isTransaction) {
+                    fileData.append("transactionId", transactionId);
+                } else {
+                    fileData.append("partnerApplicationId", partnerApp[0].partnerApplicationId)
+                }
                 fileData.append("folderId", folderId);
                 fileData.append("userId", USER_ID);
             });

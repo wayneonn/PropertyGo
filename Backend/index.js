@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const globalEmitter = require("./globalEmitter")
 
 // model
 const db = require("./models");
@@ -74,6 +75,14 @@ app.use(
     partnerApplicationUserRouter
 );
 
+globalEmitter.on('newUserCreated', async (user) => {
+    await db.Folder.create({
+        userId: user.userId,
+        timestamp: Date.now(),
+        title: "Default"
+    });
+});
+
 db.sequelize
     .sync()
     .then(async () => {
@@ -104,6 +113,7 @@ db.sequelize
                     await db.User.create(userData);
                 }
                 console.log("User test data inserted successfully.");
+
             } catch (error) {
                 console.error("Error inserting user test data:", error);
             }

@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Animated, Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AntDesign} from '@expo/vector-icons';
+import { useIsFocused } from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
 import {fetchPartnerApplication} from "../../utils/partnerApplicationApi";
 import {fetchDocuments} from "../../utils/documentApi";
@@ -13,6 +14,14 @@ const IntroScreen = () => {
     const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
     const {user} = useContext(AuthContext);
     const USER_ID = user.user.userId;
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isFocused) {
+            console.log('Screen is focused, re-rendering...');
+            fetchPartnerAppFromServer().then(r => console.log("Fetch Partner Applications completed."));
+        }
+    }, [isFocused]);
 
     useEffect(() => {
         Animated.timing(

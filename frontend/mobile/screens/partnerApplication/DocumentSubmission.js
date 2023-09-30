@@ -1,15 +1,30 @@
 // This is a Document Submission screen.
 // Prompt the User to create the Documents as needed.
-import React, { useState } from 'react';
+// I need to work this properly.
+import React, {useContext, useEffect, useState} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useFormData } from '../../contexts/PartnerApplicationFormDataContext';
 import {DocumentSelector} from "../../components/DocumentSelector";
+import {fetchDocuments, fetchFolders} from "../../utils/documentApi";
+import {fetchPartnerApplication} from "../../utils/partnerApplicationApi";
+import {AuthContext} from "../../AuthContext";
 
 const DocumentSubmissionScreen = () => {
     const navigation = useNavigation();
     const { formData, setFormData } = useFormData(); // Using your context
+    const [folders, setFolders] = useState([]) // For Document Selector
     const [selectedDocuments, setSelectedDocuments] = useState([]); // Local state to keep track of selected documents
+    const {user} = useContext(AuthContext);
+    const USER_ID = user.user.userId;
+
+    useEffect(() => {
+        fetchDataFromServer().then(r => console.log("Data completed."));
+    }, []);
+
+    useEffect(() => {
+        console.log("Folder state has been updated:", folders);
+    }, [folders]);
 
     const handleSubmit = () => {
         // Update the context with the new values
@@ -19,8 +34,24 @@ const DocumentSubmissionScreen = () => {
     };
 
     const uploadSucceed = () => {
-        console.log("Upload done.")
+        console.log("Upload Done.")
+        navigation.navigate("Intro");
     }
+
+    // Slight bit of repeat here, need to clean this up.
+    // Really the data fetching should all be done somewhere else to not repeat this.
+    const fetchDataFromServer = async () => {
+        try {
+            const partnerApp = await fetchPartnerApplication(USER_ID)
+            console.log(partnerApp.partnerApp);
+            const folders = await fetchFolders(USER_ID) // Check if users have uploaded docs.
+            console.log(folders)
+            setFolders([...folders]);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
 
     // Do we still need to fetch data???
     // I think it just ignores it if it does not exist.
@@ -28,7 +59,7 @@ const DocumentSubmissionScreen = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Upload Documents</Text>
-            <DocumentSelector documentFetch={uploadSucceed} isTransaction={false}/> {/* Replace onSelect with your actual prop if different */}
+            <DocumentSelector documentFetch={uploadSucceed} folderState={folders} isTransaction={false}/> {/* Replace onSelect with your actual prop if different */}
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Next</Text>
             </TouchableOpacity>
