@@ -13,8 +13,10 @@ export const fetchPartnerApplication = async(USER_ID) => {
 }
 
 export const sendPartnerApplication = async(USER_ID, formData) => {
+    console.log(`This is the data: ${USER_ID} with ${formData}`)
+    formData["userId"] = `${USER_ID}`
     try {
-        const response = await fetch(`${BASE_URL}/user/partner/list/${USER_ID}`, {
+        const response = await fetch(`${BASE_URL}/user/partner/new_app`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

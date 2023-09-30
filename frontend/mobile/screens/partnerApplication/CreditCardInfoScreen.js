@@ -87,29 +87,24 @@ const validationSchema = Yup.object().shape({
 // Slight issues with DatePicker. I need a DatePicker for it work.
 const AnimatedInput = ({ fieldName, keyboardType, isDatePicker }) => {
     const [field, meta, helpers] = useField(fieldName);
-    const [show, setShow] = useState(false);
 
-    const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate || new Date();
-        setShow(false);
-        helpers.setValue(currentDate);
+    const handleDateChange = (input) => {
+        // Optionally, you could add some immediate format validation here
+        helpers.setValue(input);
     };
 
     return (
         <>
             {isDatePicker ? (
                 <View>
-                    <Button title="Select Date" onPress={() => setShow(true)} />
-                    {show && (
-                        <DateTimePicker
-                            testID="dateTimePicker"
-                            value={field.value ? new Date(field.value) : new Date()}
-                            mode="date"
-                            is24Hour={true}
-                            display="default"
-                            onChange={onChange}
-                        />
-                    )}
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={helpers.setValue}
+                        onBlur={field.onBlur(fieldName)}
+                        value={field.value}
+                        placeholder="MM/YYYY"
+                        keyboardType="numeric"
+                    />
                 </View>
             ) : (
                 <TextInput
@@ -135,15 +130,24 @@ const CreditCardInfoScreen = () => {
 
     const handleSubmit = async (values) => {
         // Update the context with the new values
+        console.log(USER_ID)
         setFormData({ ...formData, ...values });
-        console.log(formData);
+        console.log(formData, values);
         // Submit the thing to create the Partner Application.
-        const res = await sendPartnerApplication(formData, USER_ID)
+        const res = await sendPartnerApplication(USER_ID, formData)
         // If submission is successful, pass it on to the next screen, or just store it in the form data.
+        // Also need to enforce creation?
         console.log(res)
-        navigation.navigate('Document Submission')
+        navigation.navigate('Document Selection')
         // Here you can add your final submission logic or navigate to another screen
     };
+
+    useEffect(() => {
+        // This will run whenever formData changes
+        sendPartnerApplication(USER_ID, formData).then(res => {
+            console.log(res);
+        });
+    }, [formData]);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>

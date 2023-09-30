@@ -11,18 +11,25 @@ exports.getPartnerApplicationsByUserID = async (req, res) => {
     }
 }
 
-exports.postPartnerApplicationByUserID = async (res, req) => {
+exports.postPartnerApplicationByUserID = async (req, res) => {
     console.log(req.body);
     try {
-        const {companyName, userRole, cardNumber, cardHolderName, cvc, expiryDate, adminId, userId} = req.body;
+        const {companyName, userRole, cardNumber, cardHolderName, cvc, expiryDate, userId} = req.body;
         // Additional logic here if needed for input validation ---- deciding whether it should be on the frontend or backend.
+        console.log(expiryDate)
+        const adminId = 1; // Hardcode 1 since Admin only has two.
+        const [month, year] = expiryDate.split('/');
+        const yearNum = Number.parseInt(year)
+        const monthNum = Number.parseInt(month)
+        const formatDate = new Date(yearNum, monthNum - 1); // Month at zero-index.
+        console.log("Formatted Date: ", formatDate)
         const newPartnerApplication = await PartnerApplication.create({
             companyName,
             userRole,
             cardNumber,
             cardHolderName,
             cvc,
-            expiryDate,
+            "expiryDate": formatDate,
             adminId,
             userId,
         });

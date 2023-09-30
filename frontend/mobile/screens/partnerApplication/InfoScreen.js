@@ -1,12 +1,14 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Animated, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Animated, Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AntDesign} from '@expo/vector-icons';
 import {useNavigation} from '@react-navigation/native';
 import {fetchPartnerApplication} from "../../utils/partnerApplicationApi";
+import {fetchDocuments} from "../../utils/documentApi";
 import {AuthContext} from "../../AuthContext";
 
 const IntroScreen = () => {
     const [partner, setPartner] = useState([]); // Local state to keep track of selected documents
+    const [documentsValid, setDocumentsValid] = useState(false);
     const navigation = useNavigation();
     const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
     const {user} = useContext(AuthContext);
@@ -38,6 +40,13 @@ const IntroScreen = () => {
         try {
             const partnerApp = await fetchPartnerApplication(USER_ID)
             console.log(partnerApp.partnerApp);
+            const documents = await fetchDocuments(USER_ID) // Check if users have uploaded docs.
+            console.log(documents)
+            if (documents.length === 0) {
+                setDocumentsValid(false)
+            } else {
+                setDocumentsValid(true)
+            }
             console.log(partnerApp.partnerApp[0].approved);
             setPartner([...partnerApp.partnerApp]);
             console.log(partner);
@@ -52,21 +61,27 @@ const IntroScreen = () => {
             {partner.length !== 0 ? (
                 partner.approved ? (
                     <View style={styles.box}>
-                        <Text style={styles.title}>Your Application is successful, welcome to the team!</Text>
-                        <Text style={styles.subtitle}>View your profile to see what else you can do as a
-                            partner. </Text>
+                        <Text style={styles.titleApproved}>Your Application is successful, welcome to the team!</Text>
+                        <Text style={styles.subtitle}>View your profile to see what else you can do as a partner.</Text>
                     </View>
                 ) : (
                     <View style={styles.box}>
-                        <Text style={styles.title}>Wait for your application to be approved.</Text>
+                        <Text style={styles.titlePending}>Wait for your application to be approved.</Text>
                         <Text style={styles.subtitle}>We love to have you join our platform, but we need time. Hope to
                             see you with us soon.</Text>
+                        {!documentsValid &&
+                            (<View style={{paddingVertical: 10}}>
+                                <Button onPress={() => navigation.navigate('Document Selection')}
+                                        title={"Document Selection"}> </Button>
+                                <Text style={styles.warningText}>You have not submitted your documents. Please proceed
+                                    to the document submission page to submit your documents.</Text>
+                            </View>)}
                     </View>
                 )
             ) : (
                 <View>
                     <Animated.View style={styles.box}>
-                        <Text style={styles.title}>Join us as a Partner today.</Text>
+                        <Text style={styles.titleIntro}>Join us as a Partner today.</Text>
                         <Text style={styles.subtitle}>Let's get started on your journey to working on our
                             platform.</Text>
                     </Animated.View>
@@ -78,7 +93,7 @@ const IntroScreen = () => {
             )}
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -93,15 +108,34 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         paddingHorizontal: 10,
     },
-    title: {
-        fontSize: 32,
-        fontWeight: 'bold',
+    titleApproved: {
+        fontSize: 34,
+        fontWeight: '700',
+        color: '#007bff',
+        lineHeight: 40,
+    },
+    titlePending: {
+        fontSize: 34,
+        fontWeight: '700',
+        color: '#404040',
+        lineHeight: 40,
+    },
+    titleIntro: {
+        fontSize: 34,
+        fontWeight: '700',
         color: '#333',
+        lineHeight: 40,
     },
     subtitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontStyle: "italic",
         color: '#666',
+        lineHeight: 28,
+    },
+    warningText: {
+        fontSize: 12,
+        color: 'rgba(255,0,0,0.41)',
+        lineHeight: 24,
     },
     button: {
         flexDirection: 'row',
@@ -114,7 +148,8 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#fff',
-        fontSize: 18,
+        fontSize: 20,
+        fontWeight: '600',
         marginRight: 10,
     },
 });

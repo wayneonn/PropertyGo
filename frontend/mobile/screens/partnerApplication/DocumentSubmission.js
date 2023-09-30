@@ -1,5 +1,5 @@
 // This is a Document Submission screen.
-
+// Prompt the User to create the Documents as needed.
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
