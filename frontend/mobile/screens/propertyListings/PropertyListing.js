@@ -15,6 +15,7 @@ import { getPropertyListing, getImageUriById, getUserById, addFavoriteProperty, 
 import base64 from 'react-native-base64';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
+import DefaultImage from '../../assets/No-Image-Available.webp'; 
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -189,15 +190,25 @@ const PropertyListingScreen = ({ route }) => {
         {/* Image Gallery */}
         <View style={styles.imageGallery}>
           <Swiper style={styles.wrapper} showsButtons={false} loop={false} autoplay={true} autoplayTimeout={5}>
-            {propertyListing.images.map((image, index) => (
-              <View key={index} style={styles.slide}>
+            {propertyListing.images.length > 0 ? (
+              propertyListing.images.map((image, index) => (
+                <View key={index} style={styles.slide}>
+                  <Image
+                    source={{ uri: getImageUriById(image.imageId) }}
+                    style={styles.image}
+                  />
+                </View>
+              ))
+            ) : (
+              <View style={styles.slide}>
                 <Image
-                  source={{ uri: getImageUriById(image.imageId) }}
+                  source={DefaultImage} // Use the placeholder image here
                   style={styles.image}
                 />
               </View>
-            ))}
+            )}
           </Swiper>
+
           {/* Add your square boxes for images here. You might need another package or custom UI for this. */}
         </View>
 

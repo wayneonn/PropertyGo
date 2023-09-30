@@ -91,7 +91,6 @@ const UserListings = ({ navigation }) => {
         data={filteredFavorites}
         keyExtractor={(item) => (item.propertyId ?? 'defaultKey').toString()}
         renderItem={({ item }) => {
-          console.log("This is the item: ", item); // Add this line for debugging
           return isSquareLayout ? (
             <PropertyCard
               property={item}

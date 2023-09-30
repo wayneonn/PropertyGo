@@ -9,6 +9,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { getImageUriById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites } from '../../utils/api';
 import { AuthContext } from '../../AuthContext';
+import DefaultImage from '../../assets/No-Image-Available-Small.jpg';
+
 
 const PropertyCardRectangle = ({ property, onPress }) => {
   const [propertyImageUri, setPropertyImageUri] = useState('');
@@ -46,33 +48,33 @@ const PropertyCardRectangle = ({ property, onPress }) => {
   };
 
   const handleFavoriteToggle = async () => {
-    const userId = user.user.userId; 
+    const userId = user.user.userId;
     try {
-        if (isFavorite) {
-            // Remove the property from favorites
-            console.log('Removing property from favorites...');
-            const { success } = await removeFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
+      if (isFavorite) {
+        // Remove the property from favorites
+        console.log('Removing property from favorites...');
+        const { success } = await removeFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
 
-            if (success) {
-                setIsFavorite(false);
-            } else {
-                console.error('Error removing property from favorites.');
-            }
+        if (success) {
+          setIsFavorite(false);
         } else {
-            // Add the property to favorites
-            console.log('Adding property to favorites...');
-            const { success } = await addFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
-
-            if (success) {
-                setIsFavorite(true);
-            } else {
-                console.error('Error adding property to favorites.');
-            }
+          console.error('Error removing property from favorites.');
         }
+      } else {
+        // Add the property to favorites
+        console.log('Adding property to favorites...');
+        const { success } = await addFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
+
+        if (success) {
+          setIsFavorite(true);
+        } else {
+          console.error('Error adding property to favorites.');
+        }
+      }
     } catch (error) {
-        console.error('Error toggling favorite:', error);
+      console.error('Error toggling favorite:', error);
     }
-};
+  };
 
   return (
     <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
@@ -81,7 +83,7 @@ const PropertyCardRectangle = ({ property, onPress }) => {
           <Image source={{ uri: propertyImageUri }} style={styles.propertyImage} />
         ) : (
           <View style={styles.placeholderImage}>
-            <Text>No Image</Text>
+            <Image source={DefaultImage} style={styles.placeholderImageImage} />
           </View>
         )}
       </View>
@@ -161,6 +163,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  placeholderImage: {
+    width: '100%',
+    aspectRatio: 1,
+    backgroundColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderImageImage: {
+    width: '100%', // Adjust the width as needed to match the desired size
+    height: '100%', // Adjust the height as needed to match the desired size
   },
 });
 

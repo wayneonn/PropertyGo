@@ -10,6 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { getImageUriById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites } from '../../utils/api';
 import { AuthContext } from '../../AuthContext';
+import DefaultImage from '../../assets/No-Image-Available.webp';
 
 const PropertyCard = ({ property, onPress }) => {
     const [propertyImageUri, setPropertyImageUri] = useState('');
@@ -23,13 +24,13 @@ const PropertyCard = ({ property, onPress }) => {
             const imageUri = getImageUriById(smallestImageId);
             setPropertyImageUri(imageUri);
         }
-        
+
         // Check if the property is in favorites and update the isFavorite state
         checkIfPropertyIsFavorite();
     }, [property]);
 
     const checkIfPropertyIsFavorite = async () => {
-        const userId = user.user.userId; 
+        const userId = user.user.userId;
         try {
             const { success, data } = await isPropertyInFavorites(userId, property.propertyListingId);
 
@@ -44,13 +45,13 @@ const PropertyCard = ({ property, onPress }) => {
     };
 
     const handleFavoriteToggle = async () => {
-        const userId = user.user.userId; 
+        const userId = user.user.userId;
         try {
             if (isFavorite) {
                 // Remove the property from favorites
                 console.log('Removing property from favorites...');
                 const { success } = await removeFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
-    
+
                 if (success) {
                     setIsFavorite(false);
                 } else {
@@ -60,7 +61,7 @@ const PropertyCard = ({ property, onPress }) => {
                 // Add the property to favorites
                 console.log('Adding property to favorites...');
                 const { success } = await addFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
-    
+
                 if (success) {
                     setIsFavorite(true);
                 } else {
@@ -71,17 +72,17 @@ const PropertyCard = ({ property, onPress }) => {
             console.error('Error toggling favorite:', error);
         }
     };
-    
-    
+
+
 
     return (
         <TouchableOpacity style={[styles.card, { width: cardSize * 0.85, height: cardSize * 0.8 }]} onPress={() => onPress(property.propertyId)}>
             <View style={styles.imageContainer}>
                 {propertyImageUri ? (
-                    <Image source={{ uri: propertyImageUri }} style={[styles.propertyImage, { borderRadius: 10 }]} />
+                    <Image source={{ uri: propertyImageUri }} style={styles.propertyImage} />
                 ) : (
                     <View style={styles.placeholderImage}>
-                        <Text>No Image</Text>
+                        <Image source={DefaultImage} style={styles.placeholderImageImage} />
                     </View>
                 )}
             </View>
@@ -110,57 +111,72 @@ const PropertyCard = ({ property, onPress }) => {
 
 const styles = StyleSheet.create({
     card: {
-      backgroundColor: '#fff',
-      alignSelf: 'center', // Center the card
-      marginVertical: 10, // A little margin top and bottom for spacing between cards
-      borderRadius: 10,
-      borderWidth: 0.5, // Light border
-      borderColor: '#ddd', // Light gray color
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 5,
-      },
-      shadowOpacity: 0.3,
-      shadowRadius: 4.65,
-      elevation: 7,
+        backgroundColor: '#fff',
+        alignSelf: 'center', // Center the card
+        marginVertical: 10, // A little margin top and bottom for spacing between cards
+        borderRadius: 10,
+        borderWidth: 0.5, // Light border
+        borderColor: '#ddd', // Light gray color
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 7,
     },
     imageContainer: {
-      width: '100%',
-      height: '60%',
-      overflow: 'hidden', // Hide overflow
+        width: '100%',
+        height: '60%',
+        overflow: 'hidden', // Hide overflow
     },
     propertyImage: {
-      width: '100%',
-      height: '100%',
+        width: '100%',
+        height: '100%',
+        borderRadius: 10
     },
     placeholderImage: {
-      width: '100%',
-      height: '100%',
-      backgroundColor: '#ccc',
-      justifyContent: 'center',
-      alignItems: 'center',
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#ccc',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
     },
     propertyDetails: {
-      padding: 10,
-      flex: 1, 
-      justifyContent: 'space-between',
+        padding: 10,
+        flex: 1,
+        justifyContent: 'space-between',
     },
     propertyTitle: {
-      fontSize: 16,
-      fontWeight: 'bold',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     propertyPrice: {
-      fontSize: 16,
-      color: '#333',
+        fontSize: 16,
+        color: '#333',
     },
     propertyInfo: {
-      fontSize: 12,
-      color: '#555',
+        fontSize: 12,
+        color: '#555',
     },
     favoriteButton: {
-      alignSelf: 'flex-end',
+        alignSelf: 'flex-end',
     },
-  });
+    placeholderImage: {
+        width: '100%',
+        aspectRatio: 1,
+        backgroundColor: '#ccc',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+    },
+    placeholderImageImage: {
+        width: '100%', // Adjust the width as needed to match the desired size
+        height: '100%', // Adjust the height as needed to match the desired size
+        borderRadius: 10,
+    },
+});
 
 export default PropertyCard;
