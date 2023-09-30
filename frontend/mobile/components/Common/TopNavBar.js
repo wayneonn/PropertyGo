@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'grey',
     elevation: 5,
     backgroundColor: 'white', // Set the background color of the header
+    // borderWidth:3,
   },
   HamburgerIcon: {
     marginRight:39,

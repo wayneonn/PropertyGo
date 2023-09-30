@@ -9,6 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { createDrawerScreen } from '../components/DrawerScreen';
 import ForumStackGroup from './ForumStackGroup';
+import ForumTopNavBar from '../components/Forum/ForumTopNavBar';
 
 const CustomDrawerContent = (props) => {
     // const { navigation, user, updateUserProfilePicture } = props;
@@ -82,11 +83,12 @@ const ForumSideNavigator = () => {
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawerContent {...props} />}
-            // screenOptions={() => ({
-            //     drawerActiveTintColor: "#FFD700",
-            //     header: () => <TopBar/>,
-                // headerShown: false,
-            // })}
+            screenOptions={() => ({
+                drawerPosition: 'right',
+                drawerActiveTintColor: "#FFD700",
+                // header: () => <ForumTopNavBar/>,
+                headerShown: false,
+            })}
             >
             {drawerScreens.map((screen) => (
                 <Drawer.Screen

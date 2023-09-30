@@ -37,7 +37,11 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'imageId',
         });
         ForumComment.belongsTo(models.ForumPost, {
-            foreignKey: 'forumPostId', 
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: false,
+                name: 'forumPostId'
+            },
             as: 'forumPost', 
         });
         ForumComment.belongsTo(models.User, {

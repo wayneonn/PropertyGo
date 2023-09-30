@@ -35,7 +35,7 @@ const LoginNavigator = () => {
             <Stack.Screen
                 name="Forum Side Navigator"
                 component={ForumSideNavigator}
-                // options={{ headerShown: false }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="Property Listings Stack Group"

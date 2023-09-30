@@ -2,13 +2,13 @@ import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
 
 
-const ForumHome = () => {
+const ForumTopicHot = () => {
 
     return (
       <SafeAreaView >
-        <Text>ForumHomeScreen</Text>
+        <Text>ForumTopicHotScreen</Text>
       </SafeAreaView>
     );
   };
 
-  export default ForumHome;
+  export default ForumTopicHot;
