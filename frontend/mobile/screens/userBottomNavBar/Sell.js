@@ -235,19 +235,25 @@ export default function PropertyListing() {
         </View>
 
         <View style={styles.imageRow}>
-          <TouchableOpacity onPress={handleChoosePhoto} style={styles.imagePicker}>
-            <Icon name="camera" size={40} color="#aaa" />
-          </TouchableOpacity>
+          <ScrollView horizontal={true}>
+            {/* Add a View to hold the Add Image button */}
+            <View>
+              <TouchableOpacity onPress={handleChoosePhoto} style={styles.imagePicker}>
+                <Icon name="camera" size={40} color="#aaa" />
+              </TouchableOpacity>
+            </View>
 
-          {images.map((image, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleImagePress(index)}
-              style={styles.imageContainer}
-            >
-              <Image source={{ uri: image.uri }} style={styles.image} />
-            </TouchableOpacity>
-          ))}
+            {/* Map over the images */}
+            {images.map((image, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleImagePress(index)}
+                style={styles.imageContainer}
+              >
+                <Image source={{ uri: image.uri }} style={styles.image} />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
 
         <View style={styles.inputContainer}>
@@ -303,16 +309,6 @@ export default function PropertyListing() {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Size</Text>
-          <TextInput
-            placeholder="Size"
-            value={property.size}
-            onChangeText={(text) => setProperty({ ...property, size: text })}
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
           <Text style={styles.label}>Postal Code</Text>
           <TextInput
             placeholder="Postal Code"
@@ -329,8 +325,10 @@ export default function PropertyListing() {
           <TextInput
             placeholder="Address"
             value={property.address}
-            onChangeText={(text) => setProperty({ ...property, size: text })}
-            style={styles.input}
+            onChangeText={(text) => setProperty({ ...property, address: text })}
+            style={[styles.input, styles.mediumTypeInput]}
+            multiline={true}
+            numberOfLines={2}
           />
         </View>
 
@@ -340,7 +338,7 @@ export default function PropertyListing() {
           <TextInput
             placeholder="Unit Number"
             value={property.unitNumber}
-            onChangeText={(text) => setProperty({ ...property, size: text })}
+            onChangeText={(text) => setProperty({ ...property, unitNumber: text })}
             style={styles.input}
           />
         </View>
@@ -441,9 +439,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 8,
     height: 40,
+    borderRadius: 5,
   },
   largeTextInput: {
     height: 120,
+  },
+  mediumTypeInput: {
+    height: 60,
   },
   imageRow: {
     flexDirection: 'row',

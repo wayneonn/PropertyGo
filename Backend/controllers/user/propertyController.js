@@ -5,12 +5,26 @@ const { sequelize, Property, Image, User } = require('../../models');
 async function getAllProperties(req, res) {
     try {
         const properties = await Property.findAll();
-        
+
+        // Create an object to store image IDs mapped to property IDs
+        const imageIdToPropertyIdMap = {};
+
+        // Fetch associated images and populate the mapping
+        const images = await Image.findAll();
+        images.forEach(image => {
+            const propertyId = image.propertyId;
+            const imageId = image.imageId;
+            if (!imageIdToPropertyIdMap[propertyId]) {
+                imageIdToPropertyIdMap[propertyId] = [];
+            }
+            imageIdToPropertyIdMap[propertyId].push(imageId);
+        });
+
+        // Create an array to store properties with image IDs
         const propertiesWithImages = properties.map(property => {
             const propertyJSON = property.toJSON();
-            if (propertyJSON.images) {
-                propertyJSON.images = propertyJSON.images.toString('base64');
-            }
+            const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
+            propertyJSON.images = imageIds;
             return propertyJSON;
         });
 
@@ -95,11 +109,6 @@ async function createProperty(req, res) {
 }
 
 
-
-
-
-
-
 // Update a property
 async function updateProperty(req, res) {
     const propertyId = req.params.id;
@@ -134,7 +143,7 @@ async function updateProperty(req, res) {
 async function getPropertyById(req, res) {
     try {
         const { propertyListingId } = req.params;
-        
+
         // Find the property by ID
         const property = await Property.findByPk(propertyListingId);
 
@@ -145,15 +154,13 @@ async function getPropertyById(req, res) {
         // Fetch associated images
         const images = await Image.findAll({ where: { propertyId: propertyListingId } });
 
-        // Map image URLs
-        const imageId = images.map(image => ({
-            imageId: `${image.imageId}`, 
-        }));
+        // Create an array of imageIds
+        const imageIds = images.map(image => image.imageId);
 
-        // Create a property object with image URLs
+        // Create a property object with imageIds
         const propertyWithImages = {
             ...property.toJSON(),
-            images: imageId,
+            images: imageIds,
         };
 
         // Respond with the property data
@@ -194,57 +201,46 @@ async function countUsersFavoritedProperty(req, res) {
     }
   }
 
-// Add a new route to filter properties by region
+// Get properties by region with imageIds
 async function getPropertiesByRegion(req, res) {
     try {
         const { region } = req.params;
 
-        // Find properties based on the specified region parameter, including only image IDs
+        // Find properties based on the specified region parameter
         const properties = await Property.findAll({
             where: {
                 region: region,
             },
-            include: [
-                {
-                    model: Image,
-                    as: 'propertyImages', // Use the correct association name
-                    attributes: ['imageId', 'propertyId'], // Include both imageId and propertyId
-                },
-            ],
         });
 
         // Create an object to store image IDs mapped to property IDs
         const imageIdToPropertyIdMap = {};
 
-        // Populate the mapping of image IDs to property IDs
-        properties.forEach(property => {
-            property.propertyImages.forEach(image => {
-                const propertyId = image.propertyId;
-                const imageId = image.imageId;
-                if (!imageIdToPropertyIdMap[propertyId]) {
-                    imageIdToPropertyIdMap[propertyId] = [];
-                }
-                imageIdToPropertyIdMap[propertyId].push(imageId);
-            });
+        // Fetch associated images and populate the mapping
+        const images = await Image.findAll();
+        images.forEach(image => {
+            const propertyId = image.propertyId;
+            const imageId = image.imageId;
+            if (!imageIdToPropertyIdMap[propertyId]) {
+                imageIdToPropertyIdMap[propertyId] = [];
+            }
+            imageIdToPropertyIdMap[propertyId].push(imageId);
         });
 
-        // Create an array to store property data along with image IDs
-        const recentlyAddedPropertiesWithImageIds = properties.map(property => {
+        // Create an array to store properties with image IDs
+        const propertiesWithImages = properties.map(property => {
+            const propertyJSON = property.toJSON();
             const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
-            return {
-                ...property.toJSON(),
-                images: imageIds,
-            };
+            propertyJSON.images = imageIds;
+            return propertyJSON;
         });
 
-        // Respond with the sorted list of properties including image IDs
-        res.json(recentlyAddedPropertiesWithImageIds);
+        res.json(propertiesWithImages);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 }
-
 
 
 // Add a new route to get properties sorted by favorite count in descending order
@@ -257,11 +253,6 @@ async function getPropertiesByFavoriteCount(req, res) {
                     model: User,
                     as: 'favouritedByUsers',
                 },
-                {
-                    model: Image,
-                    as: 'propertyImages',
-                    attributes: ['imageId', 'propertyId'], // Include both imageId and propertyId
-                },
             ],
         });
 
@@ -273,27 +264,25 @@ async function getPropertiesByFavoriteCount(req, res) {
         // Create an object to store image IDs mapped to property IDs
         const imageIdToPropertyIdMap = {};
 
-        // Populate the mapping of image IDs to property IDs
-        properties.forEach(property => {
-            property.propertyImages.forEach(image => {
-                const propertyId = image.propertyId;
-                const imageId = image.imageId;
-                if (!imageIdToPropertyIdMap[propertyId]) {
-                    imageIdToPropertyIdMap[propertyId] = [];
-                }
-                imageIdToPropertyIdMap[propertyId].push(imageId);
-            });
+        // Fetch associated images and populate the mapping
+        const images = await Image.findAll();
+        images.forEach(image => {
+            const propertyId = image.propertyId;
+            const imageId = image.imageId;
+            if (!imageIdToPropertyIdMap[propertyId]) {
+                imageIdToPropertyIdMap[propertyId] = [];
+            }
+            imageIdToPropertyIdMap[propertyId].push(imageId);
         });
 
         // Create an array to store property data along with favorite counts and image IDs
         const propertiesWithFavoriteCountAndImages = properties.map(property => {
             const favoriteCount = property.favouritedByUsers.length;
+            const propertyJSON = property.toJSON();
             const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
-            return {
-                ...property.toJSON(),
-                images: imageIds,
-                favoriteCount,
-            };
+            propertyJSON.images = imageIds;
+            propertyJSON.favoriteCount = favoriteCount;
+            return propertyJSON;
         });
 
         // Sort properties by favorite count in descending order
@@ -315,37 +304,28 @@ async function getRecentlyAddedProperties(req, res) {
         // Find all properties and sort them by postedAt datetime in descending order
         const properties = await Property.findAll({
             order: [['postedAt', 'DESC']],
-            include: [
-                {
-                    model: Image,
-                    as: 'propertyImages', // Use the correct association name
-                    attributes: ['imageId', 'propertyId'], // Include both imageId and propertyId
-                },
-            ],
         });
 
         // Create an object to store image IDs mapped to property IDs
         const imageIdToPropertyIdMap = {};
 
-        // Populate the mapping of image IDs to property IDs
-        properties.forEach(property => {
-            property.propertyImages.forEach(image => {
-                const propertyId = image.propertyId;
-                const imageId = image.imageId;
-                if (!imageIdToPropertyIdMap[propertyId]) {
-                    imageIdToPropertyIdMap[propertyId] = [];
-                }
-                imageIdToPropertyIdMap[propertyId].push(imageId);
-            });
+        // Fetch associated images and populate the mapping
+        const images = await Image.findAll();
+        images.forEach(image => {
+            const propertyId = image.propertyId;
+            const imageId = image.imageId;
+            if (!imageIdToPropertyIdMap[propertyId]) {
+                imageIdToPropertyIdMap[propertyId] = [];
+            }
+            imageIdToPropertyIdMap[propertyId].push(imageId);
         });
 
         // Create an array to store property data along with image IDs
         const recentlyAddedPropertiesWithImageIds = properties.map(property => {
+            const propertyJSON = property.toJSON();
             const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
-            return {
-                ...property.toJSON(),
-                images: imageIds,
-            };
+            propertyJSON.images = imageIds;
+            return propertyJSON;
         });
 
         // Respond with the sorted list of properties including image IDs
@@ -356,6 +336,8 @@ async function getRecentlyAddedProperties(req, res) {
     }
 }
 
+
+// Get properties posted by a user with imageIds
 async function getPropertiesByUser(req, res) {
     try {
         const { userId } = req.params;
@@ -365,37 +347,28 @@ async function getPropertiesByUser(req, res) {
             where: {
                 userId: userId, // Assuming userId is a foreign key in the Property model
             },
-            include: [
-                {
-                    model: Image,
-                    as: 'propertyImages', // Use the correct association name
-                    attributes: ['imageId', 'propertyId'], // Include both imageId and propertyId
-                },
-            ],
         });
 
         // Create an object to store image IDs mapped to property IDs
         const imageIdToPropertyIdMap = {};
 
-        // Populate the mapping of image IDs to property IDs
-        properties.forEach(property => {
-            property.propertyImages.forEach(image => {
-                const propertyId = image.propertyId;
-                const imageId = image.imageId;
-                if (!imageIdToPropertyIdMap[propertyId]) {
-                    imageIdToPropertyIdMap[propertyId] = [];
-                }
-                imageIdToPropertyIdMap[propertyId].push(imageId);
-            });
+        // Fetch associated images and populate the mapping
+        const images = await Image.findAll();
+        images.forEach(image => {
+            const propertyId = image.propertyId;
+            const imageId = image.imageId;
+            if (!imageIdToPropertyIdMap[propertyId]) {
+                imageIdToPropertyIdMap[propertyId] = [];
+            }
+            imageIdToPropertyIdMap[propertyId].push(imageId);
         });
 
         // Create an array to store property data along with image IDs
         const propertiesWithImageIds = properties.map(property => {
+            const propertyJSON = property.toJSON();
             const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
-            return {
-                ...property.toJSON(),
-                images: imageIds,
-            };
+            propertyJSON.images = imageIds;
+            return propertyJSON;
         });
 
         // Respond with the list of properties posted by the user, including image IDs

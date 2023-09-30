@@ -254,7 +254,6 @@ async function getUserFavorites(req, res) {
   }
 }
 
-
 async function isPropertyInFavorites(req, res) {
   try {
     const { userId, propertyId } = req.params;
