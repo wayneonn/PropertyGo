@@ -215,6 +215,7 @@ const PropertyListingScreen = ({ route }) => {
         <View style={styles.propertyDetailsTop}>
           <View style={styles.propertyDetailsTopLeft}>
             <Text style={styles.forSaleText}>For Sales</Text>
+            <Text style={styles.title}>{propertyListing.title}</Text>
             <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
             <Text style={styles.pricePerSqm}>
               ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
@@ -552,6 +553,13 @@ const styles = StyleSheet.create({
     color: '#333',
     letterSpacing: 2,
     marginBottom: 5,
+  },
+  title: {
+    fontSize: 18,
+    color: '#333',
+    letterSpacing: 2,
+    marginBottom: 5,
+    fontWeight: 'bold',
   },
   priceLabel: {
     fontSize: 25,

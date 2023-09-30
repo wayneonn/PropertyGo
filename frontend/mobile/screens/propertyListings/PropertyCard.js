@@ -8,7 +8,13 @@ import {
     Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getImageUriById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites } from '../../utils/api';
+import {
+    getImageUriById,
+    isPropertyInFavorites,
+    addFavoriteProperty,
+    removeFavoriteProperty,
+    countUsersFavoritedProperty
+} from '../../utils/api';
 import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available.webp';
 
@@ -16,7 +22,17 @@ const PropertyCard = ({ property, onPress }) => {
     const [propertyImageUri, setPropertyImageUri] = useState('');
     const [isFavorite, setIsFavorite] = useState(false);
     const { user } = useContext(AuthContext);
+    const [favoriteCount, setFavoriteCount] = useState(0); // Added state for favorite count
     const cardSize = Dimensions.get('window').width;
+
+    const formatPrice = (price) => {
+        if (price !== null && !isNaN(price)) {
+            const formattedPrice = price.toFixed(2); // Format to 2 decimal places
+            return formattedPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        } else {
+            return 'N/A'; // Handle the case when price is null, undefined, or not a number
+        }
+    };
 
     useEffect(() => {
         if (property.images && property.images.length > 0) {
@@ -27,6 +43,7 @@ const PropertyCard = ({ property, onPress }) => {
 
         // Check if the property is in favorites and update the isFavorite state
         checkIfPropertyIsFavorite();
+        fetchFavoriteCount();
     }, [property]);
 
     const checkIfPropertyIsFavorite = async () => {
@@ -36,11 +53,46 @@ const PropertyCard = ({ property, onPress }) => {
 
             if (success) {
                 setIsFavorite(data.isLiked);
+                setFavoriteCount(data.favoriteCount); // Set the favorite count from the API response
             } else {
                 console.error('Error checking if property is in favorites:', data.message);
             }
         } catch (error) {
             console.error('Error checking if property is in favorites:', error);
+        }
+    };
+
+    const fetchFavoriteCount = async () => {
+        const { success, data, message } = await countUsersFavoritedProperty(property.propertyListingId);
+        console.log('countUsersFavoritedProperty:', success, data, message);
+        if (success) {
+            setFavoriteCount(data.count); // Assuming the count is in data.count
+        } else {
+            console.error('Error fetching favorite count:', message);
+        }
+    };
+
+    const handleFavoriteButtonPress = async () => {
+        if (isFavorite) {
+            // Remove the property from favorites
+            const { success } = await removeFavoriteProperty(user.user.userId, property.propertyListingId);
+
+            if (success) {
+                setIsFavorite(false);
+                setFavoriteCount((prevCount) => prevCount - 1);
+            } else {
+                console.error('Error removing property from favorites');
+            }
+        } else {
+            // Add the property to favorites
+            const { success } = await addFavoriteProperty(user.user.userId, property.propertyListingId);
+
+            if (success) {
+                setIsFavorite(true);
+                setFavoriteCount((prevCount) => prevCount + 1);
+            } else {
+                console.error('Error adding property to favorites');
+            }
         }
     };
 
@@ -88,22 +140,25 @@ const PropertyCard = ({ property, onPress }) => {
             </View>
             <View style={styles.propertyDetails}>
                 <Text style={styles.propertyTitle}>{property.title}</Text>
-                <Text style={styles.propertyPrice}>${property.price}</Text>
+                <Text style={styles.propertyPrice}>${formatPrice(property.price)}</Text>
                 <Text style={styles.propertyInfo}>
                     {property.bed} <Ionicons name="bed" size={16} color="#333" /> |
                     {property.bathroom} <Ionicons name="water" size={16} color="#333" /> |
                     {property.size} sqm <Ionicons name="cube-outline" size={16} color="#333" />
                 </Text>
-                <TouchableOpacity
-                    style={styles.favoriteButton}
-                    onPress={handleFavoriteToggle}
-                >
-                    <Ionicons
-                        name={isFavorite ? 'heart' : 'heart-outline'}
-                        size={24}
-                        color={isFavorite ? 'red' : '#333'}
-                    />
-                </TouchableOpacity>
+                <View style={styles.favoriteButton}>
+          <TouchableOpacity onPress={handleFavoriteButtonPress}>
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={24}
+              color={isFavorite ? 'red' : '#333'}
+              style={{ marginRight: 4 }} // Adjust as needed
+            />
+          </TouchableOpacity>
+          <Text style={{ color: isFavorite ? 'red' : '#333', fontSize: 16, fontWeight: 'bold' }}>
+            {favoriteCount}
+          </Text>
+        </View>
             </View>
         </TouchableOpacity>
     );
@@ -150,7 +205,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     propertyTitle: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
     },
     propertyPrice: {
@@ -177,6 +232,20 @@ const styles = StyleSheet.create({
         height: '100%', // Adjust the height as needed to match the desired size
         borderRadius: 10,
     },
+    favoriteContainer: {
+        // flexDirection: 'row',
+        // alignItems: 'left',
+        // marginTop: 8, // Adjust the spacing as needed
+      },
+      favoriteCount: {
+        marginTop: 40, // Adjust the spacing between icon and count as needed
+        fontSize: 16,
+      },
+      favoriteButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-end', // Align to the right
+      },
 });
 
 export default PropertyCard;

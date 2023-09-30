@@ -15,7 +15,7 @@ router.get('/recently-added', getRecentlyAddedProperties);
 router.get('/propertiesByRegion/:region', getPropertiesByRegion);
 router.get('/propertiesByUser/:userId', getPropertiesByUser);
 router.get('/', getAllProperties);
-router.post('/', upload.array('images', 15), createProperty);
+router.post('/', upload.array('images', 5), createProperty);
 router.put('/:id', upload.single('images'), updateProperty);
 router.get('/:propertyListingId', getPropertyById);
 

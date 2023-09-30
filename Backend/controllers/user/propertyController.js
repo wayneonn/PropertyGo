@@ -1,5 +1,5 @@
-const { Property, Image, User } = require('../../models');
 const sharp = require('sharp');
+const { sequelize, Property, Image, User } = require('../../models');
 
 // Get all properties
 async function getAllProperties(req, res) {
@@ -24,11 +24,18 @@ async function getAllProperties(req, res) {
 // Modify the createProperty function to handle multiple images
 async function createProperty(req, res) {
     const propertyData = JSON.parse(req.body.property);
-    console.log(propertyData);
+    console.log('Received property data:', propertyData);
+
+    // Start a transaction
+    const transaction = await sequelize.transaction();
+
     try {
         const images = req.files;
+        console.log('Received images:', images);
 
         if (images.length === 0) {
+            await transaction.rollback();
+            console.log('No images selected. Rolling back transaction.');
             return res.status(400).json({ error: 'No images selected' });
         }
 
@@ -36,11 +43,17 @@ async function createProperty(req, res) {
         propertyData.postedAt = new Date(); // Set the postedAt date
 
         // Create the property in the database
-        const createdProperty = await Property.create(propertyData);
+        const createdProperty = await Property.create(propertyData, { transaction });
+        console.log('Created property:', createdProperty);
+
+        const failedImages = [];
 
         // Create and associate images with the property
-        await Promise.all(
-            images.map(async (image, index) => {
+        for (let index = 0; index < images.length; index++) {
+            const image = images[index];
+            console.log('Creating image for index', index, 'with propertyId', createdProperty.propertyListingId);
+
+            try {
                 const processedImageBuffer = await sharp(image.buffer)
                     .resize({ width: 800 }) // You can set the dimensions accordingly
                     .webp()
@@ -52,16 +65,39 @@ async function createProperty(req, res) {
                     propertyId: createdProperty.propertyListingId, // Associate the image with the created property
                 };
 
-                const createdImage = await Image.create(imageData);
-            })
-        );
+                // Create the image record with the associated propertyId
+                await Image.create(imageData, { transaction });
+                console.log(`Image ${index + 1} created successfully.`);
+            } catch (imageError) {
+                console.error('Error creating image:', imageError);
+                failedImages.push({ index, error: 'Failed to create image' });
+            }
+        }
+
+        if (failedImages.length > 0) {
+            // If there were failed images, roll back the transaction
+            await transaction.rollback();
+            console.log('Rolled back transaction due to errors in creating images.');
+            return res.status(500).json({ error: 'Error creating some images', failedImages });
+        }
+
+        // If everything went well for all images, commit the transaction
+        await transaction.commit();
+        console.log('Transaction committed successfully.');
 
         res.json({ propertyListingId: createdProperty.propertyListingId });
     } catch (error) {
+        await transaction.rollback(); // Roll back the transaction if there was an error creating the property
         console.error('Error creating property:', error);
+        console.log('Rolling back transaction due to an error.');
         res.status(500).json({ error: 'Error creating property' });
     }
 }
+
+
+
+
+
 
 
 // Update a property

@@ -17,6 +17,15 @@ const PropertyCardRectangle = ({ property, onPress }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const { user } = useContext(AuthContext);
 
+  const formatPrice = (price) => {
+    if (price !== null && !isNaN(price)) {
+      const formattedPrice = price.toFixed(2); // Format to 2 decimal places
+      return formattedPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    } else {
+      return 'N/A'; // Handle the case when price is null, undefined, or not a number
+    }
+  };
+
   useEffect(() => {
     // Retrieve and set the image URI based on the smallest imageId
     console.log('property.images:', property.images);
@@ -89,7 +98,7 @@ const PropertyCardRectangle = ({ property, onPress }) => {
       </View>
       <View style={styles.propertyDetails}>
         <Text style={styles.propertyTitle}>{property.title}</Text>
-        <Text style={styles.propertyPrice}>${property.price}</Text>
+        <Text style={styles.propertyPrice}>${formatPrice(property.price)}</Text>
         <Text style={styles.propertyInfo}>
           {property.bed} <Ionicons name="bed" size={16} color="#333" /> |
           {property.bathroom} <Ionicons name="water" size={16} color="#333" /> |

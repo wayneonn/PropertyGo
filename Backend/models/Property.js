@@ -154,10 +154,10 @@ module.exports = (sequelize, DataTypes) => {
               }, // This will be the foreign key in the Transaction model
           onDelete: 'CASCADE', // If an invoice is deleted, delete the associated transaction
         });
-        Property.hasMany(models.Image, {
-            foreignKey: 'imageId',
-            as: 'propertyImages',
-        });
+        // Property.hasMany(models.Image, {
+        //     foreignKey: 'imageId',
+        //     as: 'propertyImages',
+        // });
         Property.belongsToMany(models.User, {
             through: 'UserFavourites', // This is the name of the join table
             foreignKey: 'propertyId',
