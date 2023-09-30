@@ -320,6 +320,55 @@ async function getRecentlyAddedProperties(req, res) {
     }
 }
 
+async function getPropertiesByUser(req, res) {
+    try {
+        const { userId } = req.params;
+
+        // Find properties associated with the specified user
+        const properties = await Property.findAll({
+            where: {
+                userId: userId, // Assuming userId is a foreign key in the Property model
+            },
+            include: [
+                {
+                    model: Image,
+                    as: 'propertyImages', // Use the correct association name
+                    attributes: ['imageId', 'propertyId'], // Include both imageId and propertyId
+                },
+            ],
+        });
+
+        // Create an object to store image IDs mapped to property IDs
+        const imageIdToPropertyIdMap = {};
+
+        // Populate the mapping of image IDs to property IDs
+        properties.forEach(property => {
+            property.propertyImages.forEach(image => {
+                const propertyId = image.propertyId;
+                const imageId = image.imageId;
+                if (!imageIdToPropertyIdMap[propertyId]) {
+                    imageIdToPropertyIdMap[propertyId] = [];
+                }
+                imageIdToPropertyIdMap[propertyId].push(imageId);
+            });
+        });
+
+        // Create an array to store property data along with image IDs
+        const propertiesWithImageIds = properties.map(property => {
+            const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
+            return {
+                ...property.toJSON(),
+                images: imageIds,
+            };
+        });
+
+        // Respond with the list of properties posted by the user, including image IDs
+        res.json(propertiesWithImageIds);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
 
   
 module.exports = {
@@ -331,4 +380,5 @@ module.exports = {
     getPropertiesByFavoriteCount,
     getPropertiesByRegion,
     getRecentlyAddedProperties,
+    getPropertiesByUser,
 };

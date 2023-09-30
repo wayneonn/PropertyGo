@@ -16,15 +16,15 @@ import base64 from 'react-native-base64';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 
-const PropertyListingScreen = ({ route }) => {
+const PropertyUserListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
   const navigation = useNavigation();
   const [isFavorite, setIsFavorite] = useState(false);
   const [propertyListing, setPropertyListing] = useState(null);
   const [userDetails, setUser] = useState(null);
   const { user } = useContext(AuthContext);
-  const [favoriteCount, setFavoriteCount] = useState(0);
   const isCurrentUserPropertyOwner = userDetails && userDetails.userId === user.user.userId;
+  const [favoriteCount, setFavoriteCount] = useState(0);
   const [region, setRegion] = useState({
     latitude: 1.36922522142582,
     longitude: 103.848493192474,
@@ -64,7 +64,7 @@ const PropertyListingScreen = ({ route }) => {
     fetchPropertyListing(propertyListingId);
     checkIfPropertyIsFavorite();
     fetchFavoriteCount();
-  }, [propertyListingId, user.user.userId]);
+  }, [propertyListingId]);
 
   const checkIfPropertyIsFavorite = async () => {
     const userId = user.user.userId;
@@ -330,7 +330,6 @@ const PropertyListingScreen = ({ route }) => {
           </>
         )}
       </View>
-
     </View>
   );
 };
@@ -444,6 +443,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#eee',
     justifyContent: 'space-between', // Added for spacing between buttons
     paddingHorizontal: 10, // Padding to give space from the screen edge
+    paddingBottom: 20, // Add margin to give space from the bottom of the screen
   },
 
   chatWithSellerButton: {
@@ -469,38 +469,6 @@ const styles = StyleSheet.create({
   },
 
   buyButton: {
-    flex: 1,
-    padding: 12,
-    backgroundColor: '#FFD700', // Yellow color
-    alignItems: 'center',
-    borderWidth: 1,        // Add border
-    borderColor: '#000',   // Border color
-    borderRadius: 10,      // Make it rounded
-    margin: 2,  // Margin for spacing between buttons
-  },
-  bumpListingButton: {
-    flex: 1,
-    padding: 12,
-    backgroundColor: 'white', // Choose your color
-    alignItems: 'center',
-    borderWidth: 1,       // Add border
-    borderColor: '#000',  // Border color
-    borderRadius: 10,     // Make it rounded
-    margin: 2,  // Margin for spacing between buttons
-  },
-
-  editListingButton: {
-    flex: 1,
-    padding: 12,
-    backgroundColor: 'white', // Choose your color
-    alignItems: 'center',
-    borderWidth: 1,       // Add border
-    borderColor: '#000',  // Border color
-    borderRadius: 10,     // Make it rounded
-    margin: 2,  // Margin for spacing between buttons
-  },
-
-  deleteListingButton: {
     flex: 1,
     padding: 12,
     backgroundColor: '#FFD700', // Yellow color
@@ -560,7 +528,39 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  bumpListingButton: {
+    flex: 1,
+    padding: 12,
+    backgroundColor: 'white', // Choose your color
+    alignItems: 'center',
+    borderWidth: 1,       // Add border
+    borderColor: '#000',  // Border color
+    borderRadius: 10,     // Make it rounded
+    margin: 2,  // Margin for spacing between buttons
+  },
+
+  editListingButton: {
+    flex: 1,
+    padding: 12,
+    backgroundColor: 'white', // Choose your color
+    alignItems: 'center',
+    borderWidth: 1,       // Add border
+    borderColor: '#000',  // Border color
+    borderRadius: 10,     // Make it rounded
+    margin: 2,  // Margin for spacing between buttons
+  },
+
+  deleteListingButton: {
+    flex: 1,
+    padding: 12,
+    backgroundColor: '#FFD700', // Yellow color
+    alignItems: 'center',
+    borderWidth: 1,        // Add border
+    borderColor: '#000',   // Border color
+    borderRadius: 10,      // Make it rounded
+    margin: 2,  // Margin for spacing between buttons
+  },
 
 });
 
-export default PropertyListingScreen;
+export default PropertyUserListingScreen;
