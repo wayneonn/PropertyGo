@@ -18,7 +18,10 @@ import * as ImagePicker from 'expo-image-picker';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { editProperty, getPropertyListing, getImageUriById } from '../../utils/api';
+import {
+  editProperty, getPropertyListing, getImageUriById,
+  removeImageById, updateImageById, createImageWithPropertyId
+} from '../../utils/api';
 import DefaultImage from '../../assets/No-Image-Available.webp';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
@@ -28,12 +31,12 @@ import { getAreaAndRegion } from '../../services/GetAreaAndRegion';
 const EditPropertyListing = ({ route }) => {
   const { propertyListingId } = route.params;
   const [images, setImages] = useState([]);
-  const [images1, setImages1] = useState([]);
   const navigation = useNavigation();
   const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
   const { user } = useContext(AuthContext);
   const [propertyListing, setPropertyListing] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
   const [propertyData, setPropertyData] = useState({
     title: '',
     description: '',
@@ -72,14 +75,14 @@ const EditPropertyListing = ({ route }) => {
   const handlePriceChange = (text) => {
     // Remove dollar sign and commas
     const raw = text.replace(/[^0-9]/g, '');
-  
+
     // Update rawPrice here
     setRawPrice(raw);
-  
+
     // Format and update formattedPrice
     setFormattedPrice(formatPrice(raw));
   };
-  
+
 
 
   const handleSubmit = async () => {
@@ -149,7 +152,7 @@ const EditPropertyListing = ({ route }) => {
           propertyType: propertyTypeUpperCase,
         }
       );
-  
+
       if (success) {
         console.log('Property updated successfully:', propertyListingId);
         Alert.alert(
@@ -294,8 +297,50 @@ const EditPropertyListing = ({ route }) => {
   };
 
   const handleChoosePhoto = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+    if (permissionResult.granted === false) {
+      console.warn('Permission to access photos was denied');
+      return;
+    }
+  
+    const options = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    };
+  
+    let response = await ImagePicker.launchImageLibraryAsync(options);
+  
+    if (!response.cancelled) {
+      // Upload the selected image to the backend
+      try {
+        const { success, data, message } = await createImageWithPropertyId(
+          propertyListingId, // Pass the propertyListingId
+          response // Pass the whole response object
+        );
+  
+        if (success) {
+          // Add the newly uploaded image to the state
+          const updatedImages = [...images, { uri: data.imageId }]; // Use data.imageId as the URI
+          setImages(updatedImages);
+  
+          // Show an alert for successful upload
+          Alert.alert('Image Uploaded', 'The image has been successfully uploaded.');
+        } else {
+          console.error('Error uploading image:', message);
+          // Handle the error appropriately, e.g., show an error message to the user
+        }
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        // Handle the error appropriately, e.g., show an error message to the user
+      }
+    }
+  };
+  
+
+  const handleUpdateImage = async (index) => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       console.warn('Permission to access photos was denied');
@@ -311,7 +356,34 @@ const EditPropertyListing = ({ route }) => {
     let response = await ImagePicker.launchImageLibraryAsync(options);
 
     if (!response.cancelled) {
-      setImages([...images, response]); // Use the images state to store selected images
+      // Upload the selected image to the backend and update the state
+      const formData = new FormData();
+      formData.append('image', {
+        uri: response.uri,
+        type: 'image/jpeg', // Adjust the type as needed
+        name: 'propertyImage.jpg',
+      });
+
+      try {
+        const { success, data, message } = await updateImageById(
+          propertyListingId, // Pass the propertyListingId
+          images[index].id, // Pass the image ID to update
+          formData
+        );
+
+        if (success) {
+          // Replace the image in the state with the updated one
+          const updatedImages = [...images];
+          updatedImages[index] = { uri: data.imageUri };
+          setImages(updatedImages);
+        } else {
+          console.error('Error updating image:', message);
+          // Handle the error appropriately, e.g., show an error message to the user
+        }
+      } catch (error) {
+        console.error('Error updating image:', error);
+        // Handle the error appropriately, e.g., show an error message to the user
+      }
     }
   };
 
@@ -340,11 +412,25 @@ const EditPropertyListing = ({ route }) => {
   };
 
   const handleRemoveImage = async (index) => {
-    // Handle image removal logic here
-    // Remove the image at the specified index from the 'images' state
-    const updatedImages = [...images];
-    updatedImages.splice(index, 1);
-    setImages(updatedImages);
+    try {
+      const { success, message } = await removeImageById(
+        propertyListingId, // Pass the propertyListingId
+        images[index].id // Pass the image ID to remove
+      );
+
+      if (success) {
+        // Remove the image at the specified index from the 'images' state
+        const updatedImages = [...images];
+        updatedImages.splice(index, 1);
+        setImages(updatedImages);
+      } else {
+        console.error('Error removing image:', message);
+        // Handle the error appropriately, e.g., show an error message to the user
+      }
+    } catch (error) {
+      console.error('Error removing image:', error);
+      // Handle the error appropriately, e.g., show an error message to the user
+    }
   };
 
 
@@ -371,17 +457,22 @@ const EditPropertyListing = ({ route }) => {
             {/* Map over the images */}
             {images.map((image, index) => {
               const imageUri = getImageUriById(image.uri);
-              console.log(`Image URI at index ${index}: ${imageUri}`); // Add this log
+              console.log('imageUri:', imageUri);
               return (
                 <TouchableOpacity
                   key={index}
                   onPress={() => handleImagePress(index)}
                   style={styles.imageContainer}
                 >
-                  <Image source={{ uri: imageUri }} style={styles.image} />
+                  {imageUri ? (
+                    <Image source={{ uri: imageUri }} style={styles.image} />
+                  ) : (
+                    <Image source={DefaultImage} style={styles.image} /> // Use a default image here
+                  )}
                 </TouchableOpacity>
               );
             })}
+
 
           </ScrollView>
         </View>

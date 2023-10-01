@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 const { getImagesByPropertyId, getImageById, 
     removeImageById, updateImageById, createImageWithPropertyId} = require('../../controllers/user/imageController'); // Import the image controller
 
@@ -7,7 +11,7 @@ const { getImagesByPropertyId, getImageById,
 router.get('/getImagesByPropertyId/:propertyListingId', getImagesByPropertyId);
 router.get('/:imageId', getImageById);
 router.delete('/:imageId', removeImageById);
-router.put('/:imageId', updateImageById);
-router.post('/createImageWithPropertyId/:propertyId', createImageWithPropertyId);
+router.put('/:imageId', upload.single('image'), updateImageById);
+router.post('/createImageWithPropertyId/:propertyId', upload.single('image'), createImageWithPropertyId);
 
 module.exports = router;

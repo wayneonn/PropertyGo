@@ -118,42 +118,48 @@ async function updateImageById(req, res) {
 
 async function createImageWithPropertyId(req, res) {
     try {
-      const { propertyId } = req.params;
-      const { title, image } = req.body;
-  
-      // Find the property by ID
-      const property = await Property.findByPk(propertyId);
-  
-      if (!property) {
-        return res.status(404).json({ error: 'Property not found' });
-      }
-  
-      // Process and save the image data
-      try {
-        const processedImageBuffer = await sharp(image.buffer)
-          .resize({ width: 800 }) // You can set the dimensions accordingly
-          .webp()
-          .toBuffer();
-  
-        const imageData = {
-          title,
-          image: processedImageBuffer,
-          propertyId: propertyId,
-        };
-  
-        // Create the image record with the associated propertyId
-        const createdImage = await Image.create(imageData);
-  
-        res.json({ message: 'Image created successfully', imageId: createdImage.imageId });
-      } catch (imageError) {
-        console.error('Error processing image:', imageError);
-        return res.status(500).json({ error: 'Error processing image' });
-      }
+        const { propertyId } = req.params;
+        const { title } = req.body;
+        const image = req.file; // Use req.file to get the uploaded image data
+        console.log("image", image)
+        // Find the property by ID
+        const property = await Property.findByPk(propertyId);
+
+        if (!property) {
+            return res.status(404).json({ error: 'Property not found' });
+        }
+
+        // Process and save the image data
+        try {
+            if (!image) {
+                return res.status(400).json({ error: 'No image selected' });
+            }
+
+            const processedImageBuffer = await sharp(image.buffer)
+                .resize({ width: 800 }) // You can set the dimensions accordingly
+                .webp()
+                .toBuffer();
+
+            const imageData = {
+                title,
+                image: processedImageBuffer,
+                propertyId: propertyId,
+            };
+
+            // Create the image record with the associated propertyId
+            const createdImage = await Image.create(imageData);
+
+            res.json({ message: 'Image created successfully', imageId: createdImage.imageId });
+        } catch (imageError) {
+            console.error('Error processing image:', imageError);
+            return res.status(500).json({ error: 'Error processing image' });
+        }
     } catch (error) {
-      console.error('Error creating image:', error);
-      res.status(500).json({ error: 'Error creating image' });
+        console.error('Error creating image:', error);
+        res.status(500).json({ error: 'Error creating image' });
     }
-  }
+}
+
 
 
 module.exports = {

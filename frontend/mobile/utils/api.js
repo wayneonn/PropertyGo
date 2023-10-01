@@ -134,6 +134,8 @@ export const createProperty = async (propertyData, images) => {
       },
     });
 
+    console.log('Formdata:', formData)
+
     if (response.ok) {
       const data = await response.json();
       return { success: true, data };
@@ -472,13 +474,14 @@ export const updateImageById = async (imageId, updatedImage) => {
 
 export const createImageWithPropertyId = async (propertyId, image) => {
   try {
+    console.log('Image:', image);
     const formData = new FormData();
-    formData.append('title', image.title);
     formData.append('image', {
       uri: image.uri,
       type: 'image/jpeg', // Modify the type according to your needs
       name: 'propertyImage.jpg',
     });
+    formData.append('title', 'Property Image');
 
     const response = await fetch(`${BASE_URL}/${IMAGE_ENDPOINT}/createImageWithPropertyId/${propertyId}`, {
       method: 'POST',
@@ -488,8 +491,11 @@ export const createImageWithPropertyId = async (propertyId, image) => {
       },
     });
 
+    console.log('Formdata:', formData)
+
     if (response.ok) {
       const data = await response.json();
+      console.log('Data:', data);
       return { success: true, data };
     } else {
       const errorData = await response.json();
@@ -499,4 +505,5 @@ export const createImageWithPropertyId = async (propertyId, image) => {
     return { success: false, message: error.message };
   }
 };
+
 
