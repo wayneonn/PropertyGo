@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -10,187 +10,110 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
+import Swiper from 'react-native-swiper';
 import { Picker } from '@react-native-picker/picker';
-import * as ImagePicker from 'expo-image-picker';
+import MapView, { Marker, Callout } from 'react-native-maps';
+import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { createProperty } from '../../utils/api';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from the correct library
-import { AuthContext } from '../../AuthContext';
+import { editProperty, getPropertyListing, getImageUriById } from '../../utils/api';
+import DefaultImage from '../../assets/No-Image-Available.webp';
 import { useNavigation } from '@react-navigation/native';
-import PropertyListingScreen from '../propertyListings/PropertyListing';
+import { AuthContext } from '../../AuthContext';
+import base64 from 'react-native-base64';
 import { getAreaAndRegion } from '../../services/GetAreaAndRegion';
 
-const propertyTypes = [
-  { label: 'Select Property Type', value: '' },
-  { label: 'Resale', value: 'Resale' },
-  { label: 'New Launch', value: 'New Launch' },
-]
-
-export default function PropertyListing() {
-  const { user } = useContext(AuthContext);
+const EditPropertyListing = ({ route }) => {
+  const { propertyListingId } = route.params;
+  const [images, setImages] = useState([]);
   const navigation = useNavigation();
-  const updateAreaAndRegion = async (postalCode) => {
-    const { area, region } = await getAreaAndRegion(postalCode);
-    setProperty({ ...property, area, region });
-  };
-
-  const [property, setProperty] = useState({
-    title: 'Sample Title',
-    description:
-      'Sample Description (You can add a longer description here.)',
-    price: '100000', // Add a dollar symbol to the price
-    offeredPrice: '90000', // Add a dollar symbol to the offered price
-    bed: '2',
-    bathroom: '2',
-    size: '1200',
-    tenure: 1,
-    propertyType: '',
-    propertyStatus: 'ACTIVE',
-    userId: user.user.userId,
-    postalCode: '822126',
+  const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
+  const { user } = useContext(AuthContext);
+  const [propertyListing, setPropertyListing] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [formattedPrice, setFormattedPrice] = useState('');
+  const [rawPrice, setRawPrice] = useState('');
+  const [propertyData, setPropertyData] = useState({
+    title: '',
+    description: '',
+    price: '',
+    bed: '',
+    bathroom: '',
+    size: '',
+    postalCode: '',
     address: '',
-    unitNumber: '17-360',
-    area: '',
-    region: '',
   });
 
-  const [images, setImages] = useState([]);
-  const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
+  const [property, setProperty] = useState({
+  });
 
-  const handleChoosePhoto = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+  const propertyTypes = [
+    { label: 'Select Property Type', value: '' },
+    { label: 'Resale', value: 'Resale' },
+    { label: 'New Launch', value: 'New Launch' },
+  ]
 
-    if (permissionResult.granted === false) {
-      console.warn('Permission to access photos was denied');
-      return;
-    }
-
-    const options = {
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    };
-
-    let response = await ImagePicker.launchImageLibraryAsync(options);
-
-    if (!response.cancelled) {
-      setImages([...images, response]);
-    }
+  // Function to format the price with dollar sign and commas
+  const formatPrice = (price) => {
+    return `$${price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
   };
 
-  const handleImagePress = (index) => {
-    Alert.alert(
-      'Choose an action',
-      'Do you want to replace or remove this image?',
-      [
-        {
-          text: 'Replace',
-          onPress: () => replaceImage(index),
-        },
-        {
-          text: 'Remove',
-          onPress: () => removeImage(index),
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-      ]
-    );
+  // Function to remove dollar sign and commas and save raw price
+  const handlePriceChange = (text) => {
+    const raw = text.replace(/[^0-9]/g, '');
+    setFormattedPrice(formatPrice(raw));
+    setRawPrice(raw);
   };
-
-  const replaceImage = async (index) => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      console.warn('Permission to access photos was denied');
-      return;
-    }
-
-    const options = {
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    };
-
-    let response = await ImagePicker.launchImageLibraryAsync(options);
-
-    if (!response.cancelled) {
-      const updatedImages = [...images];
-      updatedImages[index] = response;
-      setImages(updatedImages);
-    }
-  };
-
-  const removeImage = (index) => {
-    const updatedImages = [...images];
-    updatedImages.splice(index, 1);
-    setImages(updatedImages);
-  };
-
-  // Function to fetch address based on postal code
-  const fetchAddressByPostalCode = async (postalCode) => {
-    if (postalCode.length === 6) { // Only fetch address when 6 digits are entered
-      try {
-        const response = await fetch(
-          `https://developers.onemap.sg/commonapi/search?searchVal=${postalCode}&returnGeom=Y&getAddrDetails=Y`
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.found === 1) {
-            // Extract the address from the API response
-            const address = data.results[0].ADDRESS;
-            const { area, region } = await getAreaAndRegion(postalCode);
-
-            // Update the address in the property state
-            setProperty({ ...property, address, postalCode, area, region });
-            console.log("address: ", address);
-          } else {
-            // No address found, alert the user and clear the address field
-            Alert.alert('Invalid Postal Code', 'No address found for the postal code.');
-            setProperty({ ...property, address: '', postalCode });
-          }
-        } else {
-          console.error('API request failed.');
-        }
-      } catch (error) {
-        console.error('Error fetching address:', error);
-      }
-    }
-  };
-
-
-  // Event listener for postal code input
-  const handlePostalCodeChange = (text) => {
-    // Restrict input to a maximum of 6 digits
-    if (/^\d{0,6}$/.test(text)) {
-      // Update the postalCode field in the property state
-      setProperty({ ...property, postalCode: text });
-
-      // Call the function to fetch the address
-      if (text.length === 6) {
-        fetchAddressByPostalCode(text);
-        postalCode = text;
-      }
-    }
-  };
-
-
 
   const handleSubmit = async () => {
+    // Validation checks
     if (images.length === 0) {
       Alert.alert('No images selected', 'Please select at least one image.');
       return;
     }
 
-    // Convert property type to uppercase
-    let propertyTypeUpperCase = property.propertyType.toUpperCase();
+    // Parse the formatted price to remove dollar sign and commas
+    const price = rawPrice ? parseInt(rawPrice, 10) : 0;
 
-    // Check if propertyType is 'New Launch' and convert it to 'NEW_LAUNCH'
+    if (!price || price <= 0) {
+      Alert.alert('Invalid Price', 'Price must be a numeric value.');
+      return;
+    }
+
+    if (!/^\d+$/.test(property.size)) {
+      Alert.alert('Invalid Size', 'Size must be a numeric value.');
+      return;
+    }
+
+    if (!/^\d+$/.test(property.bed)) {
+      Alert.alert('Invalid Bed', 'Bed must be a numeric value.');
+      return;
+    }
+
+    if (!/^\d+$/.test(property.bathroom)) {
+      Alert.alert('Invalid Bathroom', 'Bathroom must be a numeric value.');
+      return;
+    }
+
+    if (property.propertyType === '') {
+      Alert.alert('Property Type Not Selected', 'Please select a property type.');
+      return;
+    }
+
+    if (
+      property.title.trim() === '' ||
+      property.description.trim() === '' ||
+      property.unitNumber.trim() === '' ||
+      property.postalCode.trim() === '' ||
+      property.address.trim() === ''
+    ) {
+      Alert.alert('Missing Information', 'Please fill in all fields.');
+      return;
+    }
+
+    // Other checks and API call
+    let propertyTypeUpperCase = property.propertyType.toUpperCase();
     if (propertyTypeUpperCase === 'NEW LAUNCH') {
       propertyTypeUpperCase = 'NEW_LAUNCH';
     }
@@ -199,9 +122,9 @@ export default function PropertyListing() {
       const { success, data, message } = await createProperty(
         {
           ...property,
-          price: property.price.replace(/\$/g, ''), // Remove dollar symbol
-          offeredPrice: property.offeredPrice.replace(/\$/g, ''), // Remove dollar symbol
-          propertyType: propertyTypeUpperCase, // Set property type to uppercase
+          price: price, // Use the parsed price here
+          offeredPrice: property.offeredPrice.replace(/\$/g, ''),
+          propertyType: propertyTypeUpperCase,
         },
         images
       );
@@ -226,6 +149,149 @@ export default function PropertyListing() {
     }
   };
 
+  // Function to fetch address based on postal code
+  const fetchAddressByPostalCode = async (postalCode) => {
+    if (postalCode.length === 6) {
+      try {
+        const response = await fetch(
+          `https://developers.onemap.sg/commonapi/search?searchVal=${postalCode}&returnGeom=Y&getAddrDetails=Y`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.found === 1) {
+            const address = data.results[0].ADDRESS;
+            const { area, region } = await getAreaAndRegion(postalCode);
+
+            // Update the postalCode field in the property state
+            setPropertyData({
+              ...propertyData,
+              postalCode, // Update postalCode with the new value
+              address,
+              area,
+              region,
+            });
+          } else {
+            Alert.alert('Invalid Postal Code', 'No address found for the postal code.');
+            setPropertyData({ ...propertyData, postalCode: '', address: '' }); // Clear postalCode and address
+          }
+        } else {
+          console.error('API request failed.');
+        }
+      } catch (error) {
+        console.error('Error fetching address:', error);
+      }
+    }
+  };
+
+  // Event listener for postal code input
+  const handlePostalCodeChange = (text) => {
+    // Restrict input to a maximum of 6 digits
+    if (/^\d{0,6}$/.test(text)) {
+      // Update the postalCode field in the property state
+      setPropertyData({
+        ...propertyData,
+        postalCode: text, // Update postalCode with the new value
+      });
+
+      // Call the function to fetch the address
+      if (text.length === 6) {
+        fetchAddressByPostalCode(text);
+      }
+    }
+  };
+
+
+  useEffect(() => {
+    // Fetch property listing details using propertyListingId from your API
+    fetchPropertyListing(propertyListingId);
+  }, [propertyListingId]);
+
+  const fetchPropertyListing = async (id) => {
+    try {
+      // Make an API call to fetch property listing details by id
+      const response = await fetch(getPropertyListing(id));
+      const data = await response.json();
+      setPropertyListing(data); // Update state with the fetched data
+
+      // Update the property data fields with fetched data
+      setPropertyData({
+        title: data.title,
+        description: data.description,
+        price: data.price.toString(),
+        bed: data.bed.toString(),
+        bathroom: data.bathroom.toString(),
+        size: data.size.toString(),
+        postalCode: data.postalCode.toString() || '', // Update postalCode (or provide a default value)
+        address: data.address,
+        unitNumber: data.unitNumber || '', // Update unitNumber (or provide a default value)
+        propertyType: transformPropertyType(data.propertyType), // Transform propertyType label
+      });
+
+      // Update formattedPrice with the fetched price
+      setFormattedPrice(formatPrice(data.price.toString()));
+
+      // Set isLoading to false here
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching property listing:', error);
+      setIsLoading(false); // Ensure that isLoading is set to false even on error
+    }
+  };
+
+
+  // Function to transform property type label
+  const transformPropertyType = (type) => {
+    if (type === 'NEW_LAUNCH') {
+      return 'New Launch';
+    } else {
+      return 'Resale'
+    }
+    // Handle other property type cases here if needed
+    return type; // Return the type unchanged if not matched
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      const response = await editProperty(propertyListingId, propertyData, []);
+      if (response.success) {
+        // Property updated successfully, navigate back to the property listing screen
+        navigation.navigate('PropertyListingScreen', { propertyListingId });
+      } else {
+        console.error('Error updating property:', response.message);
+        // Handle the error appropriately, e.g., show an error message to the user
+      }
+    } catch (error) {
+      console.error('Error updating property:', error);
+      // Handle the error appropriately, e.g., show an error message to the user
+    }
+  };
+
+  const handleChoosePhoto = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      console.warn('Permission to access photos was denied');
+      return;
+    }
+
+    const options = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    };
+
+    let response = await ImagePicker.launchImageLibraryAsync(options);
+
+    if (!response.cancelled) {
+      setImages([...images, response]);
+    }
+  };
+
+  if (isLoading) {
+    return <ActivityIndicator style={styles.loadingIndicator} />;
+  }
 
   return (
     <View style={styles.container}>
@@ -260,8 +326,10 @@ export default function PropertyListing() {
           <Text style={styles.label}>Title</Text>
           <TextInput
             placeholder="Title"
-            value={property.title}
-            onChangeText={(text) => setProperty({ ...property, title: text })}
+            value={propertyData.title}
+            onChangeText={(text) =>
+              setPropertyData({ ...propertyData, title: text }) // Fix the object reference to propertyData
+            }
             style={styles.input}
           />
         </View>
@@ -270,18 +338,20 @@ export default function PropertyListing() {
           <Text style={styles.label}>Price</Text>
           <TextInput
             placeholder="$ Price"
-            value={property.price}
-            onChangeText={(text) => setProperty({ ...property, price: text })}
+            value={formattedPrice}
+            onChangeText={handlePriceChange}
             style={styles.input}
           />
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Size</Text>
+          <Text style={styles.label}>Size (sqm)</Text>
           <TextInput
             placeholder="Size (sqm)"
-            value={property.size}
-            onChangeText={(text) => setProperty({ ...property, size: text })}
+            value={propertyData.size}
+            onChangeText={(text) =>
+              setPropertyData({ ...propertyData, size: text }) // Fix the object reference to propertyData
+            }
             style={styles.input}
           />
         </View>
@@ -290,8 +360,10 @@ export default function PropertyListing() {
           <Text style={styles.label}>Bed</Text>
           <TextInput
             placeholder="Bed"
-            value={property.bed}
-            onChangeText={(text) => setProperty({ ...property, bed: text })}
+            value={propertyData.bed}
+            onChangeText={(text) =>
+              setPropertyData({ ...propertyData, bed: text }) // Fix the object reference to propertyData
+            }
             style={styles.input}
           />
         </View>
@@ -300,9 +372,9 @@ export default function PropertyListing() {
           <Text style={styles.label}>Bathroom</Text>
           <TextInput
             placeholder="Bathroom"
-            value={property.bathroom}
+            value={propertyData.bathroom}
             onChangeText={(text) =>
-              setProperty({ ...property, bathroom: text })
+              setPropertyData({ ...propertyData, bathroom: text }) // Fix the object reference to propertyData
             }
             style={styles.input}
           />
@@ -312,10 +384,10 @@ export default function PropertyListing() {
           <Text style={styles.label}>Postal Code</Text>
           <TextInput
             placeholder="Postal Code"
-            maxLength={6} // Restrict input to 6 characters
-            keyboardType="numeric" // Show numeric keyboard
-            value={property.postalCode}
-            onChangeText={handlePostalCodeChange} // Handle postal code changes
+            maxLength={6}
+            keyboardType="numeric"
+            value={propertyData.postalCode} // Display the postalCode from propertyData
+            onChangeText={handlePostalCodeChange}
             style={styles.input}
           />
         </View>
@@ -324,41 +396,41 @@ export default function PropertyListing() {
           <Text style={styles.label}>Address</Text>
           <TextInput
             placeholder="Address"
-            value={property.address}
-            onChangeText={(text) => setProperty({ ...property, address: text })}
+            value={propertyData.address}
+            onChangeText={(text) =>
+              setPropertyData({ ...propertyData, address: text }) // Fix the object reference to propertyData
+            }
             style={[styles.input, styles.mediumTypeInput]}
             multiline={true}
             numberOfLines={2}
           />
         </View>
 
-
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Unit Number</Text>
           <TextInput
             placeholder="Unit Number"
-            value={property.unitNumber}
-            onChangeText={(text) => setProperty({ ...property, unitNumber: text })}
+            value={propertyData.unitNumber}
+            onChangeText={(text) =>
+              setPropertyData({ ...propertyData, unitNumber: text }) // Fix the object reference to propertyData
+            }
             style={styles.input}
           />
         </View>
-
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Description</Text>
           <TextInput
             placeholder="Description"
-            value={property.description}
+            value={propertyData.description}
             onChangeText={(text) =>
-              setProperty({ ...property, description: text })
+              setPropertyData({ ...propertyData, description: text }) // Fix the object reference to propertyData
             }
             style={[styles.input, styles.largeTextInput]}
             multiline={true}
             numberOfLines={4}
           />
         </View>
-
-
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Property Type</Text>
@@ -367,9 +439,9 @@ export default function PropertyListing() {
             onPress={() => setPropertyTypeVisible(true)}
           >
             <Text style={styles.propertyTypePickerText}>
-              {property.propertyType
-                ? property.propertyType.charAt(0).toUpperCase() +
-                property.propertyType.slice(1)
+              {propertyData.propertyType
+                ? propertyData.propertyType.charAt(0).toUpperCase() +
+                propertyData.propertyType.slice(1)
                 : 'Select Property Type'}
             </Text>
             <Icon name="caret-down" size={20} color="black" />
@@ -384,9 +456,9 @@ export default function PropertyListing() {
         >
           <View style={styles.modalContainer}>
             <Picker
-              selectedValue={property.propertyType}
+              selectedValue={propertyData.propertyType}
               onValueChange={(value) =>
-                setProperty({ ...property, propertyType: value })
+                setPropertyData({ ...property, propertyType: value })
               }
               style={styles.picker}
             >
@@ -415,7 +487,7 @@ export default function PropertyListing() {
 
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -521,3 +593,5 @@ const styles = StyleSheet.create({
     marginLeft: 90,
   },
 });
+
+export default EditPropertyListing;
