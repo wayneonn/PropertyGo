@@ -57,20 +57,6 @@ export default function PropertyListing() {
 
   const [images, setImages] = useState([]);
   const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
-  const [formattedPrice, setFormattedPrice] = useState('');
-  const [rawPrice, setRawPrice] = useState('');
-
-    // Function to format the price with dollar sign and commas
-    const formatPrice = (price) => {
-      return `$${price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
-    };
-  
-    // Function to remove dollar sign and commas and save raw price
-    const handlePriceChange = (text) => {
-      const raw = text.replace(/[^0-9]/g, '');
-      setFormattedPrice(formatPrice(raw));
-      setRawPrice(raw);
-    };
 
   const handleChoosePhoto = async () => {
     const permissionResult =
@@ -193,69 +179,33 @@ export default function PropertyListing() {
     }
   };
 
+
+
   const handleSubmit = async () => {
-    // Validation checks
     if (images.length === 0) {
       Alert.alert('No images selected', 'Please select at least one image.');
       return;
     }
-  
-    // Parse the formatted price to remove dollar sign and commas
-    const price = rawPrice ? parseInt(rawPrice, 10) : 0;
-  
-    if (!price || price <= 0) {
-      Alert.alert('Invalid Price', 'Price must be a numeric value.');
-      return;
-    }
-  
-    if (!/^\d+$/.test(property.size)) {
-      Alert.alert('Invalid Size', 'Size must be a numeric value.');
-      return;
-    }
-  
-    if (!/^\d+$/.test(property.bed)) {
-      Alert.alert('Invalid Bed', 'Bed must be a numeric value.');
-      return;
-    }
-  
-    if (!/^\d+$/.test(property.bathroom)) {
-      Alert.alert('Invalid Bathroom', 'Bathroom must be a numeric value.');
-      return;
-    }
-  
-    if (property.propertyType === '') {
-      Alert.alert('Property Type Not Selected', 'Please select a property type.');
-      return;
-    }
-  
-    if (
-      property.title.trim() === '' ||
-      property.description.trim() === '' ||
-      property.unitNumber.trim() === '' ||
-      property.postalCode.trim() === '' ||
-      property.address.trim() === ''
-    ) {
-      Alert.alert('Missing Information', 'Please fill in all fields.');
-      return;
-    }
-  
-    // Other checks and API call
+
+    // Convert property type to uppercase
     let propertyTypeUpperCase = property.propertyType.toUpperCase();
+
+    // Check if propertyType is 'New Launch' and convert it to 'NEW_LAUNCH'
     if (propertyTypeUpperCase === 'NEW LAUNCH') {
       propertyTypeUpperCase = 'NEW_LAUNCH';
     }
-  
+
     try {
       const { success, data, message } = await createProperty(
         {
           ...property,
-          price: price, // Use the parsed price here
-          offeredPrice: property.offeredPrice.replace(/\$/g, ''),
-          propertyType: propertyTypeUpperCase,
+          price: property.price.replace(/\$/g, ''), // Remove dollar symbol
+          offeredPrice: property.offeredPrice.replace(/\$/g, ''), // Remove dollar symbol
+          propertyType: propertyTypeUpperCase, // Set property type to uppercase
         },
         images
       );
-  
+
       if (success) {
         const propertyListingId = data.propertyListingId;
         console.log('Property created successfully:', propertyListingId);
@@ -275,8 +225,6 @@ export default function PropertyListing() {
       );
     }
   };
-  
-  
 
 
   return (
@@ -319,17 +267,17 @@ export default function PropertyListing() {
         </View>
 
         <View style={styles.inputContainer}>
-        <Text style={styles.label}>Price</Text>
-        <TextInput
-          placeholder="$ Price"
-          value={formattedPrice}
-          onChangeText={handlePriceChange}
-          style={styles.input}
-        />
-      </View>
+          <Text style={styles.label}>Price</Text>
+          <TextInput
+            placeholder="$ Price"
+            value={property.price}
+            onChangeText={(text) => setProperty({ ...property, price: text })}
+            style={styles.input}
+          />
+        </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Size (sqm)</Text>
+          <Text style={styles.label}>Size</Text>
           <TextInput
             placeholder="Size (sqm)"
             value={property.size}

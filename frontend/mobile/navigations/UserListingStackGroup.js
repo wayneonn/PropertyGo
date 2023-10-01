@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import PropertyListing from "../screens/propertyListings/PropertyListings";
 import UserListings from "../screens/sideNavigatorBar/UserListings";
 import PropertyUserListing from "../screens/propertyListings/PropertyUserListing";
+import EditPropertyListing from "../screens/propertyListings/EditPropertyListing";
 import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import Map from "../screens/propertyListings/map";
 
@@ -16,6 +17,7 @@ const UserListingStackGroup = () => {
             {/* <PropertyListingsStack.Screen name="Map" component={Map}/> */}
             <UserListingStack.Screen name="Favourite" component={UserListings}/>
             <UserListingStack.Screen name="Property Listing" component={PropertyUserListing}/>
+            <UserListingStack.Screen name="Edit Property Listing" component={EditPropertyListing}/>
             <UserListingStack.Screen name="View Profile" component={ViewUserProfile}/>
         </UserListingStack.Navigator>
     );
