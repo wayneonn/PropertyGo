@@ -296,8 +296,6 @@ async function getPropertiesByFavoriteCount(req, res) {
     }
 }
 
-
-
 // Get recently added properties sorted by postedAt datetime
 async function getRecentlyAddedProperties(req, res) {
     try {
@@ -379,6 +377,83 @@ async function getPropertiesByUser(req, res) {
     }
 }
 
+// Remove a property
+async function removeProperty(req, res) {
+    const propertyId = req.params.propertyId;
+
+    // Start a transaction
+    const transaction = await sequelize.transaction();
+
+    try {
+        // Delete associated images first
+        await Image.destroy({ where: { propertyId: propertyId }, transaction });
+
+        // Then delete the property
+        const deleteCount = await Property.destroy({ where: { propertyListingId: propertyId }, transaction });
+
+        if (deleteCount === 0) {
+            await transaction.rollback();
+            return res.status(404).json({ error: 'Property not found' });
+        }
+
+        await transaction.commit();
+        res.json({ message: 'Property removed successfully' });
+    } catch (error) {
+        await transaction.rollback();
+        console.error('Error removing property:', error);
+        res.status(500).json({ error: 'Error removing property' });
+    }
+}
+
+// Edit a property
+async function editProperty(req, res) {
+    const propertyId = req.params.id;
+    const propertyData = JSON.parse(req.body.property);
+
+    // Start a transaction
+    const transaction = await sequelize.transaction();
+
+    try {
+        const property = await Property.findByPk(propertyId);
+        if (!property) {
+            await transaction.rollback();
+            return res.status(404).json({ error: 'Property not found' });
+        }
+
+        // If there are new images, process them
+        const images = req.files;
+        if (images && images.length > 0) {
+            for (let index = 0; index < images.length; index++) {
+                const image = images[index];
+
+                const processedImageBuffer = await sharp(image.buffer)
+                    .resize({ width: 800 }) // You can set the dimensions accordingly
+                    .webp()
+                    .toBuffer();
+
+                const imageData = {
+                    title: `Image ${index + 1}`,
+                    image: processedImageBuffer,
+                    propertyId: propertyId,
+                };
+
+                // Update or create new image records with the associated propertyId
+                await Image.upsert(imageData, { transaction });
+            }
+        }
+
+        // Update the property details
+        await property.update(propertyData, { transaction });
+
+        await transaction.commit();
+        res.json({ message: 'Property updated successfully' });
+    } catch (error) {
+        await transaction.rollback();
+        console.error('Error editing property:', error);
+        res.status(500).json({ error: 'Error editing property' });
+    }
+}
+
   
 module.exports = {
     getAllProperties,
@@ -390,4 +465,6 @@ module.exports = {
     getPropertiesByRegion,
     getRecentlyAddedProperties,
     getPropertiesByUser,
+    removeProperty,
+    editProperty,
 };

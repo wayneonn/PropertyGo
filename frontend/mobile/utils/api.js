@@ -368,3 +368,60 @@ export const getPropertiesByUser = async (userId) => {
     return { success: false, message: error.message };
   }
 };
+
+export const removeProperty = async (propertyId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${PROPERTY_ENDPOINT}/${propertyId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.message };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const editProperty = async (propertyId, propertyData, images) => {
+  try {
+    const formData = new FormData();
+
+    images.forEach((image, index) => {
+      const imageBlob = {
+        uri: image.uri,
+        type: 'image/jpeg',
+        name: `propertyImage${index}.jpg`,
+      };
+
+      formData.append(`images`, imageBlob);
+    });
+
+    formData.append('property', JSON.stringify(propertyData));
+
+    const response = await fetch(`${BASE_URL}/${PROPERTY_ENDPOINT}/${propertyId}`, {
+      method: 'PUT',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.message };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};

@@ -11,11 +11,14 @@ import {
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; // New imports for icons
-import { getPropertyListing, getImageUriById, getUserById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites, countUsersFavoritedProperty } from '../../utils/api';
+import { getPropertyListing, getImageUriById, getUserById, 
+  addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites, 
+  countUsersFavoritedProperty, removeProperty } from '../../utils/api';
 import base64 from 'react-native-base64';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available.webp';
+import { Alert } from 'react-native';
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -42,6 +45,40 @@ const PropertyListingScreen = ({ route }) => {
     } else {
       console.error('Error fetching favorite count:', message);
     }
+  };
+
+  const handleDeleteListing = async () => {
+    // Show an alert to confirm deletion
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this property listing?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            try {
+              const { success, message } = await removeProperty(propertyListingId);
+  
+              if (success) {
+                // Property deleted successfully, navigate back to the previous screen
+                navigation.goBack();
+              } else {
+                console.error('Error deleting property:', message);
+                // Handle the error appropriately, e.g., show an error message to the user
+              }
+            } catch (error) {
+              console.error('Error deleting property:', error);
+              // Handle the error appropriately, e.g., show an error message to the user
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const fetchUser = async (userId) => {
@@ -327,7 +364,7 @@ const PropertyListingScreen = ({ route }) => {
             <TouchableOpacity style={styles.editListingButton}>
               <Text style={styles.buttonText}>Edit Listing</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.deleteListingButton}>
+            <TouchableOpacity style={styles.deleteListingButton} onPress={handleDeleteListing}>
               <Text style={styles.buttonText}>Delete Listing</Text>
             </TouchableOpacity>
           </>
