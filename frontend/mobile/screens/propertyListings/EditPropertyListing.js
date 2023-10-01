@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -27,13 +28,12 @@ import { getAreaAndRegion } from '../../services/GetAreaAndRegion';
 const EditPropertyListing = ({ route }) => {
   const { propertyListingId } = route.params;
   const [images, setImages] = useState([]);
+  const [images1, setImages1] = useState([]);
   const navigation = useNavigation();
   const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
   const { user } = useContext(AuthContext);
   const [propertyListing, setPropertyListing] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [formattedPrice, setFormattedPrice] = useState('');
-  const [rawPrice, setRawPrice] = useState('');
   const [propertyData, setPropertyData] = useState({
     title: '',
     description: '',
@@ -43,7 +43,21 @@ const EditPropertyListing = ({ route }) => {
     size: '',
     postalCode: '',
     address: '',
+    propertyType: '', // You should also initialize propertyType here if it's part of propertyData
   });
+
+  // Function to format the price with dollar sign and commas
+  const formatPrice = (price) => {
+    return `$${price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
+  };
+
+  // Initialize formattedPrice and rawPrice with the initial price from propertyData
+  const [formattedPrice, setFormattedPrice] = useState(
+    formatPrice(propertyData.price.toString())
+  );
+  const [rawPrice, setRawPrice] = useState(propertyData.price.toString());
+
+
 
   const [property, setProperty] = useState({
   });
@@ -54,100 +68,109 @@ const EditPropertyListing = ({ route }) => {
     { label: 'New Launch', value: 'New Launch' },
   ]
 
-  // Function to format the price with dollar sign and commas
-  const formatPrice = (price) => {
-    return `$${price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
-  };
-
   // Function to remove dollar sign and commas and save raw price
   const handlePriceChange = (text) => {
+    // Remove dollar sign and commas
     const raw = text.replace(/[^0-9]/g, '');
-    setFormattedPrice(formatPrice(raw));
+  
+    // Update rawPrice here
     setRawPrice(raw);
+  
+    // Format and update formattedPrice
+    setFormattedPrice(formatPrice(raw));
   };
+  
+
 
   const handleSubmit = async () => {
     // Validation checks
+    console.log(propertyData)
     if (images.length === 0) {
       Alert.alert('No images selected', 'Please select at least one image.');
       return;
     }
 
     // Parse the formatted price to remove dollar sign and commas
+    console.log(' price:', propertyData.price);
+    console.log('Raw price:', rawPrice);
     const price = rawPrice ? parseInt(rawPrice, 10) : 0;
-
-    if (!price || price <= 0) {
+    console.log('Parsed price:', price);
+    if (!propertyData.price || propertyData.price <= 0) {
       Alert.alert('Invalid Price', 'Price must be a numeric value.');
       return;
     }
 
-    if (!/^\d+$/.test(property.size)) {
+    if (!/^\d+$/.test(propertyData.size)) {
       Alert.alert('Invalid Size', 'Size must be a numeric value.');
       return;
     }
 
-    if (!/^\d+$/.test(property.bed)) {
+    if (!/^\d+$/.test(propertyData.bed)) {
       Alert.alert('Invalid Bed', 'Bed must be a numeric value.');
       return;
     }
 
-    if (!/^\d+$/.test(property.bathroom)) {
+    if (!/^\d+$/.test(propertyData.bathroom)) {
       Alert.alert('Invalid Bathroom', 'Bathroom must be a numeric value.');
       return;
     }
 
-    if (property.propertyType === '') {
+    if (propertyData.propertyType === '') {
       Alert.alert('Property Type Not Selected', 'Please select a property type.');
       return;
     }
 
     if (
-      property.title.trim() === '' ||
-      property.description.trim() === '' ||
-      property.unitNumber.trim() === '' ||
-      property.postalCode.trim() === '' ||
-      property.address.trim() === ''
+      propertyData.title.trim() === '' ||
+      propertyData.description.trim() === '' ||
+      propertyData.unitNumber.trim() === '' ||
+      propertyData.postalCode.trim() === '' ||
+      propertyData.address.trim() === ''
     ) {
       Alert.alert('Missing Information', 'Please fill in all fields.');
       return;
     }
 
+    // Check if propertyData.offeredPrice is defined before replacing characters
+    // const offeredPrice = propertyData.offeredPrice ? propertyData.offeredPrice.replace(/\$/g, '') : '';
+
     // Other checks and API call
-    let propertyTypeUpperCase = property.propertyType.toUpperCase();
-    if (propertyTypeUpperCase === 'NEW LAUNCH') {
-      propertyTypeUpperCase = 'NEW_LAUNCH';
-    }
-
     try {
-      const { success, data, message } = await createProperty(
-        {
-          ...property,
-          price: price, // Use the parsed price here
-          offeredPrice: property.offeredPrice.replace(/\$/g, ''),
-          propertyType: propertyTypeUpperCase,
-        },
-        images
-      );
 
+      let propertyTypeUpperCase = propertyData.propertyType.toUpperCase();
+      if (propertyTypeUpperCase === 'NEW LAUNCH') {
+        propertyTypeUpperCase = 'NEW_LAUNCH';
+      }
+
+      const { success, data, message } = await editProperty(
+        propertyListingId, // Pass the propertyListingId
+        {
+          ...propertyData,
+          propertyType: propertyTypeUpperCase,
+        }
+      );
+  
       if (success) {
-        const propertyListingId = data.propertyListingId;
-        console.log('Property created successfully:', propertyListingId);
+        console.log('Property updated successfully:', propertyListingId);
         Alert.alert(
-          'Property Created',
-          'The property listing has been created successfully.'
+          'Property Updated',
+          'The property listing has been updated successfully.'
         );
         navigation.navigate('Property Listing', { propertyListingId });
       } else {
-        Alert.alert('Error', `Failed to create property: ${message}`);
+        Alert.alert('Error', `Failed to update property: ${message}`);
       }
     } catch (error) {
-      console.log('Error uploading property:', error);
+      console.log('Error updating property:', error);
       Alert.alert(
         'Error',
-        'An error occurred while creating the property listing.'
+        'An error occurred while updating the property listing.'
       );
     }
   };
+
+
+
 
   // Function to fetch address based on postal code
   const fetchAddressByPostalCode = async (postalCode) => {
@@ -231,6 +254,9 @@ const EditPropertyListing = ({ route }) => {
       // Update formattedPrice with the fetched price
       setFormattedPrice(formatPrice(data.price.toString()));
 
+      // Set the 'images' state with the fetched image URIs
+      setImages(data.images.map((imageUri) => ({ uri: imageUri })));
+
       // Set isLoading to false here
       setIsLoading(false);
     } catch (error) {
@@ -256,7 +282,7 @@ const EditPropertyListing = ({ route }) => {
       const response = await editProperty(propertyListingId, propertyData, []);
       if (response.success) {
         // Property updated successfully, navigate back to the property listing screen
-        navigation.navigate('PropertyListingScreen', { propertyListingId });
+        navigation.navigate('Property Listing', { propertyListingId });
       } else {
         console.error('Error updating property:', response.message);
         // Handle the error appropriately, e.g., show an error message to the user
@@ -285,9 +311,42 @@ const EditPropertyListing = ({ route }) => {
     let response = await ImagePicker.launchImageLibraryAsync(options);
 
     if (!response.cancelled) {
-      setImages([...images, response]);
+      setImages([...images, response]); // Use the images state to store selected images
     }
   };
+
+  const handleImagePress = async (index) => {
+    // Display an alert with options to update or remove the image
+    Alert.alert(
+      'Image Options',
+      'Choose an action for this image:',
+      [
+        {
+          text: 'Update',
+          onPress: () => handleUpdateImage(index),
+        },
+        {
+          text: 'Remove',
+          onPress: () => handleRemoveImage(index),
+          style: 'destructive',
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const handleRemoveImage = async (index) => {
+    // Handle image removal logic here
+    // Remove the image at the specified index from the 'images' state
+    const updatedImages = [...images];
+    updatedImages.splice(index, 1);
+    setImages(updatedImages);
+  };
+
 
   if (isLoading) {
     return <ActivityIndicator style={styles.loadingIndicator} />;
@@ -297,7 +356,7 @@ const EditPropertyListing = ({ route }) => {
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>List A Property</Text>
+          <Text style={styles.header}>Edit Property Listing</Text>
         </View>
 
         <View style={styles.imageRow}>
@@ -310,15 +369,20 @@ const EditPropertyListing = ({ route }) => {
             </View>
 
             {/* Map over the images */}
-            {images.map((image, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleImagePress(index)}
-                style={styles.imageContainer}
-              >
-                <Image source={{ uri: image.uri }} style={styles.image} />
-              </TouchableOpacity>
-            ))}
+            {images.map((image, index) => {
+              const imageUri = getImageUriById(image.uri);
+              console.log(`Image URI at index ${index}: ${imageUri}`); // Add this log
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleImagePress(index)}
+                  style={styles.imageContainer}
+                >
+                  <Image source={{ uri: imageUri }} style={styles.image} />
+                </TouchableOpacity>
+              );
+            })}
+
           </ScrollView>
         </View>
 
@@ -342,6 +406,7 @@ const EditPropertyListing = ({ route }) => {
             onChangeText={handlePriceChange}
             style={styles.input}
           />
+
         </View>
 
         <View style={styles.inputContainer}>
@@ -482,7 +547,7 @@ const EditPropertyListing = ({ route }) => {
 
       <TouchableOpacity style={styles.saveChangesButton} onPress={handleSubmit}>
         <Ionicons name="save-outline" size={18} color="white" />
-        <Text style={styles.saveChangesButtonText}>Submit</Text>
+        <Text style={styles.saveChangesButtonText}>Update</Text>
       </TouchableOpacity>
 
     </View>
@@ -590,7 +655,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginLeft: 90,
+    marginLeft: 60,
   },
 });
 

@@ -19,6 +19,8 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available.webp';
 import { Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -35,6 +37,36 @@ const PropertyListingScreen = ({ route }) => {
     latitudeDelta: 0.005, // Adjust initial zoom level
     longitudeDelta: 0.005,
   });
+
+  const handleFocus = () => {
+    // This code will be executed when the screen regains focus
+    // You can place any logic you want to run here
+    console.log('Screen has regained focus');
+    // For example, you can refetch data or perform any other actions
+    fetchFavoriteCount();
+    checkIfPropertyIsFavorite();
+  };
+
+  // Wrap the handleFocus function with useFocusEffect
+  useFocusEffect(
+    React.useCallback(() => {
+      handleFocus();
+      return () => {
+        // This cleanup function will be called when the component unmounts or the screen loses focus
+        console.log('Screen loses focus');
+        // You can perform any cleanup or unsubscribe from any listeners here
+      };
+    }, [])
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('Home page gained focus');
+      fetchPropertyListing(propertyListingId);
+      checkIfPropertyIsFavorite();
+      fetchFavoriteCount();
+    }, [])
+  );
 
   // Fetch the number of users who have favorited the property
   const fetchFavoriteCount = async () => {

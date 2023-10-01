@@ -390,27 +390,35 @@ export const removeProperty = async (propertyId) => {
   }
 };
 
-export const editProperty = async (propertyId, propertyData, images) => {
+export const editProperty = async (propertyId, propertyData) => {
   try {
-    const formData = new FormData();
-
-    images.forEach((image, index) => {
-      const imageBlob = {
-        uri: image.uri,
-        type: 'image/jpeg',
-        name: `propertyImage${index}.jpg`,
-      };
-
-      formData.append(`images`, imageBlob);
-    });
-
-    formData.append('property', JSON.stringify(propertyData));
-
     const response = await fetch(`${BASE_URL}/${PROPERTY_ENDPOINT}/${propertyId}`, {
       method: 'PUT',
-      body: formData,
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json', // Use JSON content type
+      },
+      body: JSON.stringify(propertyData), // Send propertyData as JSON string
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.message };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+
+export const removeImageById = async (imageId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${IMAGE_ENDPOINT}/${imageId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
       },
     });
 
@@ -425,3 +433,70 @@ export const editProperty = async (propertyId, propertyData, images) => {
     return { success: false, message: error.message };
   }
 };
+
+// Update an image by its ID
+export const updateImageById = async (imageId, updatedImage) => {
+  try {
+    const formData = new FormData();
+
+    // Append the updated image properties to the FormData object
+    formData.append("title", updatedImage.title);
+
+    if (updatedImage.image) {
+      formData.append("image", {
+        uri: updatedImage.image.uri,
+        type: "image/jpeg", // Modify the type according to your needs
+        name: "updatedImage.jpg",
+      });
+    }
+
+    const response = await fetch(`${BASE_URL}/${IMAGE_ENDPOINT}/${imageId}`, {
+      method: "PUT",
+      body: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.message };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const createImageWithPropertyId = async (propertyId, image) => {
+  try {
+    const formData = new FormData();
+    formData.append('title', image.title);
+    formData.append('image', {
+      uri: image.uri,
+      type: 'image/jpeg', // Modify the type according to your needs
+      name: 'propertyImage.jpg',
+    });
+
+    const response = await fetch(`${BASE_URL}/${IMAGE_ENDPOINT}/createImageWithPropertyId/${propertyId}`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.error };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+

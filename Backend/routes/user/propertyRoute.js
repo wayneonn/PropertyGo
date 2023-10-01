@@ -16,7 +16,7 @@ router.get('/propertiesByRegion/:region', getPropertiesByRegion);
 router.get('/propertiesByUser/:userId', getPropertiesByUser);
 router.get('/', getAllProperties);
 router.post('/', upload.array('images', 5), createProperty);
-router.put('/:propertyId', upload.array('images', 5), editProperty);
+router.put('/:propertyId', editProperty);
 router.delete('/:propertyId', removeProperty);
 router.get('/:propertyListingId', getPropertyById);
 

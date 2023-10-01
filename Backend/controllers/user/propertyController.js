@@ -407,53 +407,30 @@ async function removeProperty(req, res) {
 
 // Edit a property
 async function editProperty(req, res) {
-    const propertyId = req.params.id;
-    const propertyData = JSON.parse(req.body.property);
-
+    const propertyId = req.params.propertyId;
+    const propertyData = req.body; // Receive text data directly from the request body
+    console.log('Received property data:', propertyData);
     // Start a transaction
     const transaction = await sequelize.transaction();
-
+  
     try {
-        const property = await Property.findByPk(propertyId);
-        if (!property) {
-            await transaction.rollback();
-            return res.status(404).json({ error: 'Property not found' });
-        }
-
-        // If there are new images, process them
-        const images = req.files;
-        if (images && images.length > 0) {
-            for (let index = 0; index < images.length; index++) {
-                const image = images[index];
-
-                const processedImageBuffer = await sharp(image.buffer)
-                    .resize({ width: 800 }) // You can set the dimensions accordingly
-                    .webp()
-                    .toBuffer();
-
-                const imageData = {
-                    title: `Image ${index + 1}`,
-                    image: processedImageBuffer,
-                    propertyId: propertyId,
-                };
-
-                // Update or create new image records with the associated propertyId
-                await Image.upsert(imageData, { transaction });
-            }
-        }
-
-        // Update the property details
-        await property.update(propertyData, { transaction });
-
-        await transaction.commit();
-        res.json({ message: 'Property updated successfully' });
-    } catch (error) {
+      const property = await Property.findByPk(propertyId);
+      if (!property) {
         await transaction.rollback();
-        console.error('Error editing property:', error);
-        res.status(500).json({ error: 'Error editing property' });
+        return res.status(404).json({ error: 'Property not found' });
+      }
+  
+      // Update the property details
+      await property.update(propertyData, { transaction });
+  
+      await transaction.commit();
+      res.json({ message: 'Property updated successfully' });
+    } catch (error) {
+      await transaction.rollback();
+      console.error('Error editing property:', error);
+      res.status(500).json({ error: 'Error editing property' });
     }
-}
-
+  }
   
 module.exports = {
     getAllProperties,

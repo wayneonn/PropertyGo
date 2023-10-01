@@ -18,6 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available.webp'; 
 import { Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const PropertyUserListingScreen = ({ route }) => {
@@ -35,6 +36,15 @@ const PropertyUserListingScreen = ({ route }) => {
     latitudeDelta: 0.005, // Adjust initial zoom level
     longitudeDelta: 0.005,
   });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('Home page gained focus');
+      fetchPropertyListing(propertyListingId);
+      checkIfPropertyIsFavorite();
+      fetchFavoriteCount();
+    }, [])
+  );
 
 const handleDeleteListing = async () => {
   // Show an alert to confirm deletion

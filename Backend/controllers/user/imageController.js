@@ -1,3 +1,4 @@
+const sharp = require('sharp');
 const { Image, Property } = require('../../models'); // Import your Image model
 
 // Get all images associated with a property by its ID
@@ -51,7 +52,114 @@ async function getImageById(req, res) {
     }
 }
 
+async function removeImageById(req, res) {
+    try {
+        const { imageId } = req.params;
+
+        // Find the image by ID
+        const image = await Image.findByPk(imageId);
+
+        if (!image) {
+            return res.status(404).json({ error: 'Image not found' });
+        }
+
+        // Delete the image from the database
+        await image.destroy();
+
+        res.json({ message: 'Image deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting image:', error);
+        res.status(500).json({ error: 'Error deleting image' });
+    }
+}
+
+// Update an image by its ID
+async function updateImageById(req, res) {
+    try {
+        const { imageId } = req.params;
+        const { title, image } = req.body; // Assuming you can update the image title and data
+
+        // Find the image by ID
+        const imageToUpdate = await Image.findByPk(imageId);
+
+        if (!imageToUpdate) {
+            return res.status(404).json({ error: 'Image not found' });
+        }
+
+        // Update image properties
+        if (title) {
+            imageToUpdate.title = title;
+        }
+
+        if (image) {
+            try {
+                // Process and update the image data as needed (e.g., resize or convert format)
+                const processedImageBuffer = await sharp(image.buffer)
+                    .resize({ width: 800 }) // You can set the dimensions accordingly
+                    .webp()
+                    .toBuffer();
+
+                imageToUpdate.image = processedImageBuffer;
+            } catch (imageError) {
+                console.error('Error processing image:', imageError);
+                return res.status(500).json({ error: 'Error processing image' });
+            }
+        }
+
+        // Save the updated image
+        await imageToUpdate.save();
+
+        res.json({ message: 'Image updated successfully' });
+    } catch (error) {
+        console.error('Error updating image:', error);
+        res.status(500).json({ error: 'Error updating image' });
+    }
+}
+
+async function createImageWithPropertyId(req, res) {
+    try {
+      const { propertyId } = req.params;
+      const { title, image } = req.body;
+  
+      // Find the property by ID
+      const property = await Property.findByPk(propertyId);
+  
+      if (!property) {
+        return res.status(404).json({ error: 'Property not found' });
+      }
+  
+      // Process and save the image data
+      try {
+        const processedImageBuffer = await sharp(image.buffer)
+          .resize({ width: 800 }) // You can set the dimensions accordingly
+          .webp()
+          .toBuffer();
+  
+        const imageData = {
+          title,
+          image: processedImageBuffer,
+          propertyId: propertyId,
+        };
+  
+        // Create the image record with the associated propertyId
+        const createdImage = await Image.create(imageData);
+  
+        res.json({ message: 'Image created successfully', imageId: createdImage.imageId });
+      } catch (imageError) {
+        console.error('Error processing image:', imageError);
+        return res.status(500).json({ error: 'Error processing image' });
+      }
+    } catch (error) {
+      console.error('Error creating image:', error);
+      res.status(500).json({ error: 'Error creating image' });
+    }
+  }
+
+
 module.exports = {
     getImagesByPropertyId,
     getImageById,
+    removeImageById,
+    updateImageById,
+    createImageWithPropertyId,
 };
