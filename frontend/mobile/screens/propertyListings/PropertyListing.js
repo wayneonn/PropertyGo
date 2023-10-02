@@ -393,7 +393,10 @@ const PropertyListingScreen = ({ route }) => {
       <View style={styles.bottomButtonsContainer}>
         {isCurrentUserPropertyOwner ? (
           <>
-            <TouchableOpacity style={styles.bumpListingButton}>
+            <TouchableOpacity style={styles.bumpListingButton}onPress={() => {
+        navigation.navigate('Boost Listing', { propertyListingId });
+      }}
+    >
               <Text style={styles.buttonText}>Bump Listing</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.editListingButton} onPress={() => {
