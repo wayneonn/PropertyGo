@@ -440,17 +440,15 @@ export const removeImageById = async (imageId) => {
 export const updateImageById = async (imageId, updatedImage) => {
   try {
     const formData = new FormData();
-
+    console.log('Updated Image:', updatedImage.uri)
     // Append the updated image properties to the FormData object
-    formData.append("title", updatedImage.title);
+    formData.append('image', {
+      uri: updatedImage.uri, // Use the uri field to specify the URI
+      type: 'image/jpeg',    // Modify the type according to your needs
+      name: 'propertyImage.jpg',
+    });
 
-    if (updatedImage.image) {
-      formData.append("image", {
-        uri: updatedImage.image.uri,
-        type: "image/jpeg", // Modify the type according to your needs
-        name: "updatedImage.jpg",
-      });
-    }
+    formData.append('title', 'Updated Image Title'); // Modify the title as needed
 
     const response = await fetch(`${BASE_URL}/${IMAGE_ENDPOINT}/${imageId}`, {
       method: "PUT",
@@ -461,6 +459,7 @@ export const updateImageById = async (imageId, updatedImage) => {
     });
 
     if (response.ok) {
+      console.log('formData update image:', formData)
       const data = await response.json();
       return { success: true, data };
     } else {
@@ -471,6 +470,7 @@ export const updateImageById = async (imageId, updatedImage) => {
     return { success: false, message: error.message };
   }
 };
+
 
 export const createImageWithPropertyId = async (propertyId, image) => {
   try {
@@ -491,7 +491,7 @@ export const createImageWithPropertyId = async (propertyId, image) => {
       },
     });
 
-    console.log('Formdata:', formData)
+    console.log('Formdata Create Property:', formData)
 
     if (response.ok) {
       const data = await response.json();

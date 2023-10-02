@@ -77,8 +77,8 @@ async function removeImageById(req, res) {
 async function updateImageById(req, res) {
     try {
         const { imageId } = req.params;
-        const { title, image } = req.body; // Assuming you can update the image title and data
-
+        const { title } = req.body; // Assuming you can update the image title and data
+        const image = req.file;
         // Find the image by ID
         const imageToUpdate = await Image.findByPk(imageId);
 
@@ -108,13 +108,14 @@ async function updateImageById(req, res) {
 
         // Save the updated image
         await imageToUpdate.save();
-
+        console.log("imageToUpdate", imageToUpdate)
         res.json({ message: 'Image updated successfully' });
     } catch (error) {
         console.error('Error updating image:', error);
         res.status(500).json({ error: 'Error updating image' });
     }
 }
+
 
 async function createImageWithPropertyId(req, res) {
     try {

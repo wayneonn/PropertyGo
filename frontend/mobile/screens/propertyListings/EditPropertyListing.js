@@ -31,6 +31,7 @@ import { getAreaAndRegion } from '../../services/GetAreaAndRegion';
 const EditPropertyListing = ({ route }) => {
   const { propertyListingId } = route.params;
   const [images, setImages] = useState([]);
+  const [imageIdArray, setImageIdArray] = useState([]);
   const navigation = useNavigation();
   const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
   const { user } = useContext(AuthContext);
@@ -259,6 +260,8 @@ const EditPropertyListing = ({ route }) => {
 
       // Set the 'images' state with the fetched image URIs
       setImages(data.images.map((imageUri) => ({ uri: imageUri })));
+      const imageArray = data.images.map((imageId) => ({ imageId, uri: getImageUriById(imageId) }));
+      setImageIdArray(imageArray);
 
       // Set isLoading to false here
       setIsLoading(false);
@@ -298,20 +301,20 @@ const EditPropertyListing = ({ route }) => {
 
   const handleChoosePhoto = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  
+
     if (permissionResult.granted === false) {
       console.warn('Permission to access photos was denied');
       return;
     }
-  
+
     const options = {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     };
-  
+
     let response = await ImagePicker.launchImageLibraryAsync(options);
-  
+
     if (!response.cancelled) {
       // Upload the selected image to the backend
       try {
@@ -319,12 +322,12 @@ const EditPropertyListing = ({ route }) => {
           propertyListingId, // Pass the propertyListingId
           response // Pass the whole response object
         );
-  
+
         if (success) {
           // Add the newly uploaded image to the state
-          const updatedImages = [...images, { uri: data.imageId }]; // Use data.imageId as the URI
+          const updatedImages = [...images, { uri: data.imageId }];
           setImages(updatedImages);
-  
+
           // Show an alert for successful upload
           Alert.alert('Image Uploaded', 'The image has been successfully uploaded.');
         } else {
@@ -337,9 +340,9 @@ const EditPropertyListing = ({ route }) => {
       }
     }
   };
-  
 
-  const handleUpdateImage = async (index) => {
+
+  const handleUpdateImage = async (index, imageId) => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
@@ -356,26 +359,27 @@ const EditPropertyListing = ({ route }) => {
     let response = await ImagePicker.launchImageLibraryAsync(options);
 
     if (!response.cancelled) {
-      // Upload the selected image to the backend and update the state
-      const formData = new FormData();
-      formData.append('image', {
-        uri: response.uri,
-        type: 'image/jpeg', // Adjust the type as needed
+      // Create the updated image object
+      const updatedImage = {
+        uri: response.uri, // Use the uri field to specify the URI
+        type: 'image/jpeg', // Modify the type according to your needs
         name: 'propertyImage.jpg',
-      });
+      };
 
+      // Call the updateImageById function with the imageId and updatedImage
       try {
-        const { success, data, message } = await updateImageById(
-          propertyListingId, // Pass the propertyListingId
-          images[index].id, // Pass the image ID to update
-          formData
-        );
+        const { success, data, message } = await updateImageById(imageId, updatedImage);
 
         if (success) {
-          // Replace the image in the state with the updated one
+          // Update the specific image in the 'images' state array
           const updatedImages = [...images];
-          updatedImages[index] = { uri: data.imageUri };
+          updatedImages[index] = { uri: data.imageId }; // Update the image at the specified index
+
+          // Set the updated 'images' state
           setImages(updatedImages);
+
+          // Show an alert for successful upload
+          Alert.alert('Image Uploaded', 'The image has been successfully updated.');
         } else {
           console.error('Error updating image:', message);
           // Handle the error appropriately, e.g., show an error message to the user
@@ -387,15 +391,20 @@ const EditPropertyListing = ({ route }) => {
     }
   };
 
+
+
+
   const handleImagePress = async (index) => {
     // Display an alert with options to update or remove the image
+    const imageId = imageIdArray[index].imageId;
+    console.log('imageId here ', imageId)
     Alert.alert(
       'Image Options',
       'Choose an action for this image:',
       [
         {
           text: 'Update',
-          onPress: () => handleUpdateImage(index),
+          onPress: () => handleUpdateImage(index, imageId),
         },
         {
           text: 'Remove',
