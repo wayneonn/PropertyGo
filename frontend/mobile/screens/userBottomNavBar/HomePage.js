@@ -6,6 +6,7 @@ import { AuthContext } from '../../AuthContext';
 import RegionPropertyList from '../propertyListings/RegionPropertyList';
 import { useFocusEffect } from '@react-navigation/native';
 
+
 const SearchBar = () => {
   return (
     <View style={styles.searchBar}>
@@ -23,6 +24,7 @@ const HomePage = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true); // Add loading state
   const { user } = useContext(AuthContext);
   const userId = user.user.userId;
+  const [canRunEffect, setCanRunEffect] = useState(true);
 
   const handlePropertyPress = (propertyListingId) => {
     // Navigate to the Property Listing screen with the given propertyListingId
@@ -35,6 +37,7 @@ const HomePage = ({ navigation }) => {
     // Load recently added properties
     loadRecentlyAddedProperties();
   }, []);
+  
 
   useFocusEffect(
     React.useCallback(() => {

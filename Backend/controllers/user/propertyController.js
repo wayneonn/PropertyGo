@@ -211,7 +211,18 @@ async function getPropertiesByRegion(req, res) {
             where: {
                 region: region,
             },
+            include: [
+                {
+                    model: User,
+                    as: 'favouritedByUsers',
+                },
+            ],
         });
+
+        // Check if properties is undefined or empty
+        if (!properties || properties.length === 0) {
+            return res.status(404).json({ message: 'No properties found in the specified region' });
+        }
 
         // Create an object to store image IDs mapped to property IDs
         const imageIdToPropertyIdMap = {};
@@ -227,20 +238,44 @@ async function getPropertiesByRegion(req, res) {
             imageIdToPropertyIdMap[propertyId].push(imageId);
         });
 
-        // Create an array to store properties with image IDs
-        const propertiesWithImages = properties.map(property => {
+        // Create an array to store properties with image IDs and like counts
+        const propertiesWithImagesAndLikes = properties.map(property => {
+            const favoriteCount = property.favouritedByUsers.length;
             const propertyJSON = property.toJSON();
             const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
             propertyJSON.images = imageIds;
+            propertyJSON.favoriteCount = favoriteCount;
             return propertyJSON;
         });
 
-        res.json(propertiesWithImages);
+        // Sort properties by boosted status and favorite count in descending order
+        propertiesWithImagesAndLikes.sort((a, b) => {
+            // Check if both properties are boosted
+            const isBoostedA = a.boostListingEndDate && new Date(a.boostListingEndDate) >= new Date();
+            const isBoostedB = b.boostListingEndDate && new Date(b.boostListingEndDate) >= new Date();
+
+            if (isBoostedA && isBoostedB) {
+                // If both are boosted, sort by favorite count in descending order
+                return b.favoriteCount - a.favoriteCount;
+            } else if (isBoostedA) {
+                // If only A is boosted, place it above B
+                return -1;
+            } else if (isBoostedB) {
+                // If only B is boosted, place it above A
+                return 1;
+            } else {
+                // If neither is boosted, sort by favorite count in descending order
+                return b.favoriteCount - a.favoriteCount;
+            }
+        });
+
+        res.json(propertiesWithImagesAndLikes);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 }
+
 
 
 // Add a new route to get properties sorted by favorite count in descending order

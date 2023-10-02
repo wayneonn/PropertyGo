@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import PropertyCard from './PropertyCardSmall'; // Import your PropertyCard component
 import { getPropertiesByRegion } from '../../utils/api';
+import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 
 const RegionPropertyList = ({ region, onPropertyPress, handleTitlePress }) => {
   const [properties, setProperties] = useState([]);
@@ -9,6 +10,13 @@ const RegionPropertyList = ({ region, onPropertyPress, handleTitlePress }) => {
   useEffect(() => {
     loadPropertiesByRegion(region);
   }, [region]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('RegionPropertyList gained focus');
+      loadPropertiesByRegion(region);
+    }, [region])
+  );
 
   const loadPropertiesByRegion = async (region) => {
     try {
