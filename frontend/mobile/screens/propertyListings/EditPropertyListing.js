@@ -437,7 +437,7 @@ const EditPropertyListing = ({ route }) => {
         },
         {
           text: 'Remove',
-          onPress: () => handleRemoveImage(index),
+          onPress: () => handleRemoveImage(index, imageId),
           style: 'destructive',
         },
         {
@@ -449,11 +449,10 @@ const EditPropertyListing = ({ route }) => {
     );
   };
 
-  const handleRemoveImage = async (index) => {
+  const handleRemoveImage = async (index, imageId) => {
     try {
       const { success, message } = await removeImageById(
-        propertyListingId, // Pass the propertyListingId
-        images[index].id // Pass the image ID to remove
+        imageId
       );
 
       if (success) {
@@ -461,6 +460,7 @@ const EditPropertyListing = ({ route }) => {
         const updatedImages = [...images];
         updatedImages.splice(index, 1);
         setImages(updatedImages);
+        Alert.alert('Image Removed', 'The image has been successfully removed.');
       } else {
         console.error('Error removing image:', message);
         // Handle the error appropriately, e.g., show an error message to the user
