@@ -4,8 +4,10 @@ import {AntDesign} from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
 import {fetchPartnerApplication} from "../../utils/partnerApplicationApi";
-import {fetchDocuments, fetchDocumentById} from "../../utils/documentApi";
+import {fetchDocumentById} from "../../utils/documentApi";
 import {AuthContext} from "../../AuthContext";
+import Divider from "../../components/Common/Divider";
+
 
 /*
 * InfoScreen is supposed to introduce the applicant to the Partner Application process.
@@ -28,7 +30,10 @@ const IntroScreen = () => {
     const USER_ID = user.user.userId;
     const isFocused = useIsFocused();
 
+
+    // This does not work properly.
     useEffect(() => {
+        console.log("Changed focus: ", isFocused);
         if (isFocused) {
             console.log('Screen is focused, re-rendering...');
             fetchPartnerAppFromServer().then(r => console.log("Fetch Partner Applications completed."));
@@ -48,6 +53,7 @@ const IntroScreen = () => {
 
     useEffect(() => {
         fetchPartnerAppFromServer().then(r => console.log("Fetch Partner Applications completed."));
+        console.log("Focused state: ", isFocused);
     }, []);
 
     useEffect(() => {
@@ -115,6 +121,9 @@ const IntroScreen = () => {
                         <Text style={styles.titlePending}>Wait for your application to be approved.</Text>
                         <Text style={styles.subtitle}>We love to have you join our platform, but we need time. Hope to
                             see you with us soon.</Text>
+                        <Text>&nbsp;</Text>
+                        <Divider/>
+                        <Text>&nbsp;</Text>
                         <Text> This is the status of your current application. </Text>
                         <FlatList data={partner} renderItem={renderPartnerApp} keyExtractor={item => item.partnerApplicationId} />
                         {!documentsValid &&

@@ -15,10 +15,11 @@ const Stack = createStackNavigator();
 // Nice, actually kinda works.
 export default function App() {
     return (
-        <NavigationContainer independent={true}>
             <FormDataProvider>
                 <Stack.Navigator initialRouteName="Intro">
-                    <Stack.Screen name="Intro" component={IntroScreen}/>
+                    <Stack.Screen name="Intro" component={IntroScreen} options={{
+                        headerLeft: () => null,
+                    }}/>
                     <Stack.Screen name="Company Info" component={CompanyInfoScreen}/>
                     <Stack.Screen name="User Role" component={UserRoleScreen}/>
                     <Stack.Screen name="Credit Card Info" component={CreditCardInfoScreen}/>
@@ -26,6 +27,5 @@ export default function App() {
                     <Stack.Screen name="Ending" component={EndingScreen}/>
                 </Stack.Navigator>
             </FormDataProvider>
-        </NavigationContainer>
     );
 }
