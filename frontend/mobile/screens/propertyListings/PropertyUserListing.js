@@ -11,12 +11,14 @@ import {
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; // New imports for icons
-import { getPropertyListing, getImageUriById, getUserById, addFavoriteProperty,
-   removeFavoriteProperty, isPropertyInFavorites, countUsersFavoritedProperty, removeProperty } from '../../utils/api';
+import {
+  getPropertyListing, getImageUriById, getUserById, addFavoriteProperty,
+  removeFavoriteProperty, isPropertyInFavorites, countUsersFavoritedProperty, removeProperty
+} from '../../utils/api';
 import base64 from 'react-native-base64';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
-import DefaultImage from '../../assets/No-Image-Available.webp'; 
+import DefaultImage from '../../assets/No-Image-Available.webp';
 import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -46,39 +48,39 @@ const PropertyUserListingScreen = ({ route }) => {
     }, [])
   );
 
-const handleDeleteListing = async () => {
-  // Show an alert to confirm deletion
-  Alert.alert(
-    'Confirm Deletion',
-    'Are you sure you want to delete this property listing?',
-    [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-      {
-        text: 'Delete',
-        onPress: async () => {
-          try {
-            const { success, message } = await removeProperty(propertyListingId);
+  const handleDeleteListing = async () => {
+    // Show an alert to confirm deletion
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this property listing?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            try {
+              const { success, message } = await removeProperty(propertyListingId);
 
-            if (success) {
-              // Property deleted successfully, navigate back to the previous screen
-              navigation.goBack();
-            } else {
-              console.error('Error deleting property:', message);
+              if (success) {
+                // Property deleted successfully, navigate back to the previous screen
+                navigation.goBack();
+              } else {
+                console.error('Error deleting property:', message);
+                // Handle the error appropriately, e.g., show an error message to the user
+              }
+            } catch (error) {
+              console.error('Error deleting property:', error);
               // Handle the error appropriately, e.g., show an error message to the user
             }
-          } catch (error) {
-            console.error('Error deleting property:', error);
-            // Handle the error appropriately, e.g., show an error message to the user
-          }
+          },
         },
-      },
-    ],
-    { cancelable: false }
-  );
-};
+      ],
+      { cancelable: false }
+    );
+  };
 
   // Fetch the number of users who have favorited the property
   const fetchFavoriteCount = async () => {
@@ -234,9 +236,12 @@ const handleDeleteListing = async () => {
   return (
     <View style={styles.mainContainer}>
       <ScrollView style={styles.container}>
-        {/* Image Gallery */}
-        <View style={styles.imageGallery}>
-        <Swiper style={styles.wrapper} showsButtons={false} loop={false} autoplay={true} autoplayTimeout={5}>
+        <View style={styles.imageGalleryContainer}>
+          {/* Back button */}
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </TouchableOpacity>
+          <Swiper style={styles.wrapper} showsButtons={false} loop={false} autoplay={true} autoplayTimeout={5}>
             {propertyListing.images.length > 0 ? (
               propertyListing.images.map((imageId, index) => {
                 const imageUri = getImageUriById(imageId);
@@ -245,7 +250,7 @@ const handleDeleteListing = async () => {
                     <Image source={{ uri: imageUri }} style={styles.image} />
                   </View>
                 );
-              })              
+              })
             ) : (
               <View style={styles.slide}>
                 <Image
@@ -368,7 +373,10 @@ const handleDeleteListing = async () => {
             <TouchableOpacity style={styles.bumpListingButton}>
               <Text style={styles.buttonText}>Bump Listing</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.editListingButton}>
+            <TouchableOpacity style={styles.editListingButton} onPress={() => {
+              navigation.navigate('Edit Property User Listing', { propertyListingId });
+            }}
+            >
               <Text style={styles.buttonText}>Edit Listing</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.deleteListingButton} onPress={handleDeleteListing}>
@@ -625,6 +633,17 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     marginBottom: 5,
     fontWeight: 'bold',
+  },
+  imageGalleryContainer: {
+    position: 'relative',
+    height: 300,
+    width: '100%',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 16, // Adjust the top position as needed
+    left: 16, // Adjust the left position as needed
+    zIndex: 1, // Place it above the swiper
   },
 
 });

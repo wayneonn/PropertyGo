@@ -233,7 +233,7 @@ const EditPropertyListing = ({ route }) => {
     // Fetch property listing details using propertyListingId from your API
     fetchPropertyListing(propertyListingId);
   }, [propertyListingId]);
-  
+
   useEffect(() => {
     // Fetch images based on propertyListingId
     fetchImages(propertyListingId);
@@ -360,20 +360,20 @@ const EditPropertyListing = ({ route }) => {
 
   const handleUpdateImage = async (index, imageId) => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  
+
     if (permissionResult.granted === false) {
       console.warn('Permission to access photos was denied');
       return;
     }
-  
+
     const options = {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     };
-  
+
     let response = await ImagePicker.launchImageLibraryAsync(options);
-  
+
     if (!response.cancelled) {
       // Create the updated image object
       const updatedImage = {
@@ -381,18 +381,18 @@ const EditPropertyListing = ({ route }) => {
         type: 'image/jpeg', // Modify the type according to your needs
         name: 'propertyImage.jpg',
       };
-  
+
       // Call the updateImageById function with the imageId and updatedImage
       try {
         const { success, data, message } = await updateImageById(imageId, updatedImage);
-  
+
         if (success) {
           // Show an alert for successful upload
           Alert.alert('Image Updated', 'The image has been successfully updated.');
-  
+
           // Fetch the latest images from the API
           const updatedImages = await fetchLatestImages(propertyListingId);
-          
+
           // Update the images state with the latest images
           setImages(updatedImages); // This should trigger a re-render
         } else {
@@ -405,14 +405,14 @@ const EditPropertyListing = ({ route }) => {
       }
     }
   };
-  
+
   // Function to fetch the latest images from the API
   const fetchLatestImages = async (propertyListingId) => {
     try {
       // Make an API call to fetch the latest property listing details
       const response = await fetch(getPropertyListing(propertyListingId));
       const data = await response.json();
-  
+
       // Return the latest images from the fetched data
       return data.images.map((imageUri) => ({ uri: imageUri }));
     } catch (error) {
@@ -420,7 +420,7 @@ const EditPropertyListing = ({ route }) => {
       return [];
     }
   };
-  
+
 
 
   const handleImagePress = async (index) => {
@@ -486,7 +486,6 @@ const EditPropertyListing = ({ route }) => {
           </TouchableOpacity>
           <Text style={styles.header}>Edit Property Listing</Text>
         </View>
-
         <View style={styles.imageRow}>
           <ScrollView horizontal={true}>
             {/* Add a View to hold the Add Image button */}

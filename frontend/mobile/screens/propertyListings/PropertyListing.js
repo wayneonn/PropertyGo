@@ -258,18 +258,21 @@ const PropertyListingScreen = ({ route }) => {
   return (
     <View style={styles.mainContainer}>
       <ScrollView style={styles.container}>
-        {/* Image Gallery */}
-        <View style={styles.imageGallery}>
+        <View style={styles.imageGalleryContainer}>
+          {/* Back button */}
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </TouchableOpacity>
           <Swiper style={styles.wrapper} showsButtons={false} loop={false} autoplay={true} autoplayTimeout={5}>
             {propertyListing.images.length > 0 ? (
               propertyListing.images.map((imageId, index) => {
                 const imageUri = getImageUriById(imageId);
                 return (
                   <View key={index} style={styles.slide}>
-                    <Image source={{ uri: `${imageUri}?timestamp=${new Date().getTime()}` }} style={styles.image} />
+                    <Image source={{ uri: imageUri }} style={styles.image} />
                   </View>
                 );
-              })              
+              })
             ) : (
               <View style={styles.slide}>
                 <Image
@@ -653,6 +656,17 @@ const styles = StyleSheet.create({
   favoriteButtonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  imageGalleryContainer: {
+    position: 'relative',
+    height: 300,
+    width: '100%',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 16, // Adjust the top position as needed
+    left: 16, // Adjust the left position as needed
+    zIndex: 1, // Place it above the swiper
   },
 
 });
