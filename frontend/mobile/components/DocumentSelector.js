@@ -247,7 +247,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
     );
 
     return (
-        <SafeAreaView style={{paddingHorizontal: 10}}>
+        <SafeAreaView style={{paddingHorizontal: 10, backgroundColor: '#fff' }}>
             <FlatList
                 ListHeaderComponent={
                     <>

@@ -23,7 +23,9 @@ export default function App() {
                     <Stack.Screen name="Company Info" component={CompanyInfoScreen}/>
                     <Stack.Screen name="User Role" component={UserRoleScreen}/>
                     <Stack.Screen name="Credit Card Info" component={CreditCardInfoScreen}/>
-                    <Stack.Screen name="Document Selection" component={DocumentSubmission}/>
+                    <Stack.Screen name="Document Selection" component={DocumentSubmission} options={{
+                        headerLeft: () => null,
+                    }}/>
                     <Stack.Screen name="Ending" component={EndingScreen}/>
                 </Stack.Navigator>
             </FormDataProvider>

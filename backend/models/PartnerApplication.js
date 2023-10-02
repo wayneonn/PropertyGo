@@ -40,6 +40,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             freezeTableName: true,
+            indexes: [
+                {
+                    unique: true,
+                    fields: ['userId', 'userRole']
+                }
+            ]
         }
     );
 
