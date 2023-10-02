@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Animated, Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Animated, Button, FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AntDesign} from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
@@ -7,6 +7,17 @@ import {fetchPartnerApplication} from "../../utils/partnerApplicationApi";
 import {fetchDocuments} from "../../utils/documentApi";
 import {AuthContext} from "../../AuthContext";
 
+/*
+* InfoScreen is supposed to introduce the applicant to the Partner Application process.
+* 1. The InfoScreen shows a "Welcome" message if there is no Partner Application detected from the server.
+* 2a. InfoScreen shows a "Wait" message if there is a PartnerApp in the server.
+* 2b. InfoScreen shows an additional "Upload Document" button if there isn't a Document in the server.
+* 3. InfoScreen shows an "Approved" message once the Partner Application is approved.
+*
+*
+*
+*
+* */
 const IntroScreen = () => {
     const [partner, setPartner] = useState([]); // Local state to keep track of selected documents
     const [documentsValid, setDocumentsValid] = useState(false);
@@ -64,6 +75,30 @@ const IntroScreen = () => {
         }
     };
 
+    /*
+    * Fetch documents from the server based on the Application ID. 
+    *
+    *
+    * */
+    const fetchDocumentForAppFromServer = async () => {
+
+    }
+
+    /*
+    * Display the status of an approval.
+    * 1. Input -> {} in partner [].
+    * 2. Output -> Single field in the Approval.
+    * 3. Possible options: Document submission should be tied to it?
+    * */
+    const renderPartnerApp = ({ item }) => (
+        <View style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
+            <Text>Application ID: {item.partnerApplicationId}</Text>
+            <Text>User Role: {item.userRole}</Text>
+            <Text>Approval Status: {item.approved ? 'Yes' : 'No'} </Text>
+        </View>
+    );
+
+
 
     return (
         <View style={styles.container}>
@@ -78,6 +113,8 @@ const IntroScreen = () => {
                         <Text style={styles.titlePending}>Wait for your application to be approved.</Text>
                         <Text style={styles.subtitle}>We love to have you join our platform, but we need time. Hope to
                             see you with us soon.</Text>
+                        <Text> This is the status of your current application. </Text>
+                        <FlatList data={partner} renderItem={renderPartnerApp} keyExtractor={item => item.partnerApplicationId} />
                         {!documentsValid &&
                             (<View style={{paddingVertical: 10}}>
                                 <Button onPress={() => navigation.navigate('Document Selection')}

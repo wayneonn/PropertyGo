@@ -1,6 +1,16 @@
 const {PartnerApplication, Folder} = require("../../models")
 
-
+/*
+* Partner Application Controller.
+* API Routes available:
+* 1. CR => Only can create and read PartnerApp. Cannot delete them (manual delete in server), cannot update them (only update documents)
+* 2. There should only be one Approved = False application in the database. (KIV feature, not important).
+*
+*
+*
+*
+*
+* */
 exports.getPartnerApplicationsByUserID = async (req, res) => {
     try {
         const partnerApp = await PartnerApplication.findAll({where: {userId: req.params.id}});

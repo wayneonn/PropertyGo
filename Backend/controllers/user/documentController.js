@@ -84,6 +84,28 @@ exports.getDocumentsMetadata = async (req, res) => {
     }
 };
 
+exports.getDocumentMetadataByAppId = async(req, res) => {
+    try {
+        const documents = await Document.findAll( {
+            attributes: [
+                "documentId",
+                "folderId",
+                "userId",
+                "transactionId",
+                "title",
+                "createdAt",
+                "updatedAt",
+                "description"
+            ],
+            where: {deleted: false, partnerAppId: req.params.id}
+        });
+        res.json(documents);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Document metadata by partner application error.")
+    }
+ }
+
 exports.getDocumentData = async (req, res) => {
     try {
         const documentData = await Document.findByPk(req.params.documentId);

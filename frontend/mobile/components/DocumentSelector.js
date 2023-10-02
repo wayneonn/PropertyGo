@@ -156,7 +156,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
                 if(isTransaction) {
                     fileData.append("transactionId", transactionId);
                 } else {
-                    fileData.append("partnerApplicationId", partnerApp[0].partnerApplicationId)
+                    fileData.append("partnerApplicationId", partnerApp.partnerApp[0].partnerApplicationId)
                 }
                 fileData.append("folderId", folderId);
                 fileData.append("userId", USER_ID);
