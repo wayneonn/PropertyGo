@@ -1,12 +1,12 @@
 import React from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
+import {SafeAreaView, Text} from 'react-native';
 
 const ExploreServices = () => {
-  return (
-    <SafeAreaView >
-      <Text>ExploreServicesScreen</Text>
-    </SafeAreaView>
-  );
+    return (
+        <SafeAreaView>
+            <Text>ExploreServicesScreen</Text>
+        </SafeAreaView>
+    );
 };
 
 export default ExploreServices;

@@ -1,1 +1,18 @@
-{"ast":null,"code":"export * from \"./SafeAreaContext\";\nexport * from \"./SafeAreaView\";\nexport * from \"./InitialWindow\";\nexport * from \"./SafeArea.types\";","map":{"version":3,"names":[],"sources":["/Users/wjahoward/Desktop/NUS/Y3S1/IS4103/PropertyGo/frontend/mobile/node_modules/react-native-safe-area-context/src/index.tsx"],"sourcesContent":["export * from './SafeAreaContext';\nexport * from './SafeAreaView';\nexport * from './InitialWindow';\nexport * from './SafeArea.types';\n"],"mappings":"AAAA;AACA;AACA;AACA"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "export * from \"./SafeAreaContext\";\nexport * from \"./SafeAreaView\";\nexport * from \"./InitialWindow\";\nexport * from \"./SafeArea.types\";",
+  "map": {
+    "version": 3,
+    "names": [],
+    "sources": [
+      "/Users/wjahoward/Desktop/NUS/Y3S1/IS4103/PropertyGo/frontend/mobile/node_modules/react-native-safe-area-context/src/index.tsx"
+    ],
+    "sourcesContent": [
+      "export * from './SafeAreaContext';\nexport * from './SafeAreaView';\nexport * from './InitialWindow';\nexport * from './SafeArea.types';\n"
+    ],
+    "mappings": "AAAA;AACA;AACA;AACA"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

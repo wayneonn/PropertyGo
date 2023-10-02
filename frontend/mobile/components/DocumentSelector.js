@@ -5,9 +5,10 @@ import {AntDesign, Foundation, MaterialIcons} from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import {AuthContext} from "../AuthContext";
 import DropDownPicker from "react-native-dropdown-picker";
-import {fetchFolders, fetchTransactions, BASE_URL} from "../utils/documentApi";
+import {BASE_URL, fetchFolders, fetchTransactions} from "../utils/documentApi";
+import {fetchPartnerApplication} from "../utils/partnerApplicationApi";
 
-export const DocumentSelector = ({documentFetch, folderState, setFolderState}) => {
+export const DocumentSelector = ({documentFetch, folderState, isTransaction}) => {
     const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
     const [descriptions, setDescriptions] = useState(""); // Description text
     const [length, setLength] = useState(200); // Description text length
@@ -18,7 +19,7 @@ export const DocumentSelector = ({documentFetch, folderState, setFolderState}) =
     const [defaultTransactionId, setDefaultTransactionId] = useState(1); // Default transaction id
     const [defaultFolderId, setDefaultFolderId] = useState(1); // Default folder id
     const [selectedFolder, setSelectedFolder] = useState(); // Add state for selected folder
-
+    const [partnerApp, setPartnerApp] = useState([]);
     const [isOpen1, setIsOpen1] = useState(false);
     const [isOpen2, setIsOpen2] = useState(false);
 
@@ -47,10 +48,19 @@ export const DocumentSelector = ({documentFetch, folderState, setFolderState}) =
         setTransactions(transactions);
     }, [transactions]);
 
+    useEffect(() => {
+        fetchPartnerAppFromServer().then(r => console.log("Fetch partner application successful."))
+    }, []);
+
+    useEffect(() => {
+        console.log(partnerApp);
+        setPartnerApp(partnerApp)
+    }, [partnerApp]);
+
     const fetchFoldersFromServer = async () => {
         try {
             const folders = await fetchFolders(USER_ID)
-            console.log(folders)
+            console.log("Fetched Folders: ", folders)
             setFolders(folders);
             setDefaultFolderId(folders[0].folderId);
             setSelectedFolder(folders[0].folderId);
@@ -62,13 +72,23 @@ export const DocumentSelector = ({documentFetch, folderState, setFolderState}) =
     const fetchTransactionsFromServer = async () => {
         try {
             const transactions = await fetchTransactions(USER_ID)
-            console.log(transactions)
+            console.log("Fetched Transactions: ", transactions)
             setTransactions(transactions);
             setDefaultTransactionId(transactions[0].transactionId);
         } catch (error) {
             console.error(error);
         }
     };
+
+    const fetchPartnerAppFromServer = async () => {
+        try {
+            const partnerApp = await fetchPartnerApplication(USER_ID)
+            console.log("Fetched Partner Applications: ", partnerApp)
+            setPartnerApp(partnerApp);
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     // This is supposed to show all the documents that you selected.
     const selectDocuments = async () => {
@@ -133,7 +153,11 @@ export const DocumentSelector = ({documentFetch, folderState, setFolderState}) =
                     });
                 }
                 fileData.append("description", descriptions);
-                fileData.append("transactionId", transactionId);
+                if(isTransaction) {
+                    fileData.append("transactionId", transactionId);
+                } else {
+                    fileData.append("partnerApplicationId", partnerApp.partnerApp[0].partnerApplicationId)
+                }
                 fileData.append("folderId", folderId);
                 fileData.append("userId", USER_ID);
             });
@@ -160,10 +184,14 @@ export const DocumentSelector = ({documentFetch, folderState, setFolderState}) =
     };
 
     // This is for the Select Documents
+    // Honestly this needs to change depending on what is the current status.
+    // Conditional changes depending on whether it is partner app or not -> If it is an Application, then don't show.
+    // There needs to be a validator here.....
     const renderDocumentItem = ({item}) => (
         <View style={styles.documentItem}>
             <Text style={styles.documentText}>{item.name}</Text>
-            <View style={{zIndex: 5001}}>
+
+            {isTransaction && <View style={{zIndex: 5001}}>
                 <Text style={styles.descriptionText}>Transaction ID: </Text>
                 <DropDownPicker
                     listMode={"MODAL"}
@@ -185,7 +213,7 @@ export const DocumentSelector = ({documentFetch, folderState, setFolderState}) =
                     dropDownStyle={{marginTop: 2, zIndex: 5000}} // Adjust margin, if needed
                     labelStyle={{fontSize: 12, textAlign: 'left', color: '#000'}} // Adjust label font size and color
                 />
-            </View>
+            </View>}
             <Text> &nbsp; &nbsp; </Text>
             <View style={{zIndex: 5000}}>
                 <Text style={styles.descriptionText}>Folder for Document: </Text>

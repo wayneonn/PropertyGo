@@ -1,12 +1,12 @@
 import React from 'react';
-import {SafeAreaView, Text, View } from 'react-native';
+import {SafeAreaView, Text} from 'react-native';
 
 const FAQs = () => {
     return (
-      <SafeAreaView >
-        <Text>FAQsScreen</Text>
-      </SafeAreaView>
+        <SafeAreaView>
+            <Text>FAQsScreen</Text>
+        </SafeAreaView>
     );
-  };
+};
 
-  export default FAQs;
+export default FAQs;

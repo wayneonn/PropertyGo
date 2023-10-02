@@ -1,1 +1,29 @@
-{"ast":null,"code":"import React from 'react';\nimport { NavigationContainer } from '@react-navigation/native';\nimport { createStackNavigator } from '@react-navigation/stack';\nimport { AuthProvider } from \"./AuthContext\";\nimport LoginNavigator from \"./navigations/LoginNavigator\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar Stack = createStackNavigator();\nfunction App() {\n  return _jsx(AuthProvider, {\n    children: _jsx(NavigationContainer, {\n      children: _jsx(LoginNavigator, {})\n    })\n  });\n}\nexport default App;","map":{"version":3,"names":["React","NavigationContainer","createStackNavigator","AuthProvider","LoginNavigator","jsx","_jsx","Stack","App","children"],"sources":["/workspaces/PropertyGo/frontend/mobile/App.js"],"sourcesContent":["import React from 'react';\nimport { NavigationContainer } from '@react-navigation/native';\nimport { createStackNavigator } from '@react-navigation/stack';\nimport { AuthProvider } from './AuthContext';\nimport LoginNavigator from './navigations/LoginNavigator';\n\nconst Stack = createStackNavigator();\n\nfunction App() {\n  return (\n    <AuthProvider>\n      <NavigationContainer>\n        <LoginNavigator />\n      </NavigationContainer>\n    </AuthProvider>\n  );\n}\n\nexport default App;\n\n\n// const styles = StyleSheet.create({\n//   container: {\n//     flex: 1,\n//     backgroundColor: '#fff',\n//     alignItems: 'center',\n//     justifyContent: 'center',\n//   },\n// });\n"],"mappings":"AAAA,OAAOA,KAAK,MAAM,OAAO;AACzB,SAASC,mBAAmB,QAAQ,0BAA0B;AAC9D,SAASC,oBAAoB,QAAQ,yBAAyB;AAC9D,SAASC,YAAY;AACrB,OAAOC,cAAc;AAAqC,SAAAC,GAAA,IAAAC,IAAA;AAE1D,IAAMC,KAAK,GAAGL,oBAAoB,CAAC,CAAC;AAEpC,SAASM,GAAGA,CAAA,EAAG;EACb,OACEF,IAAA,CAACH,YAAY;IAAAM,QAAA,EACXH,IAAA,CAACL,mBAAmB;MAAAQ,QAAA,EAClBH,IAAA,CAACF,cAAc,IAAE;IAAC,CACC;EAAC,CACV,CAAC;AAEnB;AAEA,eAAeI,GAAG"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "import React from 'react';\nimport { NavigationContainer } from '@react-navigation/native';\nimport { createStackNavigator } from '@react-navigation/stack';\nimport { AuthProvider } from \"./AuthContext\";\nimport LoginNavigator from \"./navigations/LoginNavigator\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar Stack = createStackNavigator();\nfunction App() {\n  return _jsx(AuthProvider, {\n    children: _jsx(NavigationContainer, {\n      children: _jsx(LoginNavigator, {})\n    })\n  });\n}\nexport default App;",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "NavigationContainer",
+      "createStackNavigator",
+      "AuthProvider",
+      "LoginNavigator",
+      "jsx",
+      "_jsx",
+      "Stack",
+      "App",
+      "children"
+    ],
+    "sources": [
+      "/workspaces/PropertyGo/frontend/mobile/App.js"
+    ],
+    "sourcesContent": [
+      "import React from 'react';\nimport { NavigationContainer } from '@react-navigation/native';\nimport { createStackNavigator } from '@react-navigation/stack';\nimport { AuthProvider } from './AuthContext';\nimport LoginNavigator from './navigations/LoginNavigator';\n\nconst Stack = createStackNavigator();\n\nfunction App() {\n  return (\n    <AuthProvider>\n      <NavigationContainer>\n        <LoginNavigator />\n      </NavigationContainer>\n    </AuthProvider>\n  );\n}\n\nexport default App;\n\n\n// const styles = StyleSheet.create({\n//   container: {\n//     flex: 1,\n//     backgroundColor: '#fff',\n//     alignItems: 'center',\n//     justifyContent: 'center',\n//   },\n// });\n"
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,MAAM,OAAO;AACzB,SAASC,mBAAmB,QAAQ,0BAA0B;AAC9D,SAASC,oBAAoB,QAAQ,yBAAyB;AAC9D,SAASC,YAAY;AACrB,OAAOC,cAAc;AAAqC,SAAAC,GAAA,IAAAC,IAAA;AAE1D,IAAMC,KAAK,GAAGL,oBAAoB,CAAC,CAAC;AAEpC,SAASM,GAAGA,CAAA,EAAG;EACb,OACEF,IAAA,CAACH,YAAY;IAAAM,QAAA,EACXH,IAAA,CAACL,mBAAmB;MAAAQ,QAAA,EAClBH,IAAA,CAACF,cAAc,IAAE;IAAC,CACC;EAAC,CACV,CAAC;AAEnB;AAEA,eAAeI,GAAG"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

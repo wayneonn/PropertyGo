@@ -1,1 +1,20 @@
-{"ast":null,"code":"export { createRoot } from 'react-dom/client';","map":{"version":3,"names":["createRoot"],"sources":["C:\\Users\\Legion\\Desktop\\FSR - 1\\PropertyGo\\frontend\\mobile\\node_modules\\expo\\src\\launch\\createRoot.tsx"],"sourcesContent":["export { createRoot } from 'react-dom/client';\n"],"mappings":"AAAA,SAASA,UAAU,QAAQ,kBAAkB"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "export { createRoot } from 'react-dom/client';",
+  "map": {
+    "version": 3,
+    "names": [
+      "createRoot"
+    ],
+    "sources": [
+      "C:\\Users\\Legion\\Desktop\\FSR - 1\\PropertyGo\\frontend\\mobile\\node_modules\\expo\\src\\launch\\createRoot.tsx"
+    ],
+    "sourcesContent": [
+      "export { createRoot } from 'react-dom/client';\n"
+    ],
+    "mappings": "AAAA,SAASA,UAAU,QAAQ,kBAAkB"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

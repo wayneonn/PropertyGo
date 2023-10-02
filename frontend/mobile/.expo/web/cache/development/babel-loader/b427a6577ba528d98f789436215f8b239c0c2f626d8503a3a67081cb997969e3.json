@@ -1,1 +1,33 @@
-{"ast":null,"code":"import React from 'react';\nimport { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport UserBottomNavigator from \"./UserBottomNavigator\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar HomeStack = createNativeStackNavigator();\nvar HomeStackGroup = function HomeStackGroup() {\n  return _jsx(HomeStack.Navigator, {\n    screenOptions: {\n      headerShown: false\n    },\n    children: _jsx(HomeStack.Screen, {\n      name: \"User Bottom Navigator\",\n      component: UserBottomNavigator\n    })\n  });\n};\nexport default HomeStackGroup;","map":{"version":3,"names":["React","createNativeStackNavigator","UserBottomNavigator","jsx","_jsx","HomeStack","HomeStackGroup","Navigator","screenOptions","headerShown","children","Screen","name","component"],"sources":["C:/Users/Legion/Desktop/FSR - 1/PropertyGo/frontend/mobile/navigations/HomeStackGroup.js"],"sourcesContent":["import React from 'react';\r\nimport { createNativeStackNavigator } from \"@react-navigation/native-stack\";\r\nimport UserBottomNavigator from './UserBottomNavigator';\r\n\r\nconst HomeStack = createNativeStackNavigator();\r\n\r\nconst HomeStackGroup = () => {\r\n\r\n    return (\r\n\r\n        <HomeStack.Navigator screenOptions={{ headerShown: false }}>\r\n            <HomeStack.Screen name=\"User Bottom Navigator\" component={UserBottomNavigator}/>\r\n        </HomeStack.Navigator>\r\n    );\r\n};\r\nexport default HomeStackGroup;"],"mappings":"AAAA,OAAOA,KAAK,MAAM,OAAO;AACzB,SAASC,0BAA0B,QAAQ,gCAAgC;AAC3E,OAAOC,mBAAmB;AAA8B,SAAAC,GAAA,IAAAC,IAAA;AAExD,IAAMC,SAAS,GAAGJ,0BAA0B,CAAC,CAAC;AAE9C,IAAMK,cAAc,GAAG,SAAjBA,cAAcA,CAAA,EAAS;EAEzB,OAEIF,IAAA,CAACC,SAAS,CAACE,SAAS;IAACC,aAAa,EAAE;MAAEC,WAAW,EAAE;IAAM,CAAE;IAAAC,QAAA,EACvDN,IAAA,CAACC,SAAS,CAACM,MAAM;MAACC,IAAI,EAAC,uBAAuB;MAACC,SAAS,EAAEX;IAAoB,CAAC;EAAC,CAC/D,CAAC;AAE9B,CAAC;AACD,eAAeI,cAAc"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "import React from 'react';\nimport { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport UserBottomNavigator from \"./UserBottomNavigator\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar HomeStack = createNativeStackNavigator();\nvar HomeStackGroup = function HomeStackGroup() {\n  return _jsx(HomeStack.Navigator, {\n    screenOptions: {\n      headerShown: false\n    },\n    children: _jsx(HomeStack.Screen, {\n      name: \"User Bottom Navigator\",\n      component: UserBottomNavigator\n    })\n  });\n};\nexport default HomeStackGroup;",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "createNativeStackNavigator",
+      "UserBottomNavigator",
+      "jsx",
+      "_jsx",
+      "HomeStack",
+      "HomeStackGroup",
+      "Navigator",
+      "screenOptions",
+      "headerShown",
+      "children",
+      "Screen",
+      "name",
+      "component"
+    ],
+    "sources": [
+      "C:/Users/Legion/Desktop/FSR - 1/PropertyGo/frontend/mobile/navigations/HomeStackGroup.js"
+    ],
+    "sourcesContent": [
+      "import React from 'react';\r\nimport { createNativeStackNavigator } from \"@react-navigation/native-stack\";\r\nimport UserBottomNavigator from './UserBottomNavigator';\r\n\r\nconst HomeStack = createNativeStackNavigator();\r\n\r\nconst HomeStackGroup = () => {\r\n\r\n    return (\r\n\r\n        <HomeStack.Navigator screenOptions={{ headerShown: false }}>\r\n            <HomeStack.Screen name=\"User Bottom Navigator\" component={UserBottomNavigator}/>\r\n        </HomeStack.Navigator>\r\n    );\r\n};\r\nexport default HomeStackGroup;"
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,MAAM,OAAO;AACzB,SAASC,0BAA0B,QAAQ,gCAAgC;AAC3E,OAAOC,mBAAmB;AAA8B,SAAAC,GAAA,IAAAC,IAAA;AAExD,IAAMC,SAAS,GAAGJ,0BAA0B,CAAC,CAAC;AAE9C,IAAMK,cAAc,GAAG,SAAjBA,cAAcA,CAAA,EAAS;EAEzB,OAEIF,IAAA,CAACC,SAAS,CAACE,SAAS;IAACC,aAAa,EAAE;MAAEC,WAAW,EAAE;IAAM,CAAE;IAAAC,QAAA,EACvDN,IAAA,CAACC,SAAS,CAACM,MAAM;MAACC,IAAI,EAAC,uBAAuB;MAACC,SAAS,EAAEX;IAAoB,CAAC;EAAC,CAC/D,CAAC;AAE9B,CAAC;AACD,eAAeI,cAAc"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}
