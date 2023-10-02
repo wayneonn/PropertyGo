@@ -40,6 +40,17 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             freezeTableName: true,
+            validate: {
+                exactlyOneForeignKey() {
+                    const setKeys = ['transactionId', 'partnerApplicationId', 'propertyId'].filter(key => {
+                        return this[key] != null;
+                    });
+
+                    if (setKeys.length !== 1) {
+                        throw new Error('Exactly one of transactionId, partnerApplicationId, or propertyId must be set.');
+                    }
+                }
+            }
         }
     );
 
@@ -68,6 +79,14 @@ module.exports = (sequelize, DataTypes) => {
             as: "Transaction",
         });
 
+        Document.belongsTo(models.Property, {
+            foreignKey: {
+                name: "propertyId",
+                allowNull: true,
+            },
+            as: "Property"
+        })
+
         Document.belongsTo(models.Folder, {
             foreignKey: {
                 name: "folderId",
@@ -85,11 +104,12 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
-    Document.addHook('beforeSave', (document, options) => {
-        if (!document.transactionId && !document.partnerApplicationId) {
-            throw new Error('Either transactionId or partnerApplicationId must be set.');
-        }
-    });
+    // Document.addHook('beforeSave', (document, options) => {
+    //     if (!document.transactionId && !document.partnerApplicationId && !document.propertyId) {
+    //         throw new Error('Either transactionId, partnerApplicationId or propertyId must be set.');
+    //     }
+    // });
+
 
     return Document;
 };

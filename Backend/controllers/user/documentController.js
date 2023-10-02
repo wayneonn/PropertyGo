@@ -16,6 +16,7 @@ exports.uploadDocuments = async (req, res) => {
     let transactionId = req.body.transactionId;
     let folderId = req.body.folderId;
     let partnerApplicationId = req.body.partnerApplicationId;
+    let propertyId = req.body.propertyId;
     // If userId is an array, pick first element
     if (Array.isArray(userId)) {
         userId = userId[0];
