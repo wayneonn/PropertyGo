@@ -9,6 +9,7 @@ const {
     updateForumPostVote,
     updateForumPost,
     deleteForumPost,
+    getForumPostVoteDetails,
 } = require('../../controllers/user/forumPostController');
 
 
@@ -16,9 +17,11 @@ router.route('/:userId/forumPost')
     .post(createForumPost)
     .get(getAllForumPost)
 
+router.route('/:userId/forumPost/:forumPostId/voteDetails')
+    .get(getForumPostVoteDetails)
+
 router.route('/:userId/forumPost/:forumPostId/flagPost')
     .put(updateForumPostFlaggedStatus)
-
 
 router.route('/:userId/forumPost/:forumPostId/votePost')
     .put(updateForumPostVote)

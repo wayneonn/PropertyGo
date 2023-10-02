@@ -19,20 +19,35 @@ const createForumPost = async (req, res) => {
 
 const getAllForumPost = async (req, res) => {
     try {
-        const { sort } = req.query;
+        const sort = req.query.sort;
+        const increase = JSON.parse(req.query.increase);
         const forumTopicId = parseInt(req.query.forumTopicId);
         const userId = parseInt(req.params.userId);
 
-        let orderCriteria = [['createdAt', 'ASC']];
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (sort !== 'vote' && increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+
+        }
 
         if (sort === 'vote') {
             // Sorting by the difference between upvotes and downvotes
-            orderCriteria = [
-                [
-                    sequelize.literal('(SELECT COUNT(*) FROM `UserPostUpvoted` AS `UserPostUpvoted` WHERE `ForumPost`.`forumPostId` = `UserPostUpvoted`.`forumPostId`) - (SELECT COUNT(*) FROM `UserPostDownvoted` AS `UserPostDownvoted` WHERE `ForumPost`.`forumPostId` = `UserPostDownvoted`.`forumPostId`)'),
-                    'DESC',
-                ],
-            ];
+            if (!increase) {
+                orderCriteria = [
+                    [
+                        sequelize.literal('(SELECT COUNT(*) FROM `UserPostUpvoted` AS `UserPostUpvoted` WHERE `ForumPost`.`forumPostId` = `UserPostUpvoted`.`forumPostId`) - (SELECT COUNT(*) FROM `UserPostDownvoted` AS `UserPostDownvoted` WHERE `ForumPost`.`forumPostId` = `UserPostDownvoted`.`forumPostId`)'),
+                        'DESC',
+                    ],
+                ];
+            } else {
+                orderCriteria = [
+                    [
+                        sequelize.literal('(SELECT COUNT(*) FROM `UserPostUpvoted` AS `UserPostUpvoted` WHERE `ForumPost`.`forumPostId` = `UserPostUpvoted`.`forumPostId`) - (SELECT COUNT(*) FROM `UserPostDownvoted` AS `UserPostDownvoted` WHERE `ForumPost`.`forumPostId` = `UserPostDownvoted`.`forumPostId`)'),
+                        'ASC',
+                    ],
+                ]
+            }
         }
 
         const forumPosts = await ForumPost.findAll({
@@ -51,6 +66,39 @@ const getAllForumPost = async (req, res) => {
         });
 
         res.status(200).json(forumPosts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getForumPostVoteDetails = async (req, res) => {
+    try {
+
+        const userId = parseInt(req.params.userId);
+        const forumPostId = parseInt(req.params.forumPostId);
+        const forumPost = await ForumPost.findByPk(forumPostId);
+
+        if (!forumPost) {
+            return res.status(404).json({ message: 'ForumPost not found' });
+        }
+
+        const userUpvote = await forumPost.hasUsersUpvoted(userId);
+        const userDownvote = await forumPost.hasUsersDownvoted(userId);
+        const totalUpvote = await forumPost.countUsersUpvoted();
+        const totalDownvote = await forumPost.countUsersDownvoted();
+        const totalCommentCount = await forumPost.countForumComments();
+
+        const voteDetails = {
+            userUpvote,
+            userDownvote,
+            totalUpvote,
+            totalDownvote,
+            totalCommentCount,
+        };
+
+
+        res.status(200).json(voteDetails);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -114,19 +162,25 @@ const updateForumPostVote = async (req, res) => {
         const existingUpvote = await forumPost.hasUsersUpvoted(user);
         const existingDownvote = await forumPost.hasUsersDownvoted(user)
 
-        // Remove any existing votes by the user
-        if (existingUpvote) {
-            await forumPost.removeUsersUpvoted(user);
-        }
-        if (existingDownvote) {
-            await forumPost.removeUsersDownvoted(user);
-        }
-
         // Create a new vote record based on the user's choice
         if (voteType === 'upvote') {
-            await forumPost.addUsersUpvoted(user);
+            if (existingUpvote) {
+                await forumPost.removeUsersUpvoted(user);
+            } else {
+                if (existingDownvote) {
+                    await forumPost.removeUsersDownvoted(user);
+                }
+                await forumPost.addUsersUpvoted(user);
+            }
         } else if (voteType === 'downvote') {
-            await forumPost.addUsersDownvoted(user);
+            if (existingDownvote) {
+                await forumPost.removeUsersDownvoted(user);
+            } else {
+                if (existingUpvote) {
+                    await forumPost.removeUsersUpvoted(user);
+                }
+                await forumPost.addUsersDownvoted(user);
+            }
         } else {
             return res.status(400).json({ message: 'Invalid vote type' });
         }
@@ -215,6 +269,7 @@ const deleteForumPost = async (req, res) => {
 module.exports = {
     createForumPost,
     getAllForumPost,
+    getForumPostVoteDetails,
     updateForumPostFlaggedStatus,
     updateForumPostVote,
     updateForumPost,

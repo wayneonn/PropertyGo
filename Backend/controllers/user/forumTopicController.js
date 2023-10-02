@@ -20,19 +20,35 @@ const createForumTopic = async (req, res) => {
 
 const getAllForumTopic = async (req, res) => {
     try {
-        const { sort } = req.query;
+        const sort = req.query.sort;
+        const increase = JSON.parse(req.query.increase);
+
         const userId = parseInt(req.params.userId);
 
-        let orderCriteria = [['createdAt', 'DESC']];
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (sort !== 'vote' && increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+
+        }
 
         if (sort === 'vote') {
             // Sorting by the difference between upvotes and downvotes
-            orderCriteria = [
-                [
-                    sequelize.literal('(SELECT COUNT(*) FROM `UserTopicUpvoted` AS `UserTopicUpvoted` WHERE `ForumTopic`.`forumTopicId` = `UserTopicUpvoted`.`forumTopicId`) - (SELECT COUNT(*) FROM `UserTopicDownvoted` AS `UserTopicDownvoted` WHERE `ForumTopic`.`forumTopicId` = `UserTopicDownvoted`.`forumTopicId`)'),
-                    'DESC',
-                ],
-            ];
+            if (!increase) {
+                orderCriteria = [
+                    [
+                        sequelize.literal('(SELECT COUNT(*) FROM `UserTopicUpvoted` AS `UserTopicUpvoted` WHERE `ForumTopic`.`forumTopicId` = `UserTopicUpvoted`.`forumTopicId`) - (SELECT COUNT(*) FROM `UserTopicDownvoted` AS `UserTopicDownvoted` WHERE `ForumTopic`.`forumTopicId` = `UserTopicDownvoted`.`forumTopicId`)'),
+                        'DESC',
+                    ],
+                ];
+            } else {
+                orderCriteria = [
+                    [
+                        sequelize.literal('(SELECT COUNT(*) FROM `UserTopicUpvoted` AS `UserTopicUpvoted` WHERE `ForumTopic`.`forumTopicId` = `UserTopicUpvoted`.`forumTopicId`) - (SELECT COUNT(*) FROM `UserTopicDownvoted` AS `UserTopicDownvoted` WHERE `ForumTopic`.`forumTopicId` = `UserTopicDownvoted`.`forumTopicId`)'),
+                        'ASC',
+                    ],
+                ]
+            }
         }
 
         const forumTopics = await ForumTopic.findAll({

@@ -17,9 +17,20 @@ export const createForumPost = async (userId, forumPostData) => {
 };
 
 // Function to get ForumPost records for a specific user
-export const getAllForumPost = async (userId,forumTopicId, sort) => {
+export const getAllForumPost = async (userId, forumTopicId, sort, order) => {
     try {
-        const response = await axios.get(`${BASE_URL}/user/${userId}/forumPost?forumTopicId=${forumTopicId}&sort=${sort}`);
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumPost?forumTopicId=${forumTopicId}&sort=${sort}&increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+
+export const getForumPostVoteDetails = async (userId, forumPostId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumPost/${forumPostId}/voteDetails`);
         return response.data;
     } catch (error) {
         console.error(error);

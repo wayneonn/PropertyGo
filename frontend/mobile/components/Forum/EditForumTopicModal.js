@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, StyleSheet, TouchableHighlight } from 'react-native';
 
-const AddForumTopicModal = ({ isVisible, onCancel, onSubmit }) => {
-    const [topicName, setTopicName] = useState('');
+const EditForumTopicModal = ({ isVisible, onCancel, onSubmit, oldTopicName }) => {
+    const [topicName, setTopicName] = useState(oldTopicName);
 
     const handleTopicNameChange = (text) => {
         setTopicName(text);
@@ -12,17 +12,13 @@ const AddForumTopicModal = ({ isVisible, onCancel, onSubmit }) => {
         // Call the onSubmit function with the topicName value
         onSubmit(topicName);
 
-        // Clear the topicName input
-        setTopicName('');
-
         // Close the modal
         onCancel();
     };
 
     const handleCancel = () => {
 
-        // Clear the topicName input
-        setTopicName('');
+        setTopicName(oldTopicName);
 
         // Close the modal
         onCancel();
@@ -128,7 +124,7 @@ const styles = StyleSheet.create({
     buttonDisabled: {
         opacity: 0.5,
         backgroundColor: 'gray',
-    },
+      },
 });
 
-export default AddForumTopicModal;
+export default EditForumTopicModal;

@@ -3,21 +3,20 @@ import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, View, Text } from 'react-native';
 import { Octicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
-import ForumItemHeader from './ForumItemHeader';
+import ForumPostItemHeader from './ForumPostItemHeader';
 import ForumModal from './ForumModal';
-import { getForumTopicVoteDetails, updateForumTopicVote, updateForumTopicName } from '../../utils/forumTopicApi';
-import EditForumTopicModal from './EditForumTopicModal';
+import { getForumPostVoteDetails, updateForumPostVote } from '../../utils/forumPostApi';
+import { getTimeAgo } from '../../services/CalculateTimeAgo';
 
-const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress, onReport, onDelete, useParentCallback}) => {
+const ForumPostItem = ({ userId, post, onPress, onReport, onDelete }) => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [voteDetails, setVoteDetails] = useState([]);
-    const [isEditModalVisible, setEditModalVisible] = useState(false);
 
-    const forumItemCallback = useCallback(() => {
+    const forumPostItemCallback = useCallback(() => {
 
         const fetchData = async () => {
             try {
-                const voteData = await getForumTopicVoteDetails(userId, topicId);
+                const voteData = await getForumPostVoteDetails(userId, post.forumPostId);
                 setVoteDetails(voteData);
             } catch (error) {
                 console.error(error);
@@ -27,20 +26,16 @@ const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress
 
     }, [])
 
-    useFocusEffect(forumItemCallback)
+    useFocusEffect(forumPostItemCallback)
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
 
-    const toggleEditModal = () => {
-        setEditModalVisible(!isEditModalVisible);
-      };
-
     const handleUpvote = async () => {
         try {
-            const voteData = await updateForumTopicVote(userId, topicId, "upvote");
-            forumItemCallback();
+            const voteData = await updateForumPostVote(userId, post.forumPostId, "upvote");
+            forumPostItemCallback();
             // console.log(voteData)
 
         } catch (error) {
@@ -49,8 +44,9 @@ const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress
     };
     const handleDownvote = async () => {
         try {
-            const voteData = await updateForumTopicVote(userId, topicId, "downvote");
-            forumItemCallback();
+            const voteData = await updateForumPostVote(userId, post.forumPostId, "downvote");
+            forumPostItemCallback();
+            console.log(voteData)
             // console.log(voteData)
 
         } catch (error) {
@@ -58,32 +54,24 @@ const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress
         }
     };
 
-    const handleEdit = async (topicName) => {
-
-        if (!topicName) {
-            return;
-          }
-      
-          try {
-            const updatedTopic = { topicName }
-            const forumTopic = await updateForumTopicName(userId, topicId, updatedTopic);
-            useParentCallback();
-          } catch (error) {
-            console.error(error);
-          }
-
-    };
-
     return (
         <TouchableOpacity onPress={onPress}>
             <View style={styles.topicItemContainer}>
-                <ForumItemHeader
-                    topicName={topicName}
-                    updatedAt={updatedAt}
+                <ForumPostItemHeader
+                    user={post.userId}
                     onMoreOptionsPress={toggleModal}
-                    editable={userId === topicUserId}
-                    onEdit={toggleEditModal}
                 />
+
+                <View >
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.title}>{post.title}</Text>
+                        <Text style={styles.age}>{getTimeAgo(post.updatedAt)}</Text>
+                    </View>
+                    <View>
+                        <Text style={styles.message}>{post.message}</Text>
+                    </View>
+                </View>
+
                 <View style={styles.iconContainer}>
                     <View style={styles.voteContainer}>
                         <TouchableOpacity onPress={handleUpvote}>
@@ -94,17 +82,16 @@ const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress
                             <FontAwesome name="thumbs-down" size={20} color={voteDetails.userDownvote ? "red" : "grey"} />
                         </TouchableOpacity>
                     </View>
-                    <View style={styles.postContainer}>
+                    <View style={styles.commentContainer}>
                         <Octicons name="comment-discussion" size={20} color="#FFD700" />
-                        <Text style={styles.postText}>{voteDetails.totalPostCount}</Text>
+                        <Text style={styles.commentText}>{voteDetails.totalCommentCount}</Text>
                     </View>
                 </View>
             </View>
-            <EditForumTopicModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEdit} oldTopicName={topicName}/>
-            {topicUserId === userId ?
-                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Topic"} onDelete={onDelete} />
+            {post.userId === userId ?
+                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Post"} onDelete={onDelete} />
                 :
-                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Topic"} />
+                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Post"} />
             }
         </TouchableOpacity>
     );
@@ -117,16 +104,26 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         marginVertical: 5,
     },
+    titleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 5,
+    },
     title: {
         fontSize: 14,
-        marginHorizontal: 17,
+        marginLeft: 15,
+        marginRight: 5,
         fontWeight: 'bold',
         // borderWidth:1,
     },
-    message: {
-        fontSize: 12,
+    age: {
+        fontSize: 10,
         color: 'gray',
-        marginHorizontal: 17,
+
+    },
+    message: {
+        fontSize: 14,
+        marginHorizontal: 15,
     },
     iconContainer: {
         flexDirection: 'row',
@@ -145,11 +142,11 @@ const styles = StyleSheet.create({
         color: 'gray',
         marginLeft: 5,
     },
-    postContainer: {
+    commentContainer: {
         flexDirection: 'row',
         alignItems: 'center',
     },
-    postText: {
+    commentText: {
         marginLeft: 10,
         fontSize: 12,
         color: 'gray',
@@ -157,4 +154,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default ForumItem
+export default ForumPostItem

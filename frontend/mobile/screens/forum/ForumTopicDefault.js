@@ -1,10 +1,10 @@
 import React, { useState, useContext, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, RefreshControl } from 'react-native';
 import ForumItem from '../../components/Forum/ForumItem';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
-import { getAllForumTopic, updateForumTopicFlaggedStatus, createForumTopic } from '../../utils/forumTopicApi';
+import { getAllForumTopic, updateForumTopicFlaggedStatus, createForumTopic, deleteForumTopic } from '../../utils/forumTopicApi';
 import AddForumTopicModal from '../../components/Forum/AddForumTopicModal';
 import SearchBar from '../../components/Forum/SearchBar';
 
@@ -15,21 +15,13 @@ const ForumTopicDefault = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredTopics, setFilteredTopics] = useState([])
-  
+  const [refreshing, setRefreshing] = useState(false);
+
 
   const useParentCallback = useCallback(() => {
     const fetchData = async () => {
       try {
-        const forumTopicData = await getAllForumTopic(user.user.userId, null);
-        console.log(sort)
-        if (sort) {
-          forumTopicData.sort((a, b) => {
-            const dateA = new Date(a.updatedAt);
-            const dateB = new Date(b.updatedAt);
-
-            return dateA - dateB;
-          });
-        }
+        const forumTopicData = await getAllForumTopic(user.user.userId, null, sort);
         setforumTopics(forumTopicData)
         setFilteredTopics(forumTopicData);
         setSearchQuery('');
@@ -43,9 +35,9 @@ const ForumTopicDefault = ({ navigation }) => {
 
   useFocusEffect(useParentCallback);
 
-  const handleTopicPress = (topicId) => {
+  const handleTopicPress = (topic) => {
     setSearchQuery('');
-    navigation.navigate("Forum Post Tab Navigator", { topicId });
+    navigation.navigate("Forum Post Tab Navigator", { topic });
   };
 
   const handleFilterPress = () => {
@@ -53,10 +45,10 @@ const ForumTopicDefault = ({ navigation }) => {
   };
 
   const handleFlag = async (forumTopicId) => {
-    await updateForumTopicFlaggedStatus(user.user.userId, forumTopicId)
+    await updateForumTopicFlaggedStatus(user.user.userId, forumTopicId);
     // console.log("Topic flagged!");
     useParentCallback();
-  }
+  };
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -77,48 +69,71 @@ const ForumTopicDefault = ({ navigation }) => {
       console.error(error);
     }
   };
+
   const handleSearch = (text) => {
     // Filter the topics based on the search query
     const filtered = forumTopics.filter((topic) =>
       topic.topicName.toLowerCase().includes(text.toLowerCase())
     );
     // console.log("text :" + text)
-  
+
     if (text === "") {
       setFilteredTopics(forumTopics);
     } else {
       setFilteredTopics(filtered);
     }
-  
+
     setSearchQuery(text);
+  };
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    useParentCallback();
+    setRefreshing(false);
+  };
+
+  const handleDelete = async (forumTopicId) => {
+    try {
+      await deleteForumTopic(user.user.userId, forumTopicId)
+      useParentCallback();
+    } catch (error) {
+      console.error(error);
+    }
   };
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor={'#FFD700'}
+        />
+      }>
         <View style={styles.header}>
           <Text style={styles.title}>Forum Topics</Text>
           <TouchableOpacity onPress={handleFilterPress} style={styles.filterButton}>
             <AntDesign name={sort ? "arrowup" : "arrowdown"} size={20} color="black" />
           </TouchableOpacity>
         </View>
-        <SearchBar searchQuery={searchQuery} handleSearch = {handleSearch}/>
+        <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
         {filteredTopics.map((topic, index) => (
           <ForumItem
             key={topic.forumTopicId}
             userId={user.user.userId}
+            topicUserId = {topic.userId}
             topicId={topic.forumTopicId}
             topicName={topic.topicName}
             updatedAt={topic.updatedAt}
-            onPress={() => handleTopicPress(topic.forumTopicId)}
+            onPress={() => handleTopicPress(topic)}
             onReport={() => handleFlag(topic.forumTopicId)}
-            parentCallback={useParentCallback}
+            onDelete={() => handleDelete(topic.forumTopicId)}
+            useParentCallback={useParentCallback}
           />
         ))}
       </ScrollView>
-      <AddForumTopicModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumTopic} />
       <TouchableOpacity onPress={toggleModal} style={styles.addItem}>
         <Ionicons name="add-circle" size={50} color="#FFD700" />
       </TouchableOpacity>
+      <AddForumTopicModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumTopic} />
     </SafeAreaView>
 
   );
@@ -137,7 +152,7 @@ const styles = StyleSheet.create({
     height: 30,
     // borderWidth:1,
     paddingEnd: 10,
-    marginVertical:10,
+    marginVertical: 10,
   },
   title: {
     fontSize: 18,
