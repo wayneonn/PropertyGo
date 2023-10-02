@@ -13,7 +13,6 @@ const RegionPropertyList = ({ region, onPropertyPress, handleTitlePress }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log('RegionPropertyList gained focus');
       loadPropertiesByRegion(region);
     }, [region])
   );
@@ -34,8 +33,8 @@ const RegionPropertyList = ({ region, onPropertyPress, handleTitlePress }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => handleTitlePress(region, properties)}>
-        <Text style={styles.sectionTitle}>{region} Properties</Text>
+      <TouchableOpacity onPress={() => handleTitlePress(`${region} Area Properties`, properties)}>
+        <Text style={styles.sectionTitle}>{region} Area Properties</Text>
       </TouchableOpacity>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {properties.map((property) => (

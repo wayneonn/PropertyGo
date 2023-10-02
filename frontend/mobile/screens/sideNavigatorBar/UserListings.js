@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import PropertyCard from '../propertyListings/PropertyCard';
 import PropertyCardRectangle from '../propertyListings/PropertyCardRectangle';
 import { getUserFavorites, removeFavoriteProperty, isPropertyInFavorites, getPropertiesByUser } from '../../utils/api';
@@ -64,53 +64,55 @@ const UserListings = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>User Listings</Text>
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search by property title"
-        onChangeText={(text) => setSearchText(text)}
-        value={searchText}
-      />
-      <TouchableOpacity
-        style={styles.toggleButton}
-        onPress={toggleCardLayout}
-      >
-        <View style={styles.toggleContainer}>
-          <Ionicons
-            name={isSquareLayout ? 'list' : 'grid'}
-            size={24}
-            color="#333"
-          />
-          <Text style={styles.toggleLabel}>
-            {isSquareLayout ? 'List' : 'Grid'}
-          </Text>
-        </View>
-      </TouchableOpacity>
-      <FlatList
-        data={filteredFavorites}
-        keyExtractor={(item) => (item.propertyId ?? 'defaultKey').toString()}
-        renderItem={({ item }) => {
-          return isSquareLayout ? (
-            <PropertyCard
-              property={item}
-              onPress={() =>
-                navigation.navigate('Property Listing', { propertyListingId: item.propertyListingId })
-              }
-              onFavoritePress={handleFavoritePress}
+    <ScrollView style={styles.container}>
+      <View style={styles.container}>
+        <Text style={styles.title}>User Listings</Text>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search by property title"
+          onChangeText={(text) => setSearchText(text)}
+          value={searchText}
+        />
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={toggleCardLayout}
+        >
+          <View style={styles.toggleContainer}>
+            <Ionicons
+              name={isSquareLayout ? 'list' : 'grid'}
+              size={24}
+              color="#333"
             />
-          ) : (
-            <PropertyCardRectangle
-              property={item}
-              onPress={() =>
-                navigation.navigate('Property Listing', { propertyListingId: item.propertyListingId })
-              }
-              onFavoritePress={handleFavoritePress}
-            />
-          );
-        }}
-      />
-    </View>
+            <Text style={styles.toggleLabel}>
+              {isSquareLayout ? 'List' : 'Grid'}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <FlatList
+          data={filteredFavorites}
+          keyExtractor={(item) => (item.propertyId ?? 'defaultKey').toString()}
+          renderItem={({ item }) => {
+            return isSquareLayout ? (
+              <PropertyCard
+                property={item}
+                onPress={() =>
+                  navigation.navigate('Property Listing', { propertyListingId: item.propertyListingId })
+                }
+                onFavoritePress={handleFavoritePress}
+              />
+            ) : (
+              <PropertyCardRectangle
+                property={item}
+                onPress={() =>
+                  navigation.navigate('Property Listing', { propertyListingId: item.propertyListingId })
+                }
+                onFavoritePress={handleFavoritePress}
+              />
+            );
+          }}
+        />
+      </View>
+    </ScrollView>
   );
 };
 

@@ -610,7 +610,7 @@ module.exports = [
     postalCode: 538766,
     unitNumber: "12-567",
     address: "555, Riverside Road",
-    region: "Northeast",
+    region: "North-East",
     area: "Hougang",
   },
   {
@@ -635,7 +635,7 @@ module.exports = [
     postalCode: 550151,
     unitNumber: "06-789",
     address: "888, Serangoon Avenue",
-    region: "Northeast",
+    region: "North-East",
     area: "Serangoon",
   },
   {
@@ -660,7 +660,7 @@ module.exports = [
     postalCode: 545000,
     unitNumber: "08-123",
     address: "111, Riverview Drive",
-    region: "Northeast",
+    region: "North-East",
     area: "Sengkang",
   },
   {
@@ -685,7 +685,7 @@ module.exports = [
     postalCode: 536795,
     unitNumber: "09-567",
     address: "777, Waterside Avenue",
-    region: "Northeast",
+    region: "North-East",
     area: "Punggol",
   },
   {
@@ -710,7 +710,7 @@ module.exports = [
     postalCode: 542187,
     unitNumber: "15-789",
     address: "333, Central Road",
-    region: "Northeast",
+    region: "North-East",
     area: "Hougang Central",
   },
   // Central Region
