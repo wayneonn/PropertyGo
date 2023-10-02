@@ -82,6 +82,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        boostListingStartDate: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        boostListingEndDate: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
     }, {
         freezeTableName: true
     });
