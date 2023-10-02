@@ -83,7 +83,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
     const fetchPartnerAppFromServer = async () => {
         try {
             const partnerApp = await fetchPartnerApplication(USER_ID)
-            console.log("Fetched Applications: ", partnerApp)
+            console.log("Fetched Partner Applications: ", partnerApp)
             setPartnerApp(partnerApp);
         } catch (error) {
             console.error(error)
@@ -186,6 +186,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
     // This is for the Select Documents
     // Honestly this needs to change depending on what is the current status.
     // Conditional changes depending on whether it is partner app or not -> If it is an Application, then don't show.
+    // There needs to be a validator here.....
     const renderDocumentItem = ({item}) => (
         <View style={styles.documentItem}>
             <Text style={styles.documentText}>{item.name}</Text>

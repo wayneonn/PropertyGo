@@ -15,6 +15,7 @@ exports.uploadDocuments = async (req, res) => {
     let userId = req.body.userId;
     let transactionId = req.body.transactionId;
     let folderId = req.body.folderId;
+    let partnerApplicationId = req.body.partnerApplicationId;
     // If userId is an array, pick first element
     if (Array.isArray(userId)) {
         userId = userId[0];
@@ -26,6 +27,11 @@ exports.uploadDocuments = async (req, res) => {
     // If folderId is an array, pick first element
     if (Array.isArray(folderId)) {
         folderId = folderId[0];
+    }
+
+    // If partnerApplicationId is an array, pick first element
+    if (Array.isArray(partnerApplicationId)) {
+        partnerApplicationId = partnerApplicationId[0];
     }
 
     // Perform necessary operations with the uploaded files
@@ -46,6 +52,7 @@ exports.uploadDocuments = async (req, res) => {
                 userId: userId,
                 transactionId: transactionId,
                 folderId: folderId,
+                partnerApplicationId: partnerApplicationId,
             });
         }
 
@@ -70,6 +77,7 @@ exports.getDocumentsMetadata = async (req, res) => {
                 "folderId",
                 "userId",
                 "transactionId",
+                "partnerApplicationId",
                 "title",
                 "createdAt",
                 "updatedAt",
@@ -97,7 +105,7 @@ exports.getDocumentMetadataByAppId = async(req, res) => {
                 "updatedAt",
                 "description"
             ],
-            where: {deleted: false, partnerAppId: req.params.id}
+            where: {deleted: false, partnerApplicationId: req.params.id}
         });
         res.json(documents);
     } catch (error) {

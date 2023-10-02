@@ -222,7 +222,11 @@ function UploadScreen({navigation}) {
             </View>
             <View style={{flexDirection: "row"}}>
                 <Text style={styles.documentText}>Transaction ID: </Text>
-                <Text style={styles.documentText}>{item.transactionId}</Text>
+                <Text style={styles.documentText}>{item.transactionId === null ? "None" : item.transactionId}</Text>
+            </View>
+            <View style={{flexDirection: "row"}}>
+                <Text style={styles.documentText}>Partner Application ID: </Text>
+                <Text style={styles.documentText}>{item.partnerApplicationId === null ? "None" : item.partnerApplicationId}</Text>
             </View>
             <View style={{flexDirection: "row"}}>
                 <Text style={styles.documentText}>Folder: </Text>

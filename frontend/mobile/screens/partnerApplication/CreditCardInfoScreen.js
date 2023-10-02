@@ -12,6 +12,8 @@ import {AntDesign} from "@expo/vector-icons";
 import {sendPartnerApplication} from "../../utils/partnerApplicationApi";
 import {AuthContext} from "../../AuthContext";
 
+// This whole screen is very, very, problematic. Like...wow.
+// We should just make this either a) Stripe or b) Bank-Account, PayLah etc.
 Yup.addMethod(Yup.string, 'luhn', function (message) {
     return this.test('luhn', message || 'Invalid credit card number', function (value) {
         if (!value) return false;
@@ -84,7 +86,14 @@ const validationSchema = Yup.object().shape({
         }),
 });
 
-// Slight issues with DatePicker. I need a DatePicker for it work.
+/**
+ * CC Card Info details.
+ * 1. Input in the CC No., CVC checker, and Expiry Date checker.
+ * 2. Submit the required info into the database.
+ * 3. TODO: Hashing the damn thing so I don't get complained.
+ *
+ *
+ * */
 const AnimatedInput = ({ fieldName, keyboardType, isDatePicker }) => {
     const [field, meta, helpers] = useField(fieldName);
 
@@ -129,8 +138,6 @@ const CreditCardInfoScreen = () => {
     const USER_ID = user.user.userId;
 
     const handleSubmit = async (values) => {
-        // Update the context with the new values
-        console.log(USER_ID)
         setFormData({ ...formData, ...values });
         console.log(formData, values);
         // Submit the thing to create the Partner Application.

@@ -4,7 +4,7 @@ import {AntDesign} from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
 import {fetchPartnerApplication} from "../../utils/partnerApplicationApi";
-import {fetchDocuments} from "../../utils/documentApi";
+import {fetchDocuments, fetchDocumentById} from "../../utils/documentApi";
 import {AuthContext} from "../../AuthContext";
 
 /*
@@ -19,6 +19,7 @@ import {AuthContext} from "../../AuthContext";
 *
 * */
 const IntroScreen = () => {
+    const [partnerAppId, setPartnerAppId] = useState(0)
     const [partner, setPartner] = useState([]); // Local state to keep track of selected documents
     const [documentsValid, setDocumentsValid] = useState(false);
     const navigation = useNavigation();
@@ -53,36 +54,36 @@ const IntroScreen = () => {
         console.log("Partner state has been updated:", partner);
     }, [partner]);
 
+    useEffect(() => {
+        console.log("Partner Application ID updated: ", partnerAppId)
+    }, []);
 
-    // I am under the assumption that only application is to be submitted, so if there is already an application you should not be spamming.
-    // Honestly should be the case that no application = sign up, false = wait, true = congrats.
+
+   /**
+    * Description: Fetch partner application + partner application documents from the server.
+    * Only one application allowed per user -> doesn't make sense to apply for more?
+    *
+    *
+    * **/
     const fetchPartnerAppFromServer = async () => {
         try {
             const partnerApp = await fetchPartnerApplication(USER_ID)
-            console.log(partnerApp.partnerApp);
-            const documents = await fetchDocuments(USER_ID) // Check if users have uploaded docs.
-            console.log(documents)
-            if (documents.length === 0) {
-                setDocumentsValid(false)
-            } else {
-                setDocumentsValid(true)
+            console.log("Fetched partner apps from server: ", partnerApp.partnerApp);
+            if (partnerApp.partnerApp.length !== 0) {
+                const appDocuments = await fetchDocumentById(partnerApp.partnerApp[0].partnerApplicationId)
+                setPartnerAppId(partnerApp.partnerApp[0].partnerApplicationId);
+                console.log("Fetched application documents from server: ", appDocuments)
+                if (appDocuments.length === 0) {
+                    setDocumentsValid(false)
+                } else {
+                    setDocumentsValid(true)
+                }
             }
-            console.log(partnerApp.partnerApp[0].approved);
             setPartner([...partnerApp.partnerApp]);
-            console.log(partner);
         } catch (error) {
             console.error(error);
         }
     };
-
-    /*
-    * Fetch documents from the server based on the Application ID. 
-    *
-    *
-    * */
-    const fetchDocumentForAppFromServer = async () => {
-
-    }
 
     /*
     * Display the status of an approval.
@@ -95,6 +96,7 @@ const IntroScreen = () => {
             <Text>Application ID: {item.partnerApplicationId}</Text>
             <Text>User Role: {item.userRole}</Text>
             <Text>Approval Status: {item.approved ? 'Yes' : 'No'} </Text>
+            <Text>Documents Submitted: {documentsValid ? 'Yes' : 'No'} </Text>
         </View>
     );
 

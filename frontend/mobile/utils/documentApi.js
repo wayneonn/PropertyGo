@@ -35,3 +35,15 @@ export const fetchDocuments = async (USER_ID) => {
         console.error(error);
     }
 };
+
+export const fetchDocumentById = async (APP_ID) => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/user/documents/app/metadata/${APP_ID}`
+        );
+        const documents = await response.json();
+        return documents;
+    } catch (error) {
+        console.error(error);
+    }
+}

@@ -10,7 +10,7 @@ import {fetchDocuments, fetchFolders} from "../../utils/documentApi";
 import {fetchPartnerApplication} from "../../utils/partnerApplicationApi";
 import {AuthContext} from "../../AuthContext";
 
-const DocumentSubmissionScreen = () => {
+const DocumentSubmissionScreen = ({route}) => {
     const navigation = useNavigation();
     const { formData, setFormData } = useFormData(); // Using your context
     const [folders, setFolders] = useState([]) // For Document Selector
@@ -59,7 +59,7 @@ const DocumentSubmissionScreen = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Upload Documents</Text>
-            <DocumentSelector documentFetch={uploadSucceed} folderState={folders} isTransaction={false}/> {/* Replace onSelect with your actual prop if different */}
+            <DocumentSelector documentFetch={uploadSucceed} folderState={folders} isTransaction={false}/>
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Next</Text>
             </TouchableOpacity>
