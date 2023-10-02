@@ -50,7 +50,7 @@ const PropertyCard = ({ property, onPress }) => {
     if (property.images && property.images.length > 0) {
       const imageIds = property.images.map(Number);
       const smallestImageId = Math.min(...imageIds);
-      console.log("smallestImageId: ", smallestImageId)
+      const timestamp = new Date().getTime();
       const imageUri = getImageUriById(smallestImageId.toString());
       setPropertyImageUri(imageUri);
     }

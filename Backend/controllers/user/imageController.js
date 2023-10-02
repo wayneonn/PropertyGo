@@ -109,7 +109,7 @@ async function updateImageById(req, res) {
         // Save the updated image
         await imageToUpdate.save();
         console.log("imageToUpdate", imageToUpdate)
-        res.json({ message: 'Image updated successfully' });
+        res.json({ message: 'Image updated successfully', imageId: imageToUpdate.imageId});
     } catch (error) {
         console.error('Error updating image:', error);
         res.status(500).json({ error: 'Error updating image' });

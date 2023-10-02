@@ -266,7 +266,7 @@ const PropertyListingScreen = ({ route }) => {
                 const imageUri = getImageUriById(imageId);
                 return (
                   <View key={index} style={styles.slide}>
-                    <Image source={{ uri: imageUri }} style={styles.image} />
+                    <Image source={{ uri: `${imageUri}?timestamp=${new Date().getTime()}` }} style={styles.image} />
                   </View>
                 );
               })              

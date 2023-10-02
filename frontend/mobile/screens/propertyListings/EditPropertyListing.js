@@ -155,7 +155,7 @@ const EditPropertyListing = ({ route }) => {
       );
 
       if (success) {
-        console.log('Property updated successfully:', propertyListingId);
+        console.log('Property updated successfully:');
         Alert.alert(
           'Property Updated',
           'The property listing has been updated successfully.'
@@ -233,6 +233,22 @@ const EditPropertyListing = ({ route }) => {
     // Fetch property listing details using propertyListingId from your API
     fetchPropertyListing(propertyListingId);
   }, [propertyListingId]);
+  
+  useEffect(() => {
+    // Fetch images based on propertyListingId
+    fetchImages(propertyListingId);
+  }, [propertyListingId, images]); // You can keep images here if you want to refresh the images when it changes
+
+  const fetchImages = async (propertyListingId) => {
+    try {
+      // Fetch images based on propertyListingId and update the images state
+      const imageArray = await fetchImageArray(propertyListingId);
+      setImageIdArray(imageArray);
+    } catch (error) {
+      console.error('Error fetching images:', error);
+      // Handle the error appropriately, e.g., show an error message to the user
+    }
+  };
 
   const fetchPropertyListing = async (id) => {
     try {
@@ -318,7 +334,7 @@ const EditPropertyListing = ({ route }) => {
     if (!response.cancelled) {
       // Upload the selected image to the backend
       try {
-        const { success, data, message } = await createImageWithPropertyId(
+        const { success, data, message } = await createImazgeWithPropertyId(
           propertyListingId, // Pass the propertyListingId
           response // Pass the whole response object
         );
@@ -344,20 +360,20 @@ const EditPropertyListing = ({ route }) => {
 
   const handleUpdateImage = async (index, imageId) => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
+  
     if (permissionResult.granted === false) {
       console.warn('Permission to access photos was denied');
       return;
     }
-
+  
     const options = {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     };
-
+  
     let response = await ImagePicker.launchImageLibraryAsync(options);
-
+  
     if (!response.cancelled) {
       // Create the updated image object
       const updatedImage = {
@@ -365,21 +381,20 @@ const EditPropertyListing = ({ route }) => {
         type: 'image/jpeg', // Modify the type according to your needs
         name: 'propertyImage.jpg',
       };
-
+  
       // Call the updateImageById function with the imageId and updatedImage
       try {
         const { success, data, message } = await updateImageById(imageId, updatedImage);
-
+  
         if (success) {
-          // Update the specific image in the 'images' state array
-          const updatedImages = [...images];
-          updatedImages[index] = { uri: data.imageId }; // Update the image at the specified index
-
-          // Set the updated 'images' state
-          setImages(updatedImages);
-
           // Show an alert for successful upload
-          Alert.alert('Image Uploaded', 'The image has been successfully updated.');
+          Alert.alert('Image Updated', 'The image has been successfully updated.');
+  
+          // Fetch the latest images from the API
+          const updatedImages = await fetchLatestImages(propertyListingId);
+          
+          // Update the images state with the latest images
+          setImages(updatedImages); // This should trigger a re-render
         } else {
           console.error('Error updating image:', message);
           // Handle the error appropriately, e.g., show an error message to the user
@@ -390,14 +405,28 @@ const EditPropertyListing = ({ route }) => {
       }
     }
   };
-
-
+  
+  // Function to fetch the latest images from the API
+  const fetchLatestImages = async (propertyListingId) => {
+    try {
+      // Make an API call to fetch the latest property listing details
+      const response = await fetch(getPropertyListing(propertyListingId));
+      const data = await response.json();
+  
+      // Return the latest images from the fetched data
+      return data.images.map((imageUri) => ({ uri: imageUri }));
+    } catch (error) {
+      console.error('Error fetching latest images:', error);
+      return [];
+    }
+  };
+  
 
 
   const handleImagePress = async (index) => {
     // Display an alert with options to update or remove the image
     const imageId = imageIdArray[index].imageId;
-    console.log('imageId here ', imageId)
+    // console.log('imageId here ', imageId)
     Alert.alert(
       'Image Options',
       'Choose an action for this image:',
@@ -466,7 +495,7 @@ const EditPropertyListing = ({ route }) => {
             {/* Map over the images */}
             {images.map((image, index) => {
               const imageUri = getImageUriById(image.uri);
-              console.log('imageUri:', imageUri);
+              // console.log('imageUri:', imageUri);
               return (
                 <TouchableOpacity
                   key={index}
@@ -474,7 +503,8 @@ const EditPropertyListing = ({ route }) => {
                   style={styles.imageContainer}
                 >
                   {imageUri ? (
-                    <Image source={{ uri: imageUri }} style={styles.image} />
+                    <Image source={{ uri: `${imageUri}?timestamp=${new Date().getTime()}` }} style={styles.image} />
+
                   ) : (
                     <Image source={DefaultImage} style={styles.image} /> // Use a default image here
                   )}
