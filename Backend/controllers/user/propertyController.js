@@ -286,7 +286,25 @@ async function getPropertiesByFavoriteCount(req, res) {
         });
 
         // Sort properties by favorite count in descending order
-        propertiesWithFavoriteCountAndImages.sort((a, b) => b.favoriteCount - a.favoriteCount);
+        propertiesWithFavoriteCountAndImages.sort((a, b) => {
+            // Check if both properties are boosted
+            const isBoostedA = a.boostListingEndDate && new Date(a.boostListingEndDate) >= new Date();
+            const isBoostedB = b.boostListingEndDate && new Date(b.boostListingEndDate) >= new Date();
+
+            if (isBoostedA && isBoostedB) {
+                // If both are boosted, sort by favorite count in descending order
+                return b.favoriteCount - a.favoriteCount;
+            } else if (isBoostedA) {
+                // If only A is boosted, place it above B
+                return -1;
+            } else if (isBoostedB) {
+                // If only B is boosted, place it above A
+                return 1;
+            } else {
+                // If neither is boosted, sort by favorite count in descending order
+                return b.favoriteCount - a.favoriteCount;
+            }
+        });
 
         // Respond with the sorted list of properties including image IDs
         res.json(propertiesWithFavoriteCountAndImages);

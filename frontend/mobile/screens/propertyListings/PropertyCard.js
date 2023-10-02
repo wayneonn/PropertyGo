@@ -17,12 +17,14 @@ import {
 } from '../../utils/api';
 import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available.webp';
+import * as Animatable from 'react-native-animatable';
 
 const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
     const [propertyImageUri, setPropertyImageUri] = useState('');
     const [isFavorite, setIsFavorite] = useState(false);
     const { user } = useContext(AuthContext);
     const [favoriteCount, setFavoriteCount] = useState(0); // Added state for favorite count
+    const [isBoostActive, setIsBoostActive] = useState(false); // Added state for boost status
     const cardSize = Dimensions.get('window').width;
 
     const formatPrice = (price) => {
@@ -43,8 +45,19 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
 
         // Check if the property is in favorites and update the isFavorite state
         checkIfPropertyIsFavorite();
+        calculateBoostStatus();
         fetchFavoriteCount();
     }, [property, reloadPropertyCard]);
+
+    const calculateBoostStatus = () => {
+        if (property.boostListingEndDate) {
+            const currentDate = new Date();
+            const boostEndDate = new Date(property.boostListingEndDate);
+            setIsBoostActive(boostEndDate >= currentDate); // Check if boost is active
+        } else {
+            setIsBoostActive(false); // No boost end date means not active
+        }
+    };
 
     const checkIfPropertyIsFavorite = async () => {
         const userId = user.user.userId;
@@ -96,6 +109,23 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
         }
     };
 
+    const [currentColor, setCurrentColor] = useState('blue'); // Initial color
+    const colors = ['red', 'green', 'blue', 'orange']; // Define your desired colors
+    const animationDuration = 1000; // Duration for each color change (in milliseconds)
+
+    useEffect(() => {
+        // Create a timer to change the color at regular intervals
+        const colorChangeTimer = setInterval(() => {
+            // Get the next color in the array
+            const nextColorIndex = (colors.indexOf(currentColor) + 1) % colors.length;
+            const nextColor = colors[nextColorIndex];
+            setCurrentColor(nextColor);
+        }, animationDuration);
+
+        // Clear the timer when the component unmounts
+        return () => clearInterval(colorChangeTimer);
+    }, [currentColor]);
+
     return (
         <TouchableOpacity style={[styles.card, { width: cardSize * 0.85, height: cardSize * 0.8 }]} onPress={() => onPress(property.propertyId)}>
             <View style={styles.imageContainer}>
@@ -116,6 +146,16 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
                     {property.size} sqm <Ionicons name="cube-outline" size={16} color="#333" />
                 </Text>
                 <View style={styles.favoriteButton}>
+                    {isBoostActive && (
+                        <Animatable.View animation="jello" easing="ease-out" iterationCount="infinite">
+                            <Ionicons
+                                name="flash"
+                                size={24}
+                                color={currentColor}
+                                style={{ marginRight: 4 }}
+                            />
+                        </Animatable.View>
+                    )}
                     <TouchableOpacity onPress={handleFavoriteButtonPress}>
                         <Ionicons
                             name={isFavorite ? 'heart' : 'heart-outline'}
@@ -205,16 +245,16 @@ const styles = StyleSheet.create({
         // flexDirection: 'row',
         // alignItems: 'left',
         // marginTop: 8, // Adjust the spacing as needed
-      },
-      favoriteCount: {
+    },
+    favoriteCount: {
         marginTop: 40, // Adjust the spacing between icon and count as needed
         fontSize: 16,
-      },
-      favoriteButton: {
+    },
+    favoriteButton: {
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'flex-end', // Align to the right
-      },
+    },
 });
 
 export default PropertyCard;

@@ -334,7 +334,7 @@ const EditPropertyListing = ({ route }) => {
     if (!response.cancelled) {
       // Upload the selected image to the backend
       try {
-        const { success, data, message } = await createImazgeWithPropertyId(
+        const { success, data, message } = await createImageWithPropertyId(
           propertyListingId, // Pass the propertyListingId
           response // Pass the whole response object
         );
