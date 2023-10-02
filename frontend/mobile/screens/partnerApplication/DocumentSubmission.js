@@ -2,7 +2,7 @@
 // Prompt the User to create the Documents as needed.
 // I need to work this properly.
 import React, {useContext, useEffect, useState} from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, SafeAreaView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useFormData } from '../../contexts/PartnerApplicationFormDataContext';
 import {DocumentSelector} from "../../components/DocumentSelector";
@@ -57,13 +57,13 @@ const DocumentSubmissionScreen = ({route}) => {
     // I think it just ignores it if it does not exist.
     // Probably just turn it into a free signal.
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Upload Documents</Text>
             <DocumentSelector documentFetch={uploadSucceed} folderState={folders} isTransaction={false}/>
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Next</Text>
             </TouchableOpacity>
-        </View>
+        </SafeAreaView>
     );
 };
 

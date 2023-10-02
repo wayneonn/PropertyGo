@@ -1,6 +1,6 @@
 // Since the Document Selector is a common component, I am going to abstract it.
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {FlatList, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {AntDesign, Foundation, MaterialIcons} from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import {AuthContext} from "../AuthContext";
@@ -153,7 +153,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
                     });
                 }
                 fileData.append("description", descriptions);
-                if(isTransaction) {
+                if (isTransaction) {
                     fileData.append("transactionId", transactionId);
                 } else {
                     fileData.append("partnerApplicationId", partnerApp.partnerApp[0].partnerApplicationId)
@@ -247,55 +247,57 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
     );
 
     return (
-        <FlatList
-            ListHeaderComponent={
-                <>
-                    <Text style={styles.detailText}>List of Selected Documents:</Text>
-                </>
-            }
-            ListFooterComponent={
-                <>
-                    <View style={styles.descriptionContainer}>
-                        <Text style={styles.detailText}>
-                            Write your description for the files selected:
+        <SafeAreaView style={{paddingHorizontal: 10}}>
+            <FlatList
+                ListHeaderComponent={
+                    <>
+                        <Text style={styles.detailText}>List of Selected Documents:</Text>
+                    </>
+                }
+                ListFooterComponent={
+                    <>
+                        <View style={styles.descriptionContainer}>
+                            <Text style={styles.detailText}>
+                                Write your description for the files selected:
+                            </Text>
+                            <TextInput
+                                style={styles.descriptionInput}
+                                placeholder="Add a description"
+                                value={descriptions}
+                                maxLength={200} // max length of the text
+                                onChangeText={(text) => {
+                                    setDescriptions(text);
+                                    setLength(200 - text.length);
+                                }}
+                            />
+                            <Text> Remaining: {length}</Text>
+                        </View>
+                        <View style={styles.iconContainer}>
+                            <TouchableOpacity onPress={selectDocuments}>
+                                <AntDesign name="addfile" size={24} color="black"/>
+                            </TouchableOpacity>
+                            <Text> &nbsp;&nbsp;&nbsp; </Text>
+                            <TouchableOpacity onPress={handleUpload}>
+                                <AntDesign name="clouduploado" size={24} color="black"/>
+                            </TouchableOpacity>
+                        </View>
+                    </>
+                }
+                ListEmptyComponent={() => (
+                    <View style={styles.emptyListContainer}>
+                        <MaterialIcons name="description" size={40} color="lightgray"/>
+                        <Text style={styles.emptyListText}>
+                            Your selected documents would appear here.
                         </Text>
-                        <TextInput
-                            style={styles.descriptionInput}
-                            placeholder="Add a description"
-                            value={descriptions}
-                            maxLength={200} // max length of the text
-                            onChangeText={(text) => {
-                                setDescriptions(text);
-                                setLength(200 - text.length);
-                            }}
-                        />
-                        <Text> Remaining: {length}</Text>
                     </View>
-                    <View style={styles.iconContainer}>
-                        <TouchableOpacity onPress={selectDocuments}>
-                            <AntDesign name="addfile" size={24} color="black"/>
-                        </TouchableOpacity>
-                        <Text> &nbsp;&nbsp;&nbsp; </Text>
-                        <TouchableOpacity onPress={handleUpload}>
-                            <AntDesign name="clouduploado" size={24} color="black"/>
-                        </TouchableOpacity>
-                    </View>
-                </>
-            }
-            ListEmptyComponent={() => (
-                <View style={styles.emptyListContainer}>
-                    <MaterialIcons name="description" size={40} color="lightgray"/>
-                    <Text style={styles.emptyListText}>
-                        Your selected documents would appear here.
-                    </Text>
-                </View>
-            )}
-            data={selectedDocuments}
-            keyExtractor={(item, index) =>
-                item.id ? item.id.toString() : index.toString()
-            }
-            renderItem={renderDocumentItem}
-        />
+                )}
+                data={selectedDocuments}
+                keyExtractor={(item, index) =>
+                    item.id ? item.id.toString() : index.toString()
+                }
+                renderItem={renderDocumentItem}
+            />
+        </SafeAreaView>
     );
 };
 

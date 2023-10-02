@@ -1,12 +1,8 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {Platform, ScrollView} from 'react-native';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { Formik, useField } from 'formik';
-import { useNavigation } from '@react-navigation/native';
-import { useFormData } from '../../contexts/PartnerApplicationFormDataContext';
+import React, {useContext, useEffect} from 'react';
+import {KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Formik, useField} from 'formik';
+import {useNavigation} from '@react-navigation/native';
+import {useFormData} from '../../contexts/PartnerApplicationFormDataContext';
 import * as Yup from 'yup';
 import {AntDesign} from "@expo/vector-icons";
 import {sendPartnerApplication} from "../../utils/partnerApplicationApi";
@@ -94,7 +90,7 @@ const validationSchema = Yup.object().shape({
  *
  *
  * */
-const AnimatedInput = ({ fieldName, keyboardType, isDatePicker }) => {
+const AnimatedInput = ({fieldName, keyboardType, isDatePicker}) => {
     const [field, meta, helpers] = useField(fieldName);
 
     const handleDateChange = (input) => {
@@ -112,7 +108,7 @@ const AnimatedInput = ({ fieldName, keyboardType, isDatePicker }) => {
                         onBlur={field.onBlur(fieldName)}
                         value={field.value}
                         placeholder="MM/YYYY"
-                        keyboardType="numeric"
+                        keyboardType="default"
                     />
                 </View>
             ) : (
@@ -130,15 +126,14 @@ const AnimatedInput = ({ fieldName, keyboardType, isDatePicker }) => {
 };
 
 
-
 const CreditCardInfoScreen = () => {
     const navigation = useNavigation();
-    const { formData, setFormData } = useFormData(); // Using the context
+    const {formData, setFormData} = useFormData(); // Using the context
     const {user} = useContext(AuthContext);
     const USER_ID = user.user.userId;
 
     const handleSubmit = async (values) => {
-        setFormData({ ...formData, ...values });
+        setFormData({...formData, ...values});
         console.log(formData, values);
         // Submit the thing to create the Partner Application.
         const res = await sendPartnerApplication(USER_ID, formData)
@@ -157,40 +152,46 @@ const CreditCardInfoScreen = () => {
     }, [formData]);
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Credit Card Information</Text>
-            <Formik
-                initialValues={{
-                    cardNumber: formData.cardNumber || '',
-                    cardHolderName: formData.cardHolderName || '',
-                    cvc: formData.cvc || '',
-                    expiryDate: formData.expiryDate || '',
-                }}
-                onSubmit={handleSubmit}
-                validationSchema={validationSchema}
-            >
-                {({ handleSubmit, isValid , values}) => (
-                    <View>
-                        <Text style={styles.label}>Card Number</Text>
-                        <AnimatedInput fieldName="cardNumber" keyboardType="number-pad" />
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={Platform.OS === 'ios' && {flex: 1}}
+            keyboardVerticalOffset={30}
+        >
+            <ScrollView contentContainerStyle={styles.container}>
+                <Text style={styles.title}>Credit Card Information</Text>
+                <Formik
+                    initialValues={{
+                        cardNumber: formData.cardNumber || '',
+                        cardHolderName: formData.cardHolderName || '',
+                        cvc: formData.cvc || '',
+                        expiryDate: formData.expiryDate || '',
+                    }}
+                    onSubmit={handleSubmit}
+                    validationSchema={validationSchema}
+                >
+                    {({handleSubmit, isValid, values}) => (
+                        <View>
+                            <Text style={styles.label}>Card Number</Text>
+                            <AnimatedInput fieldName="cardNumber" keyboardType="number-pad"/>
 
-                        <Text style={styles.label}>Card Holder Name</Text>
-                        <AnimatedInput fieldName="cardHolderName" />
+                            <Text style={styles.label}>Card Holder Name</Text>
+                            <AnimatedInput fieldName="cardHolderName"/>
 
-                        <Text style={styles.label}>CVC</Text>
-                        <AnimatedInput fieldName="cvc" keyboardType="number-pad" />
+                            <Text style={styles.label}>CVC</Text>
+                            <AnimatedInput fieldName="cvc" keyboardType="number-pad"/>
 
-                        <Text style={styles.label}>Expiry Date</Text>
-                        <AnimatedInput fieldName="expiryDate" isDatePicker={true} />
-                        <Text>&nbsp;&nbsp;</Text>
-                        <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={!isValid}>
-                            <Text style={styles.buttonText}>Next</Text>
-                            <AntDesign name="arrowright" size={20} color="black" />
-                        </TouchableOpacity>
-                    </View>
-                )}
-            </Formik>
-        </ScrollView>
+                            <Text style={styles.label}>Expiry Date</Text>
+                            <AnimatedInput fieldName="expiryDate" isDatePicker={true}/>
+                            <Text>&nbsp;&nbsp;</Text>
+                            <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={!isValid}>
+                                <Text style={styles.buttonText}>Next</Text>
+                                <AntDesign name="arrowright" size={20} color="black"/>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                </Formik>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
