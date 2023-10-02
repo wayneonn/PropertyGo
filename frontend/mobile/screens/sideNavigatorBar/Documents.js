@@ -130,7 +130,9 @@ function UploadScreen({navigation}) {
             try {
                 // Slight issue opening certain PDF files.
                 // Native FileSystem logic
-                const fileName = FileSystem.documentDirectory + result.title;
+
+                //Filename has " " = Error and fuck you.
+                const fileName = (FileSystem.documentDirectory + result.title).replace(/\s/g, '_');
                 console.log('Filename:', fileName);
 
                 await FileSystem.writeAsStringAsync(
@@ -222,7 +224,11 @@ function UploadScreen({navigation}) {
             </View>
             <View style={{flexDirection: "row"}}>
                 <Text style={styles.documentText}>Transaction ID: </Text>
-                <Text style={styles.documentText}>{item.transactionId}</Text>
+                <Text style={styles.documentText}>{item.transactionId === null ? "None" : item.transactionId}</Text>
+            </View>
+            <View style={{flexDirection: "row"}}>
+                <Text style={styles.documentText}>Partner Application ID: </Text>
+                <Text style={styles.documentText}>{item.partnerApplicationId === null ? "None" : item.partnerApplicationId}</Text>
             </View>
             <View style={{flexDirection: "row"}}>
                 <Text style={styles.documentText}>Folder: </Text>
@@ -266,7 +272,7 @@ function UploadScreen({navigation}) {
         <SafeAreaView style={styles.container}>
             {/* Wrap the FlatList in a View with border styles */}
             <View style={styles.documentListContainer}>
-                <DocumentSelector documentFetch={fetchData} folderState={folders} setFolderState={setFolders}/>
+                <DocumentSelector documentFetch={fetchData} folderState={folders} isTransaction={true}/>
             </View>
             <Text> &nbsp; &nbsp;</Text>
             <View style={styles.documentListContainer}>

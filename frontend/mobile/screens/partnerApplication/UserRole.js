@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Picker } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
 import { useFormData } from '../../contexts/PartnerApplicationFormDataContext'; // Update the path to your FormDataContext
 
 const validationSchema = Yup.object().shape({
@@ -31,19 +32,25 @@ const UserRoleScreen = () => {
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ handleSubmit, isValid, errors, values  }) => (
+                {({ handleSubmit, isValid, errors, setFieldValue }) => (
                     <View>
                         <Text style={styles.label}>User Role</Text>
-                        <Field name="userRole" as={Picker}>
+                        <Picker
+                            selectedValue={formData.userRole}
+                            onValueChange={(itemValue) => {
+                                setFieldValue('userRole', itemValue);
+                                setFormData({ ...formData, userRole: itemValue });
+                            }}
+                        >
                             <Picker.Item label="Select role" value="" />
                             <Picker.Item label="General" value="GENERAL" />
                             <Picker.Item label="Support" value="SUPPORT" />
                             <Picker.Item label="Feedback" value="FEEDBACK" />
                             <Picker.Item label="Others" value="OTHERS" />
-                        </Field>
+                        </Picker>
                         {errors.userRole && <Text style={styles.errorText}>{errors.userRole}</Text>}
                         <Text>&nbsp;</Text>
-                        <TouchableOpacity style={styles.button} onPress={() => handleSubmit(values)} disabled={!isValid}>
+                        <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={!isValid}>
                             <Text style={styles.buttonText}>Submit</Text>
                             <AntDesign name="arrowright" size={20} color="black" />
                         </TouchableOpacity>

@@ -1,16 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import { Formik, useField } from 'formik';
-import { useNavigation } from '@react-navigation/native';
-import { useFormData } from '../../contexts/PartnerApplicationFormDataContext';
+import {KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {AntDesign} from '@expo/vector-icons';
+import {Formik, useField} from 'formik';
+import {useNavigation} from '@react-navigation/native';
+import {useFormData} from '../../contexts/PartnerApplicationFormDataContext';
 import * as Yup from 'yup';
 
 const validationSchema = Yup.object().shape({
     companyName: Yup.string()
         .required('Company Name is required'),
 });
-const AnimatedInput = ({ fieldName }) => {
+const AnimatedInput = ({fieldName}) => {
     const [field, meta] = useField(fieldName);
     return (
         <TextInput
@@ -24,38 +24,40 @@ const AnimatedInput = ({ fieldName }) => {
 
 const CompanyInfoScreen = () => {
     const navigation = useNavigation();
-    const { formData, setFormData } = useFormData(); // Using the context
+    const {formData, setFormData} = useFormData(); // Using the context
 
     const handleSubmit = (values) => {
         // Update the context with the new values
-        setFormData({ ...formData, ...values });
+        setFormData({...formData, ...values});
         console.log(formData)
         // Navigate to the next screen
         navigation.navigate('User Role');
     };
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}>
             <Text style={styles.title}>Company Information</Text>
             <Text style={styles.subtitle}>Tell us what your company is.</Text>
             <Formik
-                initialValues={{ companyName: formData.companyName || '' }}
+                initialValues={{companyName: formData.companyName || ''}}
                 onSubmit={handleSubmit}
                 validationSchema={validationSchema}
             >
-                {({ handleSubmit, isValid, errors }) => (
+                {({handleSubmit, isValid, errors}) => (
                     <View>
                         <Text style={styles.label}>Company Name</Text>
-                        <AnimatedInput fieldName="companyName" />
+                        <AnimatedInput fieldName="companyName"/>
                         {errors.companyName && <Text style={styles.errorText}>{errors.companyName}</Text>}
                         <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={!isValid}>
                             <Text style={styles.buttonText}>Next</Text>
-                            <AntDesign name="arrowright" size={20} color="black" />
+                            <AntDesign name="arrowright" size={20} color="black"/>
                         </TouchableOpacity>
                     </View>
                 )}
             </Formik>
-        </View>
+        </KeyboardAvoidingView>
     );
 };
 

@@ -3,16 +3,19 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {AuthProvider} from './AuthContext';
 import LoginNavigator from './navigations/LoginNavigator';
+import { PaperProvider } from 'react-native-paper';
 
 const Stack = createStackNavigator();
 
 function App() {
     return (
-        <AuthProvider>
-            <NavigationContainer>
-                <LoginNavigator/>
-            </NavigationContainer>
-        </AuthProvider>
+        <PaperProvider>
+            <AuthProvider>
+                <NavigationContainer>
+                    <LoginNavigator/>
+                </NavigationContainer>
+            </AuthProvider>
+        </PaperProvider>
     );
 }
 

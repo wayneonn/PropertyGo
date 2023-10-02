@@ -1,6 +1,8 @@
 // This is all the API calls for Documents.
+import configData from "../config.json"
 
-export const BASE_URL = "http://192.168.50.157:3000"; // Change this according to Wifi.
+export const BASE_URL = configData.BASE_URL
+
 // Dumping all my API's here.
 export const fetchFolders = async (USER_ID) => {
     try {
@@ -33,3 +35,15 @@ export const fetchDocuments = async (USER_ID) => {
         console.error(error);
     }
 };
+
+export const fetchDocumentById = async (APP_ID) => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/user/documents/app/metadata/${APP_ID}`
+        );
+        const documents = await response.json();
+        return documents;
+    } catch (error) {
+        console.error(error);
+    }
+}

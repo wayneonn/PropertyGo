@@ -3,7 +3,7 @@ const multer = require("multer");
 const fs = require("fs");
 const { Document } = require("../../models");
 const router = express.Router();
-const {uploadDocuments, getDocumentsMetadata, getDocumentData, deleteDocument} = require("../../controllers/user/documentController")
+const {uploadDocuments, getDocumentsMetadata, getDocumentMetadataByAppId,getDocumentData, deleteDocument} = require("../../controllers/user/documentController")
 
 // Setting up a MySQL connection since we are using MySQL.
 
@@ -60,6 +60,9 @@ router.post(
 
 // Give us the whole list of the documents.
 router.get("/documents/list/metadata/:id", getDocumentsMetadata);
+
+// Get us the list of documents associated with a specific App. ID.
+router.get("/documents/app/metadata/:id", getDocumentMetadataByAppId)
 
 
 // Give me the specific dataset.
