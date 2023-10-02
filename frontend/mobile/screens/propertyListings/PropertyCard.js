@@ -18,7 +18,7 @@ import {
 import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available.webp';
 
-const PropertyCard = ({ property, onPress }) => {
+const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
     const [propertyImageUri, setPropertyImageUri] = useState('');
     const [isFavorite, setIsFavorite] = useState(false);
     const { user } = useContext(AuthContext);
@@ -44,7 +44,7 @@ const PropertyCard = ({ property, onPress }) => {
         // Check if the property is in favorites and update the isFavorite state
         checkIfPropertyIsFavorite();
         fetchFavoriteCount();
-    }, [property]);
+    }, [property, reloadPropertyCard]);
 
     const checkIfPropertyIsFavorite = async () => {
         const userId = user.user.userId;
@@ -96,42 +96,11 @@ const PropertyCard = ({ property, onPress }) => {
         }
     };
 
-    const handleFavoriteToggle = async () => {
-        const userId = user.user.userId;
-        try {
-            if (isFavorite) {
-                // Remove the property from favorites
-                console.log('Removing property from favorites...');
-                const { success } = await removeFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
-
-                if (success) {
-                    setIsFavorite(false);
-                } else {
-                    console.error('Error removing property from favorites.');
-                }
-            } else {
-                // Add the property to favorites
-                console.log('Adding property to favorites...');
-                const { success } = await addFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
-
-                if (success) {
-                    setIsFavorite(true);
-                } else {
-                    console.error('Error adding property to favorites.');
-                }
-            }
-        } catch (error) {
-            console.error('Error toggling favorite:', error);
-        }
-    };
-
-
-
     return (
         <TouchableOpacity style={[styles.card, { width: cardSize * 0.85, height: cardSize * 0.8 }]} onPress={() => onPress(property.propertyId)}>
             <View style={styles.imageContainer}>
                 {propertyImageUri ? (
-                    <Image source={{ uri: propertyImageUri }} style={styles.propertyImage} />
+                    <Image source={{ uri: `${propertyImageUri}?timestamp=${new Date().getTime()}` }} style={styles.propertyImage} />
                 ) : (
                     <View style={styles.placeholderImage}>
                         <Image source={DefaultImage} style={styles.placeholderImageImage} />
@@ -147,18 +116,18 @@ const PropertyCard = ({ property, onPress }) => {
                     {property.size} sqm <Ionicons name="cube-outline" size={16} color="#333" />
                 </Text>
                 <View style={styles.favoriteButton}>
-          <TouchableOpacity onPress={handleFavoriteButtonPress}>
-            <Ionicons
-              name={isFavorite ? 'heart' : 'heart-outline'}
-              size={24}
-              color={isFavorite ? 'red' : '#333'}
-              style={{ marginRight: 4 }} // Adjust as needed
-            />
-          </TouchableOpacity>
-          <Text style={{ color: isFavorite ? 'red' : '#333', fontSize: 16, fontWeight: 'bold' }}>
-            {favoriteCount}
-          </Text>
-        </View>
+                    <TouchableOpacity onPress={handleFavoriteButtonPress}>
+                        <Ionicons
+                            name={isFavorite ? 'heart' : 'heart-outline'}
+                            size={24}
+                            color={isFavorite ? 'red' : '#333'}
+                            style={{ marginRight: 4 }} // Adjust as needed
+                        />
+                    </TouchableOpacity>
+                    <Text style={{ color: isFavorite ? 'red' : '#333', fontSize: 16, fontWeight: 'bold' }}>
+                        {favoriteCount}
+                    </Text>
+                </View>
             </View>
         </TouchableOpacity>
     );

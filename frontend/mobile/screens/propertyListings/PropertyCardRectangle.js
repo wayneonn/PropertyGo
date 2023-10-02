@@ -11,8 +11,7 @@ import { getImageUriById, addFavoriteProperty, removeFavoriteProperty, isPropert
 import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available-Small.jpg';
 
-
-const PropertyCardRectangle = ({ property, onPress }) => {
+const PropertyCardRectangle = ({ property, onPress, reloadPropertyCard }) => {
   const [propertyImageUri, setPropertyImageUri] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const { user } = useContext(AuthContext);
@@ -27,19 +26,21 @@ const PropertyCardRectangle = ({ property, onPress }) => {
   };
 
   useEffect(() => {
+    loadPropertyDetails();
+  }, [property, reloadPropertyCard]);
+
+  const loadPropertyDetails = async () => {
     // Retrieve and set the image URI based on the smallest imageId
-    console.log('property.images:', property.images);
     if (property.images && property.images.length > 0) {
       // Use the first image ID directly since it's an array of IDs
       const smallestImageId = property.images[0]; // Assuming the first image is the smallest
-      console.log('smallestImageId:', smallestImageId);
-      const imageUri = getImageUriById(smallestImageId); // Replace with your function to get image URI
+      const imageUri = getImageUriById(smallestImageId);
       setPropertyImageUri(imageUri);
     }
 
     // Check if the property is in favorites and update the isFavorite state
     checkIfPropertyIsFavorite();
-  }, [property]);
+  };
 
   const checkIfPropertyIsFavorite = async () => {
     const userId = user.user.userId;
@@ -61,8 +62,7 @@ const PropertyCardRectangle = ({ property, onPress }) => {
     try {
       if (isFavorite) {
         // Remove the property from favorites
-        console.log('Removing property from favorites...');
-        const { success } = await removeFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
+        const { success } = await removeFavoriteProperty(userId, property.propertyListingId);
 
         if (success) {
           setIsFavorite(false);
@@ -71,8 +71,7 @@ const PropertyCardRectangle = ({ property, onPress }) => {
         }
       } else {
         // Add the property to favorites
-        console.log('Adding property to favorites...');
-        const { success } = await addFavoriteProperty(userId, property.propertyListingId); // Use property.propertyListingId
+        const { success } = await addFavoriteProperty(userId, property.propertyListingId);
 
         if (success) {
           setIsFavorite(true);
@@ -89,7 +88,7 @@ const PropertyCardRectangle = ({ property, onPress }) => {
     <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
       <View style={styles.imageContainer}>
         {propertyImageUri ? (
-          <Image source={{ uri: propertyImageUri }} style={styles.propertyImage} />
+          <Image source={{ uri: `${propertyImageUri}?timestamp=${new Date().getTime()}` }} style={styles.propertyImage} />
         ) : (
           <View style={styles.placeholderImage}>
             <Image source={DefaultImage} style={styles.placeholderImageImage} />
@@ -118,6 +117,7 @@ const PropertyCardRectangle = ({ property, onPress }) => {
     </TouchableOpacity>
   );
 };
+
 
 const styles = StyleSheet.create({
   card: {

@@ -18,7 +18,7 @@ import {
 import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available.webp';
 
-const PropertyCard = ({ property, onPress }) => {
+const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
   const [propertyImageUri, setPropertyImageUri] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteCount, setFavoriteCount] = useState(0); // Added state for favorite count
@@ -34,30 +34,27 @@ const PropertyCard = ({ property, onPress }) => {
     }
   };
 
-      const fetchFavoriteCount = async () => {
-        const { success, data, message } = await countUsersFavoritedProperty(property.propertyListingId);
-        console.log('countUsersFavoritedProperty:', success, data, message);
-        if (success) {
-            setFavoriteCount(data.count); // Assuming the count is in data.count
-        } else {
-            console.error('Error fetching favorite count:', message);
-        }
-    };
+  const fetchFavoriteCount = async () => {
+    const { success, data, message } = await countUsersFavoritedProperty(property.propertyListingId);
+    console.log('countUsersFavoritedProperty:', success, data, message);
+    if (success) {
+      setFavoriteCount(data.count); // Assuming the count is in data.count
+    } else {
+      console.error('Error fetching favorite count:', message);
+    }
+  };
 
   useEffect(() => {
-    console.log( "for property id", property.propertyListingId, "for name: ", property.title, "for length: ", 
-    property.images.length, 'property.images:', property.images,)
     if (property.images && property.images.length > 0) {
       const imageIds = property.images.map(Number);
       const smallestImageId = Math.min(...imageIds);
-      const timestamp = new Date().getTime();
       const imageUri = getImageUriById(smallestImageId.toString());
       setPropertyImageUri(imageUri);
     }
 
     // Fetch property favorite status and count in parallel
     fetchPropertyDetails();
-  }, [property]);
+  }, [property, reloadPropertyCard]);
 
   const fetchPropertyDetails = async () => {
     const userId = user.user.userId;
@@ -111,7 +108,7 @@ const PropertyCard = ({ property, onPress }) => {
     <TouchableOpacity style={[styles.card, { width: cardSize * 0.8, height: cardSize * 0.8 }]} onPress={() => onPress(property.propertyId)}>
       <View style={styles.imageContainer}>
         {propertyImageUri ? (
-          <Image source={{ uri: propertyImageUri }} style={styles.propertyImage} />
+          <Image source={{ uri: `${propertyImageUri}?timestamp=${new Date().getTime()}` }} style={styles.propertyImage} />
         ) : (
           <View style={styles.placeholderImage}>
             <Image source={DefaultImage} style={styles.placeholderImageImage} />
