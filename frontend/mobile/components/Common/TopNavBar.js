@@ -2,6 +2,8 @@ import React from 'react';
 import { Image, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { AntDesign, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import TokenStackGroup from '../../navigations/TokenStackGroup'; // Adjust the import path as needed
+
 
 const TopBar = () => {
   const navigation = useNavigation();
@@ -19,12 +21,7 @@ const TopBar = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.iconsContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            // Handle your action here
-          }}
-          style={styles.coinIcon}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate('Token')} style={styles.coinIcon}>
           <FontAwesome5 name="coins" size={26} color="black" />
         </TouchableOpacity>
         <TouchableOpacity
@@ -46,15 +43,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    paddingTop:42,
-    paddingBottom:3,
+    paddingTop: 42,
+    paddingBottom: 3,
     borderBottomWidth: 0.5,
     borderBottomColor: 'grey',
     elevation: 5,
     backgroundColor: 'white', // Set the background color of the header
   },
   HamburgerIcon: {
-    marginRight:39,
+    marginRight: 39,
   },
   coinIcon: {
     marginRight: 15,
