@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
-import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; // New imports for icons
+import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons, FontAwesome } from '@expo/vector-icons'; 
 import {
   getPropertyListing, getImageUriById, getUserById, addFavoriteProperty,
   removeFavoriteProperty, isPropertyInFavorites, countUsersFavoritedProperty, removeProperty
@@ -105,6 +105,16 @@ const PropertyUserListingScreen = ({ route }) => {
       // Handle the error here
       console.error('Error fetching user:', message);
     }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
   };
 
   useEffect(() => {
@@ -312,13 +322,26 @@ const PropertyUserListingScreen = ({ route }) => {
             )}
           </View>
         </View>
-
+        <View style={styles.dateContainer}>
+          <FontAwesome name="calendar" size={16} color="#333" />
+          <Text style={styles.dateText}>{formatDate(propertyListing.createdAt)}</Text>
+        </View>
         <Text style={styles.descriptionHeader}>Description:</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
 
         {/* Location Details */}
         <Text style={styles.locationTitle}>Location</Text>
-        <Text style={styles.locationDetails}>{propertyListing.address}</Text>
+        <View style={styles.locationDetailsContainer}>
+          <View style={styles.locationDetailsRow}>
+            <Text style={styles.roomsAndSize}>
+              
+              <Text style={styles.locationDetailsText}>{propertyListing.area}</Text>
+              <MaterialCommunityIcons name="map-marker" size={18} color="#333" /> |
+              {'  '}<Text style={styles.locationDetailsText}>{propertyListing.region}</Text>
+              {' '}<MaterialCommunityIcons name="map" size={18} color="#333" />
+            </Text>
+          </View>
+        </View>
         <View style={styles.mapContainer}>
           <MapView style={styles.map} region={region}>
             <Marker coordinate={{ latitude: region.latitude, longitude: region.longitude }}>
@@ -648,7 +671,32 @@ const styles = StyleSheet.create({
     left: 16, // Adjust the left position as needed
     zIndex: 1, // Place it above the swiper
   },
-
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 16,
+    marginBottom: 10,
+    marginTop: -5
+  },
+  dateText: {
+    fontSize: 13,
+    marginLeft: 5,
+    color: '#333',
+  },
+  locationDetailsContainer: {
+    paddingLeft: 16,
+    marginBottom: 20,
+  },
+  locationDetailsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  locationDetailsText: {
+    fontSize: 13,
+    marginLeft: 8,
+    color: '#333',
+  },
 });
 
 export default PropertyUserListingScreen;
