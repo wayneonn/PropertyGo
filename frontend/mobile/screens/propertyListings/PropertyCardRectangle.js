@@ -11,7 +11,7 @@ import { getImageUriById, addFavoriteProperty, removeFavoriteProperty, isPropert
 import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available-Small.jpg';
 
-const PropertyCardRectangle = ({ property, onPress, reloadPropertyCard }) => {
+const PropertyCardRectangle = ({ property, onPress, reloadPropertyCard, disableFavButton }) => {
   const [propertyImageUri, setPropertyImageUri] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const { user } = useContext(AuthContext);
@@ -84,6 +84,7 @@ const PropertyCardRectangle = ({ property, onPress, reloadPropertyCard }) => {
     }
   };
 
+  // Inside your PropertyCardRectangle component
   return (
     <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
       <View style={styles.imageContainer}>
@@ -104,18 +105,23 @@ const PropertyCardRectangle = ({ property, onPress, reloadPropertyCard }) => {
           {property.size} sqm <Ionicons name="cube-outline" size={16} color="#333" />
         </Text>
       </View>
-      <TouchableOpacity
-        style={styles.favoriteButton}
-        onPress={handleFavoriteToggle}
-      >
-        <Ionicons
-          name={isFavorite ? 'heart' : 'heart-outline'}
-          size={24}
-          color={isFavorite ? '#f00' : '#333'}
-        />
-      </TouchableOpacity>
+      {/* Conditional rendering of favorite button */}
+      {!disableFavButton && (
+        <TouchableOpacity
+          style={styles.favoriteButton}
+          onPress={handleFavoriteToggle}
+          disabled={disableFavButton}
+        >
+          <Ionicons
+            name={isFavorite ? 'heart' : 'heart-outline'}
+            size={24}
+            color={isFavorite ? '#f00' : '#333'}
+          />
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
+
 };
 
 

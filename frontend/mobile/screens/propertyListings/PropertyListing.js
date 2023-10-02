@@ -11,9 +11,11 @@ import {
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; // New imports for icons
-import { getPropertyListing, getImageUriById, getUserById, 
-  addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites, 
-  countUsersFavoritedProperty, removeProperty } from '../../utils/api';
+import {
+  getPropertyListing, getImageUriById, getUserById,
+  addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites,
+  countUsersFavoritedProperty, removeProperty
+} from '../../utils/api';
 import base64 from 'react-native-base64';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
@@ -94,7 +96,7 @@ const PropertyListingScreen = ({ route }) => {
           onPress: async () => {
             try {
               const { success, message } = await removeProperty(propertyListingId);
-  
+
               if (success) {
                 // Property deleted successfully, navigate back to the previous screen
                 navigation.goBack();
@@ -393,16 +395,16 @@ const PropertyListingScreen = ({ route }) => {
       <View style={styles.bottomButtonsContainer}>
         {isCurrentUserPropertyOwner ? (
           <>
-            <TouchableOpacity style={styles.bumpListingButton}onPress={() => {
-        navigation.navigate('Boost Listing', { propertyListingId });
-      }}
-    >
+            <TouchableOpacity style={styles.bumpListingButton} onPress={() => {
+              navigation.navigate('Boost Listing', { propertyListingId });
+            }}
+            >
               <Text style={styles.buttonText}>Bump Listing</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.editListingButton} onPress={() => {
-        navigation.navigate('Edit Property Listing', { propertyListingId });
-      }}
-    >
+              navigation.navigate('Edit Property Listing', { propertyListingId });
+            }}
+            >
               <Text style={styles.buttonText}>Edit Listing</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.deleteListingButton} onPress={handleDeleteListing}>

@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import TokenCard from './TokenCard'; // Import your TokenCard component
 import { AuthContext } from '../../AuthContext';
+import { Ionicons } from '@expo/vector-icons';
 import { getUserById, updateUserProfile } from '../../utils/api';
 
 const TokenScreen = ({ navigation }) => {
@@ -86,7 +87,14 @@ const TokenScreen = ({ navigation }) => {
 
     return (
         <ScrollView>
-            <Text style={styles.screenTitle}>Add Token</Text>
+            <View style={styles.headerContainer}>
+                {/* Back button */}
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                    <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+                <Text style={styles.header}>Add Token</Text>
+            </View>
+
             <Text style={styles.tokenAmountText}>{`Token Amount: ${tokenAmount}`}</Text>
             {tokenData.map((token, index) => (
                 <TokenCard
@@ -111,6 +119,23 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 16,
     },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    header: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginLeft: 130,
+        marginTop: 15,
+    },
+    backButton: {
+        position: 'absolute',
+        top: 16, // Adjust the top position as needed
+        left: 16, // Adjust the left position as needed
+        zIndex: 1, // Place it above the swiper
+      },
 });
 
 export default TokenScreen;
