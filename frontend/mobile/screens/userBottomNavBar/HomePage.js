@@ -5,6 +5,7 @@ import { getPropertiesByFavoriteCount, getRecentlyAddedProperties, getProperties
 import { AuthContext } from '../../AuthContext';
 import RegionPropertyList from '../propertyListings/RegionPropertyList';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 
 const SearchBar = () => {
@@ -37,7 +38,7 @@ const HomePage = ({ navigation }) => {
     // Load recently added properties
     loadRecentlyAddedProperties();
   }, []);
-  
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -101,7 +102,10 @@ const HomePage = ({ navigation }) => {
           {/* Popular Properties Section */}
           <View style={styles.sectionContainer}>
             <TouchableOpacity onPress={() => handleTitlePress('Popular Properties', popularProperties)}>
-              <Text style={styles.sectionTitle}>Popular Properties</Text>
+              <View style={styles.titleContainer}>
+                <Text style={styles.sectionTitle}> {' '}<Ionicons name="trending-up-outline" size={24} style={styles.titleIcon} />
+                {' '}Popular Properties</Text>
+              </View>
             </TouchableOpacity>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {popularProperties.map((property) => (
@@ -117,7 +121,10 @@ const HomePage = ({ navigation }) => {
           {/* Recently Added Properties Section */}
           <View style={styles.sectionContainer}>
             <TouchableOpacity onPress={() => handleTitlePress('Recently Added Properties', recentlyAddedProperties)}>
-              <Text style={styles.sectionTitle}>Recently Added Properties</Text>
+            <View style={styles.titleContainer}>
+                <Text style={styles.sectionTitle}> {' '}<Ionicons name="time-outline" size={24} style={styles.titleIcon} />
+                {' '}Recently Added Properties</Text>
+              </View>
             </TouchableOpacity>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {recentlyAddedProperties.map((property) => (
@@ -132,7 +139,8 @@ const HomePage = ({ navigation }) => {
 
           {/* Regions Section */}
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Regions</Text>
+          <Text style={styles.sectionTitle}> {' '}<Ionicons name="navigate-circle-outline" size={24} style={styles.titleIcon} />
+                {' '}Regions</Text>
             <RegionPropertyList region="North" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
             <RegionPropertyList region="North-East" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
             <RegionPropertyList region="South" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
@@ -226,6 +234,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  titleIcon: {
+    marginRight: 10, // Add right margin for the icon
   },
 });
 
