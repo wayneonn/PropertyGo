@@ -6,6 +6,7 @@ import { AuthContext } from '../../AuthContext';
 import RegionPropertyList from '../propertyListings/RegionPropertyList';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import Swiper from 'react-native-swiper';
 
 
 const SearchBar = () => {
@@ -88,10 +89,35 @@ const HomePage = ({ navigation }) => {
     navigation.navigate('Properties List', { title: title, properties: properties, navigation: navigation });
   };
 
+  const ImageSwiper = () => {
+    const images = [
+      require('../../assets/Home-Image.jpeg'),
+      require('../../assets/Buying-Home.jpg'),
+      require('../../assets/HDB-Flats-Near-MRT.jpg'),
+      // Add more image paths as needed
+    ];
+
+    return (
+      <View style={styles.swiperContainer}>
+        <Swiper
+          showsButtons={false} loop={true} autoplay={true} autoplayTimeout={5}
+        >
+          {images.map((image, index) => (
+            <View key={index}>
+              <Image source={image} style={styles.swiperImage} />
+            </View>
+          ))}
+        </Swiper>
+      </View>
+    );
+  };
+
+
   return (
     <ScrollView style={styles.container}>
       {/* Search bar */}
       <SearchBar />
+      <ImageSwiper />
 
       {isLoading ? (
         <View style={styles.loadingContainer}>
@@ -104,7 +130,7 @@ const HomePage = ({ navigation }) => {
             <TouchableOpacity onPress={() => handleTitlePress('Popular Properties', popularProperties)}>
               <View style={styles.titleContainer}>
                 <Text style={styles.sectionTitle}> {' '}<Ionicons name="trending-up-outline" size={24} style={styles.titleIcon} />
-                {' '}Popular Properties</Text>
+                  {' '}Popular Properties</Text>
               </View>
             </TouchableOpacity>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -121,9 +147,9 @@ const HomePage = ({ navigation }) => {
           {/* Recently Added Properties Section */}
           <View style={styles.sectionContainer}>
             <TouchableOpacity onPress={() => handleTitlePress('Recently Added Properties', recentlyAddedProperties)}>
-            <View style={styles.titleContainer}>
+              <View style={styles.titleContainer}>
                 <Text style={styles.sectionTitle}> {' '}<Ionicons name="time-outline" size={24} style={styles.titleIcon} />
-                {' '}Recently Added Properties</Text>
+                  {' '}Recently Added Properties</Text>
               </View>
             </TouchableOpacity>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -139,8 +165,8 @@ const HomePage = ({ navigation }) => {
 
           {/* Regions Section */}
           <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}> {' '}<Ionicons name="navigate-circle-outline" size={24} style={styles.titleIcon} />
-                {' '}Regions</Text>
+            <Text style={styles.sectionTitle}> {' '}<Ionicons name="navigate-circle-outline" size={24} style={styles.titleIcon} />
+              {' '}Regions</Text>
             <RegionPropertyList region="North" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
             <RegionPropertyList region="North-East" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
             <RegionPropertyList region="South" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
@@ -237,6 +263,16 @@ const styles = StyleSheet.create({
   },
   titleIcon: {
     marginRight: 10, // Add right margin for the icon
+  },
+  swiperImage: {
+    width: '100%',
+    height: '100%', // Adjust the height as needed
+  },
+  swiperContainer: {
+    height: 130, // Set the desired height
+    marginLeft: 15, // Add left padding
+    marginRight: 15, // Add right padding
+    alignSelf: 'center', // Center horizontally
   },
 });
 
