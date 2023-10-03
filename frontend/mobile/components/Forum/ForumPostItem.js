@@ -60,6 +60,8 @@ const ForumPostItem = ({ userId, post, onPress, onReport, onDelete }) => {
                 <ForumPostItemHeader
                     user={post.userId}
                     onMoreOptionsPress={toggleModal}
+                    editable ={post.userId === userId}
+                    // onEdit ={}
                 />
 
                 <View >

@@ -10,19 +10,27 @@ const Tab = createMaterialTopTabNavigator();
 const CustomTabLabel = ({ label, color, icon }) => (
   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
     <MaterialIcons name={icon} size={20} color={color} />
-    <Text style={{ color: "black", marginLeft:5 }}>{label}</Text>
+    <Text style={{ color: "black", marginLeft: 5 }}>{label}</Text>
   </View>
 );
 
 const ForumTopicTabNavigator = () => {
   return (
     <Tab.Navigator
-      tabBarOptions={{
-        activeTintColor: '#FFD700',
-        labelStyle: { color: 'black' },
-        style: { backgroundColor: 'white'},
-        tabStyle: { height: 50 }, // Adjust the height as needed
-        indicatorStyle: { backgroundColor: '#FFD700' },
+      screenOptions={{
+        tabBarActiveTintColor: '#FFD700',
+        tabBarLabelStyle: {
+          color: 'black',
+        },
+        tabBarItemStyle: {
+          height: 50,
+        },
+        tabBarIndicatorStyle: {
+          backgroundColor: '#FFD700',
+        },
+        tabBarStyle: {
+          backgroundColor: 'white',
+        },
       }}
     >
       <Tab.Screen

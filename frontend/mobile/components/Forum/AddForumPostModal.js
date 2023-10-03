@@ -1,72 +1,113 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, Button, StyleSheet, TouchableHighlight } from 'react-native';
+import { Modal, View, Text, TextInput, Button, StyleSheet, TouchableHighlight, Image } from 'react-native';
+import ImagePicker from 'react-native-image-picker';
 
-const AddForumPostModal = ({ isVisible, onCancel, onSubmit }) => {
-    // const [title, setTitle] = useState('');
-    // const [message, setMessage] = useState('');
-    // const [imageUri, setImageUri] = useState(null);
+const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
+    const [title, setTitle] = useState('');
+    const [message, setMessage] = useState('');
+    const [imageUri, setImageUri] = useState(null);
 
-    // const handleTitlrChange = (text) => {
-    //     setTitle(text);
-    // };
+    const handleTitleChange = (text) => {
+        setTitle(text);
+    };
 
-    // const handleSubmit = () => {
-        
-    //     const postDetails = {
-    //         title,
-    //         message
-    //     }
-    //     onSubmit(topicName);
+    const handleMessageChange = (text) => {
+        setMessage(text);
+    };
 
-    //     // Clear the topicName input
-    //     setPostName('');
+    const handleImageUpload = () => {
+        // Configure options for the image picker
+        // const options = {
+        //     title: 'Select Image',
+        //     storageOptions: {
+        //         skipBackup: true,
+        //         path: 'images',
+        //     },
+        // };
 
-    //     // Close the modal
-    //     onCancel();
-    // };
+        // // Show the image picker
+        // ImagePicker.showImagePicker(options, (response) => {
+        //     if (response.didCancel) {
+        //         // User cancelled image selection
+        //     } else if (response.error) {
+        //         // Handle error
+        //     } else {
+        //         // Image selected, set the image URI
+        //         setImageUri(response.uri);
+        //     }
+        // });
+    };
 
-    // const handleCancel = () => {
+    const handleSubmit = () => {
+        const postDetails = {
+            forumTopicId,
+            title,
+            message,
+            imageUri,
+        };
 
-    //     // Clear the topicName input
-    //     setPostName('');
+        onSubmit(postDetails);
 
-    //     // Close the modal
-    //     onCancel();
-    // };
+        setTitle('');
+        setMessage('');
+        setImageUri(null);
 
-    // return (
-        // <Modal transparent={true} animationType="slide" visible={isVisible}>
-        //     <View style={styles.modalContainer}>
-        //         <View style={styles.modalContent}>
-        //             <Text style={styles.modalTitle}>Add a new Forum Post</Text>
-        //             <View style={styles.inputContainer}>
-        //                 <Text style={styles.label}>Post Name:</Text>
-        //                 <TextInput
-        //                     style={styles.input}
-        //                     placeholder="Enter Post name"
-        //                     value={PostName}
-        //                     onChangeText={handlePostNameChange}
-        //                 />
-        //             </View>
-        //             <View style={styles.buttonContainer}>
-        //                 <TouchableHighlight
-        //                     style={[styles.button, { backgroundColor: 'red' }]} // Red background for cancel button
-        //                     onPress={handleCancel}
-        //                     underlayColor="#EAEAEA"
-        //                 >
-        //                     <Text style={styles.buttonText}>Cancel</Text>
-        //                 </TouchableHighlight>
-        //                 <TouchableHighlight
-        //                     style={[styles.button, { backgroundColor: '#FFD700' }]} // Yellow background for submit button
-        //                     onPress={handleSubmit} underlayColor="#EAEAEA"
-        //                 >
-        //                     <Text style={styles.buttonText}>Submit</Text>
-        //                 </TouchableHighlight>
-        //             </View>
-        //         </View>
-        //     </View>
-        // </Modal>
-    // );
+        // Close the modal
+        onCancel();
+    };
+
+    const handleCancel = () => {
+        setTitle('');
+        setMessage('');
+        setImageUri(null);
+
+        // Close the modal
+        onCancel();
+    };
+
+    return (
+        <Modal transparent={true} animationType="slide" visible={isVisible}>
+            <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Add a new Forum Post</Text>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Title:</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter Title"
+                            value={title}
+                            onChangeText={handleTitleChange}
+                        />
+                        <Text style={styles.label}>Message:</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter Message"
+                            value={message}
+                            onChangeText={handleMessageChange}
+                        />
+                        {imageUri && <Image source={{ uri: imageUri }} style={styles.selectedImage} />}
+                        <Button title="Upload Image" onPress={handleImageUpload} />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableHighlight
+                            style={[styles.button, { backgroundColor: 'red' }]}
+                            onPress={handleCancel}
+                            underlayColor="#EAEAEA"
+                        >
+                            <Text style={styles.buttonText}>Cancel</Text>
+                        </TouchableHighlight>
+                        <TouchableHighlight
+                            style={[styles.button, { backgroundColor: '#FFD700' }]}
+                            onPress={handleSubmit}
+                            underlayColor="#EAEAEA"
+                        >
+                            <Text style={styles.buttonText}>Submit</Text>
+                        </TouchableHighlight>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -81,7 +122,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 20,
         alignItems: 'center',
-        width: '80%', // Adjust the width of the modal content
+        width: '80%',
     },
     modalTitle: {
         fontSize: 20,
@@ -93,11 +134,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginTop: 10,
         marginBottom: 5,
-        textAlign: 'left', // Align text to the left
-        alignSelf: 'flex-start', // Align text to the left
+        textAlign: 'left',
+        alignSelf: 'flex-start',
     },
     inputContainer: {
-        width: '100%', // Make the input container take full width
+        width: '100%',
     },
     input: {
         height: 50,
@@ -108,7 +149,12 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         paddingHorizontal: 10,
         paddingVertical: 12,
-        width: '100%', // Make the input take full width
+        width: '100%',
+    },
+    selectedImage: {
+        width: 200, // Adjust the width of the selected image
+        height: 200, // Adjust the height of the selected image
+        marginBottom: 10,
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -116,13 +162,13 @@ const styles = StyleSheet.create({
         width: '90%',
     },
     button: {
-        width: '45%', // Set button width
+        width: '45%',
         borderRadius: 5,
         alignItems: 'center',
         padding: 10,
     },
     buttonText: {
-        color: 'black', // Black text color for buttons
+        color: 'black',
         fontWeight: 'bold',
     },
 });

@@ -28,7 +28,7 @@ const EditForumTopicModal = ({ isVisible, onCancel, onSubmit, oldTopicName }) =>
         <Modal transparent={true} animationType="slide" visible={isVisible}>
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Add a new Forum Topic</Text>
+                    <Text style={styles.modalTitle}>Edit Forum Topic</Text>
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>Topic Name:</Text>
                         <TextInput

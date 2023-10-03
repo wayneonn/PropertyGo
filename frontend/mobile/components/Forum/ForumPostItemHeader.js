@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, AntDesign} from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const ForumItemHeader = ({ userId, onMoreOptionsPress }) => {
+const ForumItemHeader = ({ userId, onMoreOptionsPress, editable, onEdit }) => {
 
     const [profileImage, setProfileImage] = useState(null);
     const [user, setUser] = useState([])
@@ -45,9 +45,17 @@ const ForumItemHeader = ({ userId, onMoreOptionsPress }) => {
                     </>
                 )}
             </View>
-            <TouchableOpacity onPress={onMoreOptionsPress}>
-                <FontAwesome name="ellipsis-h" size={20} color="black" />
-            </TouchableOpacity>
+            <View style={styles.rightHeaderContainer}>
+                {editable ?
+                    <TouchableOpacity onPress={onEdit} style={{ marginRight: 10 }}>
+                        <AntDesign name="edit" size={20} color="black" />
+                    </TouchableOpacity>
+                    :
+                    null}
+                <TouchableOpacity onPress={onMoreOptionsPress}>
+                    <FontAwesome name="ellipsis-h" size={20} color="black" />
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -67,6 +75,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
+    rightHeaderContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        // borderWidth: 1,
+        justifyContent: 'flex-end', // Right-align items
+      },
     profileImage: {
         width: 25,
         height: 25,

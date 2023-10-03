@@ -6,10 +6,10 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true,
         },
-        title: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
+        // title: {
+        //     type: DataTypes.STRING,
+        //     allowNull: false,
+        // },
         image: {
             type: DataTypes.BLOB,
             allowNull: false,
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         Image.belongsTo(models.Property, {
             foreignKey: {
                 name: 'propertyId',
-                allowNull: false,
+                allowNull: true,
               },
             as: 'propertyListing',
         });

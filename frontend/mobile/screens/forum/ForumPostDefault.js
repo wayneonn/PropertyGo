@@ -140,8 +140,8 @@ const ForumPostDefault = ({ navigation }) => {
         ))}
 
       </ScrollView>
-      {/* <AddForumTopicModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumTopic} /> */}
-      <TouchableOpacity style={styles.addItem}>
+      <AddForumPostModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumPost} forumTopicId={topic.forumTopicId} />
+      <TouchableOpacity onPress={toggleModal} style={styles.addItem}>
         <Ionicons name="add-circle" size={50} color="#FFD700" />
       </TouchableOpacity>
     </SafeAreaView>
