@@ -23,9 +23,26 @@ const PartnerApplication = () => {
     }, []);
 
     useEffect(() => {
+        const intervalId = setInterval(() => {
+            // Your API call or other logic here
+            console.log('Polling API...');
+            fetchApplicationDataFromServer().then(r => console.log("Data polled from API."))
+        }, 5000); // Polls every 5 seconds
+
+        return () => {
+            clearInterval(intervalId); // Cleanup when the component unmounts
+        };
+    }, []);
+
+    useEffect(() => {
         console.log("Document details updated.")
         setDocumentDetails(documentDetails)
     }, [documentDetails]);
+
+    useEffect(() => {
+        setApplications(applications)
+        console.log("Application details updated. ", applications)
+    }, [applications]);
 
     const handleApprove = async (applicationId) => {
         try {
@@ -33,7 +50,7 @@ const PartnerApplication = () => {
             console.log(res);
             setApprovedSuccess(true);
             fetchApplicationDataFromServer().then(r => console.log("Updated table successfully"));
-        } catch(error) {
+        } catch (error) {
             console.error("Error approving application: ", error);
         }
     };
@@ -106,6 +123,7 @@ const PartnerApplication = () => {
             console.error('Error fetching data:', error);
         }
     };
+
 
     return (
         <div className="partner-application">

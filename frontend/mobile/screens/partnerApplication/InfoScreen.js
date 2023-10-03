@@ -57,6 +57,17 @@ const IntroScreen = () => {
     }, []);
 
     useEffect(() => {
+        const intervalId = setInterval(() => {
+            // Your API call or other logic here
+            console.log('Polling API...');
+            fetchPartnerAppFromServer().then(r => console.log("Data polled from API."))
+        }, 5000); // Polls every 5 seconds
+        return () => {
+            clearInterval(intervalId); // Cleanup when the component unmounts
+        };
+    }, []);
+
+    useEffect(() => {
         console.log("Partner state has been updated:", partner);
     }, [partner]);
 
@@ -112,7 +123,7 @@ const IntroScreen = () => {
     return (
         <View style={styles.container}>
             {partner.length !== 0 ? (
-                partner.approved ? (
+                partner[0].approved ? (
                     <View style={styles.box}>
                         <Text style={styles.titleApproved}>Your Application is successful, welcome to the team!</Text>
                         <Text style={styles.subtitle}>View your profile to see what else you can do as a partner.</Text>

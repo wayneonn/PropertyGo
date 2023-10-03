@@ -1,4 +1,5 @@
 const {PartnerApplication, Folder} = require("../../models")
+const globalEmitter = require('../../globalEmitter')
 
 /*
 * Partner Application Controller.
@@ -53,7 +54,7 @@ exports.postPartnerApplicationByUserID = async (req, res) => {
             adminId,
             userId,
         });
-
+        globalEmitter.emit("partnerCreated");
         res.status(201).json(newPartnerApplication);
     } catch (error) {
         console.error('Error creating PartnerApplication', error);
@@ -63,6 +64,9 @@ exports.postPartnerApplicationByUserID = async (req, res) => {
 
 exports.updatePartnerApplicationByID = async (req, res) => {
     console.log(req.body);
+    // const today = new Date();
+    // const nextYear = new Date(today);
+    // nextYear.setFullYear(today.getFullYear() + 1);
     try {
         const updatedApp = await PartnerApplication.update({ approved: true },
             {
@@ -71,6 +75,7 @@ exports.updatePartnerApplicationByID = async (req, res) => {
                 }
             }
         );
+        globalEmitter.emit('partnerApprovalUpdate');
         res.status(201).json(updatedApp);
     } catch(error) {
         console.error('Error updating PartnerApplication', error);

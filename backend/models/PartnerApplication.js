@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
             },
             userRole: {
-                type: DataTypes.ENUM("GENERAL", "SUPPORT", "FEEDBACK", "OTHERS"),
+                type: DataTypes.ENUM("LAWYER", "CONTRACTOR", "PROPERTY_AGENT"),
                 allowNull: false,
             },
             cardNumber: {

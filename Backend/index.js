@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const globalEmitter = require("./globalEmitter")
+const http = require('http');
+const WebSocket = require('ws');
+
 
 // model
 const db = require("./models");
@@ -71,6 +74,12 @@ app.use(
     partnerApplicationUserRouter
 );
 
+
+// TRYING TO USE WEBSOCKETS.
+const server = http.createServer(app);
+// const wss = new WebSocket.Server({server})
+
+
 globalEmitter.on('newUserCreated', async (user) => {
     await db.Folder.create({
         userId: user.userId,
@@ -78,6 +87,21 @@ globalEmitter.on('newUserCreated', async (user) => {
         title: "Default"
     });
 });
+
+// globalEmitter.on('partnerApprovalUpdate', async() => {
+//     console.log("Received partner approval update notice.")
+//     wss.clients.forEach((client) => {
+//         client.send("partnerApprovalUpdate");
+//     });
+// })
+//
+// globalEmitter.on('partnerCreated', async() => {
+//     console.log("========================== Partner created =============================");
+//     wss.clients.forEach((client) => {
+//
+//         client.send("partnerCreated");
+//     });
+// })
 
 
 db.sequelize
@@ -99,7 +123,7 @@ db.sequelize
             const existingForumTopicRecordsCount = await db.ForumTopic.count();
             const existingForumPostRecordsCount = await db.ForumPost.count();
             const existingForumCommentRecordsCount = await db.ForumComment.count();
-            const existingResponseRecordsCount = await db.Response.count(); 
+            const existingResponseRecordsCount = await db.Response.count();
 
             // General order of data insertion:
             // User -> Admin -> FAQ -> Property -> Image -> Chat -> Transaction -> Invoice -> Review
@@ -410,8 +434,8 @@ db.sequelize
                 console.log("ForumComment test data already exists in the database.");
             }
 
-            app.listen(3000, () => {
-                console.log("Server running on port 3000");
+            server.listen(3000, () => {
+                console.log('Server started on http://localhost:3000/');
             });
         }
     );

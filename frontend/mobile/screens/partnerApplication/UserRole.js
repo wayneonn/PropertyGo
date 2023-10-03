@@ -9,7 +9,7 @@ import { useFormData } from '../../contexts/PartnerApplicationFormDataContext'; 
 
 const validationSchema = Yup.object().shape({
     userRole: Yup.string()
-        .oneOf(["GENERAL", "SUPPORT", "FEEDBACK", "OTHERS"], 'Invalid role')
+        .oneOf(["LAWYER", "CONTRACTOR", "PROPERTY_AGENT"], 'Invalid role')
         .required('User Role is required'),
 });
 
@@ -43,10 +43,9 @@ const UserRoleScreen = () => {
                             }}
                         >
                             <Picker.Item label="Select role" value="" />
-                            <Picker.Item label="General" value="GENERAL" />
-                            <Picker.Item label="Support" value="SUPPORT" />
-                            <Picker.Item label="Feedback" value="FEEDBACK" />
-                            <Picker.Item label="Others" value="OTHERS" />
+                            <Picker.Item label="Lawyer" value="LAWYER" />
+                            <Picker.Item label="Contractor" value="CONTRACTOR" />
+                            <Picker.Item label="Property Agent" value="PROPERTY_AGENT" />
                         </Picker>
                         {errors.userRole && <Text style={styles.errorText}>{errors.userRole}</Text>}
                         <Text>&nbsp;</Text>

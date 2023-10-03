@@ -60,9 +60,6 @@ const DocumentSubmissionScreen = ({route}) => {
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Upload Documents</Text>
             <DocumentSelector documentFetch={uploadSucceed} folderState={folders} isTransaction={false}/>
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Next</Text>
-            </TouchableOpacity>
         </SafeAreaView>
     );
 };
