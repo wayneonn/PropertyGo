@@ -7,7 +7,7 @@ import {
   Button,
   Form,
   InputGroup,
-  Toast
+  Toast,
 } from "react-bootstrap";
 import { VscEyeClosed, VscEye } from "react-icons/vsc";
 import { BiRightArrowAlt } from "react-icons/bi";
@@ -31,7 +31,8 @@ const Login = () => {
   const [show, setShow] = useState(false);
 
   const navigate = useNavigate();
-  const imageBasePath = window.location.protocol + "//" + window.location.host + "/images/";
+  const imageBasePath =
+    window.location.protocol + "//" + window.location.host + "/images/";
 
   const handleUserNameChange = (e) => {
     setUserName(e.target.value);
@@ -53,9 +54,9 @@ const Login = () => {
       try {
         const userNameTrimmed = userName.trim();
 
-        const response = await API.post('/admin/auth/login', {
-          userName : userNameTrimmed,
-          password
+        const response = await API.post("/admin/auth/login", {
+          userName: userNameTrimmed,
+          password,
         });
 
         if (response.status === 200) {
@@ -64,7 +65,6 @@ const Login = () => {
           localStorage.setItem("loggedInAdmin", adminId);
           navigate("/profile");
         }
-
       } catch (error) {
         setShow(true);
       }
@@ -76,7 +76,13 @@ const Login = () => {
       <div className="loginToast">
         <Row>
           <Col xs={6}>
-            <Toast bg="warning" onClose={() => setShow(false)} show={show} delay={4000} autohide>
+            <Toast
+              bg="warning"
+              onClose={() => setShow(false)}
+              show={show}
+              delay={4000}
+              autohide
+            >
               <Toast.Header>
                 <strong className="me-auto">Login Unsuccessful</strong>
               </Toast.Header>
@@ -96,7 +102,7 @@ const Login = () => {
           <Col className="loginRightSideCard">
             <Card.Body className="loginRightSideCardContent">
               <Card.Img
-                src={imageBasePath + "Logo.png"}
+                src={imageBasePath + "PropertyGo-HighRes-Logo.png"}
                 className="loginPropertyGoIcon"
               />
               <div className="loginSpacesBetweenInputs"></div>

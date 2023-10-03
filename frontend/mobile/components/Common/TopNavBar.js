@@ -1,43 +1,43 @@
 import React from 'react';
-import { Image, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { AntDesign, FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {AntDesign, FontAwesome5, Ionicons} from '@expo/vector-icons';
+import {useNavigation} from '@react-navigation/native';
 
 const TopBar = () => {
-  const navigation = useNavigation();
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.HamburgerIcon}>
-        <AntDesign name="menu-unfold" size={26} color="black" />
-      </TouchableOpacity>
-      <View style={styles.logoContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.logo}>
-          <Image
-            source={require('../../assets/PropertyGo-Logo.png')}
-            style={styles.logoImage}
-          />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.iconsContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            // Handle your action here
-          }}
-          style={styles.coinIcon}
-        >
-          <FontAwesome5 name="coins" size={26} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            // Handle your action here
-          }}
-          style={styles.icon}
-        >
-          <Ionicons name="chatbubble-ellipses-outline" size={26} color="black" />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+    const navigation = useNavigation();
+    return (
+        <View style={styles.container}>
+            <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.HamburgerIcon}>
+                <AntDesign name="menu-unfold" size={26} color="black"/>
+            </TouchableOpacity>
+            <View style={styles.logoContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.logo}>
+                    <Image
+                        source={require('../../assets/PropertyGo-Logo.png')}
+                        style={styles.logoImage}
+                    />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.iconsContainer}>
+                <TouchableOpacity
+                    onPress={() => {
+                        // Handle your action here
+                    }}
+                    style={styles.coinIcon}
+                >
+                    <FontAwesome5 name="coins" size={26} color="black"/>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        // Handle your action here
+                    }}
+                    style={styles.icon}
+                >
+                    <Ionicons name="chatbubble-ellipses-outline" size={26} color="black"/>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({

@@ -1,13 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
-import {
-    createDrawerNavigator,
-    DrawerContentScrollView,
-    DrawerItemList,
-    DrawerItem
-} from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
-import { createDrawerScreen } from '../components/DrawerScreen';
+import React from 'react';
+import {createDrawerNavigator, DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer';
+import {createDrawerScreen} from '../components/DrawerScreen';
 import ForumStackGroup from './ForumStackGroup';
 import ForumTopNavBar from '../components/Forum/ForumTopNavBar';
 
@@ -26,7 +19,7 @@ const CustomDrawerContent = (props) => {
     // };
 
     // const [profileImage, setProfileImage] = useState(null);
-    
+
 
     // useEffect(() => {
     //     if (profileImageBase64) {
@@ -72,14 +65,14 @@ const CustomDrawerContent = (props) => {
 };
 
 const drawerScreens = [
-    createDrawerScreen('Forum Stack Group', ForumStackGroup, "forum" , "Forum"),
+    createDrawerScreen('Forum Stack Group', ForumStackGroup, "forum", "Forum"),
 ];
 
 const Drawer = createDrawerNavigator();
 
 const ForumSideNavigator = () => {
     // const { user } = useContext(AuthContext);
-    
+
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawerContent {...props} />}

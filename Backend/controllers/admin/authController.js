@@ -10,7 +10,7 @@ const login = async (req, res) => {
       return res.status(404).json({ message: "Login unsuccessful" }); 
     }
 
-    const match = await Admin.findOne({ where: { password } });
+    const match = await Admin.findOne({ where: { userName, password } });
     
     if (!match) {
       return res.status(404).json({ message: "Login unsuccessful" });

@@ -1,5 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   sequelize.models = {};
+  const globalEmitter = require("../globalEmitter")
 
   const User = sequelize.define("User", {
     userId: {
@@ -84,7 +85,12 @@ module.exports = (sequelize, DataTypes) => {
     allowNull: true, 
   },
   }, {
-    freezeTableName: true
+    freezeTableName: true,
+    hooks: {
+      afterCreate: async (user, options) => {
+        globalEmitter.emit('newUserCreated', user);
+      }
+    }
   });
 
   User.associate = (models) => {

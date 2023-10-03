@@ -1,0 +1,40 @@
+{
+  "ast": null,
+  "code": "import React from 'react';\nimport { Ionicons } from '@expo/vector-icons';\nimport { MaterialCommunityIcons } from '@expo/vector-icons';\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nexport var createDrawerScreen = function createDrawerScreen(name, component, iconName, label) {\n  var hideHeader = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;\n  return {\n    name: name,\n    component: component,\n    options: function options() {\n      return {\n        drawerLabel: label,\n        drawerIcon: function drawerIcon(_ref) {\n          var focused = _ref.focused,\n            color = _ref.color,\n            size = _ref.size;\n          return label === \"Forum\" ? _jsx(MaterialCommunityIcons, {\n            name: focused ? iconName : `${iconName}-outline`,\n            size: size,\n            color: color\n          }) : _jsx(Ionicons, {\n            name: focused ? iconName : `${iconName}-outline`,\n            size: size,\n            color: color\n          });\n        }\n      };\n    }\n  };\n};",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "Ionicons",
+      "MaterialCommunityIcons",
+      "jsx",
+      "_jsx",
+      "createDrawerScreen",
+      "name",
+      "component",
+      "iconName",
+      "label",
+      "hideHeader",
+      "arguments",
+      "length",
+      "undefined",
+      "options",
+      "drawerLabel",
+      "drawerIcon",
+      "_ref",
+      "focused",
+      "color",
+      "size"
+    ],
+    "sources": [
+      "/Users/wayneonn/Code/PropertyGo/frontend/mobile/components/DrawerScreen.js"
+    ],
+    "sourcesContent": [
+      "import React from 'react';\nimport { Ionicons } from '@expo/vector-icons';\nimport { MaterialCommunityIcons } from '@expo/vector-icons';\n\n\nexport const createDrawerScreen = (name, component, iconName, label, hideHeader = false) => {\n    return {\n        name,\n        component,\n        options: () => ({\n            drawerLabel: label,\n            drawerIcon: ({ focused, color, size }) => (\n                label === \"Forum\" ? <MaterialCommunityIcons\n                name={focused ? iconName : `${iconName}-outline`}\n                    size={size}\n                    color={color}\n                    />\n                :<Ionicons\n                    name={focused ? iconName : `${iconName}-outline`}\n                    size={size}\n                    color={color}\n                />\n            ),\n            // headerShown: !hideHeader && route.name !== 'Home', // Show header unless it's the \"Home\" screen\n            // headerShown: false,\n        }),\n    };\n};"
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,MAAM,OAAO;AACzB,SAASC,QAAQ,QAAQ,oBAAoB;AAC7C,SAASC,sBAAsB,QAAQ,oBAAoB;AAAC,SAAAC,GAAA,IAAAC,IAAA;AAG5D,OAAO,IAAMC,kBAAkB,GAAG,SAArBA,kBAAkBA,CAAIC,IAAI,EAAEC,SAAS,EAAEC,QAAQ,EAAEC,KAAK,EAAyB;EAAA,IAAvBC,UAAU,GAAAC,SAAA,CAAAC,MAAA,QAAAD,SAAA,QAAAE,SAAA,GAAAF,SAAA,MAAG,KAAK;EACnF,OAAO;IACHL,IAAI,EAAJA,IAAI;IACJC,SAAS,EAATA,SAAS;IACTO,OAAO,EAAE,SAAAA,QAAA;MAAA,OAAO;QACZC,WAAW,EAAEN,KAAK;QAClBO,UAAU,EAAE,SAAAA,WAAAC,IAAA;UAAA,IAAGC,OAAO,GAAAD,IAAA,CAAPC,OAAO;YAAEC,KAAK,GAAAF,IAAA,CAALE,KAAK;YAAEC,IAAI,GAAAH,IAAA,CAAJG,IAAI;UAAA,OAC/BX,KAAK,KAAK,OAAO,GAAGL,IAAA,CAACF,sBAAsB;YAC3CI,IAAI,EAAEY,OAAO,GAAGV,QAAQ,GAAI,GAAEA,QAAS,UAAU;YAC7CY,IAAI,EAAEA,IAAK;YACXD,KAAK,EAAEA;UAAM,CACZ,CAAC,GACLf,IAAA,CAACH,QAAQ;YACNK,IAAI,EAAEY,OAAO,GAAGV,QAAQ,GAAI,GAAEA,QAAS,UAAU;YACjDY,IAAI,EAAEA,IAAK;YACXD,KAAK,EAAEA;UAAM,CAChB,CAAC;QAAA;MAIV,CAAC;IAAA;EACL,CAAC;AACL,CAAC"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

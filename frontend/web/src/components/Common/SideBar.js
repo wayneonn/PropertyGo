@@ -21,7 +21,7 @@ const SideBar = () => {
       <Nav defaultActiveKey="/profile" className="flex-column">
         <Nav.Item>
           <Image
-            src={imageBasePath + "Logo.png"}
+            src={imageBasePath + "PropertyGo-HighRes-Logo.png"}
             alt=".."
             style={{
               width: "60px",
@@ -102,7 +102,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="*">
+          <Nav.Link className="a" href="/forum">
             <PiPuzzlePiece style={{ marginRight: "1em" }}></PiPuzzlePiece>
             Forum
           </Nav.Link>

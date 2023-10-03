@@ -1,0 +1,37 @@
+{
+  "ast": null,
+  "code": "import React from 'react';\nimport { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport UserProfile from \"../screens/sideNavigatorBar/UserProfile\";\nimport EditProfile from \"../screens/userProfile/EditProfile\";\nimport UpdatePassword from \"../screens/userProfile/UpdatePassword\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nimport { jsxs as _jsxs } from \"react/jsx-runtime\";\nvar UserProfileStack = createNativeStackNavigator();\nvar UserProfileStackGroup = function UserProfileStackGroup() {\n  return _jsxs(UserProfileStack.Navigator, {\n    screenOptions: {\n      headerShown: false\n    },\n    children: [_jsx(UserProfileStack.Screen, {\n      name: \"UserProfile\",\n      component: UserProfile\n    }), _jsx(UserProfileStack.Screen, {\n      name: \"EditProfile\",\n      component: EditProfile\n    }), _jsx(UserProfileStack.Screen, {\n      name: \"UpdatePassword\",\n      component: UpdatePassword\n    })]\n  });\n};\nexport default UserProfileStackGroup;",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "createNativeStackNavigator",
+      "UserProfile",
+      "EditProfile",
+      "UpdatePassword",
+      "jsx",
+      "_jsx",
+      "jsxs",
+      "_jsxs",
+      "UserProfileStack",
+      "UserProfileStackGroup",
+      "Navigator",
+      "screenOptions",
+      "headerShown",
+      "children",
+      "Screen",
+      "name",
+      "component"
+    ],
+    "sources": [
+      "/Users/wayneonn/Code/PropertyGo/frontend/mobile/navigations/UserProfileStackGroup.js"
+    ],
+    "sourcesContent": [
+      "import React from 'react';\nimport { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport UserProfile from '../screens/sideNavigatorBar/UserProfile';\nimport EditProfile from '../screens/userProfile/EditProfile';\nimport UpdatePassword from '../screens/userProfile/UpdatePassword';\n\nconst UserProfileStack = createNativeStackNavigator();\n\nconst UserProfileStackGroup = () => {\n  return (\n    <UserProfileStack.Navigator screenOptions={{ headerShown: false }}>\n      {/* <UserProfileStack.Screen name=\"ProfileUpdate\" component={ProfileUpdate} /> */}\n      <UserProfileStack.Screen name=\"UserProfile\" component={UserProfile} />\n      <UserProfileStack.Screen name=\"EditProfile\" component={EditProfile} />\n      <UserProfileStack.Screen name=\"UpdatePassword\" component={UpdatePassword} />\n    </UserProfileStack.Navigator>\n  );\n};\n\nexport default UserProfileStackGroup;\n"
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,MAAM,OAAO;AACzB,SAASC,0BAA0B,QAAQ,gCAAgC;AAC3E,OAAOC,WAAW;AAClB,OAAOC,WAAW;AAClB,OAAOC,cAAc;AAA8C,SAAAC,GAAA,IAAAC,IAAA;AAAA,SAAAC,IAAA,IAAAC,KAAA;AAEnE,IAAMC,gBAAgB,GAAGR,0BAA0B,CAAC,CAAC;AAErD,IAAMS,qBAAqB,GAAG,SAAxBA,qBAAqBA,CAAA,EAAS;EAClC,OACEF,KAAA,CAACC,gBAAgB,CAACE,SAAS;IAACC,aAAa,EAAE;MAAEC,WAAW,EAAE;IAAM,CAAE;IAAAC,QAAA,GAEhER,IAAA,CAACG,gBAAgB,CAACM,MAAM;MAACC,IAAI,EAAC,aAAa;MAACC,SAAS,EAAEf;IAAY,CAAE,CAAC,EACtEI,IAAA,CAACG,gBAAgB,CAACM,MAAM;MAACC,IAAI,EAAC,aAAa;MAACC,SAAS,EAAEd;IAAY,CAAE,CAAC,EACtEG,IAAA,CAACG,gBAAgB,CAACM,MAAM;MAACC,IAAI,EAAC,gBAAgB;MAACC,SAAS,EAAEb;IAAe,CAAE,CAAC;EAAA,CAClD,CAAC;AAEjC,CAAC;AAED,eAAeM,qBAAqB"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

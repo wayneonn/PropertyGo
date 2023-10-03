@@ -1,0 +1,32 @@
+{
+  "ast": null,
+  "code": "import React from 'react';\nimport StyleSheet from \"react-native-web/dist/exports/StyleSheet\";\nimport View from \"react-native-web/dist/exports/View\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport Image from \"react-native-web/dist/exports/Image\";\nimport TouchableOpacity from \"react-native-web/dist/exports/TouchableOpacity\";\nimport TextInput from \"react-native-web/dist/exports/TextInput\";\nimport SafeAreaView from \"react-native-web/dist/exports/SafeAreaView\";\nimport TopBar from \"../../components/Common/TopNavBar\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar propertyListings = function propertyListings() {\n  return _jsx(SafeAreaView, {\n    children: _jsx(Text, {\n      children: \"propertyListingsScreen\"\n    })\n  });\n};\nexport default propertyListings;",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "StyleSheet",
+      "View",
+      "Text",
+      "Image",
+      "TouchableOpacity",
+      "TextInput",
+      "SafeAreaView",
+      "TopBar",
+      "jsx",
+      "_jsx",
+      "propertyListings",
+      "children"
+    ],
+    "sources": [
+      "/Users/wayneonn/Code/PropertyGo/frontend/mobile/screens/propertyListings/PropertyListings.js"
+    ],
+    "sourcesContent": [
+      "import React from 'react';\nimport { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';\nimport TopBar from '../../components/Common/TopNavBar';\n\n\nconst propertyListings = () => {\n\n    return (\n      <SafeAreaView >\n        <Text>propertyListingsScreen</Text>\n      </SafeAreaView>\n    );\n  };\n\n  export default propertyListings;"
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,MAAM,OAAO;AAAC,OAAAC,UAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,KAAA;AAAA,OAAAC,gBAAA;AAAA,OAAAC,SAAA;AAAA,OAAAC,YAAA;AAE1B,OAAOC,MAAM;AAA0C,SAAAC,GAAA,IAAAC,IAAA;AAGvD,IAAMC,gBAAgB,GAAG,SAAnBA,gBAAgBA,CAAA,EAAS;EAE3B,OACED,IAAA,CAACH,YAAY;IAAAK,QAAA,EACXF,IAAA,CAACP,IAAI;MAAAS,QAAA,EAAC;IAAsB,CAAM;EAAC,CACvB,CAAC;AAEnB,CAAC;AAED,eAAeD,gBAAgB"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}
