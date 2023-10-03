@@ -158,13 +158,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: 'senderChats'
     });
-    User.hasMany(models.Property, {
-      onDelete: "CASCADE",
-      foreignKey: {
-        name: 'userId',
-      },
-      as: 'favourites'
-    });
+    User.belongsToMany(models.Property, {
+      through: 'UserFavourites',
+      foreignKey: 'userId',
+      otherKey: 'propertyId',
+      as: 'favouriteProperties',
+  });
     User.hasMany(models.Property, {
       onDelete: "CASCADE",
       foreignKey: {

@@ -2,6 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const Property = sequelize.define("Property", {
         propertyListingId: {
             type: DataTypes.BIGINT,
+            autoIncrement: true,
             primaryKey: true,
             allowNull: false,
         },
@@ -47,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         top: {
             type: DataTypes.DATE,
-            allowNull: false,
+            allowNull: true,
         },
         tenure: {
             type: DataTypes.INTEGER,
@@ -60,6 +61,34 @@ module.exports = (sequelize, DataTypes) => {
         propertyStatus: {
             type: DataTypes.ENUM('ACTIVE', 'ON_HOLD', 'COMPLETED'), 
             allowNull: false,
+        },
+        postalCode: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        unitNumber: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        address: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        area: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        region: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        boostListingStartDate: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        boostListingEndDate: {
+            type: DataTypes.DATE,
+            allowNull: true,
         },
     }, {
         freezeTableName: true
@@ -133,9 +162,15 @@ module.exports = (sequelize, DataTypes) => {
               }, // This will be the foreign key in the Transaction model
           onDelete: 'CASCADE', // If an invoice is deleted, delete the associated transaction
         });
-        Property.hasMany(models.Image, {
+        // Property.hasMany(models.Image, {
+        //     foreignKey: 'imageId',
+        //     as: 'propertyImages',
+        // });
+        Property.belongsToMany(models.User, {
+            through: 'UserFavourites', // This is the name of the join table
             foreignKey: 'propertyId',
-            as: 'propertyImages',
+            otherKey: 'userId',
+            as: 'favouritedByUsers',
         });
     };
 

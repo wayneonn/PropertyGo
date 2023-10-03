@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BLOB('long'),
             allowNull: false,
         },
+        // propertyId: {
+        //     type: DataTypes.BIGINT, // Adjust the data type as needed
+        //     allowNull: false,
+        // },
     }, {
         freezeTableName: true
     });

@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    paddingTop:42,
-    paddingBottom:3,
+    paddingTop: 42,
+    paddingBottom: 3,
     borderBottomWidth: 0.5,
     borderBottomColor: 'grey',
     elevation: 5,
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     // borderWidth:3,
   },
   HamburgerIcon: {
-    marginRight:39,
+    marginRight: 39,
   },
   coinIcon: {
     marginRight: 15,
