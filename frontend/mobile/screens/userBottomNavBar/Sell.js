@@ -53,6 +53,8 @@ export default function PropertyListing() {
     unitNumber: '17-360',
     area: '',
     region: '',
+    longitude: '',
+    latitude: '',
   });
 
   const [images, setImages] = useState([]);
@@ -158,10 +160,12 @@ export default function PropertyListing() {
           if (data.found === 1) {
             // Extract the address from the API response
             const address = data.results[0].ADDRESS;
+            const latitude = parseFloat(data.results[0].LATITUDE);
+            const longitude = parseFloat(data.results[0].LONGITUDE);
             const { area, region } = await getAreaAndRegion(postalCode);
 
             // Update the address in the property state
-            setProperty({ ...property, address, postalCode, area, region });
+            setProperty({ ...property, address, postalCode, area, region, latitude, longitude });
             console.log("address: ", address);
           } else {
             // No address found, alert the user and clear the address field

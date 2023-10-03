@@ -22,7 +22,10 @@ const RegionPropertyList = ({ region, onPropertyPress, handleTitlePress }) => {
       const { success, data } = await getPropertiesByRegion(region);
 
       if (success) {
-        setProperties(data);
+        const top10Properties = data
+        .sort((a, b) => b.favoriteCount - a.favoriteCount)
+        .slice(0, 10);
+        setProperties(top10Properties);
       } else {
         console.error(`Error loading properties in ${region}:`, data.message);
       }

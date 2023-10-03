@@ -205,13 +205,22 @@ const PropertyListingScreen = ({ route }) => {
       setUser(userDetailsData); // Update user details state
       setPropertyListing(data); // Update state with the fetched data
       // Fetch latitude and longitude based on postal code
-      fetchLatitudeLongitudeByPostalCode(data.postalCode);
+      // fetchLatitudeLongitudeByPostalCode(data.postalCode);
+      const latitude = data.latitude;
+      const longitude = data.longitude;
+      setRegion({
+        latitude,
+        longitude,
+        latitudeDelta: 0.005, // Adjust these values for initial zoom level
+        longitudeDelta: 0.005,
+      });
       console.log('Property Listing Data:', data)
     } catch (error) {
       console.error('Error fetching property listing:', error);
     }
   };
 
+  //not in use
   const fetchLatitudeLongitudeByPostalCode = async (postalCode) => {
     try {
       // Make an API call to fetch latitude and longitude based on postal code

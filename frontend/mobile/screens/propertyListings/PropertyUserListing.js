@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
-import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons, FontAwesome } from '@expo/vector-icons'; 
+import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons, FontAwesome } from '@expo/vector-icons';
 import {
   getPropertyListing, getImageUriById, getUserById, addFavoriteProperty,
   removeFavoriteProperty, isPropertyInFavorites, countUsersFavoritedProperty, removeProperty
@@ -182,12 +182,21 @@ const PropertyUserListingScreen = ({ route }) => {
       setUser(userDetailsData); // Update user details state
       setPropertyListing(data); // Update state with the fetched data
       // Fetch latitude and longitude based on postal code
-      fetchLatitudeLongitudeByPostalCode(data.postalCode);
+      // fetchLatitudeLongitudeByPostalCode(data.postalCode);
+      const latitude = data.latitude;
+      const longitude = data.longitude;
+      setRegion({
+        latitude,
+        longitude,
+        latitudeDelta: 0.005, // Adjust these values for initial zoom level
+        longitudeDelta: 0.005,
+      });
     } catch (error) {
       console.error('Error fetching property listing:', error);
     }
   };
 
+  //not in use
   const fetchLatitudeLongitudeByPostalCode = async (postalCode) => {
     try {
       // Make an API call to fetch latitude and longitude based on postal code
@@ -334,7 +343,7 @@ const PropertyUserListingScreen = ({ route }) => {
         <View style={styles.locationDetailsContainer}>
           <View style={styles.locationDetailsRow}>
             <Text style={styles.roomsAndSize}>
-              
+
               <Text style={styles.locationDetailsText}>{propertyListing.area}</Text>
               <MaterialCommunityIcons name="map-marker" size={18} color="#333" /> |
               {'  '}<Text style={styles.locationDetailsText}>{propertyListing.region}</Text>

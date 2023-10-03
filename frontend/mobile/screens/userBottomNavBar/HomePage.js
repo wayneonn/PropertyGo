@@ -55,7 +55,10 @@ const HomePage = ({ navigation }) => {
 
       if (success) {
         // Assuming data is an array of properties
-        setPopularProperties(data);
+        const top10Properties = data
+        .sort((a, b) => b.favoriteCount - a.favoriteCount)
+        .slice(0, 10);
+        setPopularProperties(top10Properties);
       } else {
         console.error('Error loading popular properties:', data.message);
       }
@@ -70,7 +73,11 @@ const HomePage = ({ navigation }) => {
 
       if (success) {
         // Assuming data is an array of properties
-        setRecentlyAddedProperties(data);
+        const top10Properties = data
+        .sort((a, b) => b.favoriteCount - a.favoriteCount)
+        .slice(0, 10);
+        setPopularProperties(top10Properties);
+        setRecentlyAddedProperties(top10Properties);
       } else {
         console.error('Error loading recently added properties:', data.message);
       }
@@ -169,10 +176,9 @@ const HomePage = ({ navigation }) => {
               {' '}Regions</Text>
             <RegionPropertyList region="North" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
             <RegionPropertyList region="North-East" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
-            <RegionPropertyList region="South" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
+            <RegionPropertyList region="Central" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
             <RegionPropertyList region="East" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
             <RegionPropertyList region="West" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
-            <RegionPropertyList region="Central" onPropertyPress={handlePropertyPress} handleTitlePress={handleTitlePress} />
           </View>
         </>
       )}
