@@ -134,6 +134,7 @@ const ForumPostDefault = ({ navigation }) => {
             onPress={() => handlePostPress(post)}
             onReport={() => handleFlag(post.forumPostId)}
             onDelete={() => handleDelete(post.forumPostId)}
+            useParentCallback={useParentCallback}
           />
         ))}
 

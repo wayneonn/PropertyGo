@@ -66,17 +66,17 @@ app.use('/admin/contactUs', contactUsAdminRouter);
 app.use('/admin/users', adminUserRouter);
 
 app.use(
-    "/user",
-    userRoute,
-    loginRoute,
-    documentRoute,
-    folderRoute,
-    transactionRoute,
-    contactUsUserRouter,
-    forumTopicUserRouter,
-    forumPostUserRouter,
-    forumCommentUserRouter,
-    partnerApplicationUserRouter
+  "/user",
+  userRoute,
+  loginRoute,
+  documentRoute,
+  folderRoute,
+  transactionRoute,
+  contactUsUserRouter,
+  forumTopicUserRouter,
+  forumPostUserRouter,
+  forumCommentUserRouter,
+  partnerApplicationUserRouter
 );
 
 app.use(
@@ -335,5 +335,5 @@ db.sequelize
       console.log("Server running on port 3000");
     });
 
-
+  });
 

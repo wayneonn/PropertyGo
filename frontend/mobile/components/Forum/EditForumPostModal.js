@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet, TouchableHighlight, Image, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { AntDesign } from '@expo/vector-icons';
+import ImageGallery from './ImageGallery';
 
-const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
-    const [title, setTitle] = useState('');
-    const [message, setMessage] = useState('');
-    const [imageUris, setImageUris] = useState([]);
-    const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+const EditForumPostModal = ({ isVisible, onCancel, onSubmit, post }) => {
+    const [title, setTitle] = useState(post.title);
+    const [message, setMessage] = useState(post.message);
+    // const [images, setImages] = useState(post.images);
+    // const [selectedImageIndex, setSelectedImageIndex] = useState(null);
 
     useEffect(() => {
         (async () => {
@@ -26,77 +27,70 @@ const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
         setMessage(text);
     };
 
-    const handleImageUpload = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 1,
-        });
+    // const handleImageUpload = async () => {
+    //     const result = await ImagePicker.launchImageLibraryAsync({
+    //         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    //         allowsEditing: true,
+    //         quality: 1,
+    //     });
 
-        if (!result.canceled) {
-            const selectedImages = result.assets.map(asset => asset.uri);
-            setImageUris([...imageUris, ...selectedImages]);
-        }
-        // console.log(imageUris);
-    };
+    //     if (!result.canceled) {
+    //         const selectedImages = result.assets.map(asset => asset.uri);
+    //         setImageUris([...imageUris, ...selectedImages]);
+    //     }
+    //     // console.log(imageUris);
+    // };
 
-    const handleImageRemove = (index) => {
-        const updatedImageUris = [...imageUris];
-        updatedImageUris.splice(index, 1);
-        setImageUris(updatedImageUris);
+    // const handleImageRemove = (index) => {
+    //     const updatedImageUris = [...imageUris];
+    //     updatedImageUris.splice(index, 1);
+    //     setImageUris(updatedImageUris);
 
-        // Clear the selected image if it was removed
-        if (selectedImageIndex === index) {
-            setSelectedImageIndex(null);
-        }
-    };
+    //     // Clear the selected image if it was removed
+    //     if (selectedImageIndex === index) {
+    //         setSelectedImageIndex(null);
+    //     }
+    // };
 
     const handleSubmit = async () => {
 
 
-        const formData = new FormData();
-        const uniqueId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+        // const formData = new FormData();
+        // const uniqueId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 
 
-        // Append each image to the formData
-        for (let i = 0; i < imageUris.length; i++) {
-            const imageUri = imageUris[i];
-            formData.append("images", {
-                uri: imageUri,
-                type: "image/jpeg",
-                name: `image${uniqueId}_${i}.jpg`,
-            });
-        }
-        formData.append('title', title);
-        formData.append('message', message);
-        formData.append('forumTopicId', forumTopicId);
+        // // Append each image to the formData
+        // for (let i = 0; i < imageUris.length; i++) {
+        //     const imageUri = imageUris[i];
+        //     formData.append("images", {
+        //         uri: imageUri,
+        //         type: "image/jpeg",
+        //         name: `image${uniqueId}_${i}.jpg`,
+        //     });
+        // }
+        // formData.append('title', title);
+        // formData.append('message', message);
+        // formData.append('forumTopicId', forumTopicId);
 
-        console.log(formData);
+        // console.log(formData);
 
-        // const postDetails = {
-        //     forumTopicId,
-        //     title,
-        //     message,
-        //     formData,
-        // };
+        const postDetails = {
+            forumPostId: post.forumPostId,
+            title,
+            message,
+        };
 
         // console.log(postDetails);
 
-        onSubmit(formData);
-
-        setTitle('');
-        setMessage('');
-        setImageUris([]);
+        onSubmit(postDetails);
 
         // Close the modal
         onCancel();
     };
 
     const handleCancel = () => {
-        setTitle('');
-        setMessage('');
-        setImageUris([]);
-        setSelectedImageIndex(null);
+        setTitle(post.title);
+        setMessage(post.message);
 
         // Close the modal
         onCancel();
@@ -106,7 +100,7 @@ const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
         <Modal transparent={true} animationType="slide" visible={isVisible}>
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Add a new Forum Post</Text>
+                    <Text style={styles.modalTitle}>Edit a new Forum Post</Text>
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>Title:</Text>
                         <TextInput
@@ -123,22 +117,7 @@ const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
                             onChangeText={handleMessageChange}
                         />
 
-                        <ScrollView horizontal>
-                            {imageUris.map((uri, index) => (
-                                <View key={index} style={{ margin: 5, position: 'relative' }}>
-                                    <Image source={{ uri }} style={styles.selectedImage} />
-                                    <TouchableHighlight
-                                        style={styles.removeImageButton}
-                                        onPress={() => handleImageRemove(index)}
-                                        underlayColor="#EAEAEA"
-                                    >
-                                        <AntDesign name="delete" size={24} color="black" />
-                                    </TouchableHighlight>
-                                </View>
-
-                            ))}
-                        </ScrollView>
-                        <Button title="Upload Image" onPress={handleImageUpload} />
+                        <ImageGallery images={post.images} />
                     </View>
                     <View style={styles.buttonContainer}>
                         <TouchableHighlight
@@ -244,4 +223,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AddForumPostModal;
+export default EditForumPostModal;

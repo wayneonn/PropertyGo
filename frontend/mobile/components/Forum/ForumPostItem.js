@@ -5,13 +5,15 @@ import { Octicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import ForumPostItemHeader from './ForumPostItemHeader';
 import ForumModal from './ForumModal';
-import { getForumPostVoteDetails, updateForumPostVote } from '../../utils/forumPostApi';
+import { getForumPostVoteDetails, updateForumPostVote, updateForumPost } from '../../utils/forumPostApi';
 import { getTimeAgo } from '../../services/CalculateTimeAgo';
 import ImageGallery from './ImageGallery';
+import EditForumPostModal from './EditForumPostModal';
 
-const ForumPostItem = ({ userId, post, onPress, onReport, onDelete }) => {
+const ForumPostItem = ({ userId, post, onPress, onReport, onDelete, useParentCallback }) => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [voteDetails, setVoteDetails] = useState([]);
+    const [isEditModalVisible, setEditModalVisible] = useState(false);
 
     const forumPostItemCallback = useCallback(() => {
 
@@ -32,6 +34,10 @@ const ForumPostItem = ({ userId, post, onPress, onReport, onDelete }) => {
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
+
+    const toggleEditModal = () => {
+        setEditModalVisible(!isEditModalVisible);
+      };
 
     const handleUpvote = async () => {
         try {
@@ -54,15 +60,31 @@ const ForumPostItem = ({ userId, post, onPress, onReport, onDelete }) => {
             console.error(error);
         }
     };
+    const handleEdit = async (postDetails) => {
+
+        console.log(postDetails)
+        if (!postDetails) {
+            return;
+          }
+      
+          try {
+            
+            const forumTopic = await updateForumPost(userId, postDetails);
+            useParentCallback();
+          } catch (error) {
+            console.error(error);
+          }
+
+    };
 
     return (
         <TouchableOpacity onPress={onPress}>
             <View style={styles.topicItemContainer}>
                 <ForumPostItemHeader
-                    user={post.userId}
+                    userId={post.userId}
                     onMoreOptionsPress={toggleModal}
                     editable ={post.userId === userId}
-                    // onEdit ={}
+                    onEdit ={toggleEditModal}
                 />
 
                 <View >
@@ -93,6 +115,7 @@ const ForumPostItem = ({ userId, post, onPress, onReport, onDelete }) => {
                     </View>
                 </View>
             </View>
+            <EditForumPostModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEdit} post={post}/>
             {post.userId === userId ?
                 <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Post"} onDelete={onDelete} />
                 :

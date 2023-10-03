@@ -1,25 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { FontAwesome, AntDesign} from '@expo/vector-icons';
+import { FontAwesome, AntDesign } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { getUserById } from '../../utils/api';
+import base64 from 'react-native-base64';
 
 const ForumItemHeader = ({ userId, onMoreOptionsPress, editable, onEdit }) => {
 
     const [profileImage, setProfileImage] = useState(null);
-    const [user, setUser] = useState([])
+    const [user, setUser] = useState(null); // Initialize user as null
 
     useFocusEffect(
         React.useCallback(() => {
-            let profileImageBase64;
-            if (user && user.profileImage && user.profileImage.data) {
-                profileImageBase64 = base64.encodeFromByteArray(user.profileImage.data);
-                setProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
-            }
+            const fetchData = async () => {
+                try {
+                    const postUser = await getUserById(userId);
+                    setUser(postUser.data);
+                    // console.log("userId:", userId)
+                    // console.log("user:", postUser.data);
 
-        }, [])
+                    let profileImageBase64;
+                    if (postUser && postUser.data.profileImage && postUser.data.profileImage.data) {
+                        profileImageBase64 = base64.encodeFromByteArray(postUser.data.profileImage.data);
+                        setProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
+                        // console.log(profileImageBase64)
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                }
+            };
+            fetchData();
+        }, [userId])
     );
-
 
     return (
         <View style={styles.forumItem}>
@@ -31,7 +45,7 @@ const ForumItemHeader = ({ userId, onMoreOptionsPress, editable, onEdit }) => {
                         <Icon name="user" size={18} color="white" />
                     </View>
                 )}
-                {user.length > 0 ? (
+                {user ? ( // Check if user data is available
                     <>
                         <Text style={styles.userName}>{user.userName}</Text>
                         <Text style={styles.age}>
@@ -39,10 +53,8 @@ const ForumItemHeader = ({ userId, onMoreOptionsPress, editable, onEdit }) => {
                         </Text>
                     </>
                 ) : (
-                    <>
-                        <Text style={styles.userName}>UserName</Text>
-                        <Text style={styles.age}>21y</Text>
-                    </>
+                    // Render a loading state or a default value while waiting for user data
+                    <Text>Loading...</Text>
                 )}
             </View>
             <View style={styles.rightHeaderContainer}>
@@ -80,7 +92,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         // borderWidth: 1,
         justifyContent: 'flex-end', // Right-align items
-      },
+    },
     profileImage: {
         width: 25,
         height: 25,
