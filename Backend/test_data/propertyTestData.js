@@ -107,8 +107,8 @@ module.exports = [
     address: "132 MARSILING RISE SINGAPORE 730132",
     region: "North",
     area: "Kranji, Woodgrove",
-    latitude: "1.27873808127932",
-    longitude: "103.828304288385",
+    latitude: "1.43828189832914",
+    longitude: "103.778025758394",
   },
   {
     propertyListingId: 5,
@@ -489,7 +489,7 @@ module.exports = [
     region: "West",
     area: "Jurong",
     latitude: "1.35021860759344",
-    longitude: "103.828304288385",
+    longitude: "103.710255713025",
   },
   // South Region
   {
