@@ -77,7 +77,7 @@ async function removeImageById(req, res) {
 async function updateImageById(req, res) {
     try {
         const { imageId } = req.params;
-        const { title } = req.body; // Assuming you can update the image title and data
+        // const { title } = req.body; // Assuming you can update the image title and data
         const image = req.file;
         // Find the image by ID
         const imageToUpdate = await Image.findByPk(imageId);
@@ -87,9 +87,9 @@ async function updateImageById(req, res) {
         }
 
         // Update image properties
-        if (title) {
-            imageToUpdate.title = title;
-        }
+        // if (title) {
+        //     imageToUpdate.title = title;
+        // }
 
         if (image) {
             try {
@@ -120,7 +120,7 @@ async function updateImageById(req, res) {
 async function createImageWithPropertyId(req, res) {
     try {
         const { propertyId } = req.params;
-        const { title } = req.body;
+        // const { title } = req.body;
         const image = req.file; // Use req.file to get the uploaded image data
         console.log("image", image)
         // Find the property by ID
@@ -142,7 +142,7 @@ async function createImageWithPropertyId(req, res) {
                 .toBuffer();
 
             const imageData = {
-                title,
+                // title,
                 image: processedImageBuffer,
                 propertyId: propertyId,
             };

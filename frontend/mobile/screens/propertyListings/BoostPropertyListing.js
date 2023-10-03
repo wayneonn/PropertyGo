@@ -5,6 +5,7 @@ import { getUserById, editProperty, getPropertyListing, updateUserProfile } from
 import PropertyCard from './PropertyCardRectangle'; // Import your PropertyCard component
 import BoostOptionCard from './BoostOptionCard';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const BoostListingScreen = ({ route, navigation }) => {
@@ -14,6 +15,16 @@ const BoostListingScreen = ({ route, navigation }) => {
     // State to hold user data and property listing data
     const [userData, setUserData] = useState(null);
     const [propertyListing, setPropertyListing] = useState(null);
+
+    useFocusEffect(
+        React.useCallback(() => {
+          console.log('Home page gained focus');
+          if (user && user.user) {
+            fetchUserData(user.user.userId);
+            fetchPropertyListingData(propertyListingId);
+        }
+        }, [])
+      );
 
     // Fetch user data by userId
     const fetchUserData = async (userId) => {

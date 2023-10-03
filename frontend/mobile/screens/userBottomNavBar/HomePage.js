@@ -128,7 +128,7 @@ const HomePage = ({ navigation }) => {
           {/* Popular Properties Section */}
           <View style={styles.sectionContainer}>
             <TouchableOpacity onPress={() => handleTitlePress('Popular Properties', popularProperties)}>
-              <View style={styles.titleContainer}>
+              <View style={[styles.titleContainer, {marginTop : 10}]}>
                 <Text style={styles.sectionTitle}> {' '}<Ionicons name="trending-up-outline" size={24} style={styles.titleIcon} />
                   {' '}Popular Properties</Text>
               </View>

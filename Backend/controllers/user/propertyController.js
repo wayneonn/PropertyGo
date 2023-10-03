@@ -74,7 +74,7 @@ async function createProperty(req, res) {
                     .toBuffer();
 
                 const imageData = {
-                    title: `Image ${index + 1}`,
+                    // title: `Image ${index + 1}`,
                     image: processedImageBuffer,
                     propertyId: createdProperty.propertyListingId, // Associate the image with the created property
                 };
@@ -264,8 +264,8 @@ async function getPropertiesByRegion(req, res) {
                 // If only B is boosted, place it above A
                 return 1;
             } else {
-                // If neither is boosted, sort by favorite count in descending order
-                return b.favoriteCount - a.favoriteCount;
+                // If neither is boosted, sort by postedAt (creation date) in descending order
+                return new Date(b.postedAt) - new Date(a.postedAt);
             }
         });
 
@@ -275,6 +275,7 @@ async function getPropertiesByRegion(req, res) {
         res.status(500).json({ message: 'Server error' });
     }
 }
+
 
 
 
