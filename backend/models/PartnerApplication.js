@@ -37,6 +37,10 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 defaultValue: false
             },
+            adminNotes: {
+                type: DataTypes.STRING,
+                allowNull: true
+            }
         },
         {
             freezeTableName: true,

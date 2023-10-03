@@ -78,3 +78,21 @@ exports.updatePartnerApplicationByID = async (req, res) => {
     }
 }
 
+exports.rejectPartnerApplicationByID = async (req, res) => {
+    console.log(req.body);
+    const description = req.body.description;
+    try {
+        const updatedApp = await PartnerApplication.update({ adminNotes: description },
+            {
+                where: {
+                    partnerApplicationId: req.params.id
+                }
+            }
+        );
+        res.status(201).json(updatedApp);
+    } catch(error) {
+        console.error('Error updating PartnerApplication', error);
+        res.status(500).send({error: 'Error updating PartnerApplication'});
+    }
+}
+

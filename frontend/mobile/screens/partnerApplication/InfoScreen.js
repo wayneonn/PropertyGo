@@ -103,6 +103,7 @@ const IntroScreen = () => {
             <Text>User Role: {item.userRole}</Text>
             <Text>Approval Status: {item.approved ? 'Yes' : 'No'} </Text>
             <Text>Documents Submitted: {documentsValid ? 'Yes' : 'No'} </Text>
+            <Text>Notes from Admin: {item.adminNotes} </Text>
         </View>
     );
 

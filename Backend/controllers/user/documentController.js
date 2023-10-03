@@ -35,6 +35,10 @@ exports.uploadDocuments = async (req, res) => {
         partnerApplicationId = partnerApplicationId[0];
     }
 
+    if (Array.isArray(propertyId)) {
+        propertyId = propertyId[0]
+    }
+
     // Perform necessary operations with the uploaded files
     // For example, you can move the files to a different directory, save their metadata to a database, etc.
 
@@ -54,9 +58,9 @@ exports.uploadDocuments = async (req, res) => {
                 transactionId: transactionId,
                 folderId: folderId,
                 partnerApplicationId: partnerApplicationId,
+                propertyId: propertyId
             });
         }
-
         res.json({ message: "File upload successful" });
     } catch (error) {
         // Handle any errors
