@@ -1,5 +1,5 @@
 import React, {useContext, useEffect} from 'react';
-import {KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform} from 'react-native';
 import {Formik, useField} from 'formik';
 import {useNavigation} from '@react-navigation/native';
 import {useFormData} from '../../contexts/PartnerApplicationFormDataContext';

@@ -139,6 +139,7 @@ exports.getDocumentData = async (req, res) => {
     }
 };
 
+
 exports.deleteDocument = async (req, res) => {
     try {
         const document = await Document.findByPk(req.params.id);

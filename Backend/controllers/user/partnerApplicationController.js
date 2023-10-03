@@ -11,6 +11,16 @@ const {PartnerApplication, Folder} = require("../../models")
 *
 *
 * */
+exports.getAllPartnerApplicationsNotApproved = async (req, res) => {
+    try {
+        const partnerApp = await PartnerApplication.findAll({where: {approved: 0}});
+        res.json({partnerApp});
+    } catch (error) {
+        res.status(500)
+            .json({message: "Error fetching approved Partner Applications: ", error: error.message});
+    }
+}
+
 exports.getPartnerApplicationsByUserID = async (req, res) => {
     try {
         const partnerApp = await PartnerApplication.findAll({where: {userId: req.params.id}});
@@ -50,4 +60,21 @@ exports.postPartnerApplicationByUserID = async (req, res) => {
         res.status(500).send({error: 'Error creating PartnerApplication'});
     }
 };
+
+exports.updatePartnerApplicationByID = async (req, res) => {
+    console.log(req.body);
+    try {
+        const updatedApp = await PartnerApplication.update({ approved: true },
+            {
+                where: {
+                    partnerApplicationId: req.params.id
+                }
+            }
+        );
+        res.status(201).json(updatedApp);
+    } catch(error) {
+        console.error('Error updating PartnerApplication', error);
+        res.status(500).send({error: 'Error updating PartnerApplication'});
+    }
+}
 

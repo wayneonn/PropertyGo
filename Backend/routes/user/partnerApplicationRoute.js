@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.get('/partner/list/:id', partnerApplicationController.getPartnerApplicationsByUserID);
 router.post('/partner/new_app/', partnerApplicationController.postPartnerApplicationByUserID);
-
+router.get('/partner/admin/approval/', partnerApplicationController.getAllPartnerApplicationsNotApproved);
+router.put('/partner/admin/approve/:id', partnerApplicationController.updatePartnerApplicationByID);
 module.exports = router;
