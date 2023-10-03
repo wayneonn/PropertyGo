@@ -134,7 +134,7 @@ module.exports = (sequelize, DataTypes) => {
           onDelete: 'CASCADE', // If an invoice is deleted, delete the associated transaction
         });
         Property.hasMany(models.Image, {
-            foreignKey: 'imageId',
+            foreignKey: 'propertyId',
             as: 'propertyImages',
         });
     };

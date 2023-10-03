@@ -5,10 +5,21 @@ const BASE_URL = 'http://localhost:3000';
 // Function to create a new ForumPost record
 export const createForumPost = async (userId, forumPostData) => {
     try {
+
+        console.log(userId)
+        console.log(forumPostData)
+
+        // Make a POST request with the forumPostData
         const response = await axios.post(
             `${BASE_URL}/user/${userId}/forumPost`,
-            forumPostData
+            forumPostData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
+                },
+            }
         );
+
         return response.data;
     } catch (error) {
         console.error(error);

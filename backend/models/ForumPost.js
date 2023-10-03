@@ -62,8 +62,13 @@ module.exports = (sequelize, DataTypes) => {
             },
             as: 'user',
         });
-        ForumPost.belongsTo(models.Image, {
-            foreignKey: 'imageId',
+        ForumPost.hasMany(models.Image, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: true,
+                name: 'forumPostId'
+            },
+            as: 'images',
         });
         ForumPost.belongsToMany(models.User, {
             through: "UserPostFlagged", // Specify the intermediary model

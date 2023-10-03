@@ -56,17 +56,16 @@ const ForumPostDefault = ({ navigation }) => {
     setModalVisible(!isModalVisible);
   };
 
-  const handleNewForumPost = async (title, message, forumTopicId) => {
+  const handleNewForumPost = async (postDetails) => {
 
-    if (!title | !message) {
-      Alert.alert('Error', 'All fields must not be empty.');
-      return;
-    }
-
+    // if (!postDetails.title | !postDetails.message) {
+    //   // Alert.alert('Error', 'All fields must not be empty.');
+    //   return;
+    // }
 
     try {
-      const newPost = { title, message, forumTopicId }
-      const forumPost = await createForumPost(user.user.userId, newPost);
+      const forumPost = await createForumPost(user.user.userId, postDetails);
+      // console.log(postDetails)
       useParentCallback();
     } catch (error) {
       console.error(error);
@@ -74,7 +73,6 @@ const ForumPostDefault = ({ navigation }) => {
   };
 
   const handleSearch = (text) => {
-
 
     const filtered = forumPosts.filter((post) =>
       post.title.toLowerCase().includes(text.toLowerCase())

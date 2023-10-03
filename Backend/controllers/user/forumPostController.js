@@ -1,21 +1,68 @@
-const { ForumPost, User } = require("../../models");
-const sequelize = require('sequelize');
+const { sequelize, ForumPost, User, Image } = require("../../models");
+const Sequelize = require('sequelize');
+const sharp = require('sharp');
 
 const createForumPost = async (req, res) => {
-    const { userId } = req.params; // Use destructuring to get userId
+    const { userId } = req.params;
 
-    // Assuming you want to set userId in the ForumPost model
-    req.body.userId = userId;
-    req.body.isInappropriate = false
+    // console.log("Form")
+    // console.log(req.files);
+    // console.log("forum topic ID:", req.body.forumTopicId)
+
+    const transaction = await sequelize.transaction();
 
     try {
-        const forumPost = await ForumPost.create(req.body);
+
+        const images = req.files;
+
+
+        const forumPost = await ForumPost.create({
+            userId: userId,
+            title: req.body.title,
+            message: req.body.message,
+            isInappropriate: false,
+            forumTopicId: req.body.forumTopicId,
+        });
+
+
+        const failedImages = [];
+
+
+        for (let index = 0; index < images.length; index++) {
+            const image = images[index];
+
+            try {
+                const processedImageBuffer = await sharp(image.buffer)
+                    .resize({ width: 800, height: 600 }) // You can set the dimensions accordingly
+                    .webp()
+                    .toBuffer();
+
+                currentImage = await Image.create({ image: processedImageBuffer }, { transaction });
+                await forumPost.addImage(currentImage, { transaction });
+
+            } catch (imageError) {
+                console.error('Error creating image:', imageError);
+                failedImages.push({ index, error: 'Failed to create image' });
+            }
+        }
+
+        if (failedImages.length > 0) {
+            // If there were failed images, roll back the transaction
+            await transaction.rollback();
+            console.log('Rolled back transaction due to errors in creating images.');
+            return res.status(500).json({ error: 'Error creating some images', failedImages });
+        }
+
+        await transaction.commit();
+        console.log('Transaction committed successfully.');
+
         res.status(201).json({ forumPost });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 
 const getAllForumPost = async (req, res) => {
     try {
@@ -36,14 +83,14 @@ const getAllForumPost = async (req, res) => {
             if (!increase) {
                 orderCriteria = [
                     [
-                        sequelize.literal('(SELECT COUNT(*) FROM `UserPostUpvoted` AS `UserPostUpvoted` WHERE `ForumPost`.`forumPostId` = `UserPostUpvoted`.`forumPostId`) - (SELECT COUNT(*) FROM `UserPostDownvoted` AS `UserPostDownvoted` WHERE `ForumPost`.`forumPostId` = `UserPostDownvoted`.`forumPostId`)'),
+                        Sequelize.literal('(SELECT COUNT(*) FROM `UserPostUpvoted` AS `UserPostUpvoted` WHERE `ForumPost`.`forumPostId` = `UserPostUpvoted`.`forumPostId`) - (SELECT COUNT(*) FROM `UserPostDownvoted` AS `UserPostDownvoted` WHERE `ForumPost`.`forumPostId` = `UserPostDownvoted`.`forumPostId`)'),
                         'DESC',
                     ],
                 ];
             } else {
                 orderCriteria = [
                     [
-                        sequelize.literal('(SELECT COUNT(*) FROM `UserPostUpvoted` AS `UserPostUpvoted` WHERE `ForumPost`.`forumPostId` = `UserPostUpvoted`.`forumPostId`) - (SELECT COUNT(*) FROM `UserPostDownvoted` AS `UserPostDownvoted` WHERE `ForumPost`.`forumPostId` = `UserPostDownvoted`.`forumPostId`)'),
+                        Sequelize.literal('(SELECT COUNT(*) FROM `UserPostUpvoted` AS `UserPostUpvoted` WHERE `ForumPost`.`forumPostId` = `UserPostUpvoted`.`forumPostId`) - (SELECT COUNT(*) FROM `UserPostDownvoted` AS `UserPostDownvoted` WHERE `ForumPost`.`forumPostId` = `UserPostDownvoted`.`forumPostId`)'),
                         'ASC',
                     ],
                 ]
@@ -54,15 +101,22 @@ const getAllForumPost = async (req, res) => {
             order: orderCriteria,
             where: {
                 isInappropriate: {
-                    [sequelize.Op.not]: true,
+                    [Sequelize.Op.not]: true,
                 },
                 forumTopicId: forumTopicId,
                 forumPostId: {
-                    [sequelize.Op.notIn]: sequelize.literal(
+                    [Sequelize.Op.notIn]: Sequelize.literal(
                         `(SELECT forumPostId FROM \`UserPostFlagged\` AS \`UserPostFlagged\` WHERE \`ForumPost\`.\`forumPostId\` = \`UserPostFlagged\`.\`forumPostId\` AND \`UserPostFlagged\`.\`userId\` = ${userId})`
                     ),
                 },
             },
+            include: [
+                // Include the associated Images
+                {
+                    model: Image,
+                    as: 'images',
+                },
+            ],
         });
 
         res.status(200).json(forumPosts);

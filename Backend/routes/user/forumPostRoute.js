@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+
 
 const {
     // createForumPostTestData,
@@ -12,9 +14,11 @@ const {
     getForumPostVoteDetails,
 } = require('../../controllers/user/forumPostController');
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 router.route('/:userId/forumPost')
-    .post(createForumPost)
+    .post(upload.array("images", 5),createForumPost)
     .get(getAllForumPost)
 
 router.route('/:userId/forumPost/:forumPostId/voteDetails')

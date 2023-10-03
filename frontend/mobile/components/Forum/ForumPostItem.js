@@ -1,12 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, View, Text, Image } from 'react-native';
 import { Octicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import ForumPostItemHeader from './ForumPostItemHeader';
 import ForumModal from './ForumModal';
 import { getForumPostVoteDetails, updateForumPostVote } from '../../utils/forumPostApi';
 import { getTimeAgo } from '../../services/CalculateTimeAgo';
+import ImageGallery from './ImageGallery';
 
 const ForumPostItem = ({ userId, post, onPress, onReport, onDelete }) => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -72,6 +73,8 @@ const ForumPostItem = ({ userId, post, onPress, onReport, onDelete }) => {
                     <View>
                         <Text style={styles.message}>{post.message}</Text>
                     </View>
+                    {/* <Image source={{ uri: `data:image/jpeg;base64,${"ZmlsZTovLy9Vc2Vycy9qYXJyZW50b2gvTGlicmFyeS9EZXZlbG9wZXIvQ29yZVNpbXVsYXRvci9EZXZpY2VzL0Y1RUI3OUQ0LTgzMzAtNEMzNy04MzUzLTRFRDlDM0EwNEM2OC9kYXRhL0NvbnRhaW5lcnMvRGF0YS9BcHBsaWNhdGlvbi81NUZEODdFNy1CODJCLTQ1NkUtODdENi0yNzg2RDc5ODQ2MTIvTGlicmFyeS9DYWNoZXMvRXhwb25lbnRFeHBlcmllbmNlRGF0YS8lMjU0MGFub255bW91cyUyNTJGUHJvcGVydHlHby1kOWU0YWEyYy1jNmUzLTRlNzItYWIwMy03MGE4ZWRmNGI5N2EvSW1hZ2VQaWNrZXIvMTg1RkFCMzktNzdERi00NzM0LTlFNUItMTQ0MkUwQTIxMDhELmpwZw=="}`}}/> */}
+                    <ImageGallery images={post.images} />
                 </View>
 
                 <View style={styles.iconContainer}>

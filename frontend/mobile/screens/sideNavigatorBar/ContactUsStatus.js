@@ -3,8 +3,8 @@ import { View, Text, FlatList, StyleSheet, SafeAreaView, RefreshControl } from '
 import { getUserContactUs } from '../../utils/contactUsApi';
 import { useFocusEffect } from '@react-navigation/native';
 import BoxItem from '../../components/BoxItem';
-import {ScrollView} from 'react-native-gesture-handler';
-import {AuthContext} from '../../AuthContext';
+import { ScrollView } from 'react-native-gesture-handler';
+import { AuthContext } from '../../AuthContext';
 
 const ContactUsStatus = ({ route }) => {
   const { user } = useContext(AuthContext);
@@ -79,8 +79,8 @@ const ContactUsStatus = ({ route }) => {
           onRefresh={handleRefresh}
           tintColor={'#FFD700'}
         />
-        }
-        >
+      }
+      >
         <Text style={styles.header}>ContactUs Status</Text>
         <Text style={{ ...styles.statusHeader, color: 'red' }}>Pending</Text>
         {pendingData.length === 0 ? (
@@ -101,16 +101,7 @@ const ContactUsStatus = ({ route }) => {
           ))
         )}
 
-                <Text style={{...styles.statusHeader, color: 'green'}}>Replied</Text>
-                {repliedData.length === 0 ? (
-                    renderEmptyListComponent()
-                ) : (
-                    repliedData.map((item) => (
-                        <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Replied"/>
-                    ))
-                )}
-
-                {/* <Text style={{ ...styles.statusHeader, color: 'green' }}>Closed</Text>
+        {/* <Text style={{ ...styles.statusHeader, color: 'green' }}>Closed</Text>
         {closedData.length === 0 ? (
           renderEmptyListComponent()
         ) : (
@@ -119,46 +110,46 @@ const ContactUsStatus = ({ route }) => {
           ))
         )} */}
 
-            </ScrollView>
-        </SafeAreaView>
-    );
+      </ScrollView>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: 'white',
-    },
-    formContainer: {
-        paddingHorizontal: 15,
-        marginTop: 20,
-    },
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        textAlign: 'center',
-    },
-    statusSection: {
-        marginBottom: 16,
-    },
-    flatListBorder: {
-        borderRadius: 8,
-        padding: 8,
-        marginBottom: 8,
-    },
-    statusHeader: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        paddingLeft: 1,
-        marginBottom: 8,
-        marginTop: 6
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: 'white',
+  },
+  formContainer: {
+    paddingHorizontal: 15,
+    marginTop: 20,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  statusSection: {
+    marginBottom: 16,
+  },
+  flatListBorder: {
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 8,
+  },
+  statusHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    paddingLeft: 1,
+    marginBottom: 8,
+    marginTop: 6
 
-    },
-    messageText: {
-        fontSize: 16,
-    },
+  },
+  messageText: {
+    fontSize: 16,
+  },
 });
 
 export default ContactUsStatus;
