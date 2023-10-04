@@ -25,6 +25,8 @@ const ContactUs = () => {
   const [closedContactus, setClosedContactus] = useState([]);
   const [showRespondModal, setShowRespondModal] = useState(false);
   const [showViewResponseModal, setShowViewResponseModal] = useState(false);
+  const [showCloseContactUsModal, setShowCloseContactUsModal] = useState(false);
+
   const [respondId, setRespondId] = useState(0);
   const [respondTitle, setRespondTitle] = useState("");
   const [respondMessage, setRespondMessage] = useState("");
@@ -42,6 +44,7 @@ const ContactUs = () => {
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewMessage, setPreviewMessage] = useState("");
   const [previewReason, setPreviewReason] = useState("");
+  const [closeContactUsId, setCloseContactUsId] = useState(0);
 
   const itemsPerPage = 4;
 
@@ -117,6 +120,11 @@ const ContactUs = () => {
     setShowPreviewModal(!showPreviewModal);
   };
 
+  const toggleShowCloseContactUsModal = (id) => {
+    setShowCloseContactUsModal(true);
+    setCloseContactUsId(id);
+  };
+
   const handleClosePreview = () => {
     setShowPreviewModal(!showPreviewModal);
   };
@@ -142,18 +150,18 @@ const ContactUs = () => {
     setValidationMessages({});
   };
 
-  const closeRespond = async (id) => {
-    //change the status of this contact us to "CLOSED"
-    const newMessage = {
-      emptyResponse: false,
-    };
+  const handleCloseContactUsModal = () => {
+    setShowCloseContactUsModal(false);
+  };
 
+  const closeRespond = async () => {
+    //change the status of this contact us to "CLOSED"
     try {
-      const response = await API.patch(`/admin/contactUs/${id}`);
+      const response = await API.patch(`/admin/contactUs/${closeContactUsId}`);
 
       if (response.status === 200) {
+        setShowCloseContactUsModal(false);
         fetchData();
-        setValidationMessages(newMessage);
         showToast("closed contact us");
       }
     } catch (error) {
@@ -190,7 +198,6 @@ const ContactUs = () => {
       );
 
       if (response.status === 200) {
-        // fetchData();
         getResponses(viewResponseId);
         setValidationMessages(newMessage);
         setShowEditModal(false);
@@ -397,7 +404,7 @@ const ContactUs = () => {
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayContactus">
           <div
-            style={{ position: "fixed", top: "5%", left: "50%", zIndex: "1" }}
+            style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}
           >
             <Row>
               <Col xs={6}>
@@ -605,7 +612,7 @@ const ContactUs = () => {
                                 marginRight: "10px",
                               }}
                               onClick={() =>
-                                closeRespond(contactus.contactUsId)
+                                toggleShowCloseContactUsModal(contactus.contactUsId)
                               }
                             >
                               <MdCurtainsClosed
@@ -1030,7 +1037,7 @@ const ContactUs = () => {
                         maxWidth: "60%",
                       }}
                     >
-                      <span className="muted-text">
+                      <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
                         {adminNames[response.adminId]}
                       </span>
                       <div className="adminResponse">
@@ -1046,18 +1053,6 @@ const ContactUs = () => {
                           }}
                           dangerouslySetInnerHTML={{ __html: response.message }}
                         ></div>
-                        {/* <TextareaAutosize
-                          readOnly
-                          style={{
-                            borderRadius: "10px",
-                            borderColor: "#F5F6F7",
-                            backgroundColor: "#FFD88D",
-                            resize: "none",
-                            overflowY: "auto",
-                            padding: "5px",
-                          }}
-                          value={response.message}
-                        /> */}
                         <Button
                           size="sm"
                           title="Edit Response"
@@ -1084,7 +1079,7 @@ const ContactUs = () => {
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                          <span className="muted-text">
+                          <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
                             updated at: {response.updatedAt}
                           </span>
                         )}
@@ -1098,7 +1093,7 @@ const ContactUs = () => {
                         maxWidth: "50%",
                       }}
                     >
-                      <span className="muted-text">
+                      <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
                         {userNames[response.userId]}
                       </span>
                       <TextareaAutosize
@@ -1115,7 +1110,7 @@ const ContactUs = () => {
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                          <span className="muted-text">
+                          <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
                             updated at: {response.updatedAt}
                           </span>
                         )}
@@ -1205,7 +1200,6 @@ const ContactUs = () => {
                             borderRadius: "10px",
                             borderColor: "#F5F6F7",
                             backgroundColor: "#FFD88D",
-                            // color: "white",
                             resize: "none",
                             overflowY: "auto",
                             padding: "5px",
@@ -1234,7 +1228,6 @@ const ContactUs = () => {
                         style={{
                           borderRadius: "10px",
                           border: "0",
-                          // color: "white",
                           backgroundColor: "#FFD88D",
                           resize: "none",
                           overflowY: "auto",
@@ -1333,6 +1326,53 @@ const ContactUs = () => {
               onClick={() => handleEdit()}
             >
               Confirm
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal
+          show={showCloseContactUsModal}
+          onHide={handleCloseContactUsModal}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Confirmation of Contact Us</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Are you sure you want to close the following contact us?</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#F5F6F7",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleCloseContactUsModal}
+            >
+              No
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={() => closeRespond()}
+            >
+              Yes
             </Button>
           </Modal.Footer>
         </Modal>

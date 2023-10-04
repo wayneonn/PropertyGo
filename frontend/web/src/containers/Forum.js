@@ -197,7 +197,7 @@ const Forum = () => {
       >
         <BreadCrumb name="Forum"></BreadCrumb>
       </div>
-      <div style={{ position: "fixed", top: "5%", left: "50%", zIndex: "1" }}>
+      <div style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}>
         <Row>
           <Col xs={6}>
             <Toast
