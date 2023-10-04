@@ -25,6 +25,7 @@
     "react-native-paper": "^5.10.6",
     "sequelize": "^6.32.1",
     "sequelize-cli": "^6.6.1",
-    "sharp": "^0.32.6"
+    "sharp": "^0.32.6",
+    "ws": "^8.14.2"
   }
 }

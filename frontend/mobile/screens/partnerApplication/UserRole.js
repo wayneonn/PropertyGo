@@ -71,12 +71,11 @@ const styles = StyleSheet.create({
         fontSize: 32,
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     label: {
         fontSize: 18,
         color: '#666',
-        marginBottom: 8,
     },
     errorText: {
         color: 'red',
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#007bff',
+        backgroundColor: '#5F5859',
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderRadius: 30,

@@ -1,8 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Animated, Button, FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AntDesign} from '@expo/vector-icons';
-import { useIsFocused } from '@react-navigation/native';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {fetchPartnerApplication} from "../../utils/partnerApplicationApi";
 import {fetchDocumentById} from "../../utils/documentApi";
 import {AuthContext} from "../../AuthContext";
@@ -76,12 +75,12 @@ const IntroScreen = () => {
     }, []);
 
 
-   /**
-    * Description: Fetch partner application + partner application documents from the server.
-    * Only one application allowed per user -> doesn't make sense to apply for more?
-    *
-    *
-    * **/
+    /**
+     * Description: Fetch partner application + partner application documents from the server.
+     * Only one application allowed per user -> doesn't make sense to apply for more?
+     *
+     *
+     * **/
     const fetchPartnerAppFromServer = async () => {
         try {
             const partnerApp = await fetchPartnerApplication(USER_ID)
@@ -108,8 +107,8 @@ const IntroScreen = () => {
     * 2. Output -> Single field in the Approval.
     * 3. Possible options: Document submission should be tied to it?
     * */
-    const renderPartnerApp = ({ item }) => (
-        <View style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
+    const renderPartnerApp = ({item}) => (
+        <View style={{padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc'}}>
             <Text>Application ID: {item.partnerApplicationId}</Text>
             <Text>User Role: {item.userRole}</Text>
             <Text>Approval Status: {item.approved ? 'Yes' : 'No'} </Text>
@@ -119,7 +118,6 @@ const IntroScreen = () => {
     );
 
 
-
     return (
         <View style={styles.container}>
             {partner.length !== 0 ? (
@@ -127,6 +125,11 @@ const IntroScreen = () => {
                     <View style={styles.box}>
                         <Text style={styles.titleApproved}>Your Application is successful, welcome to the team!</Text>
                         <Text style={styles.subtitle}>View your profile to see what else you can do as a partner.</Text>
+                        <Text>&nbsp;</Text>
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('User Profile')}>
+                            <Text style={styles.buttonText}> View Profile </Text>
+                            <AntDesign name="arrowright" size={20} color="black"/>
+                        </TouchableOpacity>
                     </View>
                 ) : (
                     <View style={styles.box}>
@@ -137,7 +140,8 @@ const IntroScreen = () => {
                         <Divider/>
                         <Text>&nbsp;</Text>
                         <Text> This is the status of your current application. </Text>
-                        <FlatList data={partner} renderItem={renderPartnerApp} keyExtractor={item => item.partnerApplicationId} />
+                        <FlatList data={partner} renderItem={renderPartnerApp}
+                                  keyExtractor={item => item.partnerApplicationId}/>
                         {!documentsValid &&
                             (<View style={{paddingVertical: 10}}>
                                 <Button onPress={() => navigation.navigate('Document Selection')}
@@ -151,8 +155,9 @@ const IntroScreen = () => {
                 <View>
                     <Animated.View style={styles.box}>
                         <Text style={styles.titleIntro}>Join us as a Partner today.</Text>
+                        <Text>&nbsp;</Text>
                         <Text style={styles.subtitle}>Let's get started on your journey to working on our
-                            platform.</Text>
+                            platform - be a lawyer, contractor or property agent.</Text>
                     </Animated.View>
                     <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Company Info')}>
                         <Text style={styles.buttonText}>Start Application</Text>
@@ -180,13 +185,13 @@ const styles = StyleSheet.create({
     titleApproved: {
         fontSize: 34,
         fontWeight: '700',
-        color: '#007bff',
+        color: '#92898A',
         lineHeight: 40,
     },
     titlePending: {
         fontSize: 34,
         fontWeight: '700',
-        color: '#404040',
+        color: '#AF9FA5',
         lineHeight: 40,
     },
     titleIntro: {
@@ -210,8 +215,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#007bff',
-        paddingVertical: 12,
+        backgroundColor: '#5F5859',
+        paddingVertical: 20,
         paddingHorizontal: 24,
         borderRadius: 30,
     },
