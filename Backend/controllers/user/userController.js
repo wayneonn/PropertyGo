@@ -1,4 +1,4 @@
-const { User } = require('../../models');
+const { User, sequelize } = require('../../models');
 const sharp = require('sharp');
 
 async function getAllUsers(req, res) {

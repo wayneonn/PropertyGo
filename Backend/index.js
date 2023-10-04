@@ -1,6 +1,16 @@
 const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io"); // for the event-based notification
 const cors = require("cors");
 const app = express();
+
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:3001",
+    methods: ["GET", "POST"]
+  }
+});
 
 // model
 const db = require("./models");
@@ -22,6 +32,7 @@ const partnerApplicationId = require("./test_data/partnerApplicationTestData");
 const forumTopicTestData = require("./test_data/forumTopicTestData");
 const forumPostTestData = require("./test_data/forumPostTestData");
 const forumCommentTestData = require("./test_data/forumCommentTestData");
+const notificationTestData = require("./test_data/notificationTestData");
 
 // admin routes
 const authRouter = require("./routes/admin/authRoutes");
@@ -31,10 +42,9 @@ const contactUsAdminRouter = require("./routes/admin/contactUsRoutes");
 const adminUserRouter = require("./routes/admin/userRoutes");
 const responseRouter = require("./routes/admin/responseRoutes");
 const forumTopicAdminRouter = require("./routes/admin/forumTopicRoutes");
-
+const notificationAdminRouter = require("./routes/admin/notificationRoutes");
 
 const userRoute = require("./routes/user/userRoute");
-// const userRoute = require("./routes/user/User");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
@@ -47,13 +57,21 @@ const forumCommentUserRouter = require('./routes/user/forumCommentRoute');
 app.use(cors());
 app.use(express.json());
 
+const injectIo = (io) => {
+  return (req, res, next) => {
+    req.io = io;
+    next();
+  };
+};
+
 app.use("/admins", adminRouter);
 app.use("/admin/auth", authRouter);
-app.use("/admin/faqs", faqRouter);
+app.use("/admin/faqs", injectIo(io), faqRouter);
 app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", contactUsAdminRouter);
 app.use("/admin/contactUs/:id/responses", responseRouter);
 app.use("/admin/forumTopics", forumTopicAdminRouter);
+app.use('/admin/notifications', notificationAdminRouter);
 
 app.use(
   "/user",
@@ -62,11 +80,25 @@ app.use(
   documentRoute,
   folderRoute,
   transactionRoute,
+  injectIo(io),
   contactUsUserRouter,
   forumTopicUserRouter,
   forumPostUserRouter,
   forumCommentUserRouter
 );
+
+io.on("connection", (socket) => {
+  console.log(`Client connected: ${socket.id}`);
+
+  socket.on("newContactUsNotification", (message) => {
+    io.emit("newContactUsNotification", message);
+  })
+
+  // Handle disconnects
+  socket.on("disconnect", () => {
+    console.log(`Client disconnected: ${socket.id}`);
+  });
+});
 
 db.sequelize
   .sync()
@@ -88,6 +120,7 @@ db.sequelize
     const existingForumTopicRecordsCount = await db.ForumTopic.count();
     const existingForumPostRecordsCount = await db.ForumPost.count();
     const existingForumCommentRecordsCount = await db.ForumComment.count();
+    const existingNotificationRecordsCount = await db.Notification.count();
 
     // General order of data insertion:
     // User -> Admin -> FAQ -> Property -> Image -> Chat -> Transaction -> Invoice -> Review
@@ -322,9 +355,27 @@ db.sequelize
       console.log("ForumComment test data already exists in the database.");
     }
 
-    app.listen(3000, () => {
-      console.log("Server running on port 3000");
-    });
+    if (existingNotificationRecordsCount === 0) {
+      try {
+        for (const notificationData of notificationTestData) {
+          await db.Notification.create(notificationData);
+        }
+
+        console.log("Notification test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Notification test data:", error);
+      }
+    } else {
+      console.log("Notification test data already exists in the database.");
+    }
+
+    // app.listen(3000, () => {
+    //   console.log("Server running on port 3000");
+    // });
+
+    server.listen(3000, () => {
+      console.log("io server running on port 3000");
+    })
   })
   .catch((error) => {
     console.error("Sequelize sync error:", error);
