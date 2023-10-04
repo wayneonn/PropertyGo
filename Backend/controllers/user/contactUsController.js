@@ -22,7 +22,7 @@ const createContactUs = async (req, res) => {
 
         await Notification.create(req.body);
 
-        // req.io.emit("newContactUsNotification", "New Contact Us has been created");
+        req.io.emit("newContactUsNotification", "New Contact Us has been created");
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error', error: error.message });

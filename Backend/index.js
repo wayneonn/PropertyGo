@@ -1,20 +1,18 @@
 const express = require("express");
 const http = require("http");
-// const socketIo = require("socket.io"); // for the event-based notification
+const socketIo = require("socket.io"); // for the event-based notification
 const cors = require("cors");
 const app = express();
 const globalEmitter = require("./globalEmitter")
-// const http = require('http');
 const WebSocket = require('ws');
 
-
-// const server = http.createServer(app);
-// const io = socketIo(server, {
-//   cors: {
-//     origin: "http://localhost:3001",
-//     methods: ["GET", "POST"]
-//   }
-// });
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:3001",
+    methods: ["GET", "POST"]
+  }
+});
 
 // model
 const db = require("./models");
@@ -72,8 +70,7 @@ const injectIo = (io) => {
 
 app.use("/admins", adminRouter);
 app.use("/admin/auth", authRouter);
-// app.use("/admin/faqs", injectIo(io), faqRouter);
-app.use("/admin/faqs", faqRouter);
+app.use("/admin/faqs", injectIo(io), faqRouter);
 app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", contactUsAdminRouter);
 app.use("/admin/contactUs/:id/responses", responseRouter);
@@ -87,7 +84,7 @@ app.use(
   documentRoute,
   folderRoute,
   transactionRoute,
-  // injectIo(io),
+  injectIo(io),
   contactUsUserRouter,
   forumTopicUserRouter,
   forumPostUserRouter,
@@ -95,21 +92,20 @@ app.use(
   partnerApplicationUserRouter
 );
 
-// io.on("connection", (socket) => {
-//   console.log(`Client connected: ${socket.id}`);
+io.on("connection", (socket) => {
+  console.log(`Client connected: ${socket.id}`);
 
-//   socket.on("newContactUsNotification", (message) => {
-//     io.emit("newContactUsNotification", message);
-//   })
+  socket.on("newContactUsNotification", (message) => {
+    io.emit("newContactUsNotification", message);
+  })
 
-//   // Handle disconnects
-//   socket.on("disconnect", () => {
-//     console.log(`Client disconnected: ${socket.id}`);
-//   });
-// });
+  // Handle disconnects
+  socket.on("disconnect", () => {
+    console.log(`Client disconnected: ${socket.id}`);
+  });
+});
 
 // TRYING TO USE WEBSOCKETS.
-const server = http.createServer(app);
 // const wss = new WebSocket.Server({server})
 
 

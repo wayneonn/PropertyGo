@@ -39,16 +39,28 @@ const CompanyInfoScreen = () => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.container}>
             <Text style={styles.title}>Company Information</Text>
-            <Text style={styles.subtitle}>Tell us what your company is.</Text>
+            <Text style={styles.subtitle}>Tell us what your company is. </Text>
             <Formik
                 initialValues={{companyName: formData.companyName || ''}}
                 onSubmit={handleSubmit}
                 validationSchema={validationSchema}
             >
-                {({handleSubmit, isValid, errors}) => (
+                {({handleSubmit, isValid, errors, values, setFieldValue}) => (
                     <View>
                         <Text style={styles.label}>Company Name</Text>
-                        <AnimatedInput fieldName="companyName"/>
+                        {/* Custom TextInput with character limit */}
+                        <TextInput
+                            name="companyName"
+                            maxLength={50}
+                            onChangeText={(text) => {
+                                setFieldValue('companyName', text);
+                            }}
+                            value={values.companyName}
+                            style={styles.input}
+                        />
+
+                        {/* Character count indicator */}
+                        <Text>{values.companyName.length}/50</Text>
                         {errors.companyName && <Text style={styles.errorText}>{errors.companyName}</Text>}
                         <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={!isValid}>
                             <Text style={styles.buttonText}>Next</Text>
@@ -95,14 +107,13 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 8,
         padding: 12,
-        marginBottom: 20,
         width: '100%',
     },
     button: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#007bff',
+        backgroundColor: '#5F5859',
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderRadius: 30,

@@ -154,7 +154,7 @@ const CreditCardInfoScreen = () => {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={Platform.OS === 'ios' && {flex: 1}}
+            style={Platform.OS === 'ios' && {flex: 1, alignItems: 'center', justifyContent: "center"}}
             keyboardVerticalOffset={30}
         >
             <ScrollView contentContainerStyle={styles.container}>
@@ -197,7 +197,7 @@ const CreditCardInfoScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flexGrow: 1,
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#f2f2f2',
@@ -207,12 +207,11 @@ const styles = StyleSheet.create({
         fontSize: 32,
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     label: {
         fontSize: 18,
         color: '#666',
-        marginBottom: 8,
     },
     input: {
         borderWidth: 1,
@@ -226,7 +225,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#007bff',
+        backgroundColor: '#5F5859',
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderRadius: 30,
