@@ -21,22 +21,22 @@ import {openBrowserAsync} from "expo-web-browser";
 import {AuthContext} from "../../AuthContext";
 import DropDownPicker from 'react-native-dropdown-picker';
 import {DocumentSelector} from "../../components/DocumentSelector";
-import {fetchDocuments, fetchFolders} from "../../utils/documentApi";
+import {BASE_URL, fetchDocuments, fetchFolders} from "../../utils/documentApi";
 
 // ICON IMPORTS
 import {AntDesign, Entypo, FontAwesome, MaterialIcons} from '@expo/vector-icons';
 
 //Conditional FileSaver import.
 let FileSaver;
-if (__DEV__ && Platform.OS === "web") {
+if (Platform.OS === "web") {
     FileSaver = require("file-saver").default;
 }
 /*******************************************/
 
 /* CONSTANTS FOR THE WHOLE PAGE */
 const {width} = Dimensions.get("window");
-const responsiveWidth = width * 0.8;
-const BASE_URL = "http://192.168.50.157:3000"; // Change this according to Wifi.
+
+// This is getting a bit cancer having to go to multiple files to change it.
 
 function UploadScreen({navigation}) {
     const [prevDocuments, setPrevDocuments] = useState([]); // This is suppose to be the list of documents that you have uploaded previously.
@@ -107,7 +107,6 @@ function UploadScreen({navigation}) {
         );
         console.log(response)
         const result = await response.json();
-        const doc = result.document;
         console.log(result)
         // The web version is kinda not needed.
         if (Platform.OS === "web") {
@@ -115,12 +114,10 @@ function UploadScreen({navigation}) {
             const byteArrays = [];
             for (let offset = 0; offset < byteCharacters.length; offset += 512) {
                 const slice = byteCharacters.slice(offset, offset + 512);
-
                 const byteNumbers = new Array(slice.length);
                 for (let i = 0; i < slice.length; i++) {
                     byteNumbers[i] = slice.charCodeAt(i);
                 }
-
                 const byteArray = new Uint8Array(byteNumbers);
                 byteArrays.push(byteArray);
             }
@@ -133,7 +130,9 @@ function UploadScreen({navigation}) {
             try {
                 // Slight issue opening certain PDF files.
                 // Native FileSystem logic
-                const fileName = FileSystem.documentDirectory + result.title;
+
+                //Filename has " " = Error and fuck you.
+                const fileName = (FileSystem.documentDirectory + result.title).replace(/\s/g, '_');
                 console.log('Filename:', fileName);
 
                 await FileSystem.writeAsStringAsync(
@@ -195,7 +194,7 @@ function UploadScreen({navigation}) {
             });
             if (response.ok) {
                 console.log("Document deleted successfully");
-                await fetchDocuments();
+                await fetchData();
             } else {
                 console.log("Error deleting document");
             }
@@ -207,6 +206,7 @@ function UploadScreen({navigation}) {
     const downloadDocumentFromServer = (document) => {
         downloadPDF(document);
     };
+
     const getFolderTitle = (folderId) => {
         const foundFolder = folders.find((folder) => folder.folderId === folderId);
         return foundFolder ? foundFolder.title : "";
@@ -224,7 +224,11 @@ function UploadScreen({navigation}) {
             </View>
             <View style={{flexDirection: "row"}}>
                 <Text style={styles.documentText}>Transaction ID: </Text>
-                <Text style={styles.documentText}>{item.transactionId}</Text>
+                <Text style={styles.documentText}>{item.transactionId === null ? "None" : item.transactionId}</Text>
+            </View>
+            <View style={{flexDirection: "row"}}>
+                <Text style={styles.documentText}>Partner Application ID: </Text>
+                <Text style={styles.documentText}>{item.partnerApplicationId === null ? "None" : item.partnerApplicationId}</Text>
             </View>
             <View style={{flexDirection: "row"}}>
                 <Text style={styles.documentText}>Folder: </Text>
@@ -268,7 +272,7 @@ function UploadScreen({navigation}) {
         <SafeAreaView style={styles.container}>
             {/* Wrap the FlatList in a View with border styles */}
             <View style={styles.documentListContainer}>
-                <DocumentSelector documentFetch={fetchData}/>
+                <DocumentSelector documentFetch={fetchData} folderState={folders} isTransaction={true}/>
             </View>
             <Text> &nbsp; &nbsp;</Text>
             <View style={styles.documentListContainer}>

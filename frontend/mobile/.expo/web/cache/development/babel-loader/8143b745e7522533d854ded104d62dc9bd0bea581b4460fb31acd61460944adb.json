@@ -1,1 +1,28 @@
-{"ast":null,"code":"import React from 'react';\nimport SafeAreaView from \"react-native-web/dist/exports/SafeAreaView\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport View from \"react-native-web/dist/exports/View\";\nimport TopBar from \"../../components/Common/TopNavBar\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar Documents = function Documents() {\n  return _jsx(SafeAreaView, {\n    children: _jsx(Text, {\n      children: \"DocumentsScreen\"\n    })\n  });\n};\nexport default Documents;","map":{"version":3,"names":["React","SafeAreaView","Text","View","TopBar","jsx","_jsx","Documents","children"],"sources":["C:/Users/Legion/Desktop/FSR - 1/PropertyGo/frontend/mobile/screens/sideNavigatorBar/Documents.js"],"sourcesContent":["import React from 'react';\r\nimport {SafeAreaView, Text, View } from 'react-native';\r\nimport TopBar from '../../components/Common/TopNavBar';\r\n\r\nconst Documents = () => {\r\n    return (\r\n      <SafeAreaView >\r\n        <Text>DocumentsScreen</Text>\r\n      </SafeAreaView>\r\n    );\r\n  };\r\n\r\n  export default Documents;"],"mappings":"AAAA,OAAOA,KAAK,MAAM,OAAO;AAAC,OAAAC,YAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAE1B,OAAOC,MAAM;AAA0C,SAAAC,GAAA,IAAAC,IAAA;AAEvD,IAAMC,SAAS,GAAG,SAAZA,SAASA,CAAA,EAAS;EACpB,OACED,IAAA,CAACL,YAAY;IAAAO,QAAA,EACXF,IAAA,CAACJ,IAAI;MAAAM,QAAA,EAAC;IAAe,CAAM;EAAC,CAChB,CAAC;AAEnB,CAAC;AAED,eAAeD,SAAS"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "import React from 'react';\nimport SafeAreaView from \"react-native-web/dist/exports/SafeAreaView\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport View from \"react-native-web/dist/exports/View\";\nimport TopBar from \"../../components/Common/TopNavBar\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar Documents = function Documents() {\n  return _jsx(SafeAreaView, {\n    children: _jsx(Text, {\n      children: \"DocumentsScreen\"\n    })\n  });\n};\nexport default Documents;",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "SafeAreaView",
+      "Text",
+      "View",
+      "TopBar",
+      "jsx",
+      "_jsx",
+      "Documents",
+      "children"
+    ],
+    "sources": [
+      "C:/Users/Legion/Desktop/FSR - 1/PropertyGo/frontend/mobile/screens/sideNavigatorBar/Documents.js"
+    ],
+    "sourcesContent": [
+      "import React from 'react';\r\nimport {SafeAreaView, Text, View } from 'react-native';\r\nimport TopBar from '../../components/Common/TopNavBar';\r\n\r\nconst Documents = () => {\r\n    return (\r\n      <SafeAreaView >\r\n        <Text>DocumentsScreen</Text>\r\n      </SafeAreaView>\r\n    );\r\n  };\r\n\r\n  export default Documents;"
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,MAAM,OAAO;AAAC,OAAAC,YAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAE1B,OAAOC,MAAM;AAA0C,SAAAC,GAAA,IAAAC,IAAA;AAEvD,IAAMC,SAAS,GAAG,SAAZA,SAASA,CAAA,EAAS;EACpB,OACED,IAAA,CAACL,YAAY;IAAAO,QAAA,EACXF,IAAA,CAACJ,IAAI;MAAAM,QAAA,EAAC;IAAe,CAAM;EAAC,CAChB,CAAC;AAEnB,CAAC;AAED,eAAeD,SAAS"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

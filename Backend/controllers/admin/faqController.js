@@ -80,7 +80,7 @@ const createFaq = async (req, res) => {
 
   res.status(201).json({ faq });
 
-  req.io.emit("newFaqRecordNotification", "A new FAQ has been added.");
+  // req.io.emit("newFaqRecordNotification", "A new FAQ has been added.");
 };
 
 const updateFaq = async (req, res) => {
