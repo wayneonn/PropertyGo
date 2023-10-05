@@ -40,7 +40,7 @@ const ForumPostHot = ({ navigation }) => {
 
   const handlePostPress = (post) => {
     setSearchQuery('');
-    // navigation.navigate("Forum Post Tab Navigator", { topic });
+    navigation.navigate("Forum Comment", { post });
   };
 
   const handleFilterPress = () => {

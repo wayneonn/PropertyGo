@@ -12,7 +12,6 @@ const createForumPost = async (req, res) => {
     const transaction = await sequelize.transaction();
 
     try {
-
         const images = req.files;
 
 
@@ -65,6 +64,7 @@ const createForumPost = async (req, res) => {
 
 
 const getAllForumPost = async (req, res) => {
+
     try {
         const sort = req.query.sort;
         const increase = JSON.parse(req.query.increase);
@@ -120,6 +120,29 @@ const getAllForumPost = async (req, res) => {
         });
 
         res.status(200).json(forumPosts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllForumPostById = async (req, res) => {
+    try {
+
+        const forumPostId = parseInt(req.params.forumPostId);
+
+
+        const forumPost = await ForumPost.findByPk(forumPostId, {
+            include: [
+              {
+                model: Image,
+                as: 'images',
+              },
+            ],
+          });
+
+        res.status(200).json(forumPost);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -327,5 +350,6 @@ module.exports = {
     updateForumPostFlaggedStatus,
     updateForumPostVote,
     updateForumPost,
-    deleteForumPost
+    deleteForumPost,
+    getAllForumPostById
 };

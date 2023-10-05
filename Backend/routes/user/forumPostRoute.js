@@ -12,6 +12,7 @@ const {
     updateForumPost,
     deleteForumPost,
     getForumPostVoteDetails,
+    getAllForumPostById
 } = require('../../controllers/user/forumPostController');
 
 const storage = multer.memoryStorage();
@@ -20,6 +21,9 @@ const upload = multer({ storage: storage });
 router.route('/:userId/forumPost')
     .post(upload.array("images", 5),createForumPost)
     .get(getAllForumPost)
+    
+router.route('/forumPost/:forumPostId')
+    .get(getAllForumPostById)
 
 router.route('/:userId/forumPost/:forumPostId/voteDetails')
     .get(getForumPostVoteDetails)

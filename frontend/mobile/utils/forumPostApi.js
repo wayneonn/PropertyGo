@@ -1,13 +1,14 @@
 import axios from 'axios';
+import configData from "../config.json"
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = configData.BASE_URL;
 
 // Function to create a new ForumPost record
 export const createForumPost = async (userId, forumPostData) => {
     try {
 
-        console.log(userId)
-        console.log(forumPostData)
+        // console.log(userId)
+        // console.log(forumPostData)
 
         // Make a POST request with the forumPostData
         const response = await axios.post(
@@ -38,6 +39,16 @@ export const getAllForumPost = async (userId, forumTopicId, sort, order) => {
     }
 };
 
+// Function to get ForumPost records for a specific user
+export const getAllForumPostById = async (forumPostId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/forumPost/${forumPostId}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
 
 export const getForumPostVoteDetails = async (userId, forumPostId) => {
     try {
@@ -81,7 +92,9 @@ export const updateForumPost = async (userId, updatedPost) => {
 
 export const deleteForumPost = async (userId, forumPostId) => {
     try {
+        console.log("Deleting forum post!")
         const response = await axios.delete(`${BASE_URL}/user/${userId}/forumPost/${forumPostId}/deleteForumPost`);
+        // console.log("response:", response)
         return response.data;
     } catch (error) {
         console.error(error);

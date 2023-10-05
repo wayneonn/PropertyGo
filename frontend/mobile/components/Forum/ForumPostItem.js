@@ -95,7 +95,6 @@ const ForumPostItem = ({ userId, post, onPress, onReport, onDelete, useParentCal
                     <View>
                         <Text style={styles.message}>{post.message}</Text>
                     </View>
-                    {/* <Image source={{ uri: `data:image/jpeg;base64,${"ZmlsZTovLy9Vc2Vycy9qYXJyZW50b2gvTGlicmFyeS9EZXZlbG9wZXIvQ29yZVNpbXVsYXRvci9EZXZpY2VzL0Y1RUI3OUQ0LTgzMzAtNEMzNy04MzUzLTRFRDlDM0EwNEM2OC9kYXRhL0NvbnRhaW5lcnMvRGF0YS9BcHBsaWNhdGlvbi81NUZEODdFNy1CODJCLTQ1NkUtODdENi0yNzg2RDc5ODQ2MTIvTGlicmFyeS9DYWNoZXMvRXhwb25lbnRFeHBlcmllbmNlRGF0YS8lMjU0MGFub255bW91cyUyNTJGUHJvcGVydHlHby1kOWU0YWEyYy1jNmUzLTRlNzItYWIwMy03MGE4ZWRmNGI5N2EvSW1hZ2VQaWNrZXIvMTg1RkFCMzktNzdERi00NzM0LTlFNUItMTQ0MkUwQTIxMDhELmpwZw=="}`}}/> */}
                     <ImageGallery images={post.images} />
                 </View>
 

@@ -1,4 +1,4 @@
-const { ForumComment, User } = require("../../models");
+const { ForumComment, User, Image } = require("../../models");
 const sequelize = require('sequelize');
 
 const createForumComment = async (req, res) => {
@@ -20,19 +20,34 @@ const createForumComment = async (req, res) => {
 const getAllForumComment = async (req, res) => {
     try {
         const { sort } = req.query;
+        const increase = JSON.parse(req.query.increase);
         const forumPostId = parseInt(req.query.forumPostId);
         const userId = parseInt(req.params.userId);
 
         let orderCriteria = [['createdAt', 'DESC']];
 
+        if (sort !== 'vote' && increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+
+        }
+
         if (sort === 'vote') {
             // Sorting by the difference between upvotes and downvotes
-            orderCriteria = [
-                [
-                    sequelize.literal('(SELECT COUNT(*) FROM `UserCommentUpvoted` AS `UserCommentUpvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentUpvoted`.`forumCommentId`) - (SELECT COUNT(*) FROM `UserCommentDownvoted` AS `UserCommentDownvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentDownvoted`.`forumCommentId`)'),
-                    'DESC',
-                ],
-            ];
+            if (!increase) {
+                orderCriteria = [
+                    [
+                        sequelize.literal('(SELECT COUNT(*) FROM `UserCommentUpvoted` AS `UserCommentUpvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentUpvoted`.`forumCommentId`) - (SELECT COUNT(*) FROM `UserCommentDownvoted` AS `UserCommentDownvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentDownvoted`.`forumCommentId`)'),
+                        'DESC',
+                    ],
+                ];
+            } else {
+                orderCriteria = [
+                    [
+                        sequelize.literal('(SELECT COUNT(*) FROM `UserCommentUpvoted` AS `UserCommentUpvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentUpvoted`.`forumCommentId`) - (SELECT COUNT(*) FROM `UserCommentDownvoted` AS `UserCommentDownvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentDownvoted`.`forumCommentId`)'),
+                        'ASC',
+                    ],
+                ];
+            }
         }
 
         const forumComments = await ForumComment.findAll({
@@ -48,9 +63,47 @@ const getAllForumComment = async (req, res) => {
                     ),
                 },
             },
+            include: [
+                // Include the associated Images
+                {
+                    model: Image,
+                    as: 'images',
+                },
+            ],
         });
 
         res.status(200).json(forumComments);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getForumCommentVoteDetails = async (req, res) => {
+    try {
+
+        const userId = parseInt(req.params.userId);
+        const forumCommentId = parseInt(req.params.forumCommentId);
+        const forumComment = await ForumComment.findByPk(forumCommentId);
+
+        if (!forumComment) {
+            return res.status(404).json({ message: 'ForumComment not found' });
+        }
+
+        const userUpvote = await forumComment.hasUsersUpvoted(userId);
+        const userDownvote = await forumComment.hasUsersDownvoted(userId);
+        const totalUpvote = await forumComment.countUsersUpvoted();
+        const totalDownvote = await forumComment.countUsersDownvoted();
+
+        const voteDetails = {
+            userUpvote,
+            userDownvote,
+            totalUpvote,
+            totalDownvote,
+        };
+
+
+        res.status(200).json(voteDetails);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -114,19 +167,25 @@ const updateForumCommentVote = async (req, res) => {
         const existingUpvote = await forumComment.hasUsersUpvoted(user);
         const existingDownvote = await forumComment.hasUsersDownvoted(user)
 
-        // Remove any existing votes by the user
-        if (existingUpvote) {
-            await forumComment.removeUsersUpvoted(user);
-        }
-        if (existingDownvote) {
-            await forumComment.removeUsersDownvoted(user);
-        }
-
         // Create a new vote record based on the user's choice
         if (voteType === 'upvote') {
-            await forumComment.addUsersUpvoted(user);
+            if (existingUpvote) {
+                await forumComment.removeUsersUpvoted(user);
+            } else {
+                if (existingDownvote) {
+                    await forumComment.removeUsersDownvoted(user);
+                }
+                await forumComment.addUsersUpvoted(user);
+            }
         } else if (voteType === 'downvote') {
-            await forumComment.addUsersDownvoted(user);
+            if (existingDownvote) {
+                await forumComment.removeUsersDownvoted(user);
+            } else {
+                if (existingUpvote) {
+                    await forumComment.removeUsersUpvoted(user);
+                }
+                await forumComment.addUsersDownvoted(user);
+            }
         } else {
             return res.status(400).json({ message: 'Invalid vote type' });
         }
@@ -218,6 +277,7 @@ module.exports = {
     updateForumCommentFlaggedStatus,
     updateForumCommentVote,
     updateForumComment,
-    deleteForumComment
+    deleteForumComment,
+    getForumCommentVoteDetails
 
 };

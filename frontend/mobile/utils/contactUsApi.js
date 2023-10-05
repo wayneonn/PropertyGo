@@ -1,6 +1,7 @@
 import axios from 'axios';
+import configData from "../config.json"
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = configData.BASE_URL;
 
 // Function to create a new ContactUs record
 export const createContactUs = async (userId, contactUsData) => {

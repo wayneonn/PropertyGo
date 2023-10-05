@@ -9,6 +9,7 @@ const {
     updateForumCommentVote,
     updateForumComment,
     deleteForumComment,
+    getForumCommentVoteDetails
 } = require('../../controllers/user/forumCommentController');
 
 
@@ -19,6 +20,8 @@ router.route('/:userId/forumComment')
 router.route('/:userId/forumComment/:forumCommentId/flagComment')
     .put(updateForumCommentFlaggedStatus)
 
+router.route('/:userId/forumComment/:forumCommentId/voteDetails')
+    .get(getForumCommentVoteDetails)
 
 router.route('/:userId/forumComment/:forumCommentId/voteComment')
     .put(updateForumCommentVote)

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext, useCallback, useEffect } from 'react';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, RefreshControl } from 'react-native';
@@ -34,13 +34,21 @@ const ForumPostDefault = ({ navigation }) => {
     }
 
     fetchData();
+
+    return () => {
+
+      setforumPosts([])
+      setFilteredPosts([]);
+    };
   }, [sort])
 
   useFocusEffect(useParentCallback);
 
+
+
   const handlePostPress = (post) => {
     setSearchQuery('');
-    // navigation.navigate("Forum Post Tab Navigator", { topic });
+    navigation.navigate("Forum Comment", { post});
   };
 
   const handleFilterPress = () => {

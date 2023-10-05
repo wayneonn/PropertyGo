@@ -31,13 +31,16 @@ const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             quality: 1,
+            multiple: true,
         });
-
+    
         if (!result.canceled) {
             const selectedImages = result.assets.map(asset => asset.uri);
-            setImageUris([...imageUris, ...selectedImages]);
+            // Check the number of selected images before adding them
+            if (imageUris.length + selectedImages.length <= 5) {
+                setImageUris([...imageUris, ...selectedImages]);
+            }
         }
-        // console.log(imageUris);
     };
 
     const handleImageRemove = (index) => {
