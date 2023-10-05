@@ -1,5 +1,6 @@
 const sharp = require('sharp');
 const { sequelize, Property, Image, User } = require('../../models');
+const { Op } = require('sequelize');
 
 // Get all properties
 async function getAllProperties(req, res) {
@@ -485,6 +486,32 @@ async function editProperty(req, res) {
       res.status(500).json({ error: 'Error editing property' });
     }
   }
+
+  async function searchProperties(req, res) {
+    try {
+      const { q } = req.query;
+  
+      // Perform a database query to search for properties
+      const results = await Property.findAll({
+        where: {
+          // Use Sequelize operators to search in relevant fields (address, area, postal code)
+          [Op.or]: [
+            { address: { [Op.like]: `%${q}%` } }, // Use [Op.like] for case-insensitive matching
+            { area: { [Op.like]: `%${q}%` } },    // Use [Op.like] for case-insensitive matching
+            { postalCode: { [Op.like]: `%${q}%` } }, // Use [Op.like] for case-insensitive matching
+          ],
+        },
+      });
+  
+      // Extract the property IDs from the results
+      const propertyIds = results.map((property) => property);
+  
+      res.json(propertyIds);
+    } catch (error) {
+      console.error('Error searching for properties:', error);
+      res.status(500).json({ error: 'Error searching for properties' });
+    }
+  }
   
 module.exports = {
     getAllProperties,
@@ -498,4 +525,5 @@ module.exports = {
     getPropertiesByUser,
     removeProperty,
     editProperty,
+    searchProperties,
 };

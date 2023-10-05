@@ -7,6 +7,7 @@ import PropertiesList from "../screens/propertyListings/PropertiesList";
 import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import TokenScreen from "../screens/token/TokenScreen"; // Import your Coins screen here
 import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListing";
+import SearchResults from '../screens/propertyListings/SearchResults';
 import Map from "../screens/propertyListings/map";
 
 const HomeListingsStack = createNativeStackNavigator();
@@ -25,6 +26,7 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="View Profile" component={ViewUserProfile}/>
             <HomeListingsStack.Screen name="Token" component={TokenScreen}/>
             <HomeListingsStack.Screen name="Boost Listing" component={BoostPropertyListing}/>
+            <HomeListingsStack.Screen name="Search Results" component={SearchResults}/>
         </HomeListingsStack.Navigator>
     );
 };
