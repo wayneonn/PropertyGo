@@ -84,8 +84,7 @@ module.exports = (sequelize, DataTypes) => {
           "LAWYER",
           "PROPERTY AGENT",
           "CONTRACTOR",
-          "BUYER",
-          "SELLER"
+          "BUYER_SELLER"
         ),
         allowNull: false,
       },

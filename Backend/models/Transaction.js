@@ -8,10 +8,10 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      timestamp: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
+      // timestamp: {
+      //   type: DataTypes.DATE,
+      //   allowNull: false,
+      // },
       onHoldBalance: {
         type: DataTypes.DOUBLE,
         defaultValue: 0.0,
@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     Transaction.belongsTo(models.User, {
       as: "buyer",
-      foreignKey: "userId",
+      foreignKey: "buyerId",
       allowNull: false,
     });
     Transaction.belongsTo(models.Property, {
@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     Transaction.belongsTo(models.User, {
       as: "seller",
-      foreignKey: "userId",
+      foreignKey: "sellerId",
       allowNull: false,
     });
     Transaction.belongsTo(models.Invoice, {
