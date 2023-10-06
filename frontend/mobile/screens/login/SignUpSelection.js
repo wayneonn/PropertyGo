@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RFValue } from 'react-native-responsive-fontsize';
+import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {RFValue} from 'react-native-responsive-fontsize';
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 const SignUpSelection = () => {
     const navigation = useNavigation();
@@ -11,7 +11,7 @@ const SignUpSelection = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.welcomeText}>Welcome to PropertyGo!</Text>
-            <Image source={require('../../assets/PropertyGo-HighRes-Logo.png')} style={styles.icon} />
+            <Image source={require('../../assets/PropertyGo-HighRes-Logo.png')} style={styles.icon}/>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign Up Screen')}>
                 <Text style={styles.buttonText}>Sign Up with Email</Text>
             </TouchableOpacity>
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 15,
         borderRadius: 25,
-        backgroundColor: '#4267B2', 
+        backgroundColor: '#4267B2',
         width: width * 0.8,
         marginVertical: 10,
     },

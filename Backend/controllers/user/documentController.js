@@ -14,6 +14,7 @@ exports.uploadDocuments = async (req, res) => {
   let userId = req.body.userId;
   let transactionId = req.body.transactionId;
   let folderId = req.body.folderId;
+  let partnerApplicationId = req.body.partnerApplicationId;
   let propertyId = req.body.propertyId;
   // If userId is an array, pick first element
   if (Array.isArray(userId)) {
@@ -26,6 +27,11 @@ exports.uploadDocuments = async (req, res) => {
   // If folderId is an array, pick first element
   if (Array.isArray(folderId)) {
     folderId = folderId[0];
+  }
+
+  // If partnerApplicationId is an array, pick first element
+  if (Array.isArray(partnerApplicationId)) {
+    partnerApplicationId = partnerApplicationId[0];
   }
 
   if (Array.isArray(propertyId)) {
@@ -50,10 +56,10 @@ exports.uploadDocuments = async (req, res) => {
         userId: userId,
         transactionId: transactionId,
         folderId: folderId,
+        partnerApplicationId: partnerApplicationId,
         propertyId: propertyId,
       });
     }
-
     res.json({ message: "File upload successful" });
   } catch (error) {
     // Handle any errors
@@ -75,9 +81,11 @@ exports.getDocumentsMetadata = async (req, res) => {
         "folderId",
         "userId",
         "transactionId",
+        "partnerApplicationId",
         "title",
         "createdAt",
         "updatedAt",
+        "description",
       ],
       where: { deleted: false, userId: req.params.id },
     });
@@ -85,6 +93,28 @@ exports.getDocumentsMetadata = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Document metadata collection error.");
+  }
+};
+
+exports.getDocumentMetadataByAppId = async (req, res) => {
+  try {
+    const documents = await Document.findAll({
+      attributes: [
+        "documentId",
+        "folderId",
+        "userId",
+        "transactionId",
+        "title",
+        "createdAt",
+        "updatedAt",
+        "description",
+      ],
+      where: { deleted: false, partnerApplicationId: req.params.id },
+    });
+    res.json(documents);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Document metadata by partner application error.");
   }
 };
 

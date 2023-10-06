@@ -1,1 +1,31 @@
-{"ast":null,"code":"export var calculateMortgageData = function calculateMortgageData(loanAmount, loanInterestRate, loanTenure) {\n  var principal = loanAmount;\n  var annualInterestRate = loanInterestRate / 100;\n  var monthlyInterestRate = annualInterestRate / 12;\n  var tenureMonths = loanTenure;\n  var monthlyRepayment = principal * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, tenureMonths) / (Math.pow(1 + monthlyInterestRate, tenureMonths) - 1);\n  var interestRepayment = principal * (Math.pow(1 + annualInterestRate, 1 / 12) - 1);\n  return {\n    monthlyRepayment: monthlyRepayment,\n    interestRepayment: interestRepayment\n  };\n};","map":{"version":3,"names":["calculateMortgageData","loanAmount","loanInterestRate","loanTenure","principal","annualInterestRate","monthlyInterestRate","tenureMonths","monthlyRepayment","Math","pow","interestRepayment"],"sources":["/Users/wayneonn/Code/PropertyGo/frontend/mobile/services/CalculateMortgageData.js"],"sourcesContent":["export const calculateMortgageData = (loanAmount, loanInterestRate, loanTenure) => {\n    const principal = loanAmount;\n    const annualInterestRate = loanInterestRate / 100;\n    const monthlyInterestRate = annualInterestRate / 12;\n    const tenureMonths = loanTenure;\n  \n    const monthlyRepayment =\n      (principal *\n        monthlyInterestRate *\n        Math.pow(1 + monthlyInterestRate, tenureMonths)) /\n      (Math.pow(1 + monthlyInterestRate, tenureMonths) - 1);\n  \n    const interestRepayment = principal * (Math.pow((1 + annualInterestRate), 1/12) - 1)\n  \n    return { monthlyRepayment, interestRepayment };\n  };"],"mappings":"AAAA,OAAO,IAAMA,qBAAqB,GAAG,SAAxBA,qBAAqBA,CAAIC,UAAU,EAAEC,gBAAgB,EAAEC,UAAU,EAAK;EAC/E,IAAMC,SAAS,GAAGH,UAAU;EAC5B,IAAMI,kBAAkB,GAAGH,gBAAgB,GAAG,GAAG;EACjD,IAAMI,mBAAmB,GAAGD,kBAAkB,GAAG,EAAE;EACnD,IAAME,YAAY,GAAGJ,UAAU;EAE/B,IAAMK,gBAAgB,GACnBJ,SAAS,GACRE,mBAAmB,GACnBG,IAAI,CAACC,GAAG,CAAC,CAAC,GAAGJ,mBAAmB,EAAEC,YAAY,CAAC,IAChDE,IAAI,CAACC,GAAG,CAAC,CAAC,GAAGJ,mBAAmB,EAAEC,YAAY,CAAC,GAAG,CAAC,CAAC;EAEvD,IAAMI,iBAAiB,GAAGP,SAAS,IAAIK,IAAI,CAACC,GAAG,CAAE,CAAC,GAAGL,kBAAkB,EAAG,CAAC,GAAC,EAAE,CAAC,GAAG,CAAC,CAAC;EAEpF,OAAO;IAAEG,gBAAgB,EAAhBA,gBAAgB;IAAEG,iBAAiB,EAAjBA;EAAkB,CAAC;AAChD,CAAC"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "export var calculateMortgageData = function calculateMortgageData(loanAmount, loanInterestRate, loanTenure) {\n  var principal = loanAmount;\n  var annualInterestRate = loanInterestRate / 100;\n  var monthlyInterestRate = annualInterestRate / 12;\n  var tenureMonths = loanTenure;\n  var monthlyRepayment = principal * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, tenureMonths) / (Math.pow(1 + monthlyInterestRate, tenureMonths) - 1);\n  var interestRepayment = principal * (Math.pow(1 + annualInterestRate, 1 / 12) - 1);\n  return {\n    monthlyRepayment: monthlyRepayment,\n    interestRepayment: interestRepayment\n  };\n};",
+  "map": {
+    "version": 3,
+    "names": [
+      "calculateMortgageData",
+      "loanAmount",
+      "loanInterestRate",
+      "loanTenure",
+      "principal",
+      "annualInterestRate",
+      "monthlyInterestRate",
+      "tenureMonths",
+      "monthlyRepayment",
+      "Math",
+      "pow",
+      "interestRepayment"
+    ],
+    "sources": [
+      "/Users/wayneonn/Code/PropertyGo/frontend/mobile/services/CalculateMortgageData.js"
+    ],
+    "sourcesContent": [
+      "export const calculateMortgageData = (loanAmount, loanInterestRate, loanTenure) => {\n    const principal = loanAmount;\n    const annualInterestRate = loanInterestRate / 100;\n    const monthlyInterestRate = annualInterestRate / 12;\n    const tenureMonths = loanTenure;\n  \n    const monthlyRepayment =\n      (principal *\n        monthlyInterestRate *\n        Math.pow(1 + monthlyInterestRate, tenureMonths)) /\n      (Math.pow(1 + monthlyInterestRate, tenureMonths) - 1);\n  \n    const interestRepayment = principal * (Math.pow((1 + annualInterestRate), 1/12) - 1)\n  \n    return { monthlyRepayment, interestRepayment };\n  };"
+    ],
+    "mappings": "AAAA,OAAO,IAAMA,qBAAqB,GAAG,SAAxBA,qBAAqBA,CAAIC,UAAU,EAAEC,gBAAgB,EAAEC,UAAU,EAAK;EAC/E,IAAMC,SAAS,GAAGH,UAAU;EAC5B,IAAMI,kBAAkB,GAAGH,gBAAgB,GAAG,GAAG;EACjD,IAAMI,mBAAmB,GAAGD,kBAAkB,GAAG,EAAE;EACnD,IAAME,YAAY,GAAGJ,UAAU;EAE/B,IAAMK,gBAAgB,GACnBJ,SAAS,GACRE,mBAAmB,GACnBG,IAAI,CAACC,GAAG,CAAC,CAAC,GAAGJ,mBAAmB,EAAEC,YAAY,CAAC,IAChDE,IAAI,CAACC,GAAG,CAAC,CAAC,GAAGJ,mBAAmB,EAAEC,YAAY,CAAC,GAAG,CAAC,CAAC;EAEvD,IAAMI,iBAAiB,GAAGP,SAAS,IAAIK,IAAI,CAACC,GAAG,CAAE,CAAC,GAAGL,kBAAkB,EAAG,CAAC,GAAC,EAAE,CAAC,GAAG,CAAC,CAAC;EAEpF,OAAO;IAAEG,gBAAgB,EAAhBA,gBAAgB;IAAEG,iBAAiB,EAAjBA;EAAkB,CAAC;AAChD,CAAC"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

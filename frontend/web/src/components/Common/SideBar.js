@@ -8,6 +8,7 @@ import {
   AiOutlineBook,
   AiOutlineCreditCard,
   AiOutlineQuestionCircle,
+    AiOutline
 } from "react-icons/ai";
 import { PiPuzzlePiece, PiHouseLine } from "react-icons/pi";
 import { GoPerson } from "react-icons/go";

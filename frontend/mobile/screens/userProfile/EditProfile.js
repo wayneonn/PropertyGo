@@ -1,34 +1,23 @@
-import React, { useContext, useState, useEffect } from 'react';
-import {
-    ScrollView,
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    Image,
-    TextInput,
-    Modal,
-    Alert,
-} from 'react-native';
-import { AuthContext } from '../../AuthContext';
+import React, {useContext, useEffect, useState} from 'react';
+import {Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
+import {AuthContext} from '../../AuthContext';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import { Picker } from '@react-native-picker/picker';
+import {Picker} from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
-import { updateUserProfile } from '../../utils/api';
-import { updateUserProfilePicture, loginUser } from '../../utils/api';
+import {loginUser, updateUserProfile, updateUserProfilePicture} from '../../utils/api';
 import base64 from 'react-native-base64';
-import { Ionicons } from '@expo/vector-icons';
+import {Ionicons} from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const countries = [
-    { label: 'Select Country', value: '' },
-    { label: 'Singapore', value: 'Singapore' },
-    { label: 'Indonesia', value: 'Indonesia' },
-    { label: 'Malaysia', value: 'Malaysia' },
+    {label: 'Select Country', value: ''},
+    {label: 'Singapore', value: 'Singapore'},
+    {label: 'Indonesia', value: 'Indonesia'},
+    {label: 'Malaysia', value: 'Malaysia'},
 ];
 
-function EditProfile({ navigation, route }) {
-    const { user, login, upd } = useContext(AuthContext);
+function EditProfile({navigation, route}) {
+    const {user, login, upd} = useContext(AuthContext);
 
     const [editedUser, setEditedUser] = useState({
         name: user.user.name,
@@ -57,7 +46,7 @@ function EditProfile({ navigation, route }) {
     }, [profileImageBase64]);
 
     const handleInputChange = (field, value) => {
-        setEditedUser({ ...editedUser, [field]: value });
+        setEditedUser({...editedUser, [field]: value});
     };
 
     const openDatePicker = () => {
@@ -65,18 +54,18 @@ function EditProfile({ navigation, route }) {
     };
 
     const handleDateConfirm = (date) => {
-        setEditedUser({ ...editedUser, dateOfBirth: date.toISOString().split('T')[0] });
+        setEditedUser({...editedUser, dateOfBirth: date.toISOString().split('T')[0]});
         setDatePickerVisibility(false);
     };
 
     const handleCountryChange = (itemValue) => {
-        setEditedUser({ ...editedUser, countryOfOrigin: itemValue });
+        setEditedUser({...editedUser, countryOfOrigin: itemValue});
         setCountryPickerVisibility(false);
     };
 
     const fetchUpdatedUserDetailsImage = async () => {
         try {
-            const { success, data, message } = await loginUser(user.user.userName, user.user.password);
+            const {success, data, message} = await loginUser(user.user.userName, user.user.password);
 
             if (success) {
                 login(data);
@@ -90,7 +79,7 @@ function EditProfile({ navigation, route }) {
 
     const fetchUpdatedUserDetails = async () => {
         try {
-            const { success, data, message } = await loginUser(user.user.userName, user.user.password);
+            const {success, data, message} = await loginUser(user.user.userName, user.user.password);
 
             if (success) {
                 login(data);
@@ -135,7 +124,7 @@ function EditProfile({ navigation, route }) {
             formData.append('countryOfOrigin', editedUser.countryOfOrigin);
             formData.append('dateOfBirth', editedUser.dateOfBirth);
 
-            const { success, data, message } = await updateUserProfile(user.user.userId, formData);
+            const {success, data, message} = await updateUserProfile(user.user.userId, formData);
 
             if (success) {
                 if (profileImage) {
@@ -196,7 +185,7 @@ function EditProfile({ navigation, route }) {
             <View style={styles.headerContainer}>
                 {/* Back button */}
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={24} color="black" />
+                    <Ionicons name="arrow-back" size={24} color="black"/>
                 </TouchableOpacity>
                 <Text style={styles.header}>Edit Profile</Text>
             </View>
@@ -204,10 +193,10 @@ function EditProfile({ navigation, route }) {
             <View style={styles.profileHeader}>
                 <TouchableOpacity onPress={chooseImage}>
                     {profileImage ? (
-                        <Image source={{ uri: profileImage }} style={styles.profileImage} />
+                        <Image source={{uri: profileImage}} style={styles.profileImage}/>
                     ) : (
                         <View style={styles.profileImagePlaceholder}>
-                            <Icon name="user" size={100} color="white" />
+                            <Icon name="user" size={100} color="white"/>
                         </View>
                     )}
                 </TouchableOpacity>
@@ -240,7 +229,7 @@ function EditProfile({ navigation, route }) {
                         onPress={() => setCountryPickerVisibility(true)}
                     >
                         <Text style={styles.countryPickerText}>{editedUser.countryOfOrigin}</Text>
-                        <Ionicons name="caret-down-outline" size={20} color="black" />
+                        <Ionicons name="caret-down-outline" size={20} color="black"/>
                     </TouchableOpacity>
                     <Modal
                         transparent={true}
@@ -270,7 +259,7 @@ function EditProfile({ navigation, route }) {
                     <TouchableOpacity onPress={openDatePicker} style={styles.datePicker}>
 
                         <Text style={styles.datePickerText}>{editedUser.dateOfBirth}</Text>
-                        <Ionicons name="calendar-outline" size={20} color="black" />
+                        <Ionicons name="calendar-outline" size={20} color="black"/>
                     </TouchableOpacity>
                     <DateTimePicker
                         isVisible={isDatePickerVisible}
@@ -285,13 +274,13 @@ function EditProfile({ navigation, route }) {
                 style={styles.updatePasswordButton}
                 onPress={() => navigation.navigate('UpdatePassword')}
             >
-                <Ionicons name="key-outline" size={20} color="white" />
+                <Ionicons name="key-outline" size={20} color="white"/>
                 <Text style={styles.updatePasswordButtonText}>Update Password</Text>
             </TouchableOpacity>
 
             {/* Save Changes button with icon */}
             <TouchableOpacity style={styles.saveChangesButton} onPress={saveChanges}>
-            <Ionicons name="save-outline" size={18} color="white" />
+                <Ionicons name="save-outline" size={18} color="white"/>
                 <Text style={styles.saveChangesButtonText}>Save Changes</Text>
             </TouchableOpacity>
         </ScrollView>

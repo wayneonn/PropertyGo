@@ -1,1 +1,52 @@
-{"ast":null,"code":"import React, { useState } from 'react';\nimport View from \"react-native-web/dist/exports/View\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport StyleSheet from \"react-native-web/dist/exports/StyleSheet\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nimport { jsxs as _jsxs } from \"react/jsx-runtime\";\nexport var Legend = function Legend(_ref) {\n  var data = _ref.data;\n  return _jsx(View, {\n    style: styles.legendContainer,\n    children: data.map(function (item, index) {\n      return _jsxs(View, {\n        style: styles.legendItem,\n        children: [_jsx(View, {\n          style: {\n            backgroundColor: item.color,\n            width: 20,\n            height: 20,\n            marginRight: 5\n          }\n        }), _jsx(Text, {\n          children: item.label + \": \" + item.amount.toFixed(2)\n        })]\n      }, index);\n    })\n  });\n};\nvar styles = StyleSheet.create({\n  legendContainer: {\n    flexDirection: 'column',\n    justifyContent: 'center',\n    marginTop: 10\n  },\n  legendItem: {\n    flexDirection: 'row',\n    alignItems: 'center',\n    marginRight: 20,\n    marginTop: 10\n  }\n});\n'';","map":{"version":3,"names":["React","useState","View","Text","StyleSheet","jsx","_jsx","jsxs","_jsxs","Legend","_ref","data","style","styles","legendContainer","children","map","item","index","legendItem","backgroundColor","color","width","height","marginRight","label","amount","toFixed","create","flexDirection","justifyContent","marginTop","alignItems"],"sources":["/Users/wayneonn/Code/PropertyGo/frontend/mobile/components/Legend.js"],"sourcesContent":["import React, { useState } from 'react';\nimport { View, Text, StyleSheet} from 'react-native';\n\n\nexport const Legend = ({ data }) => (\n    <View style={styles.legendContainer}>\n      {data.map((item, index) => (\n        <View key={index} style={styles.legendItem}>\n          <View\n            style={{\n              backgroundColor: item.color,\n              width: 20,\n              height: 20,\n              marginRight: 5,\n            }}\n          />\n          <Text>{item.label + \": \"+ item.amount.toFixed(2)}</Text>\n        </View>\n      ))}\n    </View>\n  );\n  \n  const styles = StyleSheet.create({\n    legendContainer: {\n      flexDirection: 'column',\n    //   alignItems: 'center',\n      justifyContent: 'center',\n      marginTop: 10,\n    },\n    legendItem: {\n      flexDirection: 'row',\n      alignItems: 'center',\n      marginRight: 20,\n      marginTop: 10,\n    },\n  });\n''  "],"mappings":"AAAA,OAAOA,KAAK,IAAIC,QAAQ,QAAQ,OAAO;AAAC,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,UAAA;AAAA,SAAAC,GAAA,IAAAC,IAAA;AAAA,SAAAC,IAAA,IAAAC,KAAA;AAIxC,OAAO,IAAMC,MAAM,GAAG,SAATA,MAAMA,CAAAC,IAAA;EAAA,IAAMC,IAAI,GAAAD,IAAA,CAAJC,IAAI;EAAA,OACzBL,IAAA,CAACJ,IAAI;IAACU,KAAK,EAAEC,MAAM,CAACC,eAAgB;IAAAC,QAAA,EACjCJ,IAAI,CAACK,GAAG,CAAC,UAACC,IAAI,EAAEC,KAAK;MAAA,OACpBV,KAAA,CAACN,IAAI;QAAaU,KAAK,EAAEC,MAAM,CAACM,UAAW;QAAAJ,QAAA,GACzCT,IAAA,CAACJ,IAAI;UACHU,KAAK,EAAE;YACLQ,eAAe,EAAEH,IAAI,CAACI,KAAK;YAC3BC,KAAK,EAAE,EAAE;YACTC,MAAM,EAAE,EAAE;YACVC,WAAW,EAAE;UACf;QAAE,CACH,CAAC,EACFlB,IAAA,CAACH,IAAI;UAAAY,QAAA,EAAEE,IAAI,CAACQ,KAAK,GAAG,IAAI,GAAER,IAAI,CAACS,MAAM,CAACC,OAAO,CAAC,CAAC;QAAC,CAAO,CAAC;MAAA,GAT/CT,KAUL,CAAC;IAAA,CACR;EAAC,CACE,CAAC;AAAA,CACR;AAED,IAAML,MAAM,GAAGT,UAAU,CAACwB,MAAM,CAAC;EAC/Bd,eAAe,EAAE;IACfe,aAAa,EAAE,QAAQ;IAEvBC,cAAc,EAAE,QAAQ;IACxBC,SAAS,EAAE;EACb,CAAC;EACDZ,UAAU,EAAE;IACVU,aAAa,EAAE,KAAK;IACpBG,UAAU,EAAE,QAAQ;IACpBR,WAAW,EAAE,EAAE;IACfO,SAAS,EAAE;EACb;AACF,CAAC,CAAC;AACJ,EAAE"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "import React, { useState } from 'react';\nimport View from \"react-native-web/dist/exports/View\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport StyleSheet from \"react-native-web/dist/exports/StyleSheet\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nimport { jsxs as _jsxs } from \"react/jsx-runtime\";\nexport var Legend = function Legend(_ref) {\n  var data = _ref.data;\n  return _jsx(View, {\n    style: styles.legendContainer,\n    children: data.map(function (item, index) {\n      return _jsxs(View, {\n        style: styles.legendItem,\n        children: [_jsx(View, {\n          style: {\n            backgroundColor: item.color,\n            width: 20,\n            height: 20,\n            marginRight: 5\n          }\n        }), _jsx(Text, {\n          children: item.label + \": \" + item.amount.toFixed(2)\n        })]\n      }, index);\n    })\n  });\n};\nvar styles = StyleSheet.create({\n  legendContainer: {\n    flexDirection: 'column',\n    justifyContent: 'center',\n    marginTop: 10\n  },\n  legendItem: {\n    flexDirection: 'row',\n    alignItems: 'center',\n    marginRight: 20,\n    marginTop: 10\n  }\n});\n'';",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "useState",
+      "View",
+      "Text",
+      "StyleSheet",
+      "jsx",
+      "_jsx",
+      "jsxs",
+      "_jsxs",
+      "Legend",
+      "_ref",
+      "data",
+      "style",
+      "styles",
+      "legendContainer",
+      "children",
+      "map",
+      "item",
+      "index",
+      "legendItem",
+      "backgroundColor",
+      "color",
+      "width",
+      "height",
+      "marginRight",
+      "label",
+      "amount",
+      "toFixed",
+      "create",
+      "flexDirection",
+      "justifyContent",
+      "marginTop",
+      "alignItems"
+    ],
+    "sources": [
+      "/Users/wayneonn/Code/PropertyGo/frontend/mobile/components/Legend.js"
+    ],
+    "sourcesContent": [
+      "import React, { useState } from 'react';\nimport { View, Text, StyleSheet} from 'react-native';\n\n\nexport const Legend = ({ data }) => (\n    <View style={styles.legendContainer}>\n      {data.map((item, index) => (\n        <View key={index} style={styles.legendItem}>\n          <View\n            style={{\n              backgroundColor: item.color,\n              width: 20,\n              height: 20,\n              marginRight: 5,\n            }}\n          />\n          <Text>{item.label + \": \"+ item.amount.toFixed(2)}</Text>\n        </View>\n      ))}\n    </View>\n  );\n  \n  const styles = StyleSheet.create({\n    legendContainer: {\n      flexDirection: 'column',\n    //   alignItems: 'center',\n      justifyContent: 'center',\n      marginTop: 10,\n    },\n    legendItem: {\n      flexDirection: 'row',\n      alignItems: 'center',\n      marginRight: 20,\n      marginTop: 10,\n    },\n  });\n''  "
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,IAAIC,QAAQ,QAAQ,OAAO;AAAC,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,UAAA;AAAA,SAAAC,GAAA,IAAAC,IAAA;AAAA,SAAAC,IAAA,IAAAC,KAAA;AAIxC,OAAO,IAAMC,MAAM,GAAG,SAATA,MAAMA,CAAAC,IAAA;EAAA,IAAMC,IAAI,GAAAD,IAAA,CAAJC,IAAI;EAAA,OACzBL,IAAA,CAACJ,IAAI;IAACU,KAAK,EAAEC,MAAM,CAACC,eAAgB;IAAAC,QAAA,EACjCJ,IAAI,CAACK,GAAG,CAAC,UAACC,IAAI,EAAEC,KAAK;MAAA,OACpBV,KAAA,CAACN,IAAI;QAAaU,KAAK,EAAEC,MAAM,CAACM,UAAW;QAAAJ,QAAA,GACzCT,IAAA,CAACJ,IAAI;UACHU,KAAK,EAAE;YACLQ,eAAe,EAAEH,IAAI,CAACI,KAAK;YAC3BC,KAAK,EAAE,EAAE;YACTC,MAAM,EAAE,EAAE;YACVC,WAAW,EAAE;UACf;QAAE,CACH,CAAC,EACFlB,IAAA,CAACH,IAAI;UAAAY,QAAA,EAAEE,IAAI,CAACQ,KAAK,GAAG,IAAI,GAAER,IAAI,CAACS,MAAM,CAACC,OAAO,CAAC,CAAC;QAAC,CAAO,CAAC;MAAA,GAT/CT,KAUL,CAAC;IAAA,CACR;EAAC,CACE,CAAC;AAAA,CACR;AAED,IAAML,MAAM,GAAGT,UAAU,CAACwB,MAAM,CAAC;EAC/Bd,eAAe,EAAE;IACfe,aAAa,EAAE,QAAQ;IAEvBC,cAAc,EAAE,QAAQ;IACxBC,SAAS,EAAE;EACb,CAAC;EACDZ,UAAU,EAAE;IACVU,aAAa,EAAE,KAAK;IACpBG,UAAU,EAAE,QAAQ;IACpBR,WAAW,EAAE,EAAE;IACfO,SAAS,EAAE;EACb;AACF,CAAC,CAAC;AACJ,EAAE"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

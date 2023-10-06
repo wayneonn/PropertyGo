@@ -1,5 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   sequelize.models = {};
+  const globalEmitter = require("../globalEmitter");
 
   const User = sequelize.define(
     "User",
@@ -83,7 +84,8 @@ module.exports = (sequelize, DataTypes) => {
           "LAWYER",
           "PROPERTY AGENT",
           "CONTRACTOR",
-          "BUYER_SELLER"
+          "BUYER",
+          "SELLER"
         ),
         allowNull: false,
       },
@@ -98,6 +100,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       freezeTableName: true,
+      hooks: {
+        afterCreate: async (user, options) => {
+          globalEmitter.emit("newUserCreated", user);
+        },
+      },
     }
   );
 
@@ -228,11 +235,6 @@ module.exports = (sequelize, DataTypes) => {
         name: "userId",
       },
       as: "partnerApplication",
-    });
-    User.hasMany(models.Response, {
-      onDelete: "CASCADE",
-      foreignKey: "userId",
-      as: "responses",
     });
     User.belongsToMany(models.ForumTopic, {
       through: "UserTopicFlagged", // Specify the intermediary model

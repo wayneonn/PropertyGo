@@ -1,1 +1,31 @@
-{"ast":null,"code":"import React from 'react';\nimport StyleSheet from \"react-native-web/dist/exports/StyleSheet\";\nimport View from \"react-native-web/dist/exports/View\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport Image from \"react-native-web/dist/exports/Image\";\nimport TouchableOpacity from \"react-native-web/dist/exports/TouchableOpacity\";\nimport TextInput from \"react-native-web/dist/exports/TextInput\";\nimport SafeAreaView from \"react-native-web/dist/exports/SafeAreaView\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar ForumHome = function ForumHome() {\n  return _jsx(SafeAreaView, {\n    children: _jsx(Text, {\n      children: \"ForumHomeScreen\"\n    })\n  });\n};\nexport default ForumHome;","map":{"version":3,"names":["React","StyleSheet","View","Text","Image","TouchableOpacity","TextInput","SafeAreaView","jsx","_jsx","ForumHome","children"],"sources":["/Users/wayneonn/Code/PropertyGo/frontend/mobile/screens/forum/ForumHome.js"],"sourcesContent":["import React from 'react';\nimport { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';\n\n\nconst ForumHome = () => {\n\n    return (\n      <SafeAreaView >\n        <Text>ForumHomeScreen</Text>\n      </SafeAreaView>\n    );\n  };\n\n  export default ForumHome;"],"mappings":"AAAA,OAAOA,KAAK,MAAM,OAAO;AAAC,OAAAC,UAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,KAAA;AAAA,OAAAC,gBAAA;AAAA,OAAAC,SAAA;AAAA,OAAAC,YAAA;AAAA,SAAAC,GAAA,IAAAC,IAAA;AAI1B,IAAMC,SAAS,GAAG,SAAZA,SAASA,CAAA,EAAS;EAEpB,OACED,IAAA,CAACF,YAAY;IAAAI,QAAA,EACXF,IAAA,CAACN,IAAI;MAAAQ,QAAA,EAAC;IAAe,CAAM;EAAC,CAChB,CAAC;AAEnB,CAAC;AAED,eAAeD,SAAS"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "import React from 'react';\nimport StyleSheet from \"react-native-web/dist/exports/StyleSheet\";\nimport View from \"react-native-web/dist/exports/View\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport Image from \"react-native-web/dist/exports/Image\";\nimport TouchableOpacity from \"react-native-web/dist/exports/TouchableOpacity\";\nimport TextInput from \"react-native-web/dist/exports/TextInput\";\nimport SafeAreaView from \"react-native-web/dist/exports/SafeAreaView\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar ForumHome = function ForumHome() {\n  return _jsx(SafeAreaView, {\n    children: _jsx(Text, {\n      children: \"ForumHomeScreen\"\n    })\n  });\n};\nexport default ForumHome;",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "StyleSheet",
+      "View",
+      "Text",
+      "Image",
+      "TouchableOpacity",
+      "TextInput",
+      "SafeAreaView",
+      "jsx",
+      "_jsx",
+      "ForumHome",
+      "children"
+    ],
+    "sources": [
+      "/Users/wayneonn/Code/PropertyGo/frontend/mobile/screens/forum/ForumHome.js"
+    ],
+    "sourcesContent": [
+      "import React from 'react';\nimport { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';\n\n\nconst ForumHome = () => {\n\n    return (\n      <SafeAreaView >\n        <Text>ForumHomeScreen</Text>\n      </SafeAreaView>\n    );\n  };\n\n  export default ForumHome;"
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,MAAM,OAAO;AAAC,OAAAC,UAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,KAAA;AAAA,OAAAC,gBAAA;AAAA,OAAAC,SAAA;AAAA,OAAAC,YAAA;AAAA,SAAAC,GAAA,IAAAC,IAAA;AAI1B,IAAMC,SAAS,GAAG,SAAZA,SAASA,CAAA,EAAS;EAEpB,OACED,IAAA,CAACF,YAAY;IAAAI,QAAA,EACXF,IAAA,CAACN,IAAI;MAAAQ,QAAA,EAAC;IAAe,CAAM;EAAC,CAChB,CAAC;AAEnB,CAAC;AAED,eAAeD,SAAS"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}
