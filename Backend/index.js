@@ -31,7 +31,11 @@ const contactUsAdminRouter = require("./routes/admin/contactUsRoutes");
 const adminUserRouter = require("./routes/admin/userRoutes");
 const responseRouter = require("./routes/admin/responseRoutes");
 const forumTopicAdminRouter = require("./routes/admin/forumTopicRoutes");
-
+const propertyRouter = require("./routes/admin/propertyRoutes");
+const reviewRouter = require("./routes/admin/reviewRoutes");
+const transactionRouter = require("./routes/admin/transactionRoutes");
+const folderRouter = require("./routes/admin/folderRoutes");
+const documentRouter = require("./routes/admin/documentRoutes");
 
 const userRoute = require("./routes/user/userRoute");
 // const userRoute = require("./routes/user/User");
@@ -39,10 +43,10 @@ const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
 const transactionRoute = require("./routes/user/transactionRoute");
-const contactUsUserRouter = require('./routes/user/contactUsRoutes');
-const forumTopicUserRouter = require('./routes/user/forumTopicRoute');
-const forumPostUserRouter = require('./routes/user/forumPostRoute');
-const forumCommentUserRouter = require('./routes/user/forumCommentRoute');
+const contactUsUserRouter = require("./routes/user/contactUsRoutes");
+const forumTopicUserRouter = require("./routes/user/forumTopicRoute");
+const forumPostUserRouter = require("./routes/user/forumPostRoute");
+const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
 
 app.use(cors());
 app.use(express.json());
@@ -54,6 +58,11 @@ app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", contactUsAdminRouter);
 app.use("/admin/contactUs/:id/responses", responseRouter);
 app.use("/admin/forumTopics", forumTopicAdminRouter);
+app.use("/admin/properties", propertyRouter);
+app.use("/admin/reviews", reviewRouter);
+app.use("/admin/transactions", transactionRouter);
+app.use("/admin/folders", folderRouter);
+app.use("/admin/documents", documentRouter);
 
 app.use(
   "/user",

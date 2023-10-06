@@ -83,8 +83,7 @@ module.exports = (sequelize, DataTypes) => {
           "LAWYER",
           "PROPERTY AGENT",
           "CONTRACTOR",
-          "BUYER",
-          "SELLER"
+          "BUYER_SELLER"
         ),
         allowNull: false,
       },
@@ -280,7 +279,6 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId", // Foreign key
       as: "downvotedComments",
     });
-
   };
 
   return User;
