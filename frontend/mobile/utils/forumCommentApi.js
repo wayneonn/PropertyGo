@@ -3,6 +3,30 @@ import configData from "../config.json"
 
 const BASE_URL = configData.BASE_URL;
 
+export const createForumComment = async (userId, forumCommentData) => {
+    try {
+
+        // console.log(userId)
+        // console.log(forumCommentData)
+
+        // Make a POST request with the forumCommentData
+        const response = await axios.post(
+            `${BASE_URL}/user/${userId}/forumComment`,
+            forumCommentData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
+                },
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
 // Function to get ForumComment records for a specific user
 export const getAllForumComment = async (userId, forumPostId, sort, order) => {
     try {

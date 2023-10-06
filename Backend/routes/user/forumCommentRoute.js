@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 
 const {
     // createForumCommentTestData,
@@ -12,9 +13,11 @@ const {
     getForumCommentVoteDetails
 } = require('../../controllers/user/forumCommentController');
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 router.route('/:userId/forumComment')
-    .post(createForumComment)
+    .post(upload.array("images", 5), createForumComment)
     .get(getAllForumComment)
 
 router.route('/:userId/forumComment/:forumCommentId/flagComment')

@@ -7,6 +7,7 @@ import ForumPostItemHeader from './ForumPostItemHeader';
 import ImageGallery from './ImageGallery';
 import ForumModal from './ForumModal';
 import { getForumCommentVoteDetails, updateForumCommentVote, updateForumComment } from '../../utils/forumCommentApi';
+import EditForumCommentModal from './EditForumCommentModal';
 
 const ForumCommentItem = ({ userId, comment, onReport, onDelete, useParentCallback }) => {
 
@@ -70,7 +71,7 @@ const ForumCommentItem = ({ userId, comment, onReport, onDelete, useParentCallba
 
         try {
 
-            const forumTopic = await updateForumComment(userId, commentDetails);
+            await updateForumComment(userId, commentDetails);
             useParentCallback();
         } catch (error) {
             console.error(error);
@@ -104,6 +105,9 @@ const ForumCommentItem = ({ userId, comment, onReport, onDelete, useParentCallba
                     </TouchableOpacity>
                 </View>
             </View>
+
+            <EditForumCommentModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEdit} comment={comment}/>
+            
             {comment.userId === userId ?
                 <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Comment"} onDelete={onDelete} />
                 :

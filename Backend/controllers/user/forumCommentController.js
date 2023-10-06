@@ -1,15 +1,52 @@
-const { ForumComment, User, Image } = require("../../models");
-const sequelize = require('sequelize');
+const { sequelize, ForumComment, User, Image } = require("../../models");
+const Sequelize = require('sequelize');
+const sharp = require('sharp');
 
 const createForumComment = async (req, res) => {
     const { userId } = req.params; // Use destructuring to get userId
 
-    // Assuming you want to set userId in the ForumComment model
-    req.body.userId = userId;
-    req.body.isInappropriate = false
+    const transaction = await sequelize.transaction();
 
     try {
-        const forumComment = await ForumComment.create(req.body);
+        const images = req.files;
+
+        const forumComment = await ForumComment.create({
+            userId: userId,
+            forumPostId: req.body.forumPostId,
+            message: req.body.message,
+            isInappropriate: false,
+        });
+        const failedImages = [];
+
+
+        for (let index = 0; index < images.length; index++) {
+            const image = images[index];
+
+            try {
+                const processedImageBuffer = await sharp(image.buffer)
+                    .resize({ width: 800, height: 600 }) // You can set the dimensions accordingly
+                    .webp()
+                    .toBuffer();
+
+                currentImage = await Image.create({ image: processedImageBuffer }, { transaction });
+                await forumComment.addImage(currentImage, { transaction });
+
+            } catch (imageError) {
+                console.error('Error creating image:', imageError);
+                failedImages.push({ index, error: 'Failed to create image' });
+            }
+        }
+
+        if (failedImages.length > 0) {
+            // If there were failed images, roll back the transaction
+            await transaction.rollback();
+            console.log('Rolled back transaction due to errors in creating images.');
+            return res.status(500).json({ error: 'Error creating some images', failedImages });
+        }
+
+        await transaction.commit();
+        console.log('Transaction committed successfully.');
+
         res.status(201).json({ forumComment });
     } catch (error) {
         console.error(error);
@@ -36,14 +73,14 @@ const getAllForumComment = async (req, res) => {
             if (!increase) {
                 orderCriteria = [
                     [
-                        sequelize.literal('(SELECT COUNT(*) FROM `UserCommentUpvoted` AS `UserCommentUpvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentUpvoted`.`forumCommentId`) - (SELECT COUNT(*) FROM `UserCommentDownvoted` AS `UserCommentDownvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentDownvoted`.`forumCommentId`)'),
+                        Sequelize.literal('(SELECT COUNT(*) FROM `UserCommentUpvoted` AS `UserCommentUpvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentUpvoted`.`forumCommentId`) - (SELECT COUNT(*) FROM `UserCommentDownvoted` AS `UserCommentDownvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentDownvoted`.`forumCommentId`)'),
                         'DESC',
                     ],
                 ];
             } else {
                 orderCriteria = [
                     [
-                        sequelize.literal('(SELECT COUNT(*) FROM `UserCommentUpvoted` AS `UserCommentUpvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentUpvoted`.`forumCommentId`) - (SELECT COUNT(*) FROM `UserCommentDownvoted` AS `UserCommentDownvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentDownvoted`.`forumCommentId`)'),
+                        Sequelize.literal('(SELECT COUNT(*) FROM `UserCommentUpvoted` AS `UserCommentUpvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentUpvoted`.`forumCommentId`) - (SELECT COUNT(*) FROM `UserCommentDownvoted` AS `UserCommentDownvoted` WHERE `ForumComment`.`forumCommentId` = `UserCommentDownvoted`.`forumCommentId`)'),
                         'ASC',
                     ],
                 ];
@@ -54,11 +91,11 @@ const getAllForumComment = async (req, res) => {
             order: orderCriteria,
             where: {
                 isInappropriate: {
-                    [sequelize.Op.not]: true,
+                    [Sequelize.Op.not]: true,
                 },
                 forumPostId: forumPostId,
                 forumCommentId: {
-                    [sequelize.Op.notIn]: sequelize.literal(
+                    [Sequelize.Op.notIn]: Sequelize.literal(
                         `(SELECT forumCommentId FROM \`UserCommentFlagged\` AS \`UserCommentFlagged\` WHERE \`ForumComment\`.\`forumCommentId\` = \`UserCommentFlagged\`.\`forumCommentId\` AND \`UserCommentFlagged\`.\`userId\` = ${userId})`
                     ),
                 },

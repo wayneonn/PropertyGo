@@ -3,7 +3,7 @@ import { AuthContext } from '../../AuthContext';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, TextInput, RefreshControl, Image, TouchableHighlight, Button } from 'react-native';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import ForumPostItem from '../../components/Forum/ForumPostItem';
-import { updateForumCommentFlaggedStatus, deleteForumComment, getAllForumComment } from '../../utils/forumCommentApi';
+import { updateForumCommentFlaggedStatus, deleteForumComment, getAllForumComment, createForumComment } from '../../utils/forumCommentApi';
 import { updateForumPostFlaggedStatus, deleteForumPost, getAllForumPostById } from '../../utils/forumPostApi';
 import ForumCommentItem from '../../components/Forum/ForumCommenItem';
 import * as ImagePicker from 'expo-image-picker';
@@ -124,12 +124,32 @@ const ForumComment = ({ navigation }) => {
         }
     };
 
-    const handleSubmit = () => {
-        // Handle message submission here
-        // You can send the `message` and `selectedImage` to your server or perform any other action
-        console.log('Message:', message);
-        console.log('Selected Image:', selectedImage);
-        // Reset the input fields after submission if needed
+    const handleSubmit = async () => {
+        const formData = new FormData();
+        const uniqueId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+
+        // Append each image to the formData
+        for (let i = 0; i < imageUris.length; i++) {
+            const imageUri = imageUris[i];
+            formData.append("images", {
+                uri: imageUri,
+                type: "image/jpeg",
+                name: `image${uniqueId}_${i}.jpg`,
+            });
+        }
+
+        
+        formData.append('message', message);
+        formData.append('forumPostId', post.forumPostId);
+
+        try {
+            const forumComment = await createForumComment(user.user.userId, formData);
+            useParentCallback();
+          } catch (error) {
+            console.error(error);
+          }
+
+        // Reset the input fields after submission
         setMessage('');
         setImageUris([]);
     };
@@ -191,10 +211,10 @@ const ForumComment = ({ navigation }) => {
                         style={styles.textInput}
                         multiline // Allow multiline text input
                     />
-                    <TouchableHighlight style={styles.iconButton} onPress={handleImageUpload}>
+                    <TouchableHighlight style={styles.iconButton} onPress={handleImageUpload} underlayColor="rgba(0, 0, 0, 0.1)">
                         <Ionicons name="image-outline" size={30} color="black" />
                     </TouchableHighlight>
-                    <TouchableHighlight style={styles.iconButton} onPress={handleSubmit}>
+                    <TouchableHighlight style={styles.iconButton} onPress={handleSubmit} disabled={!message && imageUris.length === 0} underlayColor="rgba(0, 0, 0, 0.1)">
                         <Ionicons name="send-outline" size={24} color="black" />
                     </TouchableHighlight>
                 </View>
@@ -214,15 +234,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: 'white', // Set background color
-        padding: 10, // Add padding to the container
+        // padding: 10, // Add padding to the container
         borderRadius: 10, // Add border radius for rounded corners
-        elevation: 2, // Add shadow to the container (Android only)
         marginHorizontal:10,
         borderWidth:1,
     },
     textInput: {
         flex: 1,
-        padding: 10,
+        paddingVertical: 10,
         marginLeft: 10, // Add margin to separate text input from icons
     },
     iconButton: {

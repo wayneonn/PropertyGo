@@ -3,11 +3,8 @@ import { Modal, View, Text, TextInput, Button, StyleSheet, TouchableHighlight, I
 import * as ImagePicker from 'expo-image-picker';
 import ImageGallery from './ImageGallery';
 
-const EditForumPostModal = ({ isVisible, onCancel, onSubmit, post }) => {
-    const [title, setTitle] = useState(post.title);
-    const [message, setMessage] = useState(post.message);
-    // const [images, setImages] = useState(post.images);
-    // const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+const EditForumCommentModal = ({ isVisible, onCancel, onSubmit, comment }) => {
+    const [message, setMessage] = useState(comment.message);
 
     useEffect(() => {
         (async () => {
@@ -18,78 +15,29 @@ const EditForumPostModal = ({ isVisible, onCancel, onSubmit, post }) => {
         })();
     }, []);
 
-    const handleTitleChange = (text) => {
-        setTitle(text);
-    };
-
     const handleMessageChange = (text) => {
         setMessage(text);
     };
 
-    // const handleImageUpload = async () => {
-    //     const result = await ImagePicker.launchImageLibraryAsync({
-    //         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    //         allowsEditing: true,
-    //         quality: 1,
-    //     });
-
-    //     if (!result.canceled) {
-    //         const selectedImages = result.assets.map(asset => asset.uri);
-    //         setImageUris([...imageUris, ...selectedImages]);
-    //     }
-    //     // console.log(imageUris);
-    // };
-
-    // const handleImageRemove = (index) => {
-    //     const updatedImageUris = [...imageUris];
-    //     updatedImageUris.splice(index, 1);
-    //     setImageUris(updatedImageUris);
-
-    //     // Clear the selected image if it was removed
-    //     if (selectedImageIndex === index) {
-    //         setSelectedImageIndex(null);
-    //     }
-    // };
 
     const handleSubmit = async () => {
 
 
-        // const formData = new FormData();
-        // const uniqueId = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-
-
-        // // Append each image to the formData
-        // for (let i = 0; i < imageUris.length; i++) {
-        //     const imageUri = imageUris[i];
-        //     formData.append("images", {
-        //         uri: imageUri,
-        //         type: "image/jpeg",
-        //         name: `image${uniqueId}_${i}.jpg`,
-        //     });
-        // }
-        // formData.append('title', title);
-        // formData.append('message', message);
-        // formData.append('forumTopicId', forumTopicId);
-
-        // console.log(formData);
-
-        const postDetails = {
-            forumPostId: post.forumPostId,
-            title,
+        const commentDetails = {
+            forumCommentId: comment.forumCommentId,
             message,
         };
 
-        // console.log(postDetails);
+        // console.log(commentDetails);
 
-        onSubmit(postDetails);
+        onSubmit(commentDetails);
 
         // Close the modal
         onCancel();
     };
 
     const handleCancel = () => {
-        setTitle(post.title);
-        setMessage(post.message);
+        setMessage(comment.message);
 
         // Close the modal
         onCancel();
@@ -99,15 +47,8 @@ const EditForumPostModal = ({ isVisible, onCancel, onSubmit, post }) => {
         <Modal transparent={true} animationType="slide" visible={isVisible}>
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Edit Forum Post</Text>
+                    <Text style={styles.modalTitle}>Edit Forum Comment</Text>
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Title:</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter Title"
-                            value={title}
-                            onChangeText={handleTitleChange}
-                        />
                         <Text style={styles.label}>Message:</Text>
                         <TextInput
                             style={styles.input}
@@ -116,7 +57,7 @@ const EditForumPostModal = ({ isVisible, onCancel, onSubmit, post }) => {
                             onChangeText={handleMessageChange}
                         />
 
-                        <ImageGallery images={post.images} />
+                        <ImageGallery images={comment.images} />
                     </View>
                     <View style={styles.buttonContainer}>
                         <TouchableHighlight
@@ -130,11 +71,11 @@ const EditForumPostModal = ({ isVisible, onCancel, onSubmit, post }) => {
                             style={[
                                 styles.button,
                                 { backgroundColor: '#FFD700' }, // Yellow background for submit button
-                                (title.trim() === '' || message.trim() === '') && styles.buttonDisabled, // disabled when topicName is empty
+                                (message.trim() === '') && styles.buttonDisabled, // disabled when topicName is empty
                             ]}
                             onPress={handleSubmit}
                             underlayColor="#EAEAEA"
-                            disabled={(title.trim() === '' || message.trim() === '')} // Disable the button if topicName is empty
+                            disabled={(message.trim() === '')} // Disable the button if topicName is empty
                         >
                             <Text style={styles.buttonText}>Submit</Text>
                         </TouchableHighlight>
@@ -222,4 +163,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EditForumPostModal;
+export default EditForumCommentModal;
