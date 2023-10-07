@@ -59,6 +59,8 @@ const UserDetail = () => {
 
       setReviews(reviews);
 
+      console.log(reviews.length);
+
       const responseFolder = await API.get(
         `http://localhost:3000/admin/folders`
       );
@@ -68,6 +70,8 @@ const UserDetail = () => {
       );
 
       setFolders(folders);
+
+      console.log(folders);
     } catch (error) {
       console.error(error);
     }

@@ -11,6 +11,10 @@ import Forum from "./containers/Forum";
 import Faq from "./containers/Faq";
 import ContactUs from "./containers/ContactUs";
 import Login from "./containers/Login";
+import UsersList from "./containers/UsersList";
+import UserDetail from "./containers/UserDetail";
+import PropertyListing from "./containers/PropertyListing";
+import Property from "./containers/Property";
 import PartnerApplication from "./containers/PartnerApplication";
 
 import "bootstrap/dist/css/bootstrap.min.css";

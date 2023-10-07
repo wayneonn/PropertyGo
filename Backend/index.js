@@ -45,6 +45,11 @@ const adminUserRouter = require("./routes/admin/userRoutes");
 const responseRouter = require("./routes/admin/responseRoutes");
 const forumTopicAdminRouter = require("./routes/admin/forumTopicRoutes");
 const notificationAdminRouter = require("./routes/admin/notificationRoutes");
+const propertyAdminRouter = require("./routes/admin/propertyRoutes");
+const reviewAdminRouter = require("./routes/admin/reviewRoutes");
+const folderAdminRouter = require("./routes/admin/folderRoutes");
+const documentAdminRouter = require("./routes/admin/documentRoutes");
+const transactionAdminRouter = require("./routes/admin/transactionRoutes");
 
 const userRoute = require("./routes/user/userRoute");
 const loginRoute = require("./routes/user/loginRoute");
@@ -76,6 +81,11 @@ app.use("/admin/contactUs", contactUsAdminRouter);
 app.use("/admin/contactUs/:id/responses", responseRouter);
 app.use("/admin/forumTopics", forumTopicAdminRouter);
 app.use("/admin/notifications", notificationAdminRouter);
+app.use("/admin/properties", propertyAdminRouter);
+app.use("/admin/reviews", reviewAdminRouter);
+app.use("/admin/documents", documentAdminRouter);
+app.use("/admin/folders", folderAdminRouter);
+app.use("/admin/transactions", transactionAdminRouter);
 
 app.use(
   "/user",

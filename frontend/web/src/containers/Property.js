@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Card, Button, Form, Carousel } from "react-bootstrap";
+import { Card, Button, Form, Carousel, Modal } from "react-bootstrap";
 import "./styles/Property.css";
 import { useParams, useNavigate } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
@@ -12,7 +12,10 @@ const Property = () => {
   const [property, setProperty] = useState({});
   const { propertyId } = useParams();
   const [seller, setSeller] = useState({});
+  const [buyer, setBuyer] = useState({});
+  const [documents, setDocuments] = useState([]);
   const [pdfBlob, setPdfBlob] = useState(null);
+  const [showDocumentModal, setShowDocumentModal] = useState(false);
 
   const imageBasePath =
     window.location.protocol + "//" + window.location.host + "/images/";
@@ -36,22 +39,47 @@ const Property = () => {
 
       console.log(sellerResponse.data.userId);
 
-      //http://localhost:3000/admin/documents/property?propertyId=1&userId=1
+      const transactionResponse = await API.get(
+        `http://localhost:3000/admin/transactions`
+      );
 
-      const document = await API.get(
-        `/admin/documents/property?propertyId=${propertyId}&userId=${sellerResponse.data.userId}`
+      console.log(transactionResponse.data);
+
+      const transactions = transactionResponse.data.transactions
+        .filter((transaction) => transaction.propertyId == propertyId)
+        .filter((transaction) => transaction.requestId === null) // transaction is for OTP payment
+        .filter((transaction) => transaction.status == "PAID"); // transaction is paid, means property is sold
+
+      console.log(transactions);
+
+      const buyerId = transactions[0].buyerId;
+
+      const buyerResponse = await API.get(
+        `http://localhost:3000/admin/users/getUser/${buyerId}`
       );
-      console.log(document);
-      const binaryString = atob(document.data.formattedDocuments[0].document);
-      const test = new Blob(
-        [
-          new Uint8Array(binaryString.length).map((_, i) =>
-            binaryString.charCodeAt(i)
-          ),
-        ],
-        { type: "application/pdf" }
+
+      setBuyer(buyerResponse.data);
+
+      const documentResponse = await API.get(
+        `http://localhost:3000/admin/documents`
       );
-      setPdfBlob(test);
+
+      console.log("document:" + documentResponse);
+
+      const documents = documentResponse.data.formattedDocuments[0].documents
+        .filter((document) => document.propertyId == propertyId)
+        .filter(
+          (document) =>
+            document.userId == buyerId ||
+            document.userId == sellerResponse.data.userId
+        );
+
+      // Now, the 'documents' array contains documents that meet the specified conditions.
+      //need howard help fetch documents
+
+      console.log(documents);
+
+      setDocuments(documents);
     } catch (error) {
       console.error(error);
     }
@@ -79,6 +107,32 @@ const Property = () => {
     }
   }
 
+  const toggleDocumentModal = async (documentId) => {
+    const documents = await API.get(`http://localhost:3000/admin/documents`);
+    // console.log(document);
+    // const binaryString = atob(document.data.formattedDocuments[0].document);
+
+    const document = documents.filter(
+      (document) => document.documentId == documentId
+    );
+
+    const binaryString = atob(document.data.formattedDocuments[0].document); //need howard help fetch documents
+    const test = new Blob(
+      [
+        new Uint8Array(binaryString.length).map((_, i) =>
+          binaryString.charCodeAt(i)
+        ),
+      ],
+      { type: "application/pdf" }
+    );
+    setPdfBlob(test);
+    setShowDocumentModal(!showDocumentModal);
+  };
+
+  const handleCloseDocumentModal = () => {
+    setShowDocumentModal(false);
+  };
+
   return (
     <div className="property">
       <div
@@ -102,99 +156,114 @@ const Property = () => {
       </div>
       <div className="property-main">
         <div style={{ display: "flex" }}>
-          <div>
-            <div className="images">
-              <Carousel
-                style={{
-                  width: "600px",
-                  height: "400px",
-                }}
-              >
-                {Array.isArray(property.images) &&
-                property.images.length > 0 ? (
-                  property.images.map((image) => (
-                    <Carousel.Item>
-                      <div className="image-container">
-                        <img
-                          className="image"
-                          src={`data:image/jpeg;base64,${image.toString(
-                            "base64"
-                          )}`}
-                          alt="property image"
-                        />
-                      </div>
-                    </Carousel.Item>
-                  ))
-                ) : (
+          {/* <div> */}
+          <div className="images">
+            <Carousel
+              style={{
+                width: "600px",
+                height: "400px",
+              }}
+            >
+              {Array.isArray(property.images) && property.images.length > 0 ? (
+                property.images.map((image) => (
                   <Carousel.Item>
                     <div className="image-container">
                       <img
                         className="image"
-                        src={imageBasePath + "login.jpeg"}
-                        alt="default image"
+                        src={`data:image/jpeg;base64,${image.toString(
+                          "base64"
+                        )}`}
+                        alt="property image"
                       />
                     </div>
                   </Carousel.Item>
-                )}
-              </Carousel>
-            </div>
-            <div className="description">
-              <div className="property-desc">
-                <span style={{ fontSize: "30px", fontWeight: "600" }}>
-                  {property.title}
-                </span>
-                <span style={{ fontSize: "15px", marginBottom: "20px" }}>
-                  {property.description}
-                </span>
+                ))
+              ) : (
+                <Carousel.Item>
+                  <div className="image-container">
+                    <img
+                      className="image"
+                      src={imageBasePath + "login.jpeg"}
+                      alt="default image"
+                    />
+                  </div>
+                </Carousel.Item>
+              )}
+            </Carousel>
+          </div>
+          <div className="description">
+            <div className="property-desc">
+              <span style={{ fontSize: "30px", fontWeight: "600" }}>
+                {property.title}
+              </span>
+              <span style={{ fontSize: "15px", marginBottom: "30px" }}>
+                {property.description}
+              </span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <div className={getPropertyClassName(property.propertyStatus)}>
+                  {property.propertyStatus}
+                </div>
                 <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
+                  className={getPropertyTypeClassName(property.propertyType)}
                 >
-                  <div
-                    className={getPropertyClassName(property.propertyStatus)}
-                  >
-                    {property.propertyStatus}
-                  </div>
-                  <div
-                    className={getPropertyTypeClassName(property.propertyType)}
-                  >
-                    {property.propertyType}
-                  </div>
+                  {property.propertyType}
                 </div>
               </div>
-              <hr
-                style={{ width: "600px", marginLeft: "30px", padding: "0" }}
-              />
-              <div className="attri">
-                <div className="property-price">
-                  <span style={{ opacity: "0.8" }}>Selling price</span>
-                  <span style={{ fontSize: "25px", fontWeight: "500" }}>
-                    S$ {property.price}
+            </div>
+            <hr style={{ width: "565px", marginLeft: "30px", padding: "0" }} />
+            <div className="attri">
+              <div className="property-price">
+                <span style={{ opacity: "0.8" }}>Selling price</span>
+                <span style={{ fontSize: "25px", fontWeight: "500" }}>
+                  S$ {property.price}
+                </span>
+              </div>
+              <div className="property-attri">
+                <div className="bed-bath-sqm">
+                  <span>
+                    <LiaBedSolid className="icon" /> {property.bed}
                   </span>
                 </div>
-                <div className="property-attri">
-                  <div className="bed-bath-sqm">
-                    <span>
-                      <LiaBedSolid className="icon" /> {property.bed}
-                    </span>
-                  </div>
-                  <div className="bed-bath-sqm">
-                    <span>
-                      <LiaBathSolid className="icon" /> {property.bathroom}
-                    </span>
-                  </div>
-                  <div className="bed-bath-sqm">
-                    <span>
-                      <RxDimensions className="icon" /> {property.size} sqft
-                    </span>
-                  </div>
+                <div className="bed-bath-sqm">
+                  <span>
+                    <LiaBathSolid className="icon" /> {property.bathroom}
+                  </span>
+                </div>
+                <div className="bed-bath-sqm">
+                  <span>
+                    <RxDimensions className="icon" /> {property.size} sqft
+                  </span>
                 </div>
               </div>
             </div>
+            {property.propertyStatus == "COMPLETED" && (
+              <div className="sold">
+                <div className="sold-price">
+                  <span style={{ opacity: "0.8" }}>Offered Price</span>
+                  <span style={{ fontSize: "25px", fontWeight: "500" }}>
+                    S$ {property.offeredPrice}
+                  </span>
+                </div>
+                <div className="sold-buyer">
+                  <span style={{ opacity: "0.8" }}>Transacted with</span>
+                  {/* <span className="buyer-name">{buyer.userName}</span> */}
+                  <a
+                    href={`/users/details/${buyer.userId}`}
+                    className="buyer-name"
+                  >
+                    {buyer.userName}
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="long-desc">
+          {/* </div> */}
+          {/* <div className="long-desc">
             <div style={{ display: "flex", flexDirection: "column" }}>
               <span style={{ fontSize: "14px", marginBottom: "10px" }}>
                 Posted by:
@@ -250,8 +319,43 @@ const Property = () => {
                 <p>No PDF</p>
               )}
             </div>
+          </div> */}
+        </div>
+        <div className="document-area">
+          <span>Property Listing Documents</span>
+          <hr />
+          <div className="documents-boxes">
+            {Array.isArray(documents) && documents.length > 0 ? (
+              documents.map((document) => (
+                <div
+                  className="folder"
+                  key={document.id}
+                  onClick={() => toggleDocumentModal(document.documentId)}
+                >
+                  <span>{document.title}</span>
+                </div>
+              ))
+            ) : (
+              <span>No Documents ...</span>
+            )}
           </div>
         </div>
+        <Modal>
+          <Modal.Body>
+            <div width="10em">
+              {pdfBlob ? (
+                <embed
+                  src={URL.createObjectURL(pdfBlob)}
+                  type="application/pdf"
+                  width="100%"
+                  height="550px"
+                />
+              ) : (
+                <p>No PDF</p>
+              )}
+            </div>
+          </Modal.Body>
+        </Modal>
       </div>
     </div>
   );

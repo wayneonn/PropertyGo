@@ -24,7 +24,7 @@
 
 .images {
   display: flex;
-  margin-left: 30px;
+  margin-left: 25px;
 }
 
 .image-container {
@@ -114,7 +114,7 @@
   border-width: 0.8px;
   border-color: red;
   font-weight: 600;
-  width: 60px;
+  width: 75px;
   height: 20px;
   border-radius: 10px;
   align-items: center;
@@ -169,6 +169,71 @@
   color: blue;
 }
 
+.sold {
+  max-width: 600px;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sold-price {
+  display: flex;
+  flex-direction: column;
+}
+
+.sold-buyer {
+  display: flex;
+  flex-direction: column;
+}
+
+.buyer-name {
+  font-size: 20px;
+  font-weight: 450;
+  text-decoration: none;
+  color: inherit;
+}
+
+.buyer-name:hover {
+  cursor: pointer;
+  color: orangered;
+}
+
+.folder {
+  background-color: #FFFDCE;
+  height: 150px;
+  width: 150px;
+  transition: background-color 0.1s; /* Add a transition for smooth color change */
+  cursor: pointer; /* Change cursor to a pointer */
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  transform: 0.1s;
+}
+
+.folder:hover {
+  background-color: #EBEBEB;
+  transform: scale(1.02); /* Change background color on hover */
+}
+
+.documents-boxes {
+  display: flex;
+  align-items: center;
+}
+
+.document-area {
+  /* background-color: pink; */
+  height: 250px;
+  width: 1205px;
+  margin-left: 20px;
+  margin-top: 50px;
+  border-radius: 8px;
+  padding: 15px;
+}
 
 
 

@@ -2,7 +2,6 @@ module.exports = [
   {
     transactionId: 1,
     onHoldBalance: 348.29,
-    requestId: 1,
     buyerId: 1, // buyer
     propertyId: 3,
     sellerId: 2,
@@ -12,7 +11,6 @@ module.exports = [
   {
     transactionId: 2,
     onHoldBalance: 94.23,
-    requestId: 2,
     buyerId: 1, // buyer
     propertyId: 2,
     sellerId: 2,
@@ -22,17 +20,15 @@ module.exports = [
   {
     transactionId: 3,
     onHoldBalance: 412.68,
-    requestId: 2,
     buyerId: 1, // buyer
     propertyId: 1,
     sellerId: 2,
     invoiceId: 3,
-    status: "PENDING",
+    status: "PAID",
   },
   {
     transactionId: 4,
     onHoldBalance: 412.68,
-    requestId: 2,
     buyerId: 1, // buyer
     propertyId: 4,
     sellerId: 2,
@@ -42,7 +38,6 @@ module.exports = [
   {
     transactionId: 5,
     onHoldBalance: 412.68,
-    requestId: 2,
     buyerId: 1, // buyer
     propertyId: 5,
     sellerId: 2,
@@ -52,7 +47,6 @@ module.exports = [
   {
     transactionId: 6,
     onHoldBalance: 412.68,
-    requestId: 2,
     buyerId: 1, // buyer
     propertyId: 6,
     sellerId: 2,

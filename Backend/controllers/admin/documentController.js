@@ -55,7 +55,39 @@ const getDocumentWithPropertyId = async (req, res) => {
   }
 };
 
+const getDocuments = async (req, res) => {
+  const formattedDocuments = [];
+
+  try {
+    const documents = await Document.findAll({});
+
+    for (let document of documents) {
+      if (document) {
+        const base64Data = document.document.toString("base64");
+        document.document = base64Data;
+        // res.json({
+        //   documentId: document.documentId,
+        //   title: document.title,
+        //   timestamp: document.timestamp,
+        //   deleted: document.deleted,
+        //   description: document.description,
+        //   type: document.type,
+        //   size: document.size,
+        //   document: base64Data,
+        // });
+      }
+      formattedDocuments.push(document);
+    }
+
+    res.status(200).json({ formattedDocuments });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   getDocumentsWithFolderId,
   getDocumentWithPropertyId,
+  getDocuments,
 };
