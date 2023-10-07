@@ -65,7 +65,7 @@ const ContactUs = () => {
 
   const [validationMessages, setValidationMessages] = useState({
     emptyEditResponse: false,
-    emptyAddResponse: false
+    emptyAddResponse: false,
   });
 
   // toast message
@@ -170,7 +170,7 @@ const ContactUs = () => {
     //edit contact us in backend, use the contactusid of the editId, response
     const newMessage = {
       emptyEditResponse: false,
-      emptyAddResponse: false
+      emptyAddResponse: false,
     };
 
     const responseTrimmed = htmlToPlainText(editResponse).trim();
@@ -241,7 +241,7 @@ const ContactUs = () => {
   const handleAddRespond = async () => {
     const newMessage = {
       emptyAddResponse: false,
-      emptyEditResponse: false
+      emptyEditResponse: false,
     };
 
     const addedRespondTrimmed = htmlToPlainText(addedRespond).trim();
@@ -392,13 +392,17 @@ const ContactUs = () => {
     <div className="contactus">
       <div
         style={{
-          marginTop: "20px",
+          marginTop: "10px",
           marginLeft: "30px",
           display: "flex",
           justifyContent: "space-between",
         }}
       >
-        <BreadCrumb name="Contact Us"></BreadCrumb>
+        <BreadCrumb
+          names={["Home"]}
+          lastname="Contact us"
+          links={["/"]}
+        ></BreadCrumb>
       </div>
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayContactus">
@@ -1134,7 +1138,9 @@ const ContactUs = () => {
                 value={addedRespond}
                 onChange={setAddedRespond}
                 theme="snow"
-                className={validationMessages.emptyAddResponse ? "is-invalid" : ""}
+                className={
+                  validationMessages.emptyAddResponse ? "is-invalid" : ""
+                }
                 style={{ width: "29em" }}
                 modules={modules}
                 formats={formats}

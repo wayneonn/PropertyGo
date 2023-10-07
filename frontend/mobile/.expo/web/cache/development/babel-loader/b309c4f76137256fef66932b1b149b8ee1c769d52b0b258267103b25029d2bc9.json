@@ -1,1 +1,27 @@
-{"ast":null,"code":"import React from 'react';\nimport SafeAreaView from \"react-native-web/dist/exports/SafeAreaView\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport View from \"react-native-web/dist/exports/View\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar UserProfile = function UserProfile() {\n  return _jsx(SafeAreaView, {\n    children: _jsx(Text, {\n      children: \"UserProfileScreen\"\n    })\n  });\n};\nexport default UserProfile;","map":{"version":3,"names":["React","SafeAreaView","Text","View","jsx","_jsx","UserProfile","children"],"sources":["/Users/wayneonn/Code/PropertyGo/frontend/mobile/screens/sideNavigatorBar/UserProfile.js"],"sourcesContent":["import React from 'react';\nimport {SafeAreaView, Text, View } from 'react-native';\n\nconst UserProfile = () => {\n    return (\n      <SafeAreaView >\n        <Text>UserProfileScreen</Text>\n      </SafeAreaView>\n    );\n  };\n\n  export default UserProfile;"],"mappings":"AAAA,OAAOA,KAAK,MAAM,OAAO;AAAC,OAAAC,YAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAAA,SAAAC,GAAA,IAAAC,IAAA;AAG1B,IAAMC,WAAW,GAAG,SAAdA,WAAWA,CAAA,EAAS;EACtB,OACED,IAAA,CAACJ,YAAY;IAAAM,QAAA,EACXF,IAAA,CAACH,IAAI;MAAAK,QAAA,EAAC;IAAiB,CAAM;EAAC,CAClB,CAAC;AAEnB,CAAC;AAED,eAAeD,WAAW"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "import React from 'react';\nimport SafeAreaView from \"react-native-web/dist/exports/SafeAreaView\";\nimport Text from \"react-native-web/dist/exports/Text\";\nimport View from \"react-native-web/dist/exports/View\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar UserProfile = function UserProfile() {\n  return _jsx(SafeAreaView, {\n    children: _jsx(Text, {\n      children: \"UserProfileScreen\"\n    })\n  });\n};\nexport default UserProfile;",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "SafeAreaView",
+      "Text",
+      "View",
+      "jsx",
+      "_jsx",
+      "UserProfile",
+      "children"
+    ],
+    "sources": [
+      "/Users/wayneonn/Code/PropertyGo/frontend/mobile/screens/sideNavigatorBar/UserProfile.js"
+    ],
+    "sourcesContent": [
+      "import React from 'react';\nimport {SafeAreaView, Text, View } from 'react-native';\n\nconst UserProfile = () => {\n    return (\n      <SafeAreaView >\n        <Text>UserProfileScreen</Text>\n      </SafeAreaView>\n    );\n  };\n\n  export default UserProfile;"
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,MAAM,OAAO;AAAC,OAAAC,YAAA;AAAA,OAAAC,IAAA;AAAA,OAAAC,IAAA;AAAA,SAAAC,GAAA,IAAAC,IAAA;AAG1B,IAAMC,WAAW,GAAG,SAAdA,WAAWA,CAAA,EAAS;EACtB,OACED,IAAA,CAACJ,YAAY;IAAAM,QAAA,EACXF,IAAA,CAACH,IAAI;MAAAK,QAAA,EAAC;IAAiB,CAAM;EAAC,CAClB,CAAC;AAEnB,CAAC;AAED,eAAeD,WAAW"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RFValue } from 'react-native-responsive-fontsize';
+import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {RFValue} from 'react-native-responsive-fontsize';
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 const LoginPortal = () => {
     const navigation = useNavigation();
@@ -11,7 +11,7 @@ const LoginPortal = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.welcomeText}>Welcome to PropertyGo!</Text>
-            <Image source={require('../../assets/PropertyGo-HighRes-Logo.png')} style={styles.icon} />
+            <Image source={require('../../assets/PropertyGo-HighRes-Logo.png')} style={styles.icon}/>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
                 <Text style={styles.buttonText}>Sign In</Text>
             </TouchableOpacity>
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         fontSize: RFValue(24, 680),
         color: 'black',
         marginBottom: 60,
-      },
+    },
     icon: {
         width: width * 0.5,
         height: height * 0.2,

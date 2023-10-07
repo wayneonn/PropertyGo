@@ -1,0 +1,97 @@
+.userdetail {
+  background-color: #0000000D;
+  width: calc(100% - 180px);
+  top: 60px;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  overflow-y: auto;
+}
+
+.container {
+  margin-left: 30px;
+  background-color: white;
+  width: 1210px;
+  height: 640px;
+  font-size: 14px;
+}
+
+.username {
+  display: flex;
+  padding: 30px 30px 20px 30px;
+  align-items: center;
+}
+
+.status-box {
+  background-color: #FFD700;
+  height: 240px;
+  width: 460px;
+  margin-left: 30px;
+  border-radius: 8px;
+}
+
+.deactivated-box {
+  background-color: #FF6666;
+  height: 240px;
+  width: 460px;
+  margin-left: 30px;
+  border-radius: 8px;
+}
+
+.rating {
+  background-color: #FFFDCE;
+  width: 90px;
+  height: 90px;
+  border-radius: 100px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.document-area {
+  /* background-color: pink; */
+  height: 250px;
+  width: 1205px;
+  margin-left: 30px;
+  margin-top: 50px;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.folder {
+  background-color: #FFFDCE;
+  height: 150px;
+  width: 150px;
+  transition: background-color 0.1s; /* Add a transition for smooth color change */
+  cursor: pointer; /* Change cursor to a pointer */
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  transform: 0.1s;
+}
+
+.folder:hover {
+  background-color: #EBEBEB;
+  transform: scale(1.02); /* Change background color on hover */
+}
+
+.documents-boxes {
+  display: flex;
+  align-items: center;
+}
+
+.document {
+  display: flex;
+  flex-direction: column;
+}
+
+.document-title {
+  padding: 10px;
+}
+

@@ -184,13 +184,17 @@ const Forum = () => {
     <div className="faq">
       <div
         style={{
-          marginTop: "20px",
+          marginTop: "10px",
           marginLeft: "30px",
           display: "flex",
           justifyContent: "space-between",
         }}
       >
-        <BreadCrumb name="Forum"></BreadCrumb>
+        <BreadCrumb
+          names={["Home"]}
+          lastname="Forum"
+          links={["/"]}
+        ></BreadCrumb>
       </div>
       <div style={{ position: "fixed", top: "5%", left: "50%", zIndex: "1" }}>
         <Row>

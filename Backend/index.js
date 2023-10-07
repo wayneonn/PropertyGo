@@ -1,6 +1,18 @@
 const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io"); // for the event-based notification
 const cors = require("cors");
 const app = express();
+const globalEmitter = require("./globalEmitter");
+const WebSocket = require("ws");
+
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:3001",
+    methods: ["GET", "POST"],
+  },
+});
 
 // model
 const db = require("./models");
@@ -22,6 +34,7 @@ const partnerApplicationId = require("./test_data/partnerApplicationTestData");
 const forumTopicTestData = require("./test_data/forumTopicTestData");
 const forumPostTestData = require("./test_data/forumPostTestData");
 const forumCommentTestData = require("./test_data/forumCommentTestData");
+const notificationTestData = require("./test_data/notificationTestData");
 
 // admin routes
 const authRouter = require("./routes/admin/authRoutes");
@@ -31,29 +44,48 @@ const contactUsAdminRouter = require("./routes/admin/contactUsRoutes");
 const adminUserRouter = require("./routes/admin/userRoutes");
 const responseRouter = require("./routes/admin/responseRoutes");
 const forumTopicAdminRouter = require("./routes/admin/forumTopicRoutes");
-
+const notificationAdminRouter = require("./routes/admin/notificationRoutes");
+const propertyAdminRouter = require("./routes/admin/propertyRoutes");
+const reviewAdminRouter = require("./routes/admin/reviewRoutes");
+const folderAdminRouter = require("./routes/admin/folderRoutes");
+const documentAdminRouter = require("./routes/admin/documentRoutes");
+const transactionAdminRouter = require("./routes/admin/transactionRoutes");
 
 const userRoute = require("./routes/user/userRoute");
-// const userRoute = require("./routes/user/User");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
 const transactionRoute = require("./routes/user/transactionRoute");
-const contactUsUserRouter = require('./routes/user/contactUsRoutes');
-const forumTopicUserRouter = require('./routes/user/forumTopicRoute');
-const forumPostUserRouter = require('./routes/user/forumPostRoute');
-const forumCommentUserRouter = require('./routes/user/forumCommentRoute');
+const contactUsUserRouter = require("./routes/user/contactUsRoutes");
+const forumTopicUserRouter = require("./routes/user/forumTopicRoute");
+const forumPostUserRouter = require("./routes/user/forumPostRoute");
+const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
+const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
+const e = require("express");
 
 app.use(cors());
 app.use(express.json());
 
+const injectIo = (io) => {
+  return (req, res, next) => {
+    req.io = io;
+    next();
+  };
+};
+
 app.use("/admins", adminRouter);
 app.use("/admin/auth", authRouter);
-app.use("/admin/faqs", faqRouter);
+app.use("/admin/faqs", injectIo(io), faqRouter);
 app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", contactUsAdminRouter);
 app.use("/admin/contactUs/:id/responses", responseRouter);
 app.use("/admin/forumTopics", forumTopicAdminRouter);
+app.use("/admin/notifications", notificationAdminRouter);
+app.use("/admin/properties", propertyAdminRouter);
+app.use("/admin/reviews", reviewAdminRouter);
+app.use("/admin/documents", documentAdminRouter);
+app.use("/admin/folders", folderAdminRouter);
+app.use("/admin/transactions", transactionAdminRouter);
 
 app.use(
   "/user",
@@ -62,11 +94,52 @@ app.use(
   documentRoute,
   folderRoute,
   transactionRoute,
+  injectIo(io),
   contactUsUserRouter,
   forumTopicUserRouter,
   forumPostUserRouter,
-  forumCommentUserRouter
+  forumCommentUserRouter,
+  partnerApplicationUserRouter
 );
+
+io.on("connection", (socket) => {
+  console.log(`Client connected: ${socket.id}`);
+
+  socket.on("newContactUsNotification", (message) => {
+    io.emit("newContactUsNotification", message);
+  });
+
+  // Handle disconnects
+  socket.on("disconnect", () => {
+    console.log(`Client disconnected: ${socket.id}`);
+  });
+});
+
+// TRYING TO USE WEBSOCKETS.
+// const wss = new WebSocket.Server({server})
+
+globalEmitter.on("newUserCreated", async (user) => {
+  await db.Folder.create({
+    userId: user.userId,
+    timestamp: Date.now(),
+    title: "Default",
+  });
+});
+
+// globalEmitter.on('partnerApprovalUpdate', async() => {
+//     console.log("Received partner approval update notice.")
+//     wss.clients.forEach((client) => {
+//         client.send("partnerApprovalUpdate");
+//     });
+// })
+//
+// globalEmitter.on('partnerCreated', async() => {
+//     console.log("========================== Partner created =============================");
+//     wss.clients.forEach((client) => {
+//
+//         client.send("partnerCreated");
+//     });
+// })
 
 db.sequelize
   .sync()
@@ -82,12 +155,13 @@ db.sequelize
     const existingChatRecordsCount = await db.Chat.count();
     const existingRequestRecordsCount = await db.Request.count();
     const existingContactUsRecordsCount = await db.ContactUs.count();
-    const existingResponseRecordsCount = await db.Response.count();
     const existingPartnerApplicationRecordsCount =
       await db.PartnerApplication.count();
     const existingForumTopicRecordsCount = await db.ForumTopic.count();
     const existingForumPostRecordsCount = await db.ForumPost.count();
     const existingForumCommentRecordsCount = await db.ForumComment.count();
+    const existingResponseRecordsCount = await db.Response.count();
+    const existingNotificationRecordsCount = await db.Notification.count();
 
     // General order of data insertion:
     // User -> Admin -> FAQ -> Property -> Image -> Chat -> Transaction -> Invoice -> Review
@@ -112,7 +186,6 @@ db.sequelize
         for (const adminData of adminTestData) {
           await db.Admin.create(adminData);
         }
-
         console.log("Admin test data inserted successfully.");
       } catch (error) {
         console.error("Error inserting Admin test data:", error);
@@ -268,14 +341,88 @@ db.sequelize
         for (const transactionData of transactionTestData) {
           await db.Transaction.create(transactionData);
         }
-
-        console.log("Transaction test data inserted successfully.");
+        console.log("Transaction data inserted successfully.");
       } catch (error) {
-        console.error("Error inserting Transaction test data:", error);
+        console.log("Error inserting transaction data: ", error);
       }
     } else {
-      console.log("Transaction test data already exists in the database.");
+      console.log("Transaction data already exists. ");
     }
+
+    // Partner Application
+    if (existingPartnerApplicationRecordsCount === 0) {
+      try {
+        for (const partnerApplicationData of partnerApplicationId) {
+          await db.PartnerApplication.create(partnerApplicationData);
+        }
+        console.log("Partner Application test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Partner Application test data:", error);
+      }
+    } else {
+      console.log(
+        "Partner Application test data already exists in the database."
+      );
+    }
+
+    // FAQ
+    // if (existingFaqRecordsCount === 0) {
+    //   try {
+    //     for (const faqData of faqTestData) {
+    //       await db.FAQ.create(faqData);
+    //     }
+
+    //     if (existingContactUsRecordsCount === 0) {
+    //       try {
+    //         for (const contactUsData of contactUsTestData) {
+    //           await db.ContactUs.create(contactUsData);
+    //         }
+    //         console.log('Contact Us test data inserted successfully.');
+    //       } catch (error) {
+    //         console.error('Error inserting Contact Us test data:', error);
+    //       }
+    //     } else {
+    //       console.log('Contact Us test data already exists in the database.');
+    //     }
+
+    //     console.log('Faq test data inserted successfully.');
+    //   } catch (error) {
+    //     console.error('Error inserting Faq test data:', error);
+    //   }
+    // } else {
+    //   console.log('Admin test data already exists in the database.');
+    // }
+
+    // Images
+    // if (existingImageRecordsCount === 0) {
+    //   try {
+    //     for (const imageData of imageTestData) {
+    //       await db.Image.create(imageData);
+    //     }
+    //     console.log("Image test data inserted successfully.");
+    //   } catch (error) {
+    //     console.log("Error inserting Image test data:", error);
+    //   }
+    // } else {
+    //   console.log("Image test data already exists in the database.");
+    // }
+
+    // Review
+
+    // Transaction
+    // if (existingTransactionRecordsCount === 0) {
+    //   try {
+    //     for (const transactionData of transactionTestData) {
+    //       await db.Transaction.create(transactionData);
+    //     }
+
+    //     console.log("Transaction test data inserted successfully.");
+    //   } catch (error) {
+    //     console.error("Error inserting Transaction test data:", error);
+    //   }
+    // } else {
+    //   console.log("Transaction test data already exists in the database.");
+    // }
 
     // ForumTopic
     if (existingForumTopicRecordsCount === 0) {
@@ -322,8 +469,31 @@ db.sequelize
       console.log("ForumComment test data already exists in the database.");
     }
 
-    app.listen(3000, () => {
-      console.log("Server running on port 3000");
+    if (existingNotificationRecordsCount === 0) {
+      try {
+        for (const notificationData of notificationTestData) {
+          await db.Notification.create(notificationData);
+        }
+
+        console.log("Notification test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Notification test data:", error);
+      }
+    } else {
+      console.log("Notification test data already exists in the database.");
+    }
+
+    // app.listen(3000, () => {
+    //   console.log("Server running on port 3000");
+    // });
+
+    //   server.listen(3000, () => {
+    //     console.log("io server running on port 3000");
+    //   })
+    // })
+
+    server.listen(3000, () => {
+      console.log("Server started on http://localhost:3000/");
     });
   })
   .catch((error) => {
