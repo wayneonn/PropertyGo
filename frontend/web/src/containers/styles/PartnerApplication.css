@@ -1,0 +1,28 @@
+.partner-application-container {
+    background-color: #0000000D;
+    width: calc(100% - 180px);
+    top: 60px;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+    overflow-y: auto;
+}
+
+.display-partner-application {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.partner-application {
+    background-color: #FFFFFF;
+    width: 75em;
+    /* height: 40em; */
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.faq-paginate {
+    justify-content: center;
+    align-items: center;
+    padding: 5px 5px 5px 5px;
+}

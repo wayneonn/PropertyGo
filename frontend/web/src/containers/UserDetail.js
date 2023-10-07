@@ -182,6 +182,30 @@ const UserDetail = () => {
     setShowDocumentModal(false);
   };
 
+  const handleDownload = async (documentId) => {
+    try {
+      const response = await API.get(`http://127.0.0.1:3000/user/documents/${documentId}/data`)
+      console.log("This is the document: ", response.data.document);
+      const byteCharacters = atob(response.data.document); // Decode the Base64 string
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      const blob = new Blob(byteArrays, { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank')
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error fetching document data: ", error);
+    }
+  }
+
   return (
     <div className="userdetail">
       <div
@@ -412,7 +436,11 @@ const UserDetail = () => {
             {Array.isArray(documents) && documents.length > 0 ? (
               documents.map((document) => (
                 <div className="document-title">
-                  <span>{document.title}</span>
+                  <span>
+                    <a href="#" onClick={() => handleDownload(document.documentId)}>
+                      {document.title}
+                    </a>
+                  </span>
                 </div>
               ))
             ) : (

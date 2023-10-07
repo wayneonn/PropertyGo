@@ -1,9 +1,11 @@
 // This is the page for React Partner Application.
 
-import React, {useEffect, useState} from 'react';
-import {Button, Form, Modal, Table} from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Modal, Table, Pagination } from 'react-bootstrap';
+import BreadCrumb from "../components/Common/BreadCrumb.js";
 import axios from "axios";
-import app from "../App";
+
+import "./styles/PartnerApplication.css";
 
 const PartnerApplication = () => {
     const [applications, setApplications] = useState([]); // Replace with actual data fetching
@@ -16,6 +18,18 @@ const PartnerApplication = () => {
     const [rejectId, setRejectId] = useState(0);
     const [selectedApplication, setSelectedApplication] = useState(null);
 
+    const itemsPerPage = 9;
+
+    const [currentPagePartnerApplication, setCurrentPagePartnerApplication] = useState(1);
+    const [totalPagePartnerApplication, setTotalPagePartnerApplication] = useState(0);
+
+    const indexOfLastItemPartnerApplication = currentPagePartnerApplication * itemsPerPage;
+    const indexOfFirstItemPartnerApplication = indexOfLastItemPartnerApplication - itemsPerPage;
+
+    const handlePageChangePartnerApplication = (pageNumber) => {
+        setCurrentPagePartnerApplication(pageNumber);
+    };
+
     useEffect(() => {
         // Fetch applications from the server here
         // setApplications(fetchedData);
@@ -23,15 +37,17 @@ const PartnerApplication = () => {
     }, []);
 
     useEffect(() => {
-        const intervalId = setInterval(() => {
-            // Your API call or other logic here
-            console.log('Polling API...');
-            fetchApplicationDataFromServer().then(r => console.log("Data polled from API."))
-        }, 5000); // Polls every 5 seconds
+        // const intervalId = setInterval(() => {
+        //     // Your API call or other logic here
+        //     console.log('Polling API...');
+        //     fetchApplicationDataFromServer().then(r => console.log("Data polled from API."))
+        // }, 5000); // Polls every 5 seconds
 
-        return () => {
-            clearInterval(intervalId); // Cleanup when the component unmounts
-        };
+        // return () => {
+        //     clearInterval(intervalId); // Cleanup when the component unmounts
+        // };
+        console.log('Polling API...');
+        fetchApplicationDataFromServer().then(r => console.log("Data polled from API."))
     }, []);
 
     useEffect(() => {
@@ -41,6 +57,7 @@ const PartnerApplication = () => {
 
     useEffect(() => {
         setApplications(applications)
+        setTotalPagePartnerApplication(Math.ceil(applications.length / itemsPerPage));
         console.log("Application details updated. ", applications)
     }, [applications]);
 
@@ -68,7 +85,7 @@ const PartnerApplication = () => {
             };
             const res = await axios.put(`http://127.0.0.1:3000/user/partner/admin/reject/${rejectId}`, {
                 description: rejectionNote
-            }, {headers})
+            }, { headers })
             console.log("Server response: ", res);
             fetchApplicationDataFromServer().then(r => "Updated rejection successfully.");
             setShowRejectModal(false);
@@ -104,7 +121,7 @@ const PartnerApplication = () => {
                 const byteArray = new Uint8Array(byteNumbers);
                 byteArrays.push(byteArray);
             }
-            const blob = new Blob(byteArrays, {type: "application/pdf"});
+            const blob = new Blob(byteArrays, { type: "application/pdf" });
             const url = URL.createObjectURL(blob);
             window.open(url, '_blank')
             URL.revokeObjectURL(url);
@@ -124,50 +141,111 @@ const PartnerApplication = () => {
         }
     };
 
+    function formatUserCreatedAt(userCreatedAt) {
+        const dateObject = new Date(userCreatedAt);
+        const months = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ];
+        const day = dateObject.getDate();
+        const monthIndex = dateObject.getMonth();
+        const year = dateObject.getFullYear();
+        const formattedDate = `${day} ${months[monthIndex]} ${year}`;
+        return formattedDate;
+    }
 
     return (
-        <div className="partner-application">
+        <div className="partner-application-container">
             <div style={{
-                marginTop: "30px",
+                marginTop: "20px",
+                marginLeft: "30px",
                 display: "flex",
-                flex: 1
+                justifyContent: "space-between",
             }}>
-                <h2>Partner Applications</h2>
-                <Table hover responsive>
-                    <thead>
-                    <tr>
-                        <th>Application ID</th>
-                        <th>Name</th>
-                        <th>Date Submitted</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {applications.length > 0 ? (
-                        applications.map((application) => (
-                            <tr key={application.partnerApplicationId}>
-                                <td>{application.partnerApplicationId}</td>
-                                <td>{application.companyName}</td>
-                                <td>{application.createdAt}</td>
-                                <td>{application.userRole}</td>
-                                <td>
-                                    <Button
-                                        onClick={() => handleApprove(application.partnerApplicationId)}>Approve</Button>
-                                    <Button
-                                        onClick={() => handleReject(application)}>Reject</Button>
-                                    <Button
-                                        onClick={() => handleDocuments(application.partnerApplicationId)}>Documents</Button>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="5">No applications available</td>
-                        </tr>
-                    )}
-                    </tbody>
-                </Table>
+                <BreadCrumb names={["Home"]} lastname="Partner Application" links={["/"]}></BreadCrumb>
+            </div>
+            <div style={{ display: "flex", marginTop: "10px" }}>
+                <div className="display-partner-application">
+                    <div className="partner-application">
+                        <h3
+                            style={{
+                                color: "black",
+                                font: "Montserrat",
+                                fontWeight: "700",
+                                fontSize: "16px",
+                                padding: "5px 5px 5px 5px",
+                            }}
+                        >
+                            Partner Application
+                        </h3>
+                        <div>
+                            <div>
+                                <Table hover responsive>
+                                    <thead
+                                        style={{
+                                            textAlign: "center"
+                                        }}
+                                    >
+                                        <tr>
+                                            <th>Application ID</th>
+                                            <th>Name</th>
+                                            <th>Date Submitted</th>
+                                            <th>Role Applied For</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {applications.length > 0 ? (
+                                            applications.slice(indexOfFirstItemPartnerApplication, indexOfLastItemPartnerApplication).map((application) => (
+                                                <tr key={application.partnerApplicationId} style={{ textAlign: "center" }}>
+                                                    <td>{application.partnerApplicationId}</td>
+                                                    <td>{application.companyName}</td>
+                                                    <td>{formatUserCreatedAt(application.createdAt)}</td>
+                                                    <td>{application.userRole}</td>
+                                                    <td>
+                                                        <Button variant="warning"
+                                                            onClick={() => handleApprove(application.partnerApplicationId)}>Approve</Button>&nbsp;
+                                                        <Button variant="warning"
+                                                            onClick={() => handleReject(application)}>Reject</Button>&nbsp;
+                                                        <Button variant="warning"
+                                                            onClick={() => handleDocuments(application.partnerApplicationId)}>View Documents</Button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="5" style={{ textAlign: "center" }}>No applications available</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </div>
+                            <div>
+                                <Pagination className="faq-paginate">
+                                    {Array.from({ length: totalPagePartnerApplication }).map((_, index) => (
+                                        <Pagination.Item
+                                            key={index}
+                                            active={index + 1 === currentPagePartnerApplication}
+                                            onClick={() => handlePageChangePartnerApplication(index + 1)}
+                                        >
+                                            {index + 1}
+                                        </Pagination.Item>
+                                    ))}
+                                </Pagination>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <Modal show={showDocumentModal} onHide={() => setShowDocumentModal(false)}>
                 <Modal.Header closeButton>
@@ -176,30 +254,29 @@ const PartnerApplication = () => {
                 <Modal.Body>
                     <Table>
                         <thead>
-                        <tr>
-                            <th>Document ID</th>
-                            <th>Document Title</th>
-                            <th>Document Description</th>
-                            {/* Add more columns as needed */}
-                        </tr>
+                            <tr style={{textAlign: "center"}}>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {documentDetails.map(doc => (
-                            <tr key={doc.documentId}>
-                                <td>{doc.documentId}</td>
-                                <td>{doc.title}</td>
-                                <td>{doc.description}</td>
-                                <td>
-                                    <Button onClick={() => handleDownload(doc.documentId)}> View </Button>
-                                </td>
-                                {/* Add more cells as needed */}
-                            </tr>
-                        ))}
+                            {documentDetails.map(doc => (
+                                <tr key={doc.documentId} style={{ textAlign: "center" }}>
+                                    <td>{doc.documentId}</td>
+                                    <td>{doc.title}</td>
+                                    <td>{doc.description}</td>
+                                    <td>
+                                        <Button onClick={() => handleDownload(doc.documentId)}> View </Button>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </Table>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={() => setShowDocumentModal(false)}>Close</Button>
+                    <Button variant="secondary" onClick={() => setShowDocumentModal(false)}>Close</Button>
                 </Modal.Footer>
             </Modal>
             <Modal show={approvedSuccess} onHide={() => setApprovedSuccess(false)}>
@@ -230,7 +307,7 @@ const PartnerApplication = () => {
                             />
                         </Form.Group>
                         <Form.Text className="text-muted">
-                            {`${rejectionNote.length}/100`}
+                            {`${rejectionNote.length}/100 characters`}
                         </Form.Text>
                     </Form>
                 </Modal.Body>

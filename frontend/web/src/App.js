@@ -16,6 +16,7 @@ import UserDetail from "./containers/UserDetail";
 import PropertyListing from "./containers/PropertyListing";
 import Property from "./containers/Property";
 import PartnerApplication from "./containers/PartnerApplication";
+import Notification from "./containers/Notification";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -43,7 +44,8 @@ function App() {
             element={<PropertyListing />}
           />
           <Route path="/users/property/:propertyId" element={<Property />} />
-          <Route path="/partnerapp" element={<PartnerApplication />} />
+          <Route path="/partner-application" element={<PartnerApplication />} />
+          <Route path="/notifications" element={<Notification />} />
         </Route>
         <Route
           path="/"

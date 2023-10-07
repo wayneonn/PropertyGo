@@ -6,7 +6,7 @@ const {
     getSingleFaq,
     createFaq,
     updateFaq,
-    deleteFaq
+    deleteFaq,
 } = require('../../controllers/admin/faqController');
 
 router.route('/')

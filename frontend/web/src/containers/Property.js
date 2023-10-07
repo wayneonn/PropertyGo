@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
-import { Card, Button, Form, Carousel, Modal } from "react-bootstrap";
+import { Carousel, Modal } from "react-bootstrap";
 import "./styles/Property.css";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { LiaBedSolid, LiaBathSolid } from "react-icons/lia";
 import { RxDimensions } from "react-icons/rx";
@@ -20,8 +20,6 @@ const Property = () => {
   const imageBasePath =
     window.location.protocol + "//" + window.location.host + "/images/";
 
-  const navigate = useNavigate();
-
   const fetchData = async () => {
     try {
       const response = await API.get(
@@ -29,7 +27,7 @@ const Property = () => {
       );
       setProperty(response.data);
 
-      console.log(propertyId);
+      // console.log(propertyId);
 
       const sellerResponse = await API.get(
         `http://localhost:3000/admin/users/getUser/${response.data.userId}`
@@ -37,20 +35,20 @@ const Property = () => {
 
       setSeller(sellerResponse.data);
 
-      console.log(sellerResponse.data.userId);
+      // console.log(sellerResponse.data.userId);
 
       const transactionResponse = await API.get(
         `http://localhost:3000/admin/transactions`
       );
 
-      console.log(transactionResponse.data);
+      // console.log(transactionResponse.data);
 
       const transactions = transactionResponse.data.transactions
         .filter((transaction) => transaction.propertyId == propertyId)
         .filter((transaction) => transaction.requestId === null) // transaction is for OTP payment
         .filter((transaction) => transaction.status == "PAID"); // transaction is paid, means property is sold
 
-      console.log(transactions);
+      // console.log(transactions);
 
       const buyerId = transactions[0].buyerId;
 
@@ -64,9 +62,12 @@ const Property = () => {
         `http://localhost:3000/admin/documents`
       );
 
-      console.log("document:" + documentResponse);
+      console.log("buyer " + buyerId);
+      console.log("seller " + sellerResponse.data.userId);
 
-      const documents = documentResponse.data.formattedDocuments[0].documents
+      // console.log("document:" + documentResponse);
+
+      const documents = documentResponse.data.data
         .filter((document) => document.propertyId == propertyId)
         .filter(
           (document) =>
@@ -75,7 +76,7 @@ const Property = () => {
         );
       //need howard help fetch documents
 
-      console.log(documents);
+      // console.log(documents);
 
       setDocuments(documents);
     } catch (error) {
@@ -105,27 +106,51 @@ const Property = () => {
     }
   }
 
-  const toggleDocumentModal = async (documentId) => {
-    const documents = await API.get(`http://localhost:3000/admin/documents`);
-    // console.log(document);
-    // const binaryString = atob(document.data.formattedDocuments[0].document);
+  // const toggleDocumentModal = async (documentId) => {
+  //   const documents = await API.get(`http://localhost:3000/admin/documents`);
+  //   // console.log(document);
+  //   // const binaryString = atob(document.data.formattedDocuments[0].document);
 
-    const document = documents.filter(
-      (document) => document.documentId == documentId
-    );
+  //   const document = documents.filter(
+  //     (document) => document.documentId == documentId
+  //   );
 
-    const binaryString = atob(document.data.formattedDocuments[0].document); //need howard help fetch documents
-    const test = new Blob(
-      [
-        new Uint8Array(binaryString.length).map((_, i) =>
-          binaryString.charCodeAt(i)
-        ),
-      ],
-      { type: "application/pdf" }
-    );
-    setPdfBlob(test);
-    setShowDocumentModal(!showDocumentModal);
-  };
+  //   const binaryString = atob(document.data.formattedDocuments[0].document); //need howard help fetch documents
+  //   const test = new Blob(
+  //     [
+  //       new Uint8Array(binaryString.length).map((_, i) =>
+  //         binaryString.charCodeAt(i)
+  //       ),
+  //     ],
+  //     { type: "application/pdf" }
+  //   );
+  //   setPdfBlob(test);
+  //   setShowDocumentModal(!showDocumentModal);
+  // };
+
+  const handleDownload = async (documentId) => {
+    try {
+        const response = await API.get(`http://127.0.0.1:3000/user/documents/${documentId}/data`)
+        console.log("This is the document: ", response.data.document);
+        const byteCharacters = atob(response.data.document); // Decode the Base64 string
+        const byteArrays = [];
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+            const slice = byteCharacters.slice(offset, offset + 512);
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+        const blob = new Blob(byteArrays, { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank')
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error("Error fetching document data: ", error);
+    }
+}
 
   const handleCloseDocumentModal = () => {
     setShowDocumentModal(false);
@@ -327,8 +352,8 @@ const Property = () => {
               documents.map((document) => (
                 <div
                   className="folder"
-                  key={document.id}
-                  onClick={() => toggleDocumentModal(document.documentId)}
+                  key={document.documentId}
+                  onClick={() => handleDownload(document.documentId)}
                 >
                   <span>{document.title}</span>
                 </div>

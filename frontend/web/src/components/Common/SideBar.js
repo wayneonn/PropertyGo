@@ -7,11 +7,11 @@ import {
   AiOutlineFolderOpen,
   AiOutlineBook,
   AiOutlineCreditCard,
-  AiOutlineQuestionCircle,
-    AiOutline
+  AiOutlineQuestionCircle
 } from "react-icons/ai";
 import { PiPuzzlePiece, PiHouseLine } from "react-icons/pi";
 import { GoPerson } from "react-icons/go";
+import { FaWpforms } from "react-icons/fa";
 
 const SideBar = () => {
   const imageBasePath =
@@ -114,6 +114,12 @@ const SideBar = () => {
               style={{ marginRight: "1em" }}
             ></AiOutlineFolderOpen>
             Properties
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link className="a" href="/partner-application">
+            <FaWpforms style={{ marginRight: "1em" }}></FaWpforms>
+            Partner App
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>

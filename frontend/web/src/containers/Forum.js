@@ -3,7 +3,8 @@ import { Button, Table, Modal, Form, Toast, Row, Col } from "react-bootstrap";
 import "./styles/Forum.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
-import FaqCreate from "./FaqCreate.js";
+import { IoMdFlag } from "react-icons/io";
+import ForumTopicCreate from "./ForumTopicCreate";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import the styles
 
@@ -16,12 +17,12 @@ const Forum = () => {
   const [forumTopics, setForumTopics] = useState([]);
   const [flaggedForumTopics, setFlaggedForumTopics] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [faqId, setFaqId] = useState(0);
-  const [faqQuestion, setFaqQuestion] = useState("");
-  const [faqAnswer, setFaqAnswer] = useState("");
-  const [faqType, setFaqType] = useState("");
+  const [forumTopicId, setForumTopicId] = useState(0);
+  const [forumTopicName, setForumTopicName] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteFaqId, setDeleteFaqId] = useState(0);
+  const [showEditStatusModal, setShowEditStatusModal] = useState(false);
+  const [deleteForumTopicId, setDeleteForumTopicId] = useState(0);
+  const [editForumTopicId, setEditForumTopicId] = useState(0);
 
   const ITEMS_PER_PAGE = 4;
 
@@ -47,10 +48,8 @@ const Forum = () => {
 
   // validation message
   const [validationMessages, setValidationMessages] = useState({
-    emptyFaqType: false,
-    emptyFaqQuestion: false,
-    emptyFaqAnswer: false,
-    faqQuestionUnique: false,
+    emptyForumTopicName: false,
+    forumTopicNameUnique: false
   });
 
   const handlePageChangeForumTopic = (pageNumber) => {
@@ -61,88 +60,94 @@ const Forum = () => {
     setCurrentPageFlaggedForumTopic(pageNumber);
   };
 
-  const toggleEditModal = (faqId, faqQuestion, faqAnswer, faqType) => {
+  const toggleEditModal = (forumTopicId, topicName) => {
     setShowEditModal(!showEditModal);
-    setFaqId(faqId);
-    setFaqQuestion(faqQuestion);
-    setFaqAnswer(faqAnswer);
-    setFaqType(faqType);
+    setForumTopicId(forumTopicId);
+    setForumTopicName(topicName);
   };
 
-  const toggleDeleteModal = (faqId) => {
+  const toggleDeleteModal = (forumTopicId) => {
     setShowDeleteModal(!showDeleteModal);
-    setDeleteFaqId(faqId);
+    setDeleteForumTopicId(forumTopicId);
   };
+
+  const toggleEditStatusModal = (forumTopicId) => {
+    setShowEditStatusModal(!showEditStatusModal);
+    setEditForumTopicId(forumTopicId);
+  }
 
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
   };
+
+  const handleEditStatusModal = () => {
+    setShowEditStatusModal(false);
+  }
 
   const handleClose = () => {
     setShowEditModal(false);
     setValidationMessages({});
   };
 
-  //   const handleEdit = async () => {
-  //     //edit faq in database
-  //     const newMessage = {
-  //       emptyFaqQuestion: false,
-  //       emptyFaqAnswer: false,
-  //       faqQuestionUnique: false,
-  //     };
+  const handleCloseEditStatusModal = () => {
+    setShowEditStatusModal(false);
+    setValidationMessages({});
+  }
 
-  //     const questionTrimmed = htmlToPlainText(faqQuestion).trim();
-  //     const answerTrimmed = htmlToPlainText(faqAnswer).trim();
+  const handleEdit = async () => {
+    const newMessage = {
+      emptyForumTopicName: false,
+      forumTopicNameUnique: false
+    };
 
-  //     if (questionTrimmed === "") {
-  //       newMessage.emptyFaqQuestion = true;
-  //     }
+    const forumTopicNameTrimmed = forumTopicName.trim();
 
-  //     if (answerTrimmed === "") {
-  //       newMessage.emptyFaqAnswer = true;
-  //     }
+    if (forumTopicNameTrimmed === "") {
+      newMessage.emptyForumTopicName = true;
+    }
 
-  //     if (newMessage.emptyFaqQuestion || newMessage.emptyFaqAnswer) {
-  //       setValidationMessages(newMessage);
-  //       return;
-  //     }
+    if (newMessage.emptyForumTopicName) {
+      setValidationMessages(newMessage);
+      return;
+    }
 
-  //     try {
-  //       // Save to database
-  //       const response = await API.patch(
-  //         `/admin/faqs/${faqId}?adminId=${localStorage.getItem("loggedInAdmin")}`,
-  //         {
-  //           question: faqQuestion,
-  //           answer: faqAnswer,
-  //           faqType,
-  //         }
-  //       );
+    try {
+      // Save to database
+      const response = await API.patch(
+        `/admin/forumTopics/${forumTopicId}`,
+        {
+          topicName: forumTopicNameTrimmed
+        }
+      );
 
-  //       if (response.status === 200) {
-  //         setValidationMessages(newMessage);
-  //         setFaqType("");
-  //         setFaqQuestion("");
-  //         setFaqAnswer("");
-  //         setShowEditModal(false);
+      if (response.status === 200) {
+        setValidationMessages(newMessage);
+        setForumTopicName("");
+        setShowEditModal(false);
 
-  //         showToast("updated");
-  //       }
-  //     } catch (error) {
-  //       const status = error.response.status;
-  //       if (status === 409) {
-  //         newMessage.faqQuestionUnique = true;
-  //       }
+        showToast("updated");
+      }
+    } catch (error) {
+      const status = error.response.status;
+      if (status === 409) {
+        newMessage.forumTopicNameUnique = true;
+      }
 
-  //       setValidationMessages(newMessage);
-  //     }
-  //   };
+      setValidationMessages(newMessage);
+    }
+  };
 
-  //   const handleDelete = async () => {
-  //     //delete faq from database. Use the value of the useState deleteFaqId for the faqId
-  //     await API.delete(`/admin/faqs/${deleteFaqId}`);
-  //     setShowDeleteModal(false);
-  //     showToast("deleted");
-  //   };
+  const handleEditStatus = async () => {
+    await API.patch(`/admin/forumTopics/updateForumTopicStatus/${editForumTopicId}`);
+    setShowEditStatusModal(false);
+    showToast("updated from 'Inappropriate' to 'Appropriate' status of");
+  }
+
+  const handleDelete = async () => {
+    await API.delete(`/admin/forumTopics/${deleteForumTopicId}`);
+    setShowDeleteModal(false);
+    showToast("deleted");
+  };
 
   const showToast = (action) => {
     setToastAction(action);
@@ -156,7 +161,7 @@ const Forum = () => {
         const forumTopics = response.data.forumTopics;
         const unflaggedForumTopics = forumTopics.filter(
           (forumTopic) => !forumTopic.isInappropriate
-        );
+        ).filter((forumTopic) => forumTopic.adminId === parseInt(localStorage.getItem("loggedInAdmin")));
         setForumTopics(unflaggedForumTopics);
         const flaggedForumtopics = forumTopics.filter(
           (forumTopic) => forumTopic.isInappropriate
@@ -196,7 +201,7 @@ const Forum = () => {
           links={["/"]}
         ></BreadCrumb>
       </div>
-      <div style={{ position: "fixed", top: "5%", left: "50%", zIndex: "1" }}>
+      <div style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}>
         <Row>
           <Col xs={6}>
             <Toast
@@ -209,7 +214,7 @@ const Forum = () => {
               <Toast.Header>
                 <strong className="me-auto">Successful</strong>
               </Toast.Header>
-              <Toast.Body>{`You have ${toastAction} the FAQ successfully!`}</Toast.Body>
+              <Toast.Body>{`You have ${toastAction} the Forum Topic successfully!`}</Toast.Body>
             </Toast>
           </Col>
         </Row>
@@ -226,7 +231,7 @@ const Forum = () => {
                 padding: "5px 5px 5px 5px",
               }}
             >
-              UNFLAGGED FORUM TOPIC
+              FORUM TOPIC
             </h3>
             <div>
               <div>
@@ -258,7 +263,7 @@ const Forum = () => {
                             }}
                           >
                             <td className="truncate-text">
-                              {htmlToPlainText(forumTopic.topicName)}
+                              {forumTopic.topicName}
                             </td>
                             <td className="truncate-text">
                               {forumTopic.createdAt}
@@ -275,14 +280,12 @@ const Forum = () => {
                                   border: "0",
                                   marginRight: "10px",
                                 }}
-                                // onClick={() =>
-                                //   toggleEditModal(
-                                //     faq.faqId,
-                                //     htmlToPlainText(faq.question),
-                                //     htmlToPlainText(faq.answer),
-                                //     faq.faqType
-                                //   )
-                                // }
+                                onClick={() =>
+                                  toggleEditModal(
+                                    forumTopic.forumTopicId,
+                                    forumTopic.topicName
+                                  )
+                                }
                               >
                                 <MdEditSquare
                                   style={{
@@ -292,14 +295,14 @@ const Forum = () => {
                                   }}
                                 ></MdEditSquare>
                               </Button>
-                              {/* <Button
+                              <Button
                                 size="sm"
                                 title="Delete"
                                 style={{
                                   backgroundColor: "#FFD700",
                                   border: "0",
                                 }}
-                                onClick={() => toggleDeleteModal(faq.faqId)}
+                                onClick={() => toggleDeleteModal(forumTopic.forumTopicId)}
                               >
                                 <MdDelete
                                   style={{
@@ -308,7 +311,7 @@ const Forum = () => {
                                     color: "black",
                                   }}
                                 ></MdDelete>
-                              </Button> */}
+                              </Button>
                             </td>
                           </tr>
                         ))}
@@ -364,7 +367,7 @@ const Forum = () => {
                   </tr>
                 </thead>
                 {Array.isArray(flaggedForumTopics) &&
-                flaggedForumTopics.length > 0 ? (
+                  flaggedForumTopics.length > 0 ? (
                   <tbody>
                     {flaggedForumTopics
                       .slice(
@@ -379,7 +382,7 @@ const Forum = () => {
                           }}
                         >
                           <td className="truncate-text">
-                            {htmlToPlainText(flaggedForumTopic.topicName)}
+                            {flaggedForumTopic.topicName}
                           </td>
                           <td className="truncate-text">
                             {flaggedForumTopic.createdAt}
@@ -390,28 +393,23 @@ const Forum = () => {
                           <td>
                             <Button
                               size="sm"
-                              title="Edit"
+                              title="Unflag Inappropriate Forum Topic"
                               style={{
                                 backgroundColor: "#FFD700",
                                 border: "0",
                                 marginRight: "10px",
                               }}
-                              //   onClick={() =>
-                              //     toggleEditModal(
-                              //       faq.faqId,
-                              //       htmlToPlainText(faq.question),
-                              //       htmlToPlainText(faq.answer),
-                              //       faq.faqType
-                              //     )
-                              //   }
+                              onClick={() =>
+                                toggleEditStatusModal(flaggedForumTopic.forumTopicId)
+                              }
                             >
-                              <MdEditSquare
+                              <IoMdFlag
                                 style={{
                                   width: "18px",
                                   height: "18px",
                                   color: "black",
                                 }}
-                              ></MdEditSquare>
+                              ></IoMdFlag>
                             </Button>
                             <Button
                               size="sm"
@@ -420,7 +418,7 @@ const Forum = () => {
                                 backgroundColor: "#FFD700",
                                 border: "0",
                               }}
-                              //   onClick={() => toggleDeleteModal(faq.faqId)}
+                              onClick={() => toggleDeleteModal(flaggedForumTopic.forumTopicId)}
                             >
                               <MdDelete
                                 style={{
@@ -464,95 +462,39 @@ const Forum = () => {
             </div>
           </div>
         </div>
-        <FaqCreate showToast={showToast}></FaqCreate>
-        {/* <Modal
+        <ForumTopicCreate showToast={showToast}></ForumTopicCreate>
+        <Modal
           show={showEditModal}
           onHide={handleClose}
           backdrop="static"
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Edit FAQ</Modal.Title>
+            <Modal.Title>Edit Forum Topic</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div style={{ marginBottom: "10px" }}>
-              <Form.Label
-                style={{
-                  color: "black",
-                  font: "Public Sans",
-                  fontWeight: "700",
-                  fontSize: "15px",
-                }}
-              >
-                FAQ Type
-              </Form.Label>
-              <Form.Select
-                aria-label="Default select example"
-                onChange={(e) => setFaqType(e.target.value)}
-                value={faqType}
-              >
-                <option value="SELLER">SELLER</option>
-                <option value="BUYER">BUYER</option>
-              </Form.Select>
+              <Form.Control
+                as="textarea"
+                rows={5}
+                value={forumTopicName}
+                onChange={(e) => setForumTopicName(e.target.value)}
+                isInvalid={
+                  validationMessages.emptyForumTopicName ||
+                  validationMessages.forumTopicNameUnique
+                }
+              />
+              {validationMessages.emptyForumTopicName && (
+                <Form.Control.Feedback type="invalid">
+                  Forum Topic Name is required.
+                </Form.Control.Feedback>
+              )}
+              {validationMessages.forumTopicNameUnique && (
+                <Form.Control.Feedback type="invalid">
+                  Forum Topic Name already exists. Please type another Forum Topic Name.
+                </Form.Control.Feedback>
+              )}
             </div>
-            <Form.Label
-              style={{
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "700",
-                fontSize: "15px",
-              }}
-            >
-              Question
-            </Form.Label>
-            <Form.Group>
-              <ReactQuill
-                value={faqQuestion}
-                onChange={setFaqQuestion}
-                theme="snow"
-                className={
-                  validationMessages.emptyFaqQuestion ||
-                  validationMessages.faqQuestionUnique
-                    ? "is-invalid"
-                    : ""
-                }
-              />
-              {validationMessages.emptyFaqQuestion && (
-                <Form.Control.Feedback type="invalid">
-                  Question is required.
-                </Form.Control.Feedback>
-              )}
-              {validationMessages.faqQuestionUnique && (
-                <Form.Control.Feedback type="invalid">
-                  Question already exists. Please type another question.
-                </Form.Control.Feedback>
-              )}
-            </Form.Group>
-            <Form.Label
-              style={{
-                color: "black",
-                font: "Public Sans",
-                fontWeight: "700",
-                fontSize: "15px",
-              }}
-            >
-              Answer
-            </Form.Label>
-            <Form.Group>
-              <ReactQuill
-                value={faqAnswer}
-                onChange={setFaqAnswer}
-                theme="snow"
-                className={
-                  validationMessages.emptyFaqAnswer ? "is-invalid" : ""
-                }
-              />
-              {validationMessages.emptyFaqAnswer && (
-                <Form.Control.Feedback type="invalid">
-                  Answer is required.
-                </Form.Control.Feedback>
-              )}
-            </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -596,10 +538,10 @@ const Forum = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Delete FAQ</Modal.Title>
+            <Modal.Title>Delete Forum Topic</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>Are you sure you want to delete this FAQ?</p>
+            <p>Are you sure you want to delete this Forum Topic?</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -635,7 +577,54 @@ const Forum = () => {
               Yes
             </Button>
           </Modal.Footer>
-        </Modal> */}
+        </Modal>
+        <Modal
+          show={showEditStatusModal}
+          onHide={handleEditStatusModal}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Update Status of Forum Topic</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Are you sure you want to update the status to "Appropriate" for this Forum Topic?</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#F5F6F7",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleCloseEditStatusModal}
+            >
+              No
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={() => handleEditStatus()}
+            >
+              Yes
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );
