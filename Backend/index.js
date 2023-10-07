@@ -405,19 +405,19 @@ db.sequelize
 
 
     // Transaction
-    if (existingTransactionRecordsCount === 0) {
-      try {
-        for (const transactionData of transactionTestData) {
-          await db.Transaction.create(transactionData);
-        }
+    // if (existingTransactionRecordsCount === 0) {
+    //   try {
+    //     for (const transactionData of transactionTestData) {
+    //       await db.Transaction.create(transactionData);
+    //     }
 
-        console.log("Transaction test data inserted successfully.");
-      } catch (error) {
-        console.error("Error inserting Transaction test data:", error);
-      }
-    } else {
-      console.log("Transaction test data already exists in the database.");
-    }
+    //     console.log("Transaction test data inserted successfully.");
+    //   } catch (error) {
+    //     console.error("Error inserting Transaction test data:", error);
+    //   }
+    // } else {
+    //   console.log("Transaction test data already exists in the database.");
+    // }
 
     // ForumTopic
     if (existingForumTopicRecordsCount === 0) {
