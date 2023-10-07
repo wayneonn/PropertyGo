@@ -10,10 +10,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        timeStamp: {
-            type: DataTypes.DATE,
-            allowNull: false,
-        },
+        // timeStamp: {
+        //     type: DataTypes.DATE,
+        //     allowNull: false,
+        // },
         isRecent: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },
+        hasRead: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false
+        }
     }, {
         freezeTableName: true
     })
@@ -34,11 +38,19 @@ module.exports = (sequelize, DataTypes) => {
         Notification.belongsTo(models.User, {
             foreignKey: {
                 name: 'userId',
-                allowNull: false,
+                allowNull: true,
               },
             as: 'user',
         });
+        
+        Notification.belongsTo(models.Admin, {
+            foreignKey: {
+                name: 'adminId',
+                allowNull: true,
+            },
+            as: 'admin',
+        })
     };
 
-    return Notification;
-}
+  return Notification;
+};

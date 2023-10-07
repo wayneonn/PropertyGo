@@ -25,6 +25,8 @@ const ContactUs = () => {
   const [closedContactus, setClosedContactus] = useState([]);
   const [showRespondModal, setShowRespondModal] = useState(false);
   const [showViewResponseModal, setShowViewResponseModal] = useState(false);
+  const [showCloseContactUsModal, setShowCloseContactUsModal] = useState(false);
+
   const [respondId, setRespondId] = useState(0);
   const [respondTitle, setRespondTitle] = useState("");
   const [respondMessage, setRespondMessage] = useState("");
@@ -42,6 +44,7 @@ const ContactUs = () => {
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewMessage, setPreviewMessage] = useState("");
   const [previewReason, setPreviewReason] = useState("");
+  const [closeContactUsId, setCloseContactUsId] = useState(0);
 
   const itemsPerPage = 4;
 
@@ -65,7 +68,7 @@ const ContactUs = () => {
 
   const [validationMessages, setValidationMessages] = useState({
     emptyEditResponse: false,
-    emptyAddResponse: false
+    emptyAddResponse: false,
   });
 
   // toast message
@@ -117,6 +120,11 @@ const ContactUs = () => {
     setShowPreviewModal(!showPreviewModal);
   };
 
+  const toggleShowCloseContactUsModal = (id) => {
+    setShowCloseContactUsModal(true);
+    setCloseContactUsId(id);
+  };
+
   const handleClosePreview = () => {
     setShowPreviewModal(!showPreviewModal);
   };
@@ -142,18 +150,18 @@ const ContactUs = () => {
     setValidationMessages({});
   };
 
-  const closeRespond = async (id) => {
-    //change the status of this contact us to "CLOSED"
-    const newMessage = {
-      emptyResponse: false,
-    };
+  const handleCloseContactUsModal = () => {
+    setShowCloseContactUsModal(false);
+  };
 
+  const closeRespond = async () => {
+    //change the status of this contact us to "CLOSED"
     try {
-      const response = await API.patch(`/admin/contactUs/${id}`);
+      const response = await API.patch(`/admin/contactUs/${closeContactUsId}`);
 
       if (response.status === 200) {
+        setShowCloseContactUsModal(false);
         fetchData();
-        setValidationMessages(newMessage);
         showToast("closed contact us");
       }
     } catch (error) {
@@ -170,10 +178,10 @@ const ContactUs = () => {
     //edit contact us in backend, use the contactusid of the editId, response
     const newMessage = {
       emptyEditResponse: false,
-      emptyAddResponse: false
+      emptyAddResponse: false,
     };
 
-    const responseTrimmed = htmlToPlainText(editResponse).trim();
+    const responseTrimmed = editResponse.trim();
 
     if (responseTrimmed === "") {
       newMessage.emptyEditResponse = true;
@@ -190,7 +198,6 @@ const ContactUs = () => {
       );
 
       if (response.status === 200) {
-        // fetchData();
         getResponses(viewResponseId);
         setValidationMessages(newMessage);
         setShowEditModal(false);
@@ -208,7 +215,7 @@ const ContactUs = () => {
       emptyResponse: false,
     };
 
-    const addedRespondTrimmed = htmlToPlainText(addedRespond).trim();
+    const addedRespondTrimmed = addedRespond.trim();
 
     if (addedRespondTrimmed === "") {
       newMessage.emptyResponse = true;
@@ -241,10 +248,10 @@ const ContactUs = () => {
   const handleAddRespond = async () => {
     const newMessage = {
       emptyAddResponse: false,
-      emptyEditResponse: false
+      emptyEditResponse: false,
     };
 
-    const addedRespondTrimmed = htmlToPlainText(addedRespond).trim();
+    const addedRespondTrimmed = addedRespond.trim();
 
     if (addedRespondTrimmed === "") {
       newMessage.emptyAddResponse = true;
@@ -301,12 +308,6 @@ const ContactUs = () => {
       })
     );
   };
-
-  function htmlToPlainText(html) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    return doc.body.textContent || "";
-  }
 
   const fetchData = async () => {
     try {
@@ -392,18 +393,22 @@ const ContactUs = () => {
     <div className="contactus">
       <div
         style={{
-          marginTop: "20px",
+          marginTop: "10px",
           marginLeft: "30px",
           display: "flex",
           justifyContent: "space-between",
         }}
       >
-        <BreadCrumb name="Contact Us"></BreadCrumb>
+        <BreadCrumb
+          names={["Home"]}
+          lastname="Contact us"
+          links={["/"]}
+        ></BreadCrumb>
       </div>
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayContactus">
           <div
-            style={{ position: "fixed", top: "5%", left: "50%", zIndex: "1" }}
+            style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}
           >
             <Row>
               <Col xs={6}>
@@ -451,7 +456,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(pendingContactus) &&
-                pendingContactus.length > 0 ? (
+                  pendingContactus.length > 0 ? (
                   <tbody>
                     {pendingContactus
                       .slice(indexOfFirstItemPending, indexOfLastItemPending)
@@ -556,7 +561,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(repliedContactus) &&
-                repliedContactus.length > 0 ? (
+                  repliedContactus.length > 0 ? (
                   <tbody>
                     {repliedContactus
                       .slice(indexOfFirstItemReplied, indexOfLastItemReplied)
@@ -611,7 +616,7 @@ const ContactUs = () => {
                                 marginRight: "10px",
                               }}
                               onClick={() =>
-                                closeRespond(contactus.contactUsId)
+                                toggleShowCloseContactUsModal(contactus.contactUsId)
                               }
                             >
                               <MdCurtainsClosed
@@ -705,7 +710,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(closedContactus) &&
-                closedContactus.length > 0 ? (
+                  closedContactus.length > 0 ? (
                   <tbody>
                     {closedContactus
                       .slice(indexOfFirstItemClosed, indexOfLastItemClosed)
@@ -1036,12 +1041,11 @@ const ContactUs = () => {
                         maxWidth: "60%",
                       }}
                     >
-                      <span className="muted-text">
+                      <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
                         {adminNames[response.adminId]}
                       </span>
                       <div className="adminResponse">
-                        <TextareaAutosize
-                          readOnly
+                        <div
                           style={{
                             borderRadius: "10px",
                             borderColor: "#F5F6F7",
@@ -1049,9 +1053,10 @@ const ContactUs = () => {
                             resize: "none",
                             overflowY: "auto",
                             padding: "5px",
+                            margin: "0.5em"
                           }}
-                          value={response.message}
-                        />
+                          dangerouslySetInnerHTML={{ __html: response.message }}
+                        ></div>
                         <Button
                           size="sm"
                           title="Edit Response"
@@ -1078,10 +1083,10 @@ const ContactUs = () => {
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   ) : (
                     <div
@@ -1092,7 +1097,7 @@ const ContactUs = () => {
                         maxWidth: "50%",
                       }}
                     >
-                      <span className="muted-text">
+                      <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
                         {userNames[response.userId]}
                       </span>
                       <TextareaAutosize
@@ -1109,10 +1114,10 @@ const ContactUs = () => {
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   )}
                 </div>
@@ -1134,7 +1139,9 @@ const ContactUs = () => {
                 value={addedRespond}
                 onChange={setAddedRespond}
                 theme="snow"
-                className={validationMessages.emptyAddResponse ? "is-invalid" : ""}
+                className={
+                  validationMessages.emptyAddResponse ? "is-invalid" : ""
+                }
                 style={{ width: "29em" }}
                 modules={modules}
                 formats={formats}
@@ -1199,7 +1206,6 @@ const ContactUs = () => {
                             borderRadius: "10px",
                             borderColor: "#F5F6F7",
                             backgroundColor: "#FFD88D",
-                            // color: "white",
                             resize: "none",
                             overflowY: "auto",
                             padding: "5px",
@@ -1209,10 +1215,10 @@ const ContactUs = () => {
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text">
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   ) : (
                     <div
@@ -1228,7 +1234,6 @@ const ContactUs = () => {
                         style={{
                           borderRadius: "10px",
                           border: "0",
-                          // color: "white",
                           backgroundColor: "#FFD88D",
                           resize: "none",
                           overflowY: "auto",
@@ -1238,10 +1243,10 @@ const ContactUs = () => {
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                        <span className="muted-text">
-                          updated at: {response.updatedAt}
-                        </span>
-                      )}
+                          <span className="muted-text">
+                            updated at: {response.updatedAt}
+                          </span>
+                        )}
                     </div>
                   )}
                 </div>
@@ -1327,6 +1332,53 @@ const ContactUs = () => {
               onClick={() => handleEdit()}
             >
               Confirm
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal
+          show={showCloseContactUsModal}
+          onHide={handleCloseContactUsModal}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Confirmation of Contact Us</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Are you sure you want to close the following contact us?</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#F5F6F7",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleCloseContactUsModal}
+            >
+              No
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={() => closeRespond()}
+            >
+              Yes
             </Button>
           </Modal.Footer>
         </Modal>
