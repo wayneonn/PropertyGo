@@ -139,7 +139,7 @@ const PropertyListing = () => {
             value={propertyStatus}
             style={{ marginRight: "10px" }}
           >
-            <option value="">All property statuses</option>
+            <option value="">All statuses</option>
             <option value="ACTIVE">Active</option>
             <option value="ON_HOLD">On Hold</option>
             <option value="COMPLETED">Completed</option>
@@ -149,7 +149,7 @@ const PropertyListing = () => {
             onChange={(e) => setPropertyType(e.target.value)}
             value={propertyType}
           >
-            <option value="">All property types</option>
+            <option value="">All types</option>
             <option value="RESALE">Resale</option>
             <option value="NEW_LAUNCH">New Launch</option>
           </Form.Select>
@@ -178,8 +178,12 @@ const PropertyListing = () => {
                   />
                 )}
                 <Card.Body>
-                  <Card.Title>{property.title}</Card.Title>
-                  <Card.Text>{property.description}</Card.Text>
+                  <Card.Title className="truncate-text">
+                    {property.title}
+                  </Card.Title>
+                  <Card.Text className="truncate-text">
+                    {property.description}
+                  </Card.Text>
                   <Card.Text>
                     <div
                       style={{

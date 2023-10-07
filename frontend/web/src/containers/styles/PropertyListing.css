@@ -10,7 +10,7 @@
 }
 
 .filter {
-  width: 410px;
+  width: 300px;
   height: 40px;
   margin-right: 20px;
   margin-bottom: 10px;
@@ -28,6 +28,8 @@
 
 .property-card {
   width: calc(25% - 20px);
+  /* max-height: 348px;
+  overflow-y: auto; */
 }
 
 .property-card-link {
@@ -89,7 +91,9 @@
   color: red;
 }
 
-.no-property {
-  margin-left: 500px;
-  margin-top: 230px;
+.truncate-text {
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

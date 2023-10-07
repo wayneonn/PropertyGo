@@ -106,6 +106,29 @@ const Property = () => {
     }
   }
 
+  function formatTime(postedAt) {
+    const dateObject = new Date(postedAt);
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const day = dateObject.getDate();
+    const monthIndex = dateObject.getMonth();
+    const year = dateObject.getFullYear();
+    const formattedDate = `${day} ${months[monthIndex]} ${year}`;
+    return formattedDate;
+  }
+
   // const toggleDocumentModal = async (documentId) => {
   //   const documents = await API.get(`http://localhost:3000/admin/documents`);
   //   // console.log(document);
@@ -130,27 +153,29 @@ const Property = () => {
 
   const handleDownload = async (documentId) => {
     try {
-        const response = await API.get(`http://127.0.0.1:3000/user/documents/${documentId}/data`)
-        console.log("This is the document: ", response.data.document);
-        const byteCharacters = atob(response.data.document); // Decode the Base64 string
-        const byteArrays = [];
-        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-            const slice = byteCharacters.slice(offset, offset + 512);
-            const byteNumbers = new Array(slice.length);
-            for (let i = 0; i < slice.length; i++) {
-                byteNumbers[i] = slice.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            byteArrays.push(byteArray);
+      const response = await API.get(
+        `http://127.0.0.1:3000/user/documents/${documentId}/data`
+      );
+      console.log("This is the document: ", response.data.document);
+      const byteCharacters = atob(response.data.document); // Decode the Base64 string
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
         }
-        const blob = new Blob(byteArrays, { type: "application/pdf" });
-        const url = URL.createObjectURL(blob);
-        window.open(url, '_blank')
-        URL.revokeObjectURL(url);
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      const blob = new Blob(byteArrays, { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+      URL.revokeObjectURL(url);
     } catch (error) {
-        console.error("Error fetching document data: ", error);
+      console.error("Error fetching document data: ", error);
     }
-}
+  };
 
   const handleCloseDocumentModal = () => {
     setShowDocumentModal(false);
@@ -184,7 +209,7 @@ const Property = () => {
             <Carousel
               style={{
                 width: "600px",
-                height: "400px",
+                height: "420px",
               }}
             >
               {Array.isArray(property.images) && property.images.length > 0 ? (
@@ -216,7 +241,7 @@ const Property = () => {
           </div>
           <div className="description">
             <div className="property-desc">
-              <span style={{ fontSize: "30px", fontWeight: "600" }}>
+              <span style={{ fontSize: "25px", fontWeight: "600" }}>
                 {property.title}
               </span>
               <span style={{ fontSize: "15px", marginBottom: "30px" }}>
@@ -237,6 +262,11 @@ const Property = () => {
                   {property.propertyType}
                 </div>
               </div>
+              <span
+                style={{ fontSize: "12px", opacity: "0.8", marginTop: "20px" }}
+              >
+                Date posted: {formatTime(property.createdAt)}
+              </span>
             </div>
             <hr style={{ width: "565px", marginLeft: "30px", padding: "0" }} />
             <div className="attri">
@@ -285,64 +315,6 @@ const Property = () => {
               </div>
             )}
           </div>
-          {/* </div> */}
-          {/* <div className="long-desc">
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <span style={{ fontSize: "14px", marginBottom: "10px" }}>
-                Posted by:
-              </span>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                {seller.profileImage ? (
-                  <img
-                    src={`data:image/jpeg;base64,${seller.profileImage.toString(
-                      "base64"
-                    )}`}
-                    alt="profile image"
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      borderRadius: "50px",
-                      marginRight: "10px",
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={imageBasePath + "user.png"}
-                    style={{
-                      height: "30px",
-                      width: "30px",
-                      marginRight: "10px",
-                    }}
-                  />
-                )}
-                <a href={`/users/details/${seller.userId}`} className="profile">
-                  {seller.userName}
-                </a>
-              </div>
-            </div>
-            <hr />
-            <div
-              style={{
-                fontSize: "18px",
-                textAlign: "center",
-                fontWeight: "500",
-              }}
-            >
-              <span>Intent to Sell Document</span>
-            </div>
-            <div width="10em">
-              {pdfBlob ? (
-                <embed
-                  src={URL.createObjectURL(pdfBlob)}
-                  type="application/pdf"
-                  width="100%"
-                  height="550px"
-                />
-              ) : (
-                <p>No PDF</p>
-              )}
-            </div>
-          </div> */}
         </div>
         <div className="document-area">
           <span>Property Listing Documents</span>
