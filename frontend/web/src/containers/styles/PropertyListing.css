@@ -10,9 +10,11 @@
 }
 
 .filter {
-  width: 120px;
-  height: 50px;
+  width: 410px;
+  height: 40px;
   margin-right: 20px;
+  margin-bottom: 10px;
+  display: flex;
 }
 
 .property-container {
@@ -87,3 +89,7 @@
   color: red;
 }
 
+.no-property {
+  margin-left: 500px;
+  margin-top: 230px;
+}

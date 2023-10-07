@@ -289,7 +289,7 @@ const UserDetail = () => {
                 <div className="rating">
                   <span
                     style={{
-                      fontSize: "20px",
+                      fontSize: "18px",
                       fontWeight: "600",
                       display: "flex",
                       alignItems: "center",

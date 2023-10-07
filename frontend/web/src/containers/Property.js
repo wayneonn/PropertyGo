@@ -73,8 +73,6 @@ const Property = () => {
             document.userId == buyerId ||
             document.userId == sellerResponse.data.userId
         );
-
-      // Now, the 'documents' array contains documents that meet the specified conditions.
       //need howard help fetch documents
 
       console.log(documents);
