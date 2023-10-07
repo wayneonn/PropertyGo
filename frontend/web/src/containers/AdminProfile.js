@@ -199,8 +199,12 @@ const AdminProfile = () => {
 
   return (
     <div className="admin-profile">
-      <div style={{ marginTop: "20px", marginLeft: "60px" }}>
-        <BreadCrumb name="Profile"></BreadCrumb>
+      <div style={{ marginTop: "10px", marginLeft: "30px" }}>
+        <BreadCrumb
+          names={["Home"]}
+          lastname="Profile"
+          links={["/"]}
+        ></BreadCrumb>
       </div>
       <div>
         <div

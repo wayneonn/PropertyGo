@@ -1,4 +1,4 @@
-const { ContactUs, User } = require("../../models");
+const { ContactUs, User, Notification } = require("../../models");
 
 
 const createContactUs = async (req, res) => {
@@ -10,6 +10,19 @@ const createContactUs = async (req, res) => {
     try {
         const contactUs = await ContactUs.create(req.body);
         res.status(201).json({ contactUs });
+
+        req.body = {
+            "content": `A new contact us has been sent by ${userId}`,
+            "isRecent": false,
+            "isPending": true,
+            "isCompleted": false,
+            "hasRead": false,
+            "userId": userId
+        }
+
+        await Notification.create(req.body);
+
+        req.io.emit("newContactUsNotification", "New Contact Us has been created");
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error', error: error.message });

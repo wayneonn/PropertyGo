@@ -150,6 +150,7 @@ const EditPropertyListing = ({ route }) => {
         propertyListingId, // Pass the propertyListingId
         {
           ...propertyData,
+          price: price,
           propertyType: propertyTypeUpperCase,
         }
       );

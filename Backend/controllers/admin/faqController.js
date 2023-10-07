@@ -77,7 +77,10 @@ const createFaq = async (req, res) => {
   req.body.adminId = adminId;
 
   const faq = await FAQ.create(req.body);
+
   res.status(201).json({ faq });
+
+  req.io.emit("newFaqRecordNotification", "A new FAQ has been added.");
 };
 
 const updateFaq = async (req, res) => {
@@ -146,5 +149,5 @@ module.exports = {
   getSingleFaq,
   createFaq,
   updateFaq,
-  deleteFaq,
+  deleteFaq
 };

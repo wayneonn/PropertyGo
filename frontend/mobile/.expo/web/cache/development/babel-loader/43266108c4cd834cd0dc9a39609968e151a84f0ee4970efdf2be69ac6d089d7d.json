@@ -1,1 +1,27 @@
-{"ast":null,"code":"import React from 'react';\nimport { NavigationContainer } from '@react-navigation/native';\nimport StyleSheet from \"react-native-web/dist/exports/StyleSheet\";\nimport LoginNavigator from \"./navigations/LoginNavigator\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nfunction App() {\n  return _jsx(NavigationContainer, {\n    children: _jsx(LoginNavigator, {})\n  });\n}\nexport default App;","map":{"version":3,"names":["React","NavigationContainer","StyleSheet","LoginNavigator","jsx","_jsx","App","children"],"sources":["C:/Users/Legion/Desktop/FSR - 1/PropertyGo/frontend/mobile/App.js"],"sourcesContent":["import React from 'react';\r\nimport { NavigationContainer } from '@react-navigation/native';\r\nimport { StyleSheet } from 'react-native';\r\nimport LoginNavigator from './navigations/LoginNavigator';\r\n\r\n\r\nfunction App() {\r\n  return (\r\n    <NavigationContainer>\r\n      <LoginNavigator/>\r\n    </NavigationContainer>\r\n  );\r\n}\r\n\r\nexport default App;\r\n\r\n// const styles = StyleSheet.create({\r\n//   container: {\r\n//     flex: 1,\r\n//     backgroundColor: '#fff',\r\n//     alignItems: 'center',\r\n//     justifyContent: 'center',\r\n//   },\r\n// });\r\n"],"mappings":"AAAA,OAAOA,KAAK,MAAM,OAAO;AACzB,SAASC,mBAAmB,QAAQ,0BAA0B;AAAC,OAAAC,UAAA;AAE/D,OAAOC,cAAc;AAAqC,SAAAC,GAAA,IAAAC,IAAA;AAG1D,SAASC,GAAGA,CAAA,EAAG;EACb,OACED,IAAA,CAACJ,mBAAmB;IAAAM,QAAA,EAClBF,IAAA,CAACF,cAAc,IAAC;EAAC,CACE,CAAC;AAE1B;AAEA,eAAeG,GAAG"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "import React from 'react';\nimport { NavigationContainer } from '@react-navigation/native';\nimport StyleSheet from \"react-native-web/dist/exports/StyleSheet\";\nimport LoginNavigator from \"./navigations/LoginNavigator\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nfunction App() {\n  return _jsx(NavigationContainer, {\n    children: _jsx(LoginNavigator, {})\n  });\n}\nexport default App;",
+  "map": {
+    "version": 3,
+    "names": [
+      "React",
+      "NavigationContainer",
+      "StyleSheet",
+      "LoginNavigator",
+      "jsx",
+      "_jsx",
+      "App",
+      "children"
+    ],
+    "sources": [
+      "C:/Users/Legion/Desktop/FSR - 1/PropertyGo/frontend/mobile/App.js"
+    ],
+    "sourcesContent": [
+      "import React from 'react';\r\nimport { NavigationContainer } from '@react-navigation/native';\r\nimport { StyleSheet } from 'react-native';\r\nimport LoginNavigator from './navigations/LoginNavigator';\r\n\r\n\r\nfunction App() {\r\n  return (\r\n    <NavigationContainer>\r\n      <LoginNavigator/>\r\n    </NavigationContainer>\r\n  );\r\n}\r\n\r\nexport default App;\r\n\r\n// const styles = StyleSheet.create({\r\n//   container: {\r\n//     flex: 1,\r\n//     backgroundColor: '#fff',\r\n//     alignItems: 'center',\r\n//     justifyContent: 'center',\r\n//   },\r\n// });\r\n"
+    ],
+    "mappings": "AAAA,OAAOA,KAAK,MAAM,OAAO;AACzB,SAASC,mBAAmB,QAAQ,0BAA0B;AAAC,OAAAC,UAAA;AAE/D,OAAOC,cAAc;AAAqC,SAAAC,GAAA,IAAAC,IAAA;AAG1D,SAASC,GAAGA,CAAA,EAAG;EACb,OACED,IAAA,CAACJ,mBAAmB;IAAAM,QAAA,EAClBF,IAAA,CAACF,cAAc,IAAC;EAAC,CACE,CAAC;AAE1B;AAEA,eAAeG,GAAG"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

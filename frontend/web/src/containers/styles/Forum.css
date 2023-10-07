@@ -1,0 +1,74 @@
+.faq {
+  background-color: #0000000D;
+  width: calc(100% - 180px);
+  top: 60px;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  overflow-y: auto;
+}
+
+.sellerfaq {
+  background-color: #FFFFFF;
+  width: 70em;
+  height: 340px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.buyerfaq {
+  background-color: #FFFFFF;
+  width: 70em;
+  height: 340px;
+  border-radius: 5px;
+}
+
+.displayfaq {
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+.faq-paginate {
+  justify-content: center;
+  align-items: center;
+  padding: 5px 5px 5px 5px;
+}
+
+.title {
+  padding: 10px 5px 10px 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.subtitle {
+  padding: 5px 5px 5px 5px;
+  opacity: 0.6;
+  color: #999;
+}
+
+.body {
+  margin-top: 10px;
+}
+
+.text {
+  /* margin-bottom: 10px; */
+  margin-left: 6px;
+  border: 1px solid #E5E7E8;
+  /* background-color: lightpink; */
+  width: 350px;
+  height: 150px;
+  border-radius: 4px;
+}
+
+.button-container {
+  justify-content: center;
+  align-items: center;
+  padding: 9px 15px 9px 15px;
+}
+
+.truncate-text {
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

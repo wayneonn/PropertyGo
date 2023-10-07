@@ -1,12 +1,11 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { AuthContext } from '../../AuthContext';
-import { updateUserProfile, loginUser } from '../../utils/api';
-import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome
-import { Ionicons } from '@expo/vector-icons';
+import React, {useContext, useState} from 'react';
+import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {AuthContext} from '../../AuthContext';
+import {loginUser, updateUserProfile} from '../../utils/api';
+import {FontAwesome, Ionicons} from '@expo/vector-icons'; // Import FontAwesome
 
-function UpdatePassword({ navigation }) {
-    const { user, login } = useContext(AuthContext);
+function UpdatePassword({navigation}) {
+    const {user, login} = useContext(AuthContext);
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,7 +17,7 @@ function UpdatePassword({ navigation }) {
             formData.append('password', newPassword);
             formData.append('email', user.user.email);
 
-            const { success, data, message } = await updateUserProfile(
+            const {success, data, message} = await updateUserProfile(
                 user.user.userId,
                 formData
             );
@@ -26,7 +25,7 @@ function UpdatePassword({ navigation }) {
             if (success) {
                 fetchUpdatedUserDetails();
                 Alert.alert('Success', 'Password changed successfully!', [
-                    { text: 'OK', onPress: () => navigation.goBack() },
+                    {text: 'OK', onPress: () => navigation.goBack()},
                 ]);
             } else {
                 Alert.alert('Error', message || 'Failed to update password');
@@ -63,7 +62,7 @@ function UpdatePassword({ navigation }) {
 
     const fetchUpdatedUserDetails = async () => {
         try {
-            const { success, data, message } = await loginUser(
+            const {success, data, message} = await loginUser(
                 user.user.userName,
                 newPassword
             );
@@ -85,7 +84,7 @@ function UpdatePassword({ navigation }) {
                     style={styles.backButton}
                     onPress={() => navigation.goBack()}
                 >
-                    <Ionicons name="arrow-back" size={24} color="black" />
+                    <Ionicons name="arrow-back" size={24} color="black"/>
                 </TouchableOpacity>
             </View>
             <Text style={styles.header}>Update Password</Text>
@@ -154,7 +153,7 @@ function UpdatePassword({ navigation }) {
             </View>
 
             <TouchableOpacity style={styles.button} onPress={handleSaveChanges}>
-            <Ionicons name="save-outline" size={18} color="white" />
+                <Ionicons name="save-outline" size={18} color="white"/>
                 <Text style={styles.buttonText}>Update</Text>
             </TouchableOpacity>
         </View>

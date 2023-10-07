@@ -10,14 +10,14 @@ import Swiper from 'react-native-swiper';
 
 
 const SearchBar = () => {
-  return (
-    <View style={styles.searchBar}>
-      <TextInput placeholder="Enter Postal Code/MRT Address/District" style={styles.searchInput} />
-      <TouchableOpacity style={styles.searchIconContainer}>
-        <Image source={require('../../assets/Top-Navbar-Icons/search-icon.png')} style={styles.searchIcon} />
-      </TouchableOpacity>
-    </View>
-  );
+    return (
+        <View style={styles.searchBar}>
+            <TextInput placeholder="Enter Postal Code/MRT Address/District" style={styles.searchInput}/>
+            <TouchableOpacity style={styles.searchIconContainer}>
+                <Image source={require('../../assets/Top-Navbar-Icons/search-icon.png')} style={styles.searchIcon}/>
+            </TouchableOpacity>
+        </View>
+    );
 };
 
 const HomePage = ({ navigation }) => {

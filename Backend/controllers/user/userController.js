@@ -5,23 +5,21 @@ async function getAllUsers(req, res) {
   try {
     const listOfUser = await User.findAll({
       attributes: {
-        include: [
-          [sequelize.json('profileImage'), 'profileImage']
-        ]
-      }
+        include: [[sequelize.json("profileImage"), "profileImage"]],
+      },
     });
 
-    const usersWithProfileImages = listOfUser.map(user => {
+    const usersWithProfileImages = listOfUser.map((user) => {
       const userJSON = user.toJSON();
       if (userJSON.profileImage) {
-        userJSON.profileImage = userJSON.profileImage.toString('base64');
+        userJSON.profileImage = userJSON.profileImage.toString("base64");
       }
       return userJSON;
     });
 
     res.json(usersWithProfileImages);
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching users' });
+    res.status(500).json({ error: "Error fetching users" });
   }
 }
 
@@ -31,23 +29,23 @@ async function createUser(req, res) {
     // Check if the username already exists
     const existingUser = await User.findOne({
       where: {
-        userName: user.userName
-      }
+        userName: user.userName,
+      },
     });
 
     // Check if the email already exists
     const existingEmail = await User.findOne({
       where: {
-        email: user.email
-      }
+        email: user.email,
+      },
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: 'Username already exists' });
+      return res.status(400).json({ error: "Username already exists" });
     }
 
     if (existingEmail) {
-      return res.status(400).json({ error: 'Email already exists' });
+      return res.status(400).json({ error: "Email already exists" });
     }
 
     // If neither the username nor email exists, create the user
@@ -61,7 +59,7 @@ async function createUser(req, res) {
       res.json(createdUser);
     }
   } catch (error) {
-    res.status(500).json({ error: 'Error creating user' });
+    res.status(500).json({ error: "Error creating user" });
   }
 }
 
@@ -75,17 +73,17 @@ async function updateUser(req, res) {
     const user = await User.findByPk(userId);
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     const existingEmail = await User.findOne({
       where: {
-        email: updatedUserData.email
-      }
+        email: updatedUserData.email,
+      },
     });
 
     if (existingEmail && updatedUserData.email !== user.email) {
-      return res.status(400).json({ error: 'Email already exists' });
+      return res.status(400).json({ error: "Email already exists" });
     }
 
     if (req.file) {
@@ -96,8 +94,8 @@ async function updateUser(req, res) {
 
     res.json(user);
   } catch (error) {
-    console.error('Error updating user profile:', error);
-    res.status(500).json({ error: 'Error updating user profile' });
+    console.error("Error updating user profile:", error);
+    res.status(500).json({ error: "Error updating user profile" });
   }
 }
 
@@ -108,13 +106,13 @@ async function uploadProfilePicture(req, res) {
     const profileImage = req.file;
 
     if (!profileImage) {
-      return res.status(400).json({ error: 'No profile image provided' });
+      return res.status(400).json({ error: "No profile image provided" });
     }
 
     const user = await User.findByPk(userId);
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     const processedImageBuffer = await sharp(profileImage.buffer)
@@ -125,10 +123,10 @@ async function uploadProfilePicture(req, res) {
     user.profileImage = processedImageBuffer;
     await user.save();
 
-    res.json({ success: true, message: 'Profile image uploaded successfully' });
+    res.json({ success: true, message: "Profile image uploaded successfully" });
   } catch (error) {
-    console.error('Error uploading profile picture:', error);
-    res.status(500).json({ error: 'Error uploading profile picture' });
+    console.error("Error uploading profile picture:", error);
+    res.status(500).json({ error: "Error uploading profile picture" });
   }
 }
 

@@ -7,10 +7,11 @@ import {
   AiOutlineFolderOpen,
   AiOutlineBook,
   AiOutlineCreditCard,
-  AiOutlineQuestionCircle,
+  AiOutlineQuestionCircle
 } from "react-icons/ai";
 import { PiPuzzlePiece, PiHouseLine } from "react-icons/pi";
 import { GoPerson } from "react-icons/go";
+import { FaWpforms } from "react-icons/fa";
 
 const SideBar = () => {
   const imageBasePath =
@@ -21,7 +22,7 @@ const SideBar = () => {
       <Nav defaultActiveKey="/profile" className="flex-column">
         <Nav.Item>
           <Image
-            src={imageBasePath + "Logo.png"}
+            src={imageBasePath + "PropertyGo-HighRes-Logo.png"}
             alt=".."
             style={{
               width: "60px",
@@ -38,7 +39,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="*">
+          <Nav.Link className="a" href="/users">
             <LiaClipboardListSolid
               style={{ marginRight: "1em" }}
             ></LiaClipboardListSolid>
@@ -102,7 +103,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="*">
+          <Nav.Link className="a" href="/forum">
             <PiPuzzlePiece style={{ marginRight: "1em" }}></PiPuzzlePiece>
             Forum
           </Nav.Link>
@@ -113,6 +114,12 @@ const SideBar = () => {
               style={{ marginRight: "1em" }}
             ></AiOutlineFolderOpen>
             Properties
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link className="a" href="/partner-application">
+            <FaWpforms style={{ marginRight: "1em" }}></FaWpforms>
+            Partner App
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>

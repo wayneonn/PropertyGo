@@ -1,15 +1,25 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/Common/AppLayout";
 
+// common components
+import NotFound from "./components/Common/NotFound";
+
+// containers
 import AdminProfile from "./containers/AdminProfile";
+import Forum from "./containers/Forum";
 import Faq from "./containers/Faq";
 import ContactUs from "./containers/ContactUs";
-import NotFound from "./components/Common/NotFound";
-import LogoutNotFound from "./components/Common/LogoutNotFound";
+import Login from "./containers/Login";
+import UsersList from "./containers/UsersList";
+import UserDetail from "./containers/UserDetail";
+import PropertyListing from "./containers/PropertyListing";
+import Property from "./containers/Property";
+import PartnerApplication from "./containers/PartnerApplication";
+import Notification from "./containers/Notification";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import Login from "./containers/Login";
+
 import PrivateRoute from "./PrivateRoute";
 
 function App() {
@@ -26,8 +36,17 @@ function App() {
           <Route path="/profile" element={<AdminProfile />} />
           <Route path="/faqs" element={<Faq />} />
           <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/forum" element={<Forum />} />
+          <Route path="/users" element={<UsersList />} />
+          <Route path="/users/details/:userId" element={<UserDetail />} />
+          <Route
+            path="/users/details/:userId/property-listing"
+            element={<PropertyListing />}
+          />
+          <Route path="/users/property/:propertyId" element={<Property />} />
+          <Route path="/partner-application" element={<PartnerApplication />} />
+          <Route path="/notifications" element={<Notification />} />
         </Route>
-
         <Route
           path="/"
           element={
