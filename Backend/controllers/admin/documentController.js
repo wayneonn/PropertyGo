@@ -79,7 +79,7 @@ const getDocuments = async (req, res) => {
       formattedDocuments.push(document);
     }
 
-    res.status(200).json({ formattedDocuments });
+    res.status(200).json({ data: formattedDocuments });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
