@@ -90,7 +90,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Rating:</Text>
-          <Text style={styles.value}>{userDetails.rating.toFixed(1)}</Text>
+          <Text style={styles.value}>{userDetails.rating !== null ? userDetails.rating.toFixed(1) : '0.0 [New User]'}</Text>
         </View>
         <View style={styles.ratingContainer}>
 
