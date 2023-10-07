@@ -101,40 +101,6 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         freezeTableName: true
     });
-    Property.belongsTo(models.User, {
-      foreignKey: {
-        name: "userId",
-        allowNull: false,
-      },
-      as: "propertyAgent",
-    });
-    Property.belongsTo(models.User, {
-      foreignKey: {
-        name: "userId",
-        allowNull: false,
-      },
-      as: "seller",
-    });
-    Property.hasMany(models.Chat, {
-      foreignKey: "propertyId",
-      as: "chats",
-    });
-    Property.hasMany(models.Review, {
-      foreignKey: "propertyId",
-      as: "reviews",
-    });
-    Property.hasOne(models.Transaction, {
-      foreignKey: {
-        name: "transactionId",
-        allowNull: false,
-      }, // This will be the foreign key in the Transaction model
-      onDelete: "CASCADE", // If an invoice is deleted, delete the associated transaction
-    });
-    Property.hasMany(models.Image, {
-      foreignKey: "imageId",
-      as: "propertyImages",
-    });
-  };
 
     Property.prototype.changePrice = function(newPrice) {
         this.price = newPrice;
