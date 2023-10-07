@@ -251,7 +251,9 @@ const UserDetail = () => {
               </>
             )}
           </td>
-          <span style={{ marginLeft: "12px", fontWeight: "bold" }}>
+          <span
+            style={{ marginLeft: "12px", fontWeight: "600", fontSize: "18px" }}
+          >
             {user.userName}
           </span>
         </div>
@@ -407,7 +409,7 @@ const UserDetail = () => {
           </div>
         </div>
         <div className="document-area">
-          <span>User Documents</span>
+          <span style={{ fontSize: "18px", fontWeight: "500" }}>Folders</span>
           <hr />
           <div className="documents-boxes">
             {Array.isArray(folders) && folders.length > 0 ? (
