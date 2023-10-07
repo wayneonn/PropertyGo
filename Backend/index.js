@@ -7,6 +7,7 @@ const globalEmitter = require("./globalEmitter");
 const WebSocket = require("ws");
 
 const server = http.createServer(app);
+// socket io
 const io = socketIo(server, {
   cors: {
     origin: "http://localhost:3001",
