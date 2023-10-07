@@ -18,7 +18,7 @@ const PartnerApplication = () => {
     const [rejectId, setRejectId] = useState(0);
     const [selectedApplication, setSelectedApplication] = useState(null);
 
-    const itemsPerPage = 10;
+    const itemsPerPage = 9;
 
     const [currentPagePartnerApplication, setCurrentPagePartnerApplication] = useState(1);
     const [totalPagePartnerApplication, setTotalPagePartnerApplication] = useState(0);
@@ -144,25 +144,25 @@ const PartnerApplication = () => {
     function formatUserCreatedAt(userCreatedAt) {
         const dateObject = new Date(userCreatedAt);
         const months = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
         ];
         const day = dateObject.getDate();
         const monthIndex = dateObject.getMonth();
         const year = dateObject.getFullYear();
         const formattedDate = `${day} ${months[monthIndex]} ${year}`;
         return formattedDate;
-      }
+    }
 
     return (
         <div className="partner-application-container">
@@ -207,17 +207,17 @@ const PartnerApplication = () => {
                                     <tbody>
                                         {applications.length > 0 ? (
                                             applications.slice(indexOfFirstItemPartnerApplication, indexOfLastItemPartnerApplication).map((application) => (
-                                                <tr key={application.partnerApplicationId} style={{textAlign: "center"}}>
+                                                <tr key={application.partnerApplicationId} style={{ textAlign: "center" }}>
                                                     <td>{application.partnerApplicationId}</td>
                                                     <td>{application.companyName}</td>
                                                     <td>{formatUserCreatedAt(application.createdAt)}</td>
                                                     <td>{application.userRole}</td>
                                                     <td>
-                                                        <Button
+                                                        <Button variant="warning"
                                                             onClick={() => handleApprove(application.partnerApplicationId)}>Approve</Button>&nbsp;
-                                                        <Button
+                                                        <Button variant="warning"
                                                             onClick={() => handleReject(application)}>Reject</Button>&nbsp;
-                                                        <Button
+                                                        <Button variant="warning"
                                                             onClick={() => handleDocuments(application.partnerApplicationId)}>View Documents</Button>
                                                     </td>
                                                 </tr>
@@ -254,20 +254,20 @@ const PartnerApplication = () => {
                 <Modal.Body>
                     <Table>
                         <thead>
-                            <tr>
-                                <th>Document ID</th>
-                                <th>Document Title</th>
-                                <th>Document Description</th>
-                                {/* Add more columns as needed */}
+                            <tr style={{textAlign: "center"}}>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {documentDetails.map(doc => (
-                                <tr key={doc.documentId}>
-                                    <td style={{ textAlign: "center" }}>{doc.documentId}</td>
-                                    <td style={{ textAlign: "center" }}>{doc.title}</td>
-                                    <td style={{ textAlign: "center" }}>{doc.description}</td>
-                                    <td style={{ textAlign: "center" }}>
+                                <tr key={doc.documentId} style={{ textAlign: "center" }}>
+                                    <td>{doc.documentId}</td>
+                                    <td>{doc.title}</td>
+                                    <td>{doc.description}</td>
+                                    <td>
                                         <Button onClick={() => handleDownload(doc.documentId)}> View </Button>
                                     </td>
                                 </tr>
@@ -276,7 +276,7 @@ const PartnerApplication = () => {
                     </Table>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={() => setShowDocumentModal(false)}>Close</Button>
+                    <Button variant="secondary" onClick={() => setShowDocumentModal(false)}>Close</Button>
                 </Modal.Footer>
             </Modal>
             <Modal show={approvedSuccess} onHide={() => setApprovedSuccess(false)}>
@@ -307,7 +307,7 @@ const PartnerApplication = () => {
                             />
                         </Form.Group>
                         <Form.Text className="text-muted">
-                            {`${rejectionNote.length}/100`}
+                            {`${rejectionNote.length}/100 characters`}
                         </Form.Text>
                     </Form>
                 </Modal.Body>
