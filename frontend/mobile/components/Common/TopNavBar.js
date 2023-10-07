@@ -41,48 +41,49 @@ const TopBar = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        paddingTop: 42,
-        paddingBottom: 3,
-        borderBottomWidth: 0.5,
-        borderBottomColor: 'grey',
-        elevation: 5,
-        backgroundColor: 'white', // Set the background color of the header
-    },
-    HamburgerIcon: {
-        marginRight: 39,
-    },
-    coinIcon: {
-        marginRight: 15,
-        marginBottom: 5,
-    },
-    chatIcon: {
-        marginBottom: 5,
-    },
-    logoContainer: {
-        flex: 1,
-        // justifyContent: 'center', // Center horizontally,
-        marginBottom: 5,
-        // borderWidth: 1,
-    },
-    logo: {
-        alignItems: 'center',
-    },
-    logoImage: {
-        width: 45,
-        height: 45,
-        // marginBottom: 3,
-    },
-    iconsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        // borderWidth: 1,
-        justifyContent: 'space-between', // Add this line
-    },
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingTop: 42,
+    paddingBottom: 3,
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'grey',
+    elevation: 5,
+    backgroundColor: 'white', // Set the background color of the header
+    // borderWidth:3,
+  },
+  HamburgerIcon: {
+    marginRight: 39,
+  },
+  coinIcon: {
+    marginRight: 15,
+    marginBottom: 5,
+  },
+  chatIcon: {
+    marginBottom: 5,
+  },
+  logoContainer: {
+    flex: 1,
+    // justifyContent: 'center', // Center horizontally,
+    marginBottom: 5,
+    // borderWidth: 1,
+  },
+  logo: {
+    alignItems: 'center',
+  },
+  logoImage: {
+    width: 45,
+    height: 45,
+    // marginBottom: 3,
+  },
+  iconsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // borderWidth: 1,
+    justifyContent: 'space-between', // Add this line
+  },
 });
 
 export default TopBar;

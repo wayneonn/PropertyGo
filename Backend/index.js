@@ -52,7 +52,12 @@ const folderAdminRouter = require("./routes/admin/folderRoutes");
 const documentAdminRouter = require("./routes/admin/documentRoutes");
 const transactionAdminRouter = require("./routes/admin/transactionRoutes");
 
+//property routes
+const propertyRoute = require("./routes/user/propertyRoute");
+
+// user routes
 const userRoute = require("./routes/user/userRoute");
+const imageRoute = require("./routes/user/imageRoute");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
@@ -115,6 +120,17 @@ io.on("connection", (socket) => {
     console.log(`Client disconnected: ${socket.id}`);
   });
 });
+
+app.use(
+  "/property",
+  propertyRoute,
+);
+
+app.use(
+  "/image",
+  imageRoute,
+);
+
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})

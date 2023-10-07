@@ -33,11 +33,20 @@ module.exports = (sequelize, DataTypes) => {
 
     ForumComment.associate = (models) => {
         // Define a unidirectional relationship from ForumComment to Image (0..*)
-        ForumComment.belongsTo(models.Image, {
-            foreignKey: 'imageId',
+        ForumComment.hasMany(models.Image, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: true,
+                name: 'forumCommentId'
+            },
+            as: 'images',
         });
         ForumComment.belongsTo(models.ForumPost, {
-            foreignKey: 'forumPostId', 
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: false,
+                name: 'forumPostId'
+            },
             as: 'forumPost', 
         });
         ForumComment.belongsTo(models.User, {

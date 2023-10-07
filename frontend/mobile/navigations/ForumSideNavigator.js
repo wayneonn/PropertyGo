@@ -2,6 +2,7 @@ import React from 'react';
 import {createDrawerNavigator, DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer';
 import {createDrawerScreen} from '../components/DrawerScreen';
 import ForumStackGroup from './ForumStackGroup';
+import ForumTopNavBar from '../components/Forum/ForumTopNavBar';
 
 const CustomDrawerContent = (props) => {
     // const { navigation, user, updateUserProfilePicture } = props;
@@ -65,6 +66,7 @@ const CustomDrawerContent = (props) => {
 
 const drawerScreens = [
     createDrawerScreen('Forum Stack Group', ForumStackGroup, "forum", "Forum"),
+    
 ];
 
 const Drawer = createDrawerNavigator();
@@ -75,12 +77,13 @@ const ForumSideNavigator = () => {
     return (
         <Drawer.Navigator
             drawerContent={(props) => <CustomDrawerContent {...props} />}
-            // screenOptions={() => ({
-            //     drawerActiveTintColor: "#FFD700",
-            //     header: () => <TopBar/>,
-            // headerShown: false,
-            // })}
-        >
+            screenOptions={() => ({
+                drawerPosition: 'right',
+                drawerActiveTintColor: "#FFD700",
+                // header: () => <ForumTopNavBar/>,
+                headerShown: false,
+            })}
+            >
             {drawerScreens.map((screen) => (
                 <Drawer.Screen
                     key={screen.name}
