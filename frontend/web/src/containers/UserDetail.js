@@ -16,7 +16,7 @@ const UserDetail = () => {
   const { userId } = useParams();
   const [properties, setProperties] = useState([]);
   const [reviews, setReviews] = useState([]);
-  const [aveRating, setAveRating] = useState(0.0);
+  const [aveRating, setAveRating] = useState(0);
   const [folders, setFolders] = useState([]);
   const [folderId, setFolderId] = useState(0);
   const [documents, setDocuments] = useState([]);
@@ -51,11 +51,13 @@ const UserDetail = () => {
 
       let rating = 0.0;
 
-      reviews.map((review) => {
-        rating = rating + review.rating;
-      });
+      if (Array.isArray(reviews) && reviews.length > 0) {
+        reviews.map((review) => {
+          rating = rating + review.rating;
+        });
 
-      setAveRating(parseFloat(rating / reviews.length).toFixed(2));
+        setAveRating(parseFloat(rating / reviews.length).toFixed(2));
+      }
 
       setReviews(reviews);
 
@@ -184,7 +186,9 @@ const UserDetail = () => {
 
   const handleDownload = async (documentId) => {
     try {
-      const response = await API.get(`http://127.0.0.1:3000/user/documents/${documentId}/data`)
+      const response = await API.get(
+        `http://127.0.0.1:3000/user/documents/${documentId}/data`
+      );
       console.log("This is the document: ", response.data.document);
       const byteCharacters = atob(response.data.document); // Decode the Base64 string
       const byteArrays = [];
@@ -199,12 +203,12 @@ const UserDetail = () => {
       }
       const blob = new Blob(byteArrays, { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
-      window.open(url, '_blank')
+      window.open(url, "_blank");
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error fetching document data: ", error);
     }
-  }
+  };
 
   return (
     <div className="userdetail">
@@ -313,7 +317,7 @@ const UserDetail = () => {
                 <div className="rating">
                   <span
                     style={{
-                      fontSize: "20px",
+                      fontSize: "18px",
                       fontWeight: "600",
                       display: "flex",
                       alignItems: "center",
@@ -437,7 +441,10 @@ const UserDetail = () => {
               documents.map((document) => (
                 <div className="document-title">
                   <span>
-                    <a href="#" onClick={() => handleDownload(document.documentId)}>
+                    <a
+                      href="#"
+                      onClick={() => handleDownload(document.documentId)}
+                    >
                       {document.title}
                     </a>
                   </span>

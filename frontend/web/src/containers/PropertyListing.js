@@ -10,10 +10,8 @@ const PropertyListing = () => {
   const [user, setUser] = useState({});
   const { userId } = useParams();
   const [properties, setProperties] = useState([]);
-  const [active, setActive] = useState([]);
-  const [onhold, setOnhold] = useState([]);
-  const [completed, setCompleted] = useState([]);
   const [propertyStatus, setPropertyStatus] = useState("");
+  const [propertyType, setPropertyType] = useState("");
 
   const imageBasePath =
     window.location.protocol + "//" + window.location.host + "/images/";
@@ -35,32 +33,39 @@ const PropertyListing = () => {
         (property) => property.userId == userId
       );
 
-      if (propertyStatus === "") {
+      // if (propertyStatus === "" && propertyType === "") {
+      //   setProperties(properties);
+      // } else {
+      //   const filtered = properties
+      //     .filter(
+      //       (property) =>
+      //         property.propertyStatus === propertyStatus ||
+      //         property.propertyType
+      //     )
+      //     .filter((property) => property.propertyType === propertyType);
+      //   setProperties(filtered);
+      // }
+
+      if (propertyStatus === "" && propertyType === "") {
         setProperties(properties);
+      } else if (propertyStatus === "") {
+        const filteredType = properties.filter(
+          (property) => property.propertyType === propertyType
+        );
+        setProperties(filteredType);
+      } else if (propertyType === "") {
+        const filteredStatus = properties.filter(
+          (property) => property.propertyStatus === propertyStatus
+        );
+        setProperties(filteredStatus);
       } else {
         const filtered = properties.filter(
-          (property) => property.propertyStatus === propertyStatus
+          (property) =>
+            property.propertyType === propertyType &&
+            property.propertyStatus === propertyStatus
         );
         setProperties(filtered);
       }
-
-      const active = responseProperty.data.filter(
-        (property) => property.propertyStatus == "ACTIVE"
-      );
-
-      setActive(active);
-
-      const onhold = responseProperty.data.filter(
-        (property) => property.propertyStatus == "ON_HOLD"
-      );
-
-      setOnhold(onhold);
-
-      const completed = responseProperty.data.filter(
-        (property) => property.propertyStatus == "COMPLETED"
-      );
-
-      setCompleted(completed);
     } catch (error) {
       console.error(error);
     }
@@ -68,7 +73,7 @@ const PropertyListing = () => {
 
   useEffect(() => {
     fetchData();
-  }, [propertyStatus]);
+  }, [propertyStatus, propertyType]);
 
   function getPropertyClassName(status) {
     if (status === "ACTIVE") {
@@ -77,6 +82,14 @@ const PropertyListing = () => {
       return "status-on-hold";
     } else if (status === "COMPLETED") {
       return "status-completed";
+    }
+  }
+
+  function getPropertyTypeClassName(type) {
+    if (type === "NEW_LAUNCH") {
+      return "type-new";
+    } else if (type === "RESALE") {
+      return "type-resale";
     }
   }
 
@@ -124,11 +137,21 @@ const PropertyListing = () => {
             aria-label="Default select example"
             onChange={(e) => setPropertyStatus(e.target.value)}
             value={propertyStatus}
+            style={{ marginRight: "10px" }}
           >
-            <option value="">All</option>
+            <option value="">All statuses</option>
             <option value="ACTIVE">Active</option>
             <option value="ON_HOLD">On Hold</option>
             <option value="COMPLETED">Completed</option>
+          </Form.Select>
+          <Form.Select
+            aria-label="Default select example"
+            onChange={(e) => setPropertyType(e.target.value)}
+            value={propertyType}
+          >
+            <option value="">All types</option>
+            <option value="RESALE">Resale</option>
+            <option value="NEW_LAUNCH">New Launch</option>
           </Form.Select>
         </div>
       </div>
@@ -155,13 +178,33 @@ const PropertyListing = () => {
                   />
                 )}
                 <Card.Body>
-                  <Card.Title>{property.title}</Card.Title>
-                  <Card.Text>{property.description}</Card.Text>
+                  <Card.Title className="truncate-text">
+                    {property.title}
+                  </Card.Title>
+                  <Card.Text className="truncate-text">
+                    {property.description}
+                  </Card.Text>
                   <Card.Text>
                     <div
-                      className={getPropertyClassName(property.propertyStatus)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                      }}
                     >
-                      {property.propertyStatus}
+                      <div
+                        className={getPropertyClassName(
+                          property.propertyStatus
+                        )}
+                      >
+                        {property.propertyStatus}
+                      </div>
+                      <div
+                        className={getPropertyTypeClassName(
+                          property.propertyType
+                        )}
+                      >
+                        {property.propertyType}
+                      </div>
                     </div>
                   </Card.Text>
                   <Card.Text style={{ fontSize: "12px", opacity: "0.8" }}>
@@ -172,7 +215,9 @@ const PropertyListing = () => {
             </Card>
           ))
         ) : (
-          <span>No Property Listed</span>
+          <div className="no-property">
+            <h3>No Property Listed</h3>
+          </div>
         )}
       </div>
     </div>
