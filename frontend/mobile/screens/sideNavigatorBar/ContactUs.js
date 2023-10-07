@@ -1,27 +1,27 @@
-import React, { useState, useContext } from 'react';
+import React, {useContext, useState} from 'react';
 import {
+    Alert,
+    Modal,
     SafeAreaView,
+    ScrollView,
+    StyleSheet,
     Text,
-    View,
     TextInput,
     TouchableHighlight,
-    StyleSheet,
-    ScrollView,
-    Modal,
-    Alert,
+    View,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { Ionicons } from '@expo/vector-icons';
-import { createContactUs } from '../../utils/contactUsApi';
-import { AuthContext } from '../../AuthContext';
+import {Picker} from '@react-native-picker/picker';
+import {Ionicons} from '@expo/vector-icons';
+import {createContactUs} from '../../utils/contactUsApi';
+import {AuthContext} from '../../AuthContext';
 
-const ContactUs = ({ navigation, route }) => {
+const ContactUs = ({navigation, route}) => {
     const [reason, setReason] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [isModalVisible, setModalVisible] = useState(false);
     const reasonOptions = ['General', 'Support', 'Feedback', 'Other'];
-    const { user } = useContext(AuthContext);
+    const {user} = useContext(AuthContext);
 
     const handleSubmit = () => {
         if (!reason || !title || !description) {
@@ -73,52 +73,53 @@ const ContactUs = ({ navigation, route }) => {
         <SafeAreaView style={styles.container}>
 
             <ScrollView style={styles.formContainer}>
-                    <Text style={styles.header}>Contact Us</Text>
-                    <Text style={styles.subheader}>We would love to hear from you!</Text>
+                <Text style={styles.header}>Contact Us</Text>
+                <Text style={styles.subheader}>We would love to hear from you!</Text>
 
                     <Text style={styles.label}>Select a reason:</Text>
                     <Picker
                         selectedValue={reason}
                         onValueChange={(itemValue) => setReason(itemValue)}
                         style={styles.picker}
+                        itemStyle={styles.pickerItem}
                     >
                         {reasonOptions.map((item, index) => (
                             <Picker.Item key={index} label={item} value={item} />
                         ))}
                     </Picker>
 
-                    <Text style={styles.label}>Title:</Text>
-                    <TextInput
-                        value={title}
-                        onChangeText={(text) => setTitle(text)}
-                        style={styles.input}
-                        placeholder="Enter a title"
-                    />
+                <Text style={styles.label}>Title:</Text>
+                <TextInput
+                    value={title}
+                    onChangeText={(text) => setTitle(text)}
+                    style={styles.input}
+                    placeholder="Enter a title"
+                />
 
-                    <Text style={styles.label}>Description:</Text>
-                    <TextInput
-                        value={description}
-                        onChangeText={(text) => setDescription(text)}
-                        style={[styles.input, styles.descriptionInput]}
-                        multiline={true}
-                        placeholder="Enter your description"
-                    />
+                <Text style={styles.label}>Description:</Text>
+                <TextInput
+                    value={description}
+                    onChangeText={(text) => setDescription(text)}
+                    style={[styles.input, styles.descriptionInput]}
+                    multiline={true}
+                    placeholder="Enter your description"
+                />
 
-                    <TouchableHighlight
-                        style={styles.submitButton}
-                        underlayColor="#FFC94E" // Highlight color when pressed
-                        onPress={handleSubmit}
-                    >
-                        <Text style={styles.submitButtonText}>Submit</Text>
-                    </TouchableHighlight>
+                <TouchableHighlight
+                    style={styles.submitButton}
+                    underlayColor="#FFC94E" // Highlight color when pressed
+                    onPress={handleSubmit}
+                >
+                    <Text style={styles.submitButtonText}>Submit</Text>
+                </TouchableHighlight>
                 {/* Company address and social media icons */}
                 <View style={styles.companyInfoContainer}>
                     <Text style={styles.companyAddress}>123 Cecil Street</Text>
                     <Text style={styles.companyEmail}>Inquiry@PropertyGo.com</Text>
                     <View style={styles.socialMediaContainer}>
-                        <Ionicons name="logo-facebook" size={32} color="#0078D4" />
-                        <Ionicons name="logo-twitter" size={32} color="#1DA1F2" />
-                        <Ionicons name="logo-instagram" size={32} color="#E1306C" />
+                        <Ionicons name="logo-facebook" size={32} color="#0078D4"/>
+                        <Ionicons name="logo-twitter" size={32} color="#1DA1F2"/>
+                        <Ionicons name="logo-instagram" size={32} color="#E1306C"/>
                     </View>
                 </View>
             </ScrollView>
@@ -171,13 +172,19 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         marginTop: 10,
+        marginBottom: 5,
     },
     picker: {
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 5,
-        marginBottom: 20,
+        marginBottom: 10,
+        height: 120,
     },
+    pickerItem: {
+        fontSize: 20, 
+        height: 120,  
+      },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
@@ -185,11 +192,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 12,
         fontSize: 16,
-        marginBottom: 20,
+        marginBottom: 10,
     },
     descriptionInput: {
-        height: 100,
-        textAlignVertical: 'top',
+        height: 150,
+        textAlignVertical: 'top'
+        
     },
     submitButton: {
         backgroundColor: '#FFD700',

@@ -25,7 +25,7 @@ module.exports = [
       },
       {
         topicName: "Topic 5",
-        isInappropriate: false,
+        isInappropriate: true,
         userId: 5,
         // "adminId": 5
       }

@@ -42,14 +42,16 @@ module.exports = (sequelize, DataTypes) => {
         ForumPost.hasMany(models.ForumComment, {
             onDelete: "CASCADE",
             foreignKey: {
+                allowNull: false,
                 name: 'forumPostId'
             },
             as: 'forumComments',
         });
         ForumPost.belongsTo(models.ForumTopic, {
+            onDelete: "CASCADE",
             foreignKey: {
                 allowNull: false,
-                name: 'forumTopicId',
+                name: 'forumTopicId'
             },
             as: 'forumTopic',
         });
@@ -60,8 +62,13 @@ module.exports = (sequelize, DataTypes) => {
             },
             as: 'user',
         });
-        ForumPost.belongsTo(models.Image, {
-            foreignKey: 'imageId',
+        ForumPost.hasMany(models.Image, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: true,
+                name: 'forumPostId'
+            },
+            as: 'images',
         });
         ForumPost.belongsToMany(models.User, {
             through: "UserPostFlagged", // Specify the intermediary model

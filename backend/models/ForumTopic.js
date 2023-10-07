@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         ForumTopic.hasMany(models.ForumPost, {
             onDelete: "CASCADE",
             foreignKey: {
+                allowNull: false,
                 name: 'forumTopicId'
             },
             as: 'forumPosts',

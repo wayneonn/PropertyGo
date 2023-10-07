@@ -2,14 +2,18 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./components/Common/AppLayout";
 
+// common components
+import NotFound from "./components/Common/NotFound";
+
+// containers
 import AdminProfile from "./containers/AdminProfile";
+import Forum from "./containers/Forum";
 import Faq from "./containers/Faq";
 import ContactUs from "./containers/ContactUs";
-import NotFound from "./components/Common/NotFound";
-import LogoutNotFound from "./components/Common/LogoutNotFound";
+import Login from "./containers/Login";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import Login from "./containers/Login";
+
 import PrivateRoute from "./PrivateRoute";
 
 function App() {
@@ -26,6 +30,7 @@ function App() {
           <Route path="/profile" element={<AdminProfile />} />
           <Route path="/faqs" element={<Faq />} />
           <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/forum" element={<Forum />} />
         </Route>
 
         <Route

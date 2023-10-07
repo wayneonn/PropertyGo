@@ -7,7 +7,6 @@ import LoginScreen from '../screens/login/LoginScreen.js';
 import SignUpScreen from '../screens/login/SignUpScreen';
 import SignUpSelection from '../screens/login/SignUpSelection';
 import LoginSelection from '../screens/login/LoginSelection';
-import GoogleSignUp from '../screens/login/GoogleSignUp';
 import SideNavigator from './SideNavigator'
 import ForumSideNavigator from './ForumSideNavigator';
 import PropertyListingsStackGroup from './PropertyListingsStackGroup';
@@ -35,7 +34,7 @@ const LoginNavigator = () => {
             <Stack.Screen
                 name="Forum Side Navigator"
                 component={ForumSideNavigator}
-                // options={{ headerShown: false }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="Property Listings Stack Group"

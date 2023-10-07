@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, SafeAreaView, RefreshControl } from 'react-native';
 import { getUserContactUs } from '../../utils/contactUsApi';
 import { useFocusEffect } from '@react-navigation/native';
 import BoxItem from '../../components/BoxItem';
@@ -11,7 +11,7 @@ const ContactUsStatus = ({ route }) => {
   const [contactUses, setContactUses] = useState([]);
   const [pendingData, setPendingData] = useState([]);
   const [repliedData, setRepliedData] = useState([]);
-  // const [closedData, setClosedData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -36,13 +36,35 @@ const ContactUsStatus = ({ route }) => {
           // );
         } catch (error) {
           console.error(error);
-          // Handle errors
         }
       };
 
       fetchData();
     }, [user.user.userId])
   );
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+
+    try {
+      const contactUsData = await getUserContactUs(user.user.userId);
+      setContactUses(contactUsData);
+      setPendingData(
+        contactUsData
+          .filter((item) => item.status === 'PENDING')
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      );
+      setRepliedData(
+        contactUsData
+          .filter((item) => item.status === 'REPLIED')
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      );
+    } catch (error) {
+      console.error(error);
+    }
+
+    setRefreshing(false);
+  };
 
   const renderEmptyListComponent = () => (
     <Text style={styles.messageText}>You have no enquiry here!</Text>
@@ -51,7 +73,14 @@ const ContactUsStatus = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.formContainer}>
+      <ScrollView style={styles.formContainer} refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor={'#FFD700'}
+        />
+      }
+      >
         <Text style={styles.header}>ContactUs Status</Text>
         <Text style={{ ...styles.statusHeader, color: 'red' }}>Pending</Text>
         {pendingData.length === 0 ? (
@@ -62,7 +91,7 @@ const ContactUsStatus = ({ route }) => {
           ))
         )}
 
-        
+
         <Text style={{ ...styles.statusHeader, color: 'green' }}>Replied</Text>
         {repliedData.length === 0 ? (
           renderEmptyListComponent()

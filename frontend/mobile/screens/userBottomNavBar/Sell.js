@@ -115,7 +115,7 @@ export default function PropertyListing() {
         },
       ]
     );
-  };
+};
 
   const replaceImage = async (index) => {
     const permissionResult =

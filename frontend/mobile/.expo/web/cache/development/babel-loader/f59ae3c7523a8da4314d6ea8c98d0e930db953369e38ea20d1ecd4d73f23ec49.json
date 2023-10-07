@@ -1,1 +1,32 @@
-{"ast":null,"code":"import { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport ExploreServices from \"../screens/exploreServices/ExploreServices\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar ExploreServicesStack = createNativeStackNavigator();\nvar ExploreServicesStackGroup = function ExploreServicesStackGroup() {\n  return _jsx(ExploreServicesStack.Navigator, {\n    screenOptions: {\n      headerShown: false\n    },\n    children: _jsx(ExploreServicesStack.Screen, {\n      name: \"Explore Services\",\n      component: ExploreServices\n    })\n  });\n};\nexport default ExploreServicesStackGroup;","map":{"version":3,"names":["createNativeStackNavigator","ExploreServices","jsx","_jsx","ExploreServicesStack","ExploreServicesStackGroup","Navigator","screenOptions","headerShown","children","Screen","name","component"],"sources":["/workspaces/PropertyGo/frontend/mobile/navigations/ExploreServicesStackGroup.js"],"sourcesContent":["import { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport ExploreServices from \"../screens/exploreServices/ExploreServices\";\n\nconst ExploreServicesStack = createNativeStackNavigator();\n\nconst ExploreServicesStackGroup = () => {\n\n    return (\n\n        <ExploreServicesStack.Navigator screenOptions={{ headerShown: false }}>\n            {/* Adjust accordingly */}\n            <ExploreServicesStack.Screen name=\"Explore Services\" component={ExploreServices}/>\n        </ExploreServicesStack.Navigator>\n    );\n};\nexport default ExploreServicesStackGroup;"],"mappings":"AAAA,SAASA,0BAA0B,QAAQ,gCAAgC;AAC3E,OAAOC,eAAe;AAAmD,SAAAC,GAAA,IAAAC,IAAA;AAEzE,IAAMC,oBAAoB,GAAGJ,0BAA0B,CAAC,CAAC;AAEzD,IAAMK,yBAAyB,GAAG,SAA5BA,yBAAyBA,CAAA,EAAS;EAEpC,OAEIF,IAAA,CAACC,oBAAoB,CAACE,SAAS;IAACC,aAAa,EAAE;MAAEC,WAAW,EAAE;IAAM,CAAE;IAAAC,QAAA,EAElEN,IAAA,CAACC,oBAAoB,CAACM,MAAM;MAACC,IAAI,EAAC,kBAAkB;MAACC,SAAS,EAAEX;IAAgB,CAAC;EAAC,CACtD,CAAC;AAEzC,CAAC;AACD,eAAeI,yBAAyB"},"metadata":{},"sourceType":"module","externalDependencies":[]}
+{
+  "ast": null,
+  "code": "import { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport ExploreServices from \"../screens/exploreServices/ExploreServices\";\nimport { jsx as _jsx } from \"react/jsx-runtime\";\nvar ExploreServicesStack = createNativeStackNavigator();\nvar ExploreServicesStackGroup = function ExploreServicesStackGroup() {\n  return _jsx(ExploreServicesStack.Navigator, {\n    screenOptions: {\n      headerShown: false\n    },\n    children: _jsx(ExploreServicesStack.Screen, {\n      name: \"Explore Services\",\n      component: ExploreServices\n    })\n  });\n};\nexport default ExploreServicesStackGroup;",
+  "map": {
+    "version": 3,
+    "names": [
+      "createNativeStackNavigator",
+      "ExploreServices",
+      "jsx",
+      "_jsx",
+      "ExploreServicesStack",
+      "ExploreServicesStackGroup",
+      "Navigator",
+      "screenOptions",
+      "headerShown",
+      "children",
+      "Screen",
+      "name",
+      "component"
+    ],
+    "sources": [
+      "/workspaces/PropertyGo/frontend/mobile/navigations/ExploreServicesStackGroup.js"
+    ],
+    "sourcesContent": [
+      "import { createNativeStackNavigator } from \"@react-navigation/native-stack\";\nimport ExploreServices from \"../screens/exploreServices/ExploreServices\";\n\nconst ExploreServicesStack = createNativeStackNavigator();\n\nconst ExploreServicesStackGroup = () => {\n\n    return (\n\n        <ExploreServicesStack.Navigator screenOptions={{ headerShown: false }}>\n            {/* Adjust accordingly */}\n            <ExploreServicesStack.Screen name=\"Explore Services\" component={ExploreServices}/>\n        </ExploreServicesStack.Navigator>\n    );\n};\nexport default ExploreServicesStackGroup;"
+    ],
+    "mappings": "AAAA,SAASA,0BAA0B,QAAQ,gCAAgC;AAC3E,OAAOC,eAAe;AAAmD,SAAAC,GAAA,IAAAC,IAAA;AAEzE,IAAMC,oBAAoB,GAAGJ,0BAA0B,CAAC,CAAC;AAEzD,IAAMK,yBAAyB,GAAG,SAA5BA,yBAAyBA,CAAA,EAAS;EAEpC,OAEIF,IAAA,CAACC,oBAAoB,CAACE,SAAS;IAACC,aAAa,EAAE;MAAEC,WAAW,EAAE;IAAM,CAAE;IAAAC,QAAA,EAElEN,IAAA,CAACC,oBAAoB,CAACM,MAAM;MAACC,IAAI,EAAC,kBAAkB;MAACC,SAAS,EAAEX;IAAgB,CAAC;EAAC,CACtD,CAAC;AAEzC,CAAC;AACD,eAAeI,yBAAyB"
+  },
+  "metadata": {},
+  "sourceType": "module",
+  "externalDependencies": []
+}

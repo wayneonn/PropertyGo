@@ -14,23 +14,23 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BLOB('long'),
             allowNull: false,
         },
-        propertyId: {
-            type: DataTypes.BIGINT, // Adjust the data type as needed
-            allowNull: false,
-        },
+        // propertyId: {
+        //     type: DataTypes.BIGINT, // Adjust the data type as needed
+        //     allowNull: false,
+        // },
     }, {
         freezeTableName: true
     });
 
-    // Image.associate = (models) => {
-    //     Image.belongsTo(models.Property, {
-    //         foreignKey: {
-    //             name: 'propertyId',
-    //             allowNull: false,
-    //         },
-    //         as: 'propertyListing',
-    //     });
-    // };
+    Image.associate = (models) => {
+        Image.belongsTo(models.Property, {
+            foreignKey: {
+                name: 'propertyId',
+                allowNull: true,
+              },
+            as: 'propertyListing',
+        });
+    };
 
     return Image;
 };

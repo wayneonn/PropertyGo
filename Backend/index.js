@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const globalEmitter = require("./globalEmitter")
 
 // model
 const db = require("./models");
@@ -52,6 +53,7 @@ const contactUsUserRouter = require('./routes/user/contactUsRoutes');
 const forumTopicUserRouter = require('./routes/user/forumTopicRoute');
 const forumPostUserRouter = require('./routes/user/forumPostRoute');
 const forumCommentUserRouter = require('./routes/user/forumCommentRoute');
+const partnerApplicationUserRouter = require('./routes/user/partnerApplicationRoute')
 const e = require("express");
 
 app.use(cors());
@@ -73,7 +75,8 @@ app.use(
   contactUsUserRouter,
   forumTopicUserRouter,
   forumPostUserRouter,
-  forumCommentUserRouter
+  forumCommentUserRouter,
+  partnerApplicationUserRouter
 );
 
 app.use(
@@ -331,10 +334,6 @@ db.sequelize
     app.listen(3000, () => {
       console.log("Server running on port 3000");
     });
-  })
-  .catch((error) => {
-    console.error("Sequelize sync error:", error);
+
   });
-
-
 

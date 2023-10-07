@@ -1,19 +1,8 @@
 const express = require("express");
-const { Transaction } = require("../../models");
+const { getTransactions } = require("../../controllers/user/transactionController")
 
 const router = express.Router();
 
-router.get("/transactions/:id", async (req, res) => {
-  try {
-    const transactions = await Transaction.findAll({
-      where: { userId: req.params.id },
-    });
-    res.json({ transactions });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching transaction: ", error: error.message });
-  }
-});
+router.get("/transactions/:id", getTransactions);
 
 module.exports = router;
