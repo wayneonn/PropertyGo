@@ -9,29 +9,30 @@ module.exports = [
   //   expiryDate: "2025-12-31",
   //   adminId: 1,
   //   userId: 1,
+  //   userRole: "BUYER_SELLER",
   // },
-
-  // // PartnerApplication 2
+  // PartnerApplication 2
   // {
   //   companyName: "123 Industries",
-  //   userRole: "SUPPORT",
+  //   // userRole: "SUPPORT",
   //   cardNumber: "9876 5432 1098 7654",
   //   cardHolderName: "Jane Smith",
   //   cvc: "456",
   //   expiryDate: "2024-11-30",
   //   adminId: 1,
   //   userId: 2,
+  //   userRole: "LAWYER",
   // },
-
   // // PartnerApplication 3
   // {
   //   companyName: "XYZ Enterprises",
-  //   userRole: "FEEDBACK",
+  //   // userRole: "FEEDBACK",
   //   cardNumber: "5678 9012 3456 7890",
   //   cardHolderName: "Bob Johnson",
   //   cvc: "789",
   //   expiryDate: "2023-10-31",
   //   adminId: 1,
   //   userId: 3,
+  //   userRole: "CONTRACTOR",
   // },
 ];

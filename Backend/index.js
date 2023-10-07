@@ -3,15 +3,15 @@ const http = require("http");
 const socketIo = require("socket.io"); // for the event-based notification
 const cors = require("cors");
 const app = express();
-const globalEmitter = require("./globalEmitter")
-const WebSocket = require('ws');
+const globalEmitter = require("./globalEmitter");
+const WebSocket = require("ws");
 
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: "http://localhost:3001",
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+  },
 });
 
 // model
@@ -45,17 +45,22 @@ const adminUserRouter = require("./routes/admin/userRoutes");
 const responseRouter = require("./routes/admin/responseRoutes");
 const forumTopicAdminRouter = require("./routes/admin/forumTopicRoutes");
 const notificationAdminRouter = require("./routes/admin/notificationRoutes");
+const propertyAdminRouter = require("./routes/admin/propertyRoutes");
+const reviewAdminRouter = require("./routes/admin/reviewRoutes");
+const folderAdminRouter = require("./routes/admin/folderRoutes");
+const documentAdminRouter = require("./routes/admin/documentRoutes");
+const transactionAdminRouter = require("./routes/admin/transactionRoutes");
 
 const userRoute = require("./routes/user/userRoute");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
 const transactionRoute = require("./routes/user/transactionRoute");
-const contactUsUserRouter = require('./routes/user/contactUsRoutes');
-const forumTopicUserRouter = require('./routes/user/forumTopicRoute');
-const forumPostUserRouter = require('./routes/user/forumPostRoute');
-const forumCommentUserRouter = require('./routes/user/forumCommentRoute');
-const partnerApplicationUserRouter = require('./routes/user/partnerApplicationRoute')
+const contactUsUserRouter = require("./routes/user/contactUsRoutes");
+const forumTopicUserRouter = require("./routes/user/forumTopicRoute");
+const forumPostUserRouter = require("./routes/user/forumPostRoute");
+const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
+const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
 const e = require("express");
 
 app.use(cors());
@@ -75,7 +80,12 @@ app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", contactUsAdminRouter);
 app.use("/admin/contactUs/:id/responses", responseRouter);
 app.use("/admin/forumTopics", forumTopicAdminRouter);
-app.use('/admin/notifications', notificationAdminRouter);
+app.use("/admin/notifications", notificationAdminRouter);
+app.use("/admin/properties", propertyAdminRouter);
+app.use("/admin/reviews", reviewAdminRouter);
+app.use("/admin/documents", documentAdminRouter);
+app.use("/admin/folders", folderAdminRouter);
+app.use("/admin/transactions", transactionAdminRouter);
 
 app.use(
   "/user",
@@ -97,7 +107,7 @@ io.on("connection", (socket) => {
 
   socket.on("newContactUsNotification", (message) => {
     io.emit("newContactUsNotification", message);
-  })
+  });
 
   // Handle disconnects
   socket.on("disconnect", () => {
@@ -108,12 +118,11 @@ io.on("connection", (socket) => {
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})
 
-
-globalEmitter.on('newUserCreated', async (user) => {
+globalEmitter.on("newUserCreated", async (user) => {
   await db.Folder.create({
     userId: user.userId,
     timestamp: Date.now(),
-    title: "Default"
+    title: "Default",
   });
 });
 
@@ -131,7 +140,6 @@ globalEmitter.on('newUserCreated', async (user) => {
 //         client.send("partnerCreated");
 //     });
 // })
-
 
 db.sequelize
   .sync()
@@ -335,10 +343,10 @@ db.sequelize
         }
         console.log("Transaction data inserted successfully.");
       } catch (error) {
-        console.log("Error inserting transaction data: ", error)
+        console.log("Error inserting transaction data: ", error);
       }
     } else {
-      console.log("Transaction data already exists. ")
+      console.log("Transaction data already exists. ");
     }
 
     // Partner Application
@@ -385,7 +393,6 @@ db.sequelize
     //   console.log('Admin test data already exists in the database.');
     // }
 
-
     // Images
     // if (existingImageRecordsCount === 0) {
     //   try {
@@ -400,9 +407,7 @@ db.sequelize
     //   console.log("Image test data already exists in the database.");
     // }
 
-
     // Review
-
 
     // Transaction
     // if (existingTransactionRecordsCount === 0) {
@@ -488,9 +493,9 @@ db.sequelize
     // })
 
     server.listen(3000, () => {
-      console.log('Server started on http://localhost:3000/');
+      console.log("Server started on http://localhost:3000/");
     });
-  }
-  ).catch((error) => {
+  })
+  .catch((error) => {
     console.error("Sequelize sync error:", error);
   });

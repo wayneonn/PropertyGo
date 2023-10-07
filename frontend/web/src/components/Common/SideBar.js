@@ -39,7 +39,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="*">
+          <Nav.Link className="a" href="/users">
             <LiaClipboardListSolid
               style={{ marginRight: "1em" }}
             ></LiaClipboardListSolid>

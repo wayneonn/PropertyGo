@@ -5,7 +5,7 @@ import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import FaqCreate from "./FaqCreate.js";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; 
+import "react-quill/dist/quill.snow.css";
 
 import API from "../services/API";
 import { formats, modules } from "../components/Common/RichTextEditor";
@@ -185,13 +185,13 @@ const Faq = () => {
     <div className="faq">
       <div
         style={{
-          marginTop: "20px",
+          marginTop: "10px",
           marginLeft: "30px",
           display: "flex",
           justifyContent: "space-between",
         }}
       >
-        <BreadCrumb name="FAQ"></BreadCrumb>
+        <BreadCrumb names={["Home"]} lastname="FAQ" links={["/"]}></BreadCrumb>
       </div>
       <div style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}>
         <Row>

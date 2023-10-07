@@ -189,13 +189,17 @@ const Forum = () => {
     <div className="faq">
       <div
         style={{
-          marginTop: "20px",
+          marginTop: "10px",
           marginLeft: "30px",
           display: "flex",
           justifyContent: "space-between",
         }}
       >
-        <BreadCrumb name="Forum"></BreadCrumb>
+        <BreadCrumb
+          names={["Home"]}
+          lastname="Forum"
+          links={["/"]}
+        ></BreadCrumb>
       </div>
       <div style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}>
         <Row>

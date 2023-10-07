@@ -52,5 +52,5 @@ module.exports = (sequelize, DataTypes) => {
         })
     };
 
-    return Notification;
-}
+  return Notification;
+};

@@ -172,7 +172,7 @@ const PartnerApplication = () => {
                 display: "flex",
                 justifyContent: "space-between",
             }}>
-                <BreadCrumb name="Partner Application"></BreadCrumb>
+                <BreadCrumb names={["Home"]} lastname="Partner Application" links={["/"]}></BreadCrumb>
             </div>
             <div style={{ display: "flex", marginTop: "10px" }}>
                 <div className="display-partner-application">
