@@ -66,6 +66,7 @@ const CustomDrawerContent = (props) => {
 
 const drawerScreens = [
     createDrawerScreen('Forum Stack Group', ForumStackGroup, "forum", "Forum"),
+    
 ];
 
 const Drawer = createDrawerNavigator();
