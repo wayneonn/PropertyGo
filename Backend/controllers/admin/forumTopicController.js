@@ -1,5 +1,5 @@
 const moment = require("moment");
-const { ForumTopic, ForumPost } = require("../../models");
+const { ForumTopic, ForumPost, Admin, User } = require("../../models");
 
 // helper function
 const getForumTopicForUniqueness = ({ topicName }) => {
@@ -24,21 +24,31 @@ const getAllForumTopics = async (req, res) => {
             ],
         });
 
-        const formattedForumTopics = forumTopics.map((forumTopic) => {
-            return {
-                forumTopicId: forumTopic.forumTopicId,
-                topicName: forumTopic.topicName,
-                isInappropriate: forumTopic.isInappropriate,
-                adminId: forumTopic.adminId,
-                userId: forumTopic.userId,
-                createdAt: moment(forumTopic.createdAt)
-                    .tz("Asia/Singapore")
-                    .format("YYYY-MM-DD HH:mm:ss"),
-                updatedAt: moment(forumTopic.updatedAt)
-                    .tz("Asia/Singapore")
-                    .format("YYYY-MM-DD HH:mm:ss"),
-            };
-        });
+        const formattedForumTopics = await Promise.all(
+            forumTopics.map(async (forumTopic) => {
+
+                let actor = null;
+
+                if (forumTopic.adminId === null) { // forum topic created by user
+                    actor = await User.findByPk(forumTopic.userId);
+                } else { // forum topic created by admin
+                    actor = await Admin.findByPk(forumTopic.adminId);
+                }
+
+                return {
+                    forumTopicId: forumTopic.forumTopicId,
+                    topicName: forumTopic.topicName,
+                    isInappropriate: forumTopic.isInappropriate,
+                    actor: actor,
+                    createdAt: moment(forumTopic.createdAt)
+                        .tz("Asia/Singapore")
+                        .format("YYYY-MM-DD HH:mm:ss"),
+                    updatedAt: moment(forumTopic.updatedAt)
+                        .tz("Asia/Singapore")
+                        .format("YYYY-MM-DD HH:mm:ss"),
+                };
+            })
+        );
 
         res.status(200).json({ forumTopics: formattedForumTopics });
     } catch (error) {

@@ -53,6 +53,8 @@ const Notification = () => {
             }
         };
 
+        console.log(categoryMap);
+
         const socket = socketIOClient('http://localhost:3000');
 
         socket.on('newContactUsNotification', (message) => {
@@ -105,7 +107,7 @@ const Notification = () => {
                     justifyContent: "space-between",
                 }}
             >
-                <BreadCrumb name="Notification"></BreadCrumb>
+                <BreadCrumb names={["Home"]} lastname="Notification" links={["/"]}></BreadCrumb>
             </div>
             <div
                 style={{

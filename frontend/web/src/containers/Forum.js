@@ -5,11 +5,9 @@ import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import { IoMdFlag } from "react-icons/io";
 import ForumTopicCreate from "./ForumTopicCreate";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import the styles
 
 import API from "../services/API";
-import { htmlToPlainText } from "../services/richTextEditor";
 
 import Pagination from "react-bootstrap/Pagination";
 
@@ -126,6 +124,7 @@ const Forum = () => {
         setShowEditModal(false);
 
         showToast("updated");
+        fetchData();
       }
     } catch (error) {
       const status = error.response.status;
@@ -141,12 +140,14 @@ const Forum = () => {
     await API.patch(`/admin/forumTopics/updateForumTopicStatus/${editForumTopicId}`);
     setShowEditStatusModal(false);
     showToast("updated from 'Inappropriate' to 'Appropriate' status of");
+    fetchData();
   }
 
   const handleDelete = async () => {
     await API.delete(`/admin/forumTopics/${deleteForumTopicId}`);
     setShowDeleteModal(false);
     showToast("deleted");
+    fetchData();
   };
 
   const showToast = (action) => {
@@ -154,36 +155,47 @@ const Forum = () => {
     setShow(true);
   };
 
+  // const updateForumTopics = async () => {
+  //   try {
+  //     const response = await API.get(`/admin/forumTopics`);
+  //     const forumTopicsData = response.data.forumTopics;
+  //     setForumTopics(forumTopicsData);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const fetchData = async () => {
+    try {
+      const response = await API.get(`/admin/forumTopics`);
+      const forumTopics = response.data.forumTopics;
+      const unflaggedForumTopics = forumTopics.filter(
+        (forumTopic) => !forumTopic.isInappropriate
+      );
+      setForumTopics(unflaggedForumTopics);
+      const flaggedForumtopics = forumTopics.filter(
+        (forumTopic) => forumTopic.isInappropriate
+      );
+      flaggedForumtopics.sort((a, b) => {
+        const timestampA = new Date(a.updatedAt).getTime();
+        const timestampB = new Date(b.updatedAt).getTime();
+        return timestampB - timestampA;
+      });
+      setFlaggedForumTopics(flaggedForumtopics);
+      setTotalPageForumTopics(
+        Math.ceil(unflaggedForumTopics.length / ITEMS_PER_PAGE)
+      );
+      setTotalPageFlaggedForumTopics(
+        Math.ceil(flaggedForumTopics.length / ITEMS_PER_PAGE)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await API.get(`/admin/forumTopics`);
-        const forumTopics = response.data.forumTopics;
-        const unflaggedForumTopics = forumTopics.filter(
-          (forumTopic) => !forumTopic.isInappropriate
-        ).filter((forumTopic) => forumTopic.adminId === parseInt(localStorage.getItem("loggedInAdmin")));
-        setForumTopics(unflaggedForumTopics);
-        const flaggedForumtopics = forumTopics.filter(
-          (forumTopic) => forumTopic.isInappropriate
-        );
-        flaggedForumtopics.sort((a, b) => {
-          const timestampA = new Date(a.updatedAt).getTime();
-          const timestampB = new Date(b.updatedAt).getTime();
-          return timestampB - timestampA;
-        });
-        setFlaggedForumTopics(flaggedForumtopics);
-        setTotalPageForumTopics(
-          Math.ceil(unflaggedForumTopics.length / ITEMS_PER_PAGE)
-        );
-        setTotalPageFlaggedForumTopics(
-          Math.ceil(flaggedForumTopics.length / ITEMS_PER_PAGE)
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchData();
-  }, [forumTopics]);
+  }, []);
 
   return (
     <div className="faq">
@@ -245,6 +257,7 @@ const Forum = () => {
                       <th>TOPIC NAME</th>
                       <th>DATE CREATED</th>
                       <th>UPDATED AT</th>
+                      <th>CREATED BY</th>
                       <th>ACTION</th>
                     </tr>
                   </thead>
@@ -271,6 +284,9 @@ const Forum = () => {
                             <td className="truncate-text">
                               {forumTopic.updatedAt}
                             </td>
+                            <td className="truncate-text">
+                              {forumTopic.actor.userName}
+                            </td>
                             <td>
                               <Button
                                 size="sm"
@@ -280,6 +296,7 @@ const Forum = () => {
                                   border: "0",
                                   marginRight: "10px",
                                 }}
+                                disabled={forumTopic.actor.adminId === null || forumTopic.actor.adminId != localStorage.getItem("loggedInAdmin")}
                                 onClick={() =>
                                   toggleEditModal(
                                     forumTopic.forumTopicId,
@@ -302,6 +319,7 @@ const Forum = () => {
                                   backgroundColor: "#FFD700",
                                   border: "0",
                                 }}
+                                disabled={forumTopic.actor.adminId === null || forumTopic.actor.adminId != localStorage.getItem("loggedInAdmin")}
                                 onClick={() => toggleDeleteModal(forumTopic.forumTopicId)}
                               >
                                 <MdDelete
@@ -376,7 +394,7 @@ const Forum = () => {
                       )
                       .map((flaggedForumTopic) => (
                         <tr
-                          key={flaggedForumTopics.forumTopicId}
+                          key={flaggedForumTopic.forumTopicId}
                           style={{
                             textAlign: "center",
                           }}
@@ -462,7 +480,7 @@ const Forum = () => {
             </div>
           </div>
         </div>
-        <ForumTopicCreate showToast={showToast}></ForumTopicCreate>
+        <ForumTopicCreate showToast={showToast} fetchData={fetchData}></ForumTopicCreate>
         <Modal
           show={showEditModal}
           onHide={handleClose}

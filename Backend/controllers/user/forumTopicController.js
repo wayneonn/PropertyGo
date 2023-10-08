@@ -129,6 +129,7 @@ const updateForumTopicFlaggedStatus = async (req, res) => {
         } else {
             // If the user is not flagged, add the flag
             await forumTopic.addUsersFlagged(userId);
+            req.io.emit("newFlaggedForumTopicNotification", `User ID of ${userId} has flagged a forum topic of ${forumTopicId}`);
             res.status(200).json({ message: 'Flag added successfully' });
         }
 
