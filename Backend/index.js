@@ -67,6 +67,7 @@ const forumTopicUserRouter = require("./routes/user/forumTopicRoute");
 const forumPostUserRouter = require("./routes/user/forumPostRoute");
 const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
 const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
+const reviewRoute = require("./routes/user/reviewRoute");
 const e = require("express");
 
 app.use(cors());
@@ -129,6 +130,11 @@ app.use(
 app.use(
   "/image",
   imageRoute,
+);
+
+app.use(
+  "/review",
+  reviewRoute,
 );
 
 

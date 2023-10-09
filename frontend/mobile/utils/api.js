@@ -7,6 +7,7 @@ const BASE_URL = "http://localhost:3000";
 const USER_ENDPOINT = "user";
 const PROPERTY_ENDPOINT = "property";
 const IMAGE_ENDPOINT = "image";
+const REVIEW_ENDPOINT = "review";
 
 export const loginUser = async (userName, password) => {
     try {
@@ -513,6 +514,27 @@ export const searchProperties = async (query) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.message };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const getRatingByUser = async (userId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${REVIEW_ENDPOINT}/getRatingForUser/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
       },
     });
 
