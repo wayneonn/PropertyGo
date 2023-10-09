@@ -46,8 +46,30 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
         // Check if the property is in favorites and update the isFavorite state
         checkIfPropertyIsFavorite();
         calculateBoostStatus();
+        // fetchPropertyDetails();
         fetchFavoriteCount();
     }, [property, reloadPropertyCard]);
+
+    const fetchPropertyDetails = async () => {
+        const userId = user.user.userId;
+    
+        const [favoriteStatusResponse, favoriteCountResponse] = await Promise.all([
+          isPropertyInFavorites(userId, property.propertyListingId),
+          countUsersFavoritedProperty(property.propertyListingId),
+        ]);
+    
+        if (favoriteStatusResponse.success) {
+          setIsFavorite(favoriteStatusResponse.data.isLiked);
+        } else {
+          console.error('Error checking if property is in favorites:', favoriteStatusResponse.data.message);
+        }
+    
+        if (favoriteCountResponse.success) {
+          setFavoriteCount(favoriteCountResponse.data.count);
+        } else {
+          console.error('Error fetching favorite count:', favoriteCountResponse.message);
+        }
+      };
 
     const calculateBoostStatus = () => {
         if (property.boostListingEndDate) {
@@ -77,7 +99,6 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
 
     const fetchFavoriteCount = async () => {
         const { success, data, message } = await countUsersFavoritedProperty(property.propertyListingId);
-        console.log('countUsersFavoritedProperty:', success, data, message);
         if (success) {
             setFavoriteCount(data.count); // Assuming the count is in data.count
         } else {

@@ -37,8 +37,9 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
   };
 
   const fetchFavoriteCount = async () => {
+    // console.log('Favorite count:', property.favoriteCount);
+    // setFavoriteCount(property.favoriteCount);
     const { success, data, message } = await countUsersFavoritedProperty(property.propertyListingId);
-    console.log('countUsersFavoritedProperty:', success, data, message);
     if (success) {
       setFavoriteCount(data.count);
     } else {
@@ -55,8 +56,10 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
     }
 
     // Calculate boost status and fetch property favorite status/count
+    checkIfPropertyIsFavorite();
     calculateBoostStatus();
-    fetchPropertyDetails();
+    // fetchPropertyDetails();
+    fetchFavoriteCount();
   }, [property, reloadPropertyCard]);
 
   const calculateBoostStatus = () => {
@@ -68,6 +71,22 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
       setIsBoostActive(false); // No boost end date means not active
     }
   };
+
+  const checkIfPropertyIsFavorite = async () => {
+    const userId = user.user.userId;
+    try {
+        const { success, data } = await isPropertyInFavorites(userId, property.propertyListingId);
+
+        if (success) {
+            setIsFavorite(data.isLiked);
+            setFavoriteCount(data.favoriteCount); // Set the favorite count from the API response
+        } else {
+            console.error('Error checking if property is in favorites:', data.message);
+        }
+    } catch (error) {
+        console.error('Error checking if property is in favorites:', error);
+    }
+};
 
   const fetchPropertyDetails = async () => {
     const userId = user.user.userId;

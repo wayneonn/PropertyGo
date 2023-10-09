@@ -73,7 +73,6 @@ const PropertyListingScreen = ({ route }) => {
   // Fetch the number of users who have favorited the property
   const fetchFavoriteCount = async () => {
     const { success, data, message } = await countUsersFavoritedProperty(propertyListingId);
-    console.log('countUsersFavoritedProperty:', success, data, message);
     if (success) {
       setFavoriteCount(data.count); // Assuming the count is in data.count
     } else {

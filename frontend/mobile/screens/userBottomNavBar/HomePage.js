@@ -30,6 +30,8 @@ const HomePage = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [searchTimeout, setSearchTimeout] = useState(null);
+  const [sortedPopularProperties, setSortedPopularProperties] = useState([]);
+  const [sortedRecentlyAddedProperties, setSortedRecentlyAddedProperties] = useState([]);
 
   const handlePropertyPress = (propertyListingId) => {
     // Navigate to the Property Listing screen with the given propertyListingId
@@ -41,7 +43,7 @@ const HomePage = ({ navigation }) => {
     loadPopularProperties();
     // Load recently added properties
     loadRecentlyAddedProperties();
-  }, []);
+  }, []);  
 
 
   useFocusEffect(
@@ -58,11 +60,8 @@ const HomePage = ({ navigation }) => {
       const { success, data } = await getPropertiesByFavoriteCount();
 
       if (success) {
-        // Assuming data is an array of properties
-        const top10Properties = data
-          .sort((a, b) => b.favoriteCount - a.favoriteCount)
-          .slice(0, 10);
-        setPopularProperties(top10Properties);
+        // const sortedProperties = data.sort((a, b) => b.favoriteCount - a.favoriteCount).slice(0, 10);
+        setPopularProperties(data);
       } else {
         console.error('Error loading popular properties:', data.message);
       }
@@ -76,19 +75,15 @@ const HomePage = ({ navigation }) => {
       const { success, data } = await getRecentlyAddedProperties();
 
       if (success) {
-        // Assuming data is an array of properties
-        const top10Properties = data
-          .sort((a, b) => b.favoriteCount - a.favoriteCount)
-          .slice(0, 10);
-        setPopularProperties(top10Properties);
-        setRecentlyAddedProperties(top10Properties);
+        // const sortedProperties = data.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)).slice(0, 10);
+        setRecentlyAddedProperties(data);
       } else {
         console.error('Error loading recently added properties:', data.message);
       }
     } catch (error) {
       console.error('Error loading recently added properties:', error.message);
     } finally {
-      setIsLoading(false); // Set loading to false when data is loaded or an error occurs
+      setIsLoading(false);
     }
   };
 
@@ -230,9 +225,9 @@ const HomePage = ({ navigation }) => {
               </View>
             </TouchableOpacity>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {popularProperties.map((property) => (
+              {popularProperties.slice(0, 10).map((property) => (
                 <PropertyCard
-                  key={property.propertyId}
+                  key={property.propertyListingId}
                   property={property}
                   onPress={() => handlePropertyPress(property.propertyListingId)}
                 />
@@ -249,9 +244,9 @@ const HomePage = ({ navigation }) => {
               </View>
             </TouchableOpacity>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {recentlyAddedProperties.map((property) => (
+              {recentlyAddedProperties.slice(0, 10).map((property) => (
                 <PropertyCard
-                  key={property.propertyId}
+                  key={property.propertyListingId}
                   property={property}
                   onPress={() => handlePropertyPress(property.propertyListingId)}
                 />
