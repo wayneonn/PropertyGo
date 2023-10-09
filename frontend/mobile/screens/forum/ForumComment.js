@@ -86,8 +86,13 @@ const ForumComment = ({ navigation }) => {
     };
 
     const handleFlagComment = async (forumCommentId) => {
-        updateForumCommentFlaggedStatus(user.user.userId, forumCommentId);
-        useParentCallback();
+        try {
+            await updateForumCommentFlaggedStatus(user.user.userId, forumCommentId);
+            useParentCallback();
+        } catch (error) {
+            console.error(error);
+        }
+        
     };
 
     const handleRefresh = async () => {

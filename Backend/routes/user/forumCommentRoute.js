@@ -10,7 +10,11 @@ const {
     updateForumCommentVote,
     updateForumComment,
     deleteForumComment,
-    getForumCommentVoteDetails
+    getForumCommentVoteDetails,
+    getAllForumCommentByUserId,
+    getAllUserUpvotedForumComment,
+    getAllUserDownvotedForumComment,
+    getAllUserFlaggedForumComment
 } = require('../../controllers/user/forumCommentController');
 
 const storage = multer.memoryStorage();
@@ -19,6 +23,18 @@ const upload = multer({ storage: storage });
 router.route('/:userId/forumComment')
     .post(upload.array("images", 5), createForumComment)
     .get(getAllForumComment)
+
+router.route('/:userId/forumCommentsUserUpvoted')
+    .get(getAllUserUpvotedForumComment)
+
+router.route('/:userId/forumCommentsUserDownvoted')
+    .get(getAllUserDownvotedForumComment)
+
+router.route('/:userId/forumCommentsUserFlagged')
+    .get(getAllUserFlaggedForumComment)
+
+router.route('/:userId/forumCommentsByUserId')
+    .get(getAllForumCommentByUserId)
 
 router.route('/:userId/forumComment/:forumCommentId/flagComment')
     .put(updateForumCommentFlaggedStatus)

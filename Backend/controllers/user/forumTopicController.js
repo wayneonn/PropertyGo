@@ -72,6 +72,159 @@ const getAllForumTopic = async (req, res) => {
     }
 };
 
+const getAllForumTopicByUserId = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumTopics = await user.getForumTopics({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [sequelize.Op.not]: true,
+                },
+            }
+        })
+
+        // console.log(forumTopics)
+        res.status(200).json(forumTopics);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllUserUpvotedForumTopic = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumTopics = await ForumTopic.findAll({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [sequelize.Op.not]: true,
+                },
+                forumTopicId: {
+                    [sequelize.Op.notIn]: sequelize.literal(
+                        `(SELECT forumTopicId FROM \`UserTopicFlagged\` AS \`UserTopicFlagged\` WHERE \`ForumTopic\`.\`forumTopicId\` = \`UserTopicFlagged\`.\`forumTopicId\` AND \`UserTopicFlagged\`.\`userId\` = ${userId})`
+                    ),
+                    [sequelize.Op.in]: sequelize.literal(
+                        `(SELECT forumTopicId FROM \`UserTopicUpvoted\` AS \`UserTopicUpvoted\` WHERE \`ForumTopic\`.\`forumTopicId\` = \`UserTopicUpvoted\`.\`forumTopicId\` AND \`UserTopicUpvoted\`.\`userId\` = ${userId})`
+                    ),
+                },
+            },
+        });
+
+        // console.log(forumTopics)
+        res.status(200).json(forumTopics);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllUserDownvotedForumTopic = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumTopics = await ForumTopic.findAll({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [sequelize.Op.not]: true,
+                },
+                forumTopicId: {
+                    [sequelize.Op.notIn]: sequelize.literal(
+                        `(SELECT forumTopicId FROM \`UserTopicFlagged\` AS \`UserTopicFlagged\` WHERE \`ForumTopic\`.\`forumTopicId\` = \`UserTopicFlagged\`.\`forumTopicId\` AND \`UserTopicFlagged\`.\`userId\` = ${userId})`
+                    ),
+                    [sequelize.Op.in]: sequelize.literal(
+                        `(SELECT forumTopicId FROM \`UserTopicDownvoted\` AS \`UserTopicDownvoted\` WHERE \`ForumTopic\`.\`forumTopicId\` = \`UserTopicDownvoted\`.\`forumTopicId\` AND \`UserTopicDownvoted\`.\`userId\` = ${userId})`
+                    ),
+                },
+            },
+        });
+
+        // console.log(forumTopics)
+        res.status(200).json(forumTopics);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllUserFlaggedForumTopic = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumTopics = await ForumTopic.findAll({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [sequelize.Op.not]: true,
+                },
+                forumTopicId: {
+                    [sequelize.Op.in]: sequelize.literal(
+                        `(SELECT forumTopicId FROM \`UserTopicFlagged\` AS \`UserTopicFlagged\` WHERE \`ForumTopic\`.\`forumTopicId\` = \`UserTopicFlagged\`.\`forumTopicId\` AND \`UserTopicFlagged\`.\`userId\` = ${userId})`
+                    ),
+                },
+            },
+        });
+
+        // console.log(forumTopics)
+        res.status(200).json(forumTopics);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 const getForumTopicVoteDetails = async (req, res) => {
     try {
 
@@ -268,5 +421,9 @@ module.exports = {
     updateForumTopicVote,
     updateForumTopicName,
     deleteForumTopicName,
-    getForumTopicVoteDetails
+    getForumTopicVoteDetails,
+    getAllForumTopicByUserId,
+    getAllUserUpvotedForumTopic,
+    getAllUserDownvotedForumTopic,
+    getAllUserFlaggedForumTopic
 };

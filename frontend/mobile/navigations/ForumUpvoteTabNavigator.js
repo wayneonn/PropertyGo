@@ -1,8 +1,8 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import YourContributionTopics from '../screens/forum/YourContributionTopics';
-import YourContributionPosts from '../screens/forum/YourContributionPosts';
-import YourContributionComments from '../screens/forum/YourContributionComments';
+import UpvotedTopics from '../screens/forum/UpvotedTopics'
+import UpvotedPosts from '../screens/forum/UpvotedPosts'
+import UpvotedComments from '../screens/forum/UpvotedComments'
 import { MaterialIcons } from '@expo/vector-icons';
 import { View, Text } from 'react-native'; // Import Text and View from react-native
 import { useRoute } from '@react-navigation/native';
@@ -16,7 +16,7 @@ const CustomTabLabel = ({ label, color, icon }) => (
     </View>
 );
 
-const YourContributionTabNavigator = () => {
+const ForumUpvoteTabNavigator = () => {
 
     const route = useRoute();
     // console.log(topic);
@@ -40,8 +40,8 @@ const YourContributionTabNavigator = () => {
             }}
         >
             <Tab.Screen
-                name="Your Contribution Topics"
-                component={YourContributionTopics}
+                name="Upvoted Topics"
+                component={UpvotedTopics}
                 // initialParams={{ topic }}
                 options={{
                     tabBarLabel: ({ color, focused }) => (
@@ -50,8 +50,8 @@ const YourContributionTabNavigator = () => {
                 }}
             />
             <Tab.Screen
-                name="Your Contribution Posts"
-                component={YourContributionPosts}
+                name="Upvoted Posts"
+                component={UpvotedPosts}
                 // initialParams={{ topic }}
                 options={{
                     tabBarLabel: ({ color, focused }) => (
@@ -61,8 +61,8 @@ const YourContributionTabNavigator = () => {
             />
 
             <Tab.Screen
-                name="Your Contribution Comments"
-                component={YourContributionComments}
+                name="Upvoted Comments"
+                component={UpvotedComments}
                 // initialParams={{ topic }}
                 options={{
                     tabBarLabel: ({ color, focused }) => (
@@ -74,4 +74,4 @@ const YourContributionTabNavigator = () => {
     );
 };
 
-export default YourContributionTabNavigator;
+export default ForumUpvoteTabNavigator;

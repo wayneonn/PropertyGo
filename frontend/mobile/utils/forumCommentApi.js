@@ -38,6 +38,50 @@ export const getAllForumComment = async (userId, forumPostId, sort, order) => {
     }
 };
 
+// Function to get ForumComment records for a specific user
+export const getAllUserUpvotedForumComment = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumCommentsUserUpvoted?increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumComment records for a specific user
+export const getAllUserDownvotedForumComment = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumCommentsUserDownvoted?increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumComment records for a specific user
+export const getAllUserFlaggedForumComment = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumCommentsUserFlagged?increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumComment records for a specific user
+export const getAllForumCommentByUserId = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumCommentsByUserId?increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
 export const getForumCommentVoteDetails = async (userId, forumCommentId) => {
     try {
         const response = await axios.get(`${BASE_URL}/user/${userId}/forumComment/${forumCommentId}/voteDetails`);

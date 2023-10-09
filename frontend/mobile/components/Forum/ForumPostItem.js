@@ -10,7 +10,7 @@ import { getTimeAgo } from '../../services/CalculateTimeAgo';
 import ImageGallery from './ImageGallery';
 import EditForumPostModal from './EditForumPostModal';
 
-const ForumPostItem = ({ userId, post, onPress, onReport, onDelete, useParentCallback }) => {
+const ForumPostItem = ({ userId, post, onPress, onReport, onDelete, useParentCallback, flagged }) => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [voteDetails, setVoteDetails] = useState([]);
     const [isEditModalVisible, setEditModalVisible] = useState(false);
@@ -118,7 +118,7 @@ const ForumPostItem = ({ userId, post, onPress, onReport, onDelete, useParentCal
             {post.userId === userId ?
                 <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Post"} onDelete={onDelete} />
                 :
-                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Post"} />
+                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Post"} flagged={flagged}/>
             }
         </TouchableOpacity>
     );

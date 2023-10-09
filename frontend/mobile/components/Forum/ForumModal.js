@@ -1,20 +1,23 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 
-const ForumModal = ({ itemType, isVisible, onClose, onReport, onDelete }) => {
+const ForumModal = ({ itemType, isVisible, onClose, onReport, onDelete, flagged }) => {
   return (
     <Modal transparent={true} animationType="slide" visible={isVisible} onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalContainer}>
-          <TouchableOpacity style={styles.modalOption} onPress={onReport}>
-            <Text>Flag {itemType}</Text>
-          </TouchableOpacity>
           {onDelete ?
             <TouchableOpacity style={styles.modalOption} onPress={onDelete}>
               <Text>Delete {itemType}</Text>
             </TouchableOpacity>
-            :
-            null}
+            : flagged ?
+              <TouchableOpacity style={styles.modalOption} onPress={onReport}>
+                <Text>Unflag {itemType}</Text>
+              </TouchableOpacity> :
+              <TouchableOpacity style={styles.modalOption} onPress={onReport}>
+                <Text>Flag {itemType}</Text>
+              </TouchableOpacity>
+          }
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Text>Close</Text>
           </TouchableOpacity>

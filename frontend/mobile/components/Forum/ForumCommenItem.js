@@ -9,7 +9,7 @@ import ForumModal from './ForumModal';
 import { getForumCommentVoteDetails, updateForumCommentVote, updateForumComment } from '../../utils/forumCommentApi';
 import EditForumCommentModal from './EditForumCommentModal';
 
-const ForumCommentItem = ({ userId, comment, onReport, onDelete, useParentCallback }) => {
+const ForumCommentItem = ({ userId, comment, onReport, onDelete, useParentCallback, onPress, flagged }) => {
 
     const [isModalVisible, setModalVisible] = useState(false);
     const [isEditModalVisible, setEditModalVisible] = useState(false)
@@ -82,39 +82,41 @@ const ForumCommentItem = ({ userId, comment, onReport, onDelete, useParentCallba
 
 
     return (
-        <View style={styles.topicItemContainer}>
-            <ForumPostItemHeader
-                userId={comment.userId}
-                onMoreOptionsPress={toggleModal}
-                editable={comment.userId === userId}
-                onEdit={toggleEditModal}
-            />
-            <View >
-                <Text style={styles.age}>{getTimeAgo(comment.updatedAt)}</Text>
-                <Text style={styles.message}>{comment.message}</Text>
-                <ImageGallery images={comment.images} />
-            </View>
-            <View style={styles.iconContainer}>
-                <View style={styles.voteContainer}>
-                    <TouchableOpacity onPress={handleUpvote}>
-                        <FontAwesome name="thumbs-up" size={20} color={voteDetails.userUpvote ? "green" : "grey"} />
-                    </TouchableOpacity>
-                    <Text style={styles.totalVoteText}>{voteDetails.totalUpvote - voteDetails.totalDownvote}</Text>
-                    <TouchableOpacity onPress={handleDownvote}>
-                        <FontAwesome name="thumbs-down" size={20} color={voteDetails.userDownvote ? "red" : "grey"} />
-                    </TouchableOpacity>
+        <TouchableOpacity onPress={onPress}>
+            <View style={styles.topicItemContainer}>
+                <ForumPostItemHeader
+                    userId={comment.userId}
+                    onMoreOptionsPress={toggleModal}
+                    editable={comment.userId === userId}
+                    onEdit={toggleEditModal}
+                />
+                <View >
+                    <Text style={styles.age}>{getTimeAgo(comment.updatedAt)}</Text>
+                    <Text style={styles.message}>{comment.message}</Text>
+                    <ImageGallery images={comment.images} />
                 </View>
+                <View style={styles.iconContainer}>
+                    <View style={styles.voteContainer}>
+                        <TouchableOpacity onPress={handleUpvote}>
+                            <FontAwesome name="thumbs-up" size={20} color={voteDetails.userUpvote ? "green" : "grey"} />
+                        </TouchableOpacity>
+                        <Text style={styles.totalVoteText}>{voteDetails.totalUpvote - voteDetails.totalDownvote}</Text>
+                        <TouchableOpacity onPress={handleDownvote}>
+                            <FontAwesome name="thumbs-down" size={20} color={voteDetails.userDownvote ? "red" : "grey"} />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <EditForumCommentModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEdit} comment={comment} />
+
+                {comment.userId === userId ?
+                    <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Comment"} onDelete={onDelete} />
+                    :
+                    <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Comment"} flagged={flagged}/>
+                }
+
             </View>
-
-            <EditForumCommentModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEdit} comment={comment}/>
-            
-            {comment.userId === userId ?
-                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Comment"} onDelete={onDelete} />
-                :
-                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Comment"} />
-            }
-
-        </View>
+        </TouchableOpacity>
 
     );
 };
