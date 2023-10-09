@@ -22,7 +22,6 @@ import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available.webp';
 import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import imageReload from './ImageReloadComponent';
 
 
 const PropertyListingScreen = ({ route }) => {

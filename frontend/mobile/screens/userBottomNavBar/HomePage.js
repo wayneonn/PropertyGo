@@ -7,6 +7,7 @@ import RegionPropertyList from '../propertyListings/RegionPropertyList';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Swiper from 'react-native-swiper';
+import ImageSwiper from '../propertyListings/ImageSwiper';
 
 
 const SearchBar = () => {
@@ -94,28 +95,7 @@ const HomePage = ({ navigation }) => {
   const handleTitlePress = (title, properties) => {
     navigation.navigate('Properties List', { title: title, properties: properties, navigation: navigation });
   };
-
-  const ImageSwiper = React.memo(() => {
-    const images = [
-      require('../../assets/Home-Image.jpeg'),
-      require('../../assets/Buying-Home.jpg'),
-      require('../../assets/HDB-Flats-Near-MRT.jpg'),
-      // Add more image paths as needed
-    ];
-
-    return (
-      <View style={styles.swiperContainer}>
-        <Swiper showsButtons={false} loop={true} autoplay={true} autoplayTimeout={5}>
-          {images.map((image, index) => (
-            <View key={index}>
-              <Image source={image} style={styles.swiperImage} />
-            </View>
-          ))}
-        </Swiper>
-      </View>
-    );
-  });
-
+  
   const handleSearch = async () => {
     if (searchQuery.trim() === '') {
       return;
@@ -352,16 +332,6 @@ const styles = StyleSheet.create({
   },
   titleIcon: {
     marginRight: 10, // Add right margin for the icon
-  },
-  swiperImage: {
-    width: '100%',
-    height: '100%', // Adjust the height as needed
-  },
-  swiperContainer: {
-    height: 130, // Set the desired height
-    marginLeft: 15, // Add left padding
-    marginRight: 15, // Add right padding
-    alignSelf: 'center', // Center horizontally
   },
   suggestionsContainer: {
     width: '80%', // Take up 80% width
