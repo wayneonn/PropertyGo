@@ -48,7 +48,7 @@ const HomePage = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log('Home page gained focus');
+      // console.log('Home page gained focus');
       loadPopularProperties();
       loadRecentlyAddedProperties();
       setSearchQuery('');
@@ -95,7 +95,7 @@ const HomePage = ({ navigation }) => {
     navigation.navigate('Properties List', { title: title, properties: properties, navigation: navigation });
   };
 
-  const ImageSwiper = () => {
+  const ImageSwiper = React.memo(() => {
     const images = [
       require('../../assets/Home-Image.jpeg'),
       require('../../assets/Buying-Home.jpg'),
@@ -105,9 +105,7 @@ const HomePage = ({ navigation }) => {
 
     return (
       <View style={styles.swiperContainer}>
-        <Swiper
-          showsButtons={false} loop={true} autoplay={true} autoplayTimeout={5}
-        >
+        <Swiper showsButtons={false} loop={true} autoplay={true} autoplayTimeout={5}>
           {images.map((image, index) => (
             <View key={index}>
               <Image source={image} style={styles.swiperImage} />
@@ -116,7 +114,7 @@ const HomePage = ({ navigation }) => {
         </Swiper>
       </View>
     );
-  };
+  });
 
   const handleSearch = async () => {
     if (searchQuery.trim() === '') {

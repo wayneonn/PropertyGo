@@ -25,6 +25,7 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [isBoostActive, setIsBoostActive] = useState(false); // Added state for boost status
   const { user } = useContext(AuthContext);
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
   const cardSize = Dimensions.get('window').width;
 
   const formatPrice = (price) => {
@@ -56,11 +57,12 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
     }
 
     // Calculate boost status and fetch property favorite status/count
+    setCacheBuster(Date.now());
     checkIfPropertyIsFavorite();
     calculateBoostStatus();
     // fetchPropertyDetails();
     fetchFavoriteCount();
-  }, [property, reloadPropertyCard]);
+  }, [property]);
 
   const calculateBoostStatus = () => {
     if (property.boostListingEndDate) {
@@ -155,7 +157,7 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
     >
       <View style={styles.imageContainer}>
         {propertyImageUri ? (
-          <Image source={{ uri: `${propertyImageUri}?timestamp=${new Date().getTime()}` }} style={styles.propertyImage} />
+          <Image source={{ uri: `${propertyImageUri}?timestamp=${cacheBuster}` }} style={styles.propertyImage} />
         ) : (
           <View style={styles.placeholderImage}>
             <Image source={DefaultImage} style={styles.placeholderImageImage} />

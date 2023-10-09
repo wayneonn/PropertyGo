@@ -1,9 +1,9 @@
 import configData from "../config.json"
 
-const BASE_URL_NORM = "http://localhost:3000";
+const BASE_URL = "http://localhost:3000";
 // Please change it back to whatever your IP address is.
 // const BASE_URL = configData.BASE_URL;
-const BASE_URL = "http://10.0.0.17:3000"; //Wayne's IP address
+// const BASE_URL_WAYNE = "http://10.0.0.17:3000"; //Wayne's IP address
 const USER_ENDPOINT = "user";
 const PROPERTY_ENDPOINT = "property";
 const IMAGE_ENDPOINT = "image";
@@ -135,7 +135,7 @@ export const createProperty = async (propertyData, images) => {
       },
     });
 
-    console.log('Formdata:', formData)
+    // console.log('Formdata:', formData)
 
     if (response.ok) {
       const data = await response.json();
@@ -441,7 +441,7 @@ export const removeImageById = async (imageId) => {
 export const updateImageById = async (imageId, updatedImage) => {
   try {
     const formData = new FormData();
-    console.log('Updated Image:', updatedImage.uri)
+    // console.log('Updated Image:', updatedImage.uri)
     // Append the updated image properties to the FormData object
     formData.append('image', {
       uri: updatedImage.uri, // Use the uri field to specify the URI
@@ -460,7 +460,7 @@ export const updateImageById = async (imageId, updatedImage) => {
     });
 
     if (response.ok) {
-      console.log('formData update image:', formData)
+      // console.log('formData update image:', formData)
       const data = await response.json();
       return { success: true, data };
     } else {
@@ -475,7 +475,7 @@ export const updateImageById = async (imageId, updatedImage) => {
 
 export const createImageWithPropertyId = async (propertyId, image) => {
   try {
-    console.log('Image:', image);
+    // console.log('Image:', image);
     const formData = new FormData();
     formData.append('image', {
       uri: image.uri,
@@ -492,11 +492,11 @@ export const createImageWithPropertyId = async (propertyId, image) => {
       },
     });
 
-    console.log('Formdata Create Property:', formData)
+    // console.log('Formdata Create Property:', formData)
 
     if (response.ok) {
       const data = await response.json();
-      console.log('Data:', data);
+      // console.log('Data:', data);
       return { success: true, data };
     } else {
       const errorData = await response.json();

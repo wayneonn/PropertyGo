@@ -25,6 +25,7 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
     const { user } = useContext(AuthContext);
     const [favoriteCount, setFavoriteCount] = useState(0); // Added state for favorite count
     const [isBoostActive, setIsBoostActive] = useState(false); // Added state for boost status
+    const [cacheBuster, setCacheBuster] = useState(Date.now());
     const cardSize = Dimensions.get('window').width;
 
     const formatPrice = (price) => {
@@ -48,7 +49,8 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
         calculateBoostStatus();
         // fetchPropertyDetails();
         fetchFavoriteCount();
-    }, [property, reloadPropertyCard]);
+        setCacheBuster(Date.now());
+    }, [property]);
 
     const fetchPropertyDetails = async () => {
         const userId = user.user.userId;
@@ -151,7 +153,7 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
         <TouchableOpacity style={[styles.card, { width: cardSize * 0.85, height: cardSize * 0.8 }]} onPress={() => onPress(property.propertyId)}>
             <View style={styles.imageContainer}>
                 {propertyImageUri ? (
-                    <Image source={{ uri: `${propertyImageUri}?timestamp=${new Date().getTime()}` }} style={styles.propertyImage} />
+                    <Image source={{ uri: `${propertyImageUri}?timestamp=${cacheBuster}` }} style={styles.propertyImage} />
                 ) : (
                     <View style={styles.placeholderImage}>
                         <Image source={DefaultImage} style={styles.placeholderImageImage} />
