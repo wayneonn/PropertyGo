@@ -1,7 +1,6 @@
 import { React, useState } from "react";
 import { Card, Button, Form } from "react-bootstrap";
 import "./styles/Faq.css";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import the styles
 
 import API from "../services/API";

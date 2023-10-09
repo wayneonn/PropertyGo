@@ -1,4 +1,4 @@
-const {PartnerApplication, Folder} = require("../../models")
+const {PartnerApplication, Folder, User, Notification} = require("../../models")
 const globalEmitter = require('../../globalEmitter')
 
 /*
@@ -15,7 +15,41 @@ const globalEmitter = require('../../globalEmitter')
 exports.getAllPartnerApplicationsNotApproved = async (req, res) => {
     try {
         const partnerApp = await PartnerApplication.findAll({where: {approved: 0}});
-        res.json({partnerApp});
+
+        const formattedPartnerApps = await Promise.all(
+            partnerApp.map(async (pa) => {
+
+                const user = await User.findByPk(pa.userId);
+
+                return {
+                    partnerApplicationId: pa.partnerApplicationId,
+                    companyName: pa.companyName,
+                    userRole: pa.userRole,
+                    cardNumber: pa.cardNumber,
+                    cardHolderName: pa.cardHolderName,
+                    cvc: pa.cvc,
+                    expiryDate: pa.expiryDate,
+                    approved: pa.approved,
+                    adminNotes: pa.adminNotes,
+                    createdAt: pa.createdAt,
+                    updatedAt: pa.updatedAt,
+                    adminId: pa.adminId,
+                    userId: pa.userId,
+                    username: user.userName
+                    // topicName: forumTopic.topicName,
+                    // isInappropriate: forumTopic.isInappropriate,
+                    // actor: actor,
+                    // createdAt: moment(forumTopic.createdAt)
+                    //     .tz("Asia/Singapore")
+                    //     .format("YYYY-MM-DD HH:mm:ss"),
+                    // updatedAt: moment(forumTopic.updatedAt)
+                    //     .tz("Asia/Singapore")
+                    //     .format("YYYY-MM-DD HH:mm:ss"),
+                };
+            })
+        );
+
+        res.json({partnerApp: formattedPartnerApps});
     } catch (error) {
         res.status(500)
             .json({message: "Error fetching approved Partner Applications: ", error: error.message});
@@ -63,7 +97,7 @@ exports.postPartnerApplicationByUserID = async (req, res) => {
 };
 
 exports.updatePartnerApplicationByID = async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     // const today = new Date();
     // const nextYear = new Date(today);
     // nextYear.setFullYear(today.getFullYear() + 1);
@@ -76,6 +110,30 @@ exports.updatePartnerApplicationByID = async (req, res) => {
             }
         );
         globalEmitter.emit('partnerApprovalUpdate');
+
+        const pa = await PartnerApplication.findByPk(req.params.id);
+        const user = await User.findByPk(pa.userId);
+
+        const userNotifications = await Notification.findAll({where: {userId: user.userId}});
+        const userPANotification = userNotifications.filter((userNotifcation) => userNotifcation.content.toLowerCase().includes("partner application"));
+        const userPANotifcationId = userPANotification[0].dataValues.notificationId;
+
+        const deletedUserPANotification = await Notification.findByPk(userPANotifcationId);
+
+        await deletedUserPANotification.destroy();
+
+        req.body = {
+            "content": `You have successfully approved ${user.userName}'s Partner Application`,
+            "isRecent": false,
+            "isPending": false,
+            "isCompleted": true,
+            "hasRead": false,
+            "adminId": pa.adminId
+        };
+
+        await Notification.create(req.body);
+
+        req.io.emit("newAcceptPartnerApplicationNotification", `Accepted Partner Application`);
         res.status(201).json(updatedApp);
     } catch(error) {
         console.error('Error updating PartnerApplication', error);
@@ -94,6 +152,29 @@ exports.rejectPartnerApplicationByID = async (req, res) => {
                 }
             }
         );
+
+        const pa = await PartnerApplication.findByPk(req.params.id);
+        const user = await User.findByPk(pa.userId);
+
+        const userNotifications = await Notification.findAll({where: {userId: user.userId}});
+        const userPANotification = userNotifications.filter((userNotifcation) => userNotifcation.content.toLowerCase().includes("partner application"));
+        const userPANotifcationId = userPANotification[0].dataValues.notificationId;
+
+        const deletedUserPANotification = await Notification.findByPk(userPANotifcationId);
+
+        await deletedUserPANotification.destroy();
+
+        req.body = {
+            "content": `You have successfully rejected ${user.userName}'s Partner Application`,
+            "isRecent": false,
+            "isPending": false,
+            "isCompleted": true,
+            "hasRead": false,
+            "adminId": pa.adminId
+        };
+
+        await Notification.create(req.body);
+        req.io.emit("newRejectPartnerApplicationNotification", `Rejected Partner Application`);
         res.status(201).json(updatedApp);
     } catch(error) {
         console.error('Error updating PartnerApplication', error);

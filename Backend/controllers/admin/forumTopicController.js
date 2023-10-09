@@ -72,6 +72,35 @@ const getSingleForumTopic = async (req, res) => {
     }
 };
 
+const getFlaggedForumTopics = async (req, res) => {
+    try {
+        const forumTopics = await ForumTopic.findAll({
+            attributes: [
+                "forumTopicId",
+            ],
+        });
+
+        const formattedForumTopics = await Promise.all(
+            forumTopics.map(async (forumTopic) => {
+
+                const forumTopicFromDB = await ForumTopic.findByPk(forumTopic.forumTopicId);
+
+                const totalFlagged = await forumTopicFromDB.countUsersFlagged();
+
+                return {
+                    forumTopic: forumTopicFromDB,
+                    totalFlagged: totalFlagged
+                };
+            })
+        );
+
+        res.status(200).json(formattedForumTopics);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 const createForumTopic = async (req, res) => {
     const { adminId } = req.query;
 
@@ -147,12 +176,18 @@ const deleteForumTopic = async (req, res) => { // this includes both deleting no
     res.status(200).json({ msg: "Success! Forum Topic removed." });
 };
 
-const unflagForumTopic = async (req, res) => {
+const markForumTopicInappropriate = async (req, res) => {
     const { id: forumTopicId } = req.params;
+
+    const { typeOfResponse } = req.body;
 
     const forumTopic = await ForumTopic.findByPk(forumTopicId);
 
-    forumTopic.isInappropriate = false;
+    if (typeOfResponse === "no") {
+        forumTopic.totalFlagged = 0;
+    } else {
+        forumTopic.isInappropriate = true;
+    }
 
     await forumTopic.save();
 
@@ -162,8 +197,9 @@ const unflagForumTopic = async (req, res) => {
 module.exports = {
     getAllForumTopics,
     getSingleForumTopic,
+    getFlaggedForumTopics,
     createForumTopic,
     updateForumTopic,
     deleteForumTopic,
-    unflagForumTopic
+    markForumTopicInappropriate
 };

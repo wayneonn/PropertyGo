@@ -9,14 +9,18 @@ import API from "../services/API.js";
 const Notification = () => {
     const [selectedCategory, setSelectedCategory] = useState("PENDING");
     const [categoryMap, setCategoryMap] = useState({
+        "partner application": {
+            "PENDING": [],
+            "HISTORY": [],
+        },
+        // "contact us": {
+        //     "PENDING": [],
+        //     "HISTORY": [],
+        // },
         "forum topic": {
             "PENDING": [],
-            "COMPLETED": [],
-        },
-        "contact us": {
-            "PENDING": [],
-            "COMPLETED": [],
-        },
+            "HISTORY": []
+        }
     });
 
     useEffect(() => {
@@ -26,38 +30,62 @@ const Notification = () => {
                 const notifications = response.data.notifications;
 
                 const categoryMap = {
+                    "partner application": {
+                        "PENDING": [],
+                        "HISTORY": [],
+                    },
+                    // "contact us": {
+                    //     "PENDING": [],
+                    //     "HISTORY": [],
+                    // },
                     "forum topic": {
                         "PENDING": [],
-                        "COMPLETED": [],
-                    },
-                    "contact us": {
-                        "PENDING": [],
-                        "COMPLETED": [],
-                    },
+                        "HISTORY": []
+                    }
                 };
 
                 for (const notification of notifications) {
-                    notification.category = notification.isPending ? "PENDING" : "COMPLETED";
+                    notification.category = notification.isPending ? "PENDING" : "HISTORY";
 
-                    if (notification.content.toLowerCase().includes("forum topic")) {
+                    if (notification.content.toLowerCase().includes("partner application")) {
+                        categoryMap["partner application"][notification.category].push(notification);
+                        // } else if (notification.content.toLowerCase().includes("contact us")) {
+                        //    categoryMap["contact us"][notification.category].push(notification);
+                    } else if (notification.content.toLowerCase().includes("forum topic")) {
                         categoryMap["forum topic"][notification.category].push(notification);
-                    } else if (notification.content.toLowerCase().includes("contact us")) {
-                        categoryMap["contact us"][notification.category].push(notification);
                     }
                 }
 
-                setCategoryMap(categoryMap)
+                setCategoryMap(categoryMap);
 
             } catch (error) {
                 console.error(error);
             }
         };
 
-        console.log(categoryMap);
-
         const socket = socketIOClient('http://localhost:3000');
 
-        socket.on('newContactUsNotification', (message) => {
+        // socket.on('newContactUsNotification', () => {
+        //     fetchData();
+        // });
+
+        socket.on('newFlaggedForumTopicNotification', () => {
+            fetchData();
+        });
+
+        socket.on('newRemoveFlaggedForumTopicNotification', () => {
+            fetchData();
+        });
+
+        socket.on('newPartnerApplicationNotification', () => {
+            fetchData();
+        });
+
+        socket.on('newAcceptPartnerApplicationNotification', () => {
+            fetchData();
+        });
+
+        socket.on('newRejectPartnerApplicationNotification', () => {
             fetchData();
         });
 
@@ -114,7 +142,6 @@ const Notification = () => {
                     marginLeft: "2em",
                 }}
             >
-                <h3>Category</h3>
                 <ButtonGroup key="category-group" toggle="true">
                     <ToggleButton
                         key="recent-button"
@@ -132,39 +159,39 @@ const Notification = () => {
                         type="radio"
                         variant="warning"
                         name="category"
-                        value="COMPLETED"
-                        checked={selectedCategory === "COMPLETED"}
-                        onClick={() => handleCategoryChange("COMPLETED")}
+                        value="HISTORY"
+                        checked={selectedCategory === "HISTORY"}
+                        onClick={() => handleCategoryChange("HISTORY")}
                     >
-                        COMPLETED
+                        HISTORY
                     </ToggleButton>
                 </ButtonGroup>
                 <div style={{ marginTop: "1em", marginLeft: "13em", width: "50em", }}>
                     <Accordion>
                         <Accordion.Item eventKey="0">
-                            <Accordion.Header>Forum Topic</Accordion.Header>
+                            <Accordion.Header>Partner Application</Accordion.Header>
                             <Accordion.Body>
-                                {categoryMap['forum topic'][selectedCategory].length > 0 ? (
+                                {categoryMap['partner application'][selectedCategory].length > 0 ? (
                                     <div>
-                                        {sortTime(categoryMap['forum topic'][selectedCategory]).map((notification, index) => (
+                                        {sortTime(categoryMap['partner application'][selectedCategory]).map((notification, index) => (
                                             <div key={index}>
                                                 <div>
-                                                    <p>
+                                                    <div>
                                                         <span style={{ float: 'left' }}>{notification.content}</span>
                                                         <span style={{ float: 'right' }}>{formatRelativeTime(notification.createdAt)}</span>
                                                         <div style={{ clear: 'both' }}></div>
-                                                    </p>
-                                                    <hr style={{ clear: 'both' }}/>
+                                                    </div>
+                                                    <hr style={{ clear: 'both' }} />
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p>No notifications for Forum Topic</p>
+                                    <p>No notifications for Partner Application</p>
                                 )}
                             </Accordion.Body>
                         </Accordion.Item>
-                        <Accordion.Item eventKey="1">
+                        {/* <Accordion.Item eventKey="1">
                             <Accordion.Header>Contact Us</Accordion.Header>
                             <Accordion.Body>
                                 {categoryMap['contact us'][selectedCategory].length > 0 ? (
@@ -172,12 +199,12 @@ const Notification = () => {
                                         {sortTime(categoryMap['contact us'][selectedCategory]).map((notification, index) => (
                                             <div key={index}>
                                                 <div>
-                                                    <p>
+                                                    <div>
                                                         <span style={{ float: 'left' }}>{notification.content}</span>
                                                         <span style={{ float: 'right' }}>{formatRelativeTime(notification.createdAt)}</span>
                                                         <div style={{ clear: 'both' }}></div>
-                                                    </p>
-                                                    <hr style={{ clear: 'both' }}/>
+                                                    </div>
+                                                    <hr style={{ clear: 'both' }} />
                                                 </div>
                                             </div>
                                         ))}
@@ -186,7 +213,32 @@ const Notification = () => {
                                     <p>No notifications for Contact Us</p>
                                 )}
                             </Accordion.Body>
-                        </Accordion.Item>
+                        </Accordion.Item> */}
+                        {selectedCategory === "HISTORY" && (
+                            <Accordion.Item eventKey="1">
+                                <Accordion.Header>Forum Topic</Accordion.Header>
+                                <Accordion.Body>
+                                    {categoryMap['forum topic'][selectedCategory].length > 0 ? (
+                                        <div>
+                                            {sortTime(categoryMap['forum topic'][selectedCategory]).map((notification, index) => (
+                                                <div key={index}>
+                                                    <div>
+                                                        <div>
+                                                            <span style={{ float: 'left' }}>{notification.content}</span>
+                                                            <span style={{ float: 'right' }}>{formatRelativeTime(notification.createdAt)}</span>
+                                                            <div style={{ clear: 'both' }}></div>
+                                                        </div>
+                                                        <hr style={{ clear: 'both' }} />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p>No notifications for Forum Topic</p>
+                                    )}
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        )}
                     </Accordion>
                 </div>
                 <br />

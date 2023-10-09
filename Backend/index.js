@@ -95,12 +95,12 @@ app.use("/admin/transactions", transactionAdminRouter);
 
 app.use(
   "/user",
+  injectIo(io),
   userRoute,
   loginRoute,
   documentRoute,
   folderRoute,
   transactionRoute,
-  injectIo(io),
   contactUsUserRouter,
   forumTopicUserRouter,
   forumPostUserRouter,
@@ -109,16 +109,6 @@ app.use(
 );
 
 io.on("connection", (socket) => {
-  console.log(`Client connected: ${socket.id}`);
-
-  socket.on("newContactUsNotification", (message) => {
-    io.emit("newContactUsNotification", message);
-  });
-
-  socket.on("newFlaggedForumTopicNotification", (message) => {
-    io.emit("newFlaggedForumTopicNotification", message);
-  })
-
   // Handle disconnects
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);

@@ -7,8 +7,12 @@ const {
     createForumTopic,
     updateForumTopic,
     deleteForumTopic, 
-    unflagForumTopic,
+    markForumTopicInappropriate,
+    getFlaggedForumTopics,
 } = require('../../controllers/admin/forumTopicController');
+
+router.route('/getFlaggedForumTopics')
+    .get(getFlaggedForumTopics);
 
 router.route('/')
     .get(getAllForumTopics)
@@ -20,6 +24,6 @@ router.route('/:id')
     .delete(deleteForumTopic);
 
 router.route('/updateForumTopicStatus/:id')
-    .patch(unflagForumTopic);
+    .patch(markForumTopicInappropriate);
 
 module.exports = router;
