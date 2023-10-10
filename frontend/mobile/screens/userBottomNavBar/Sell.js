@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  FlatList,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -20,6 +21,9 @@ import { AuthContext } from '../../AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import PropertyListingScreen from '../propertyListings/PropertyListing';
 import { getAreaAndRegion } from '../../services/GetAreaAndRegion';
+import { DocumentSelector } from '../../components/PropertyDocumentSelector';
+import * as DocumentPicker from 'expo-document-picker';
+import { BASE_URL, fetchFolders, fetchTransactions } from "../../utils/documentApi";
 
 const propertyTypes = [
   { label: 'Select Property Type', value: '' },
@@ -34,6 +38,7 @@ export default function PropertyListing() {
     const { area, region } = await getAreaAndRegion(postalCode);
     setProperty({ ...property, area, region });
   };
+  const [documents, setDocuments] = useState([]);
 
   const [property, setProperty] = useState({
     title: 'Sample Title',
@@ -62,17 +67,37 @@ export default function PropertyListing() {
   const [formattedPrice, setFormattedPrice] = useState('');
   const [rawPrice, setRawPrice] = useState('');
 
-    // Function to format the price with dollar sign and commas
-    const formatPrice = (price) => {
-      return `$${price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
-    };
-  
-    // Function to remove dollar sign and commas and save raw price
-    const handlePriceChange = (text) => {
-      const raw = text.replace(/[^0-9]/g, '');
-      setFormattedPrice(formatPrice(raw));
-      setRawPrice(raw);
-    };
+  //For Document
+  const [prevDocuments, setPrevDocuments] = useState([]);
+  const [filteredDocs, setFilteredDocs] = useState(prevDocuments);
+  const [folders, setFolders] = useState([]);
+  const [selectedFolder, setSelectedFolder] = useState("");
+
+  // Function to format the price with dollar sign and commas
+  const formatPrice = (price) => {
+    return `$${price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
+  };
+
+  // Function to remove dollar sign and commas and save raw price
+  const handlePriceChange = (text) => {
+    const raw = text.replace(/[^0-9]/g, '');
+    setFormattedPrice(formatPrice(raw));
+    setRawPrice(raw);
+  };
+
+  const fetchData = async () => {
+    try {
+      const documents = await fetchDocuments(USER_ID);
+      const folders = await fetchFolders(USER_ID);
+      setFolders(folders);
+      setPrevDocuments(documents);
+      setFilteredDocs(documents);
+      setSelectedFolder(defaultFolderId.toString());
+      console.log(user);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   const handleChoosePhoto = async () => {
     const permissionResult =
@@ -115,7 +140,7 @@ export default function PropertyListing() {
         },
       ]
     );
-};
+  };
 
   const replaceImage = async (index) => {
     const permissionResult =
@@ -203,35 +228,35 @@ export default function PropertyListing() {
       Alert.alert('No images selected', 'Please select at least one image.');
       return;
     }
-  
+
     // Parse the formatted price to remove dollar sign and commas
     const price = rawPrice ? parseInt(rawPrice, 10) : 0;
-  
+
     if (!price || price <= 0) {
       Alert.alert('Invalid Price', 'Price must be a numeric value.');
       return;
     }
-  
+
     if (!/^\d+$/.test(property.size)) {
       Alert.alert('Invalid Size', 'Size must be a numeric value.');
       return;
     }
-  
+
     if (!/^\d+$/.test(property.bed)) {
       Alert.alert('Invalid Bed', 'Bed must be a numeric value.');
       return;
     }
-  
+
     if (!/^\d+$/.test(property.bathroom)) {
       Alert.alert('Invalid Bathroom', 'Bathroom must be a numeric value.');
       return;
     }
-  
+
     if (property.propertyType === '') {
       Alert.alert('Property Type Not Selected', 'Please select a property type.');
       return;
     }
-  
+
     if (
       property.title.trim() === '' ||
       property.description.trim() === '' ||
@@ -242,13 +267,13 @@ export default function PropertyListing() {
       Alert.alert('Missing Information', 'Please fill in all fields.');
       return;
     }
-  
+
     // Other checks and API call
     let propertyTypeUpperCase = property.propertyType.toUpperCase();
     if (propertyTypeUpperCase === 'NEW LAUNCH') {
       propertyTypeUpperCase = 'NEW_LAUNCH';
     }
-  
+
     try {
       const { success, data, message } = await createProperty(
         {
@@ -259,7 +284,7 @@ export default function PropertyListing() {
         },
         images
       );
-  
+
       if (success) {
         const propertyListingId = data.propertyListingId;
         console.log('Property created successfully:', propertyListingId);
@@ -267,6 +292,7 @@ export default function PropertyListing() {
           'Property Created',
           'The property listing has been created successfully.'
         );
+        await documentSelectorRef.handleUpload();
         navigation.navigate('Property Listing', { propertyListingId });
       } else {
         Alert.alert('Error', `Failed to create property: ${message}`);
@@ -279,8 +305,8 @@ export default function PropertyListing() {
       );
     }
   };
-  
-  
+
+
 
 
   return (
@@ -323,14 +349,14 @@ export default function PropertyListing() {
         </View>
 
         <View style={styles.inputContainer}>
-        <Text style={styles.label}>Price</Text>
-        <TextInput
-          placeholder="$ Price"
-          value={formattedPrice}
-          onChangeText={handlePriceChange}
-          style={styles.input}
-        />
-      </View>
+          <Text style={styles.label}>Price</Text>
+          <TextInput
+            placeholder="$ Price"
+            value={formattedPrice}
+            onChangeText={handlePriceChange}
+            style={styles.input}
+          />
+        </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Size (sqm)</Text>
@@ -462,8 +488,12 @@ export default function PropertyListing() {
             </View>
           </View>
         </Modal>
+        <DocumentSelector
+          documentFetch={fetchData} // Replace with your document fetching function
+          folderState={folders} // Pass your folder state here
+          isTransaction={true} // Replace with a boolean indicating the transaction status
+        />
       </ScrollView>
-
       <TouchableOpacity style={styles.saveChangesButton} onPress={handleSubmit}>
         <Ionicons name="save-outline" size={18} color="white" />
         <Text style={styles.saveChangesButtonText}>Submit</Text>

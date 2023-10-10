@@ -504,9 +504,9 @@ async function editProperty(req, res) {
         where: {
           // Use Sequelize operators to search in relevant fields (address, area, postal code)
           [Op.or]: [
-            { address: { [Op.like]: `%${q}%` } }, // Use [Op.like] for case-insensitive matching
-            { area: { [Op.like]: `%${q}%` } },    // Use [Op.like] for case-insensitive matching
-            { postalCode: { [Op.like]: `%${q}%` } }, // Use [Op.like] for case-insensitive matching
+            { address: { [Op.like]: `%${q}%` } },
+            { area: { [Op.like]: `%${q}%` } },    
+            { postalCode: { [Op.like]: `%${q}%` } }, 
           ],
         },
       });
