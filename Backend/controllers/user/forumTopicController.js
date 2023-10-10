@@ -72,6 +72,17 @@ const getAllForumTopic = async (req, res) => {
     }
 };
 
+const getAllForumTopicUnrestricted = async (req, res) => {
+    try {
+        const forumTopics = await ForumTopic.findAll();
+        // console.log(forumTopics)
+        res.status(200).json(forumTopics);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 const getAllForumTopicByUserId = async (req, res) => {
     try {
         const increase = JSON.parse(req.query.increase);
@@ -425,5 +436,6 @@ module.exports = {
     getAllForumTopicByUserId,
     getAllUserUpvotedForumTopic,
     getAllUserDownvotedForumTopic,
-    getAllUserFlaggedForumTopic
+    getAllUserFlaggedForumTopic,
+    getAllForumTopicUnrestricted
 };

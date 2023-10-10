@@ -4,13 +4,14 @@ import { AuthContext } from '../../AuthContext';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, RefreshControl } from 'react-native';
 import ForumItem from '../../components/Forum/ForumItem';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
-import { getAllForumTopic, updateForumTopicFlaggedStatus, createForumTopic, deleteForumTopic } from '../../utils/forumTopicApi';
+import { getAllForumTopic, getAllForumTopicUnrestricted, updateForumTopicFlaggedStatus, createForumTopic, deleteForumTopic } from '../../utils/forumTopicApi';
 import AddForumTopicModal from '../../components/Forum/AddForumTopicModal';
 import SearchBar from '../../components/Forum/SearchBar';
 
 const ForumTopicDefault = ({ navigation }) => {
   const { user } = useContext(AuthContext);
   const [forumTopics, setforumTopics] = useState([]);
+  const [forumTopicsUnrestricted, setforumTopicsUnrestricted] = useState([]);
   const [sort, setSort] = useState(false) //true will be ASC
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,6 +25,9 @@ const ForumTopicDefault = ({ navigation }) => {
         const forumTopicData = await getAllForumTopic(user.user.userId, null, sort);
         setforumTopics(forumTopicData)
         setFilteredTopics(forumTopicData);
+        const forumTopicDataUnrestricted = await getAllForumTopicUnrestricted();
+        // console.log(forumTopicDataUnrestricted);
+        setforumTopicsUnrestricted(forumTopicDataUnrestricted);
         setSearchQuery('');
       } catch (error) {
         console.error(error);
@@ -133,7 +137,7 @@ const ForumTopicDefault = ({ navigation }) => {
       <TouchableOpacity onPress={toggleModal} style={styles.addItem}>
         <Ionicons name="add-circle" size={50} color="#FFD700" />
       </TouchableOpacity>
-      <AddForumTopicModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumTopic} />
+      <AddForumTopicModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumTopic} forumTopics={forumTopicsUnrestricted}/>
     </SafeAreaView>
 
   );

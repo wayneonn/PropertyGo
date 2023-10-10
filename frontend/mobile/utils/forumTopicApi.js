@@ -18,6 +18,16 @@ export const createForumTopic = async (userId, forumTopicData) => {
 };
 
 // Function to get ForumTopic records for a specific user
+export const getAllForumTopicUnrestricted = async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/forumTopic/Unrestricted`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
 export const getAllForumTopic = async (userId, sort, order) => {
     try {
         const response = await axios.get(`${BASE_URL}/user/${userId}/forumTopic?sort=${sort}&increase=${order}`);
