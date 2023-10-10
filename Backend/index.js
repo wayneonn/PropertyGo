@@ -52,7 +52,12 @@ const folderAdminRouter = require("./routes/admin/folderRoutes");
 const documentAdminRouter = require("./routes/admin/documentRoutes");
 const transactionAdminRouter = require("./routes/admin/transactionRoutes");
 
+//property routes
+const propertyRoute = require("./routes/user/propertyRoute");
+
+// user routes
 const userRoute = require("./routes/user/userRoute");
+const imageRoute = require("./routes/user/imageRoute");
 const loginRoute = require("./routes/user/loginRoute");
 const documentRoute = require("./routes/user/documentRoute");
 const folderRoute = require("./routes/user/folderRoute");
@@ -90,12 +95,12 @@ app.use("/admin/transactions", transactionAdminRouter);
 
 app.use(
   "/user",
+  injectIo(io),
   userRoute,
   loginRoute,
   documentRoute,
   folderRoute,
   transactionRoute,
-  injectIo(io),
   contactUsUserRouter,
   forumTopicUserRouter,
   forumPostUserRouter,
@@ -104,17 +109,22 @@ app.use(
 );
 
 io.on("connection", (socket) => {
-  console.log(`Client connected: ${socket.id}`);
-
-  socket.on("newContactUsNotification", (message) => {
-    io.emit("newContactUsNotification", message);
-  });
-
   // Handle disconnects
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);
   });
 });
+
+app.use(
+  "/property",
+  propertyRoute,
+);
+
+app.use(
+  "/image",
+  imageRoute,
+);
+
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})
@@ -211,13 +221,6 @@ db.sequelize
       );
     }
 
-    // FAQ
-    // if (existingFaqRecordsCount === 0) {
-    //   try {
-    //     for (const faqData of faqTestData) {
-    //       await db.FAQ.create(faqData);
-    //     }
-
     if (existingContactUsRecordsCount === 0) {
       try {
         for (const contactUsData of contactUsTestData) {
@@ -243,14 +246,6 @@ db.sequelize
     } else {
       console.log("Response test data already exists in the database.");
     }
-
-    //     console.log('Faq test data inserted successfully.');
-    //   } catch (error) {
-    //     console.error('Error inserting Faq test data:', error);
-    //   }
-    // } else {
-    //   console.log('Admin test data already exists in the database.');
-    // }
 
     // Property
     if (existingPropertyRecordsCount === 0) {

@@ -29,7 +29,7 @@
 .loginRightSideCard {
   background: #FFFFFF;
   width: 508px;
-  height: 432px;
+  height: 450px;
   display: flex;
   justify-content: center;
 }
@@ -42,8 +42,6 @@
 }
 
 .loginPropertyGoIcon {
-  width: 100.78px;
-  height: 100.78px;
   margin-top: 1em;
 }
 

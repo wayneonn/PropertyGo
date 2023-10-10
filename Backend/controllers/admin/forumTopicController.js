@@ -1,5 +1,5 @@
 const moment = require("moment");
-const { ForumTopic, ForumPost } = require("../../models");
+const { ForumTopic, ForumPost, Admin, User } = require("../../models");
 
 // helper function
 const getForumTopicForUniqueness = ({ topicName }) => {
@@ -24,21 +24,31 @@ const getAllForumTopics = async (req, res) => {
             ],
         });
 
-        const formattedForumTopics = forumTopics.map((forumTopic) => {
-            return {
-                forumTopicId: forumTopic.forumTopicId,
-                topicName: forumTopic.topicName,
-                isInappropriate: forumTopic.isInappropriate,
-                adminId: forumTopic.adminId,
-                userId: forumTopic.userId,
-                createdAt: moment(forumTopic.createdAt)
-                    .tz("Asia/Singapore")
-                    .format("YYYY-MM-DD HH:mm:ss"),
-                updatedAt: moment(forumTopic.updatedAt)
-                    .tz("Asia/Singapore")
-                    .format("YYYY-MM-DD HH:mm:ss"),
-            };
-        });
+        const formattedForumTopics = await Promise.all(
+            forumTopics.map(async (forumTopic) => {
+
+                let actor = null;
+
+                if (forumTopic.adminId === null) { // forum topic created by user
+                    actor = await User.findByPk(forumTopic.userId);
+                } else { // forum topic created by admin
+                    actor = await Admin.findByPk(forumTopic.adminId);
+                }
+
+                return {
+                    forumTopicId: forumTopic.forumTopicId,
+                    topicName: forumTopic.topicName,
+                    isInappropriate: forumTopic.isInappropriate,
+                    actor: actor,
+                    createdAt: moment(forumTopic.createdAt)
+                        .tz("Asia/Singapore")
+                        .format("YYYY-MM-DD HH:mm:ss"),
+                    updatedAt: moment(forumTopic.updatedAt)
+                        .tz("Asia/Singapore")
+                        .format("YYYY-MM-DD HH:mm:ss"),
+                };
+            })
+        );
 
         res.status(200).json({ forumTopics: formattedForumTopics });
     } catch (error) {
@@ -59,6 +69,35 @@ const getSingleForumTopic = async (req, res) => {
         res.status(200).json(forumTopic);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+const getFlaggedForumTopics = async (req, res) => {
+    try {
+        const forumTopics = await ForumTopic.findAll({
+            attributes: [
+                "forumTopicId",
+            ],
+        });
+
+        const formattedForumTopics = await Promise.all(
+            forumTopics.map(async (forumTopic) => {
+
+                const forumTopicFromDB = await ForumTopic.findByPk(forumTopic.forumTopicId);
+
+                const totalFlagged = await forumTopicFromDB.countUsersFlagged();
+
+                return {
+                    forumTopic: forumTopicFromDB,
+                    totalFlagged: totalFlagged
+                };
+            })
+        );
+
+        res.status(200).json(formattedForumTopics);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
@@ -137,12 +176,18 @@ const deleteForumTopic = async (req, res) => { // this includes both deleting no
     res.status(200).json({ msg: "Success! Forum Topic removed." });
 };
 
-const unflagForumTopic = async (req, res) => {
+const markForumTopicInappropriate = async (req, res) => {
     const { id: forumTopicId } = req.params;
+
+    const { typeOfResponse } = req.body;
 
     const forumTopic = await ForumTopic.findByPk(forumTopicId);
 
-    forumTopic.isInappropriate = false;
+    if (typeOfResponse === "no") {
+        forumTopic.totalFlagged = 0;
+    } else {
+        forumTopic.isInappropriate = true;
+    }
 
     await forumTopic.save();
 
@@ -152,8 +197,9 @@ const unflagForumTopic = async (req, res) => {
 module.exports = {
     getAllForumTopics,
     getSingleForumTopic,
+    getFlaggedForumTopics,
     createForumTopic,
     updateForumTopic,
     deleteForumTopic,
-    unflagForumTopic
+    markForumTopicInappropriate
 };

@@ -6,14 +6,18 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true,
         },
-        title: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
+        // title: {
+        //     type: DataTypes.STRING,
+        //     allowNull: false,
+        // },
         image: {
-            type: DataTypes.BLOB,
+            type: DataTypes.BLOB('long'),
             allowNull: false,
         },
+        // propertyId: {
+        //     type: DataTypes.BIGINT, // Adjust the data type as needed
+        //     allowNull: false,
+        // },
     }, {
         freezeTableName: true
     });
@@ -22,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         Image.belongsTo(models.Property, {
             foreignKey: {
                 name: 'propertyId',
-                allowNull: false,
+                allowNull: true,
               },
             as: 'propertyListing',
         });

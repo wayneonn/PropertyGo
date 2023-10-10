@@ -76,16 +76,17 @@ const ContactUs = ({navigation, route}) => {
                 <Text style={styles.header}>Contact Us</Text>
                 <Text style={styles.subheader}>We would love to hear from you!</Text>
 
-                <Text style={styles.label}>Select a reason:</Text>
-                <Picker
-                    selectedValue={reason}
-                    onValueChange={(itemValue) => setReason(itemValue)}
-                    style={styles.picker}
-                >
-                    {reasonOptions.map((item, index) => (
-                        <Picker.Item key={index} label={item} value={item}/>
-                    ))}
-                </Picker>
+                    <Text style={styles.label}>Select a reason:</Text>
+                    <Picker
+                        selectedValue={reason}
+                        onValueChange={(itemValue) => setReason(itemValue)}
+                        style={styles.picker}
+                        itemStyle={styles.pickerItem}
+                    >
+                        {reasonOptions.map((item, index) => (
+                            <Picker.Item key={index} label={item} value={item} />
+                        ))}
+                    </Picker>
 
                 <Text style={styles.label}>Title:</Text>
                 <TextInput
@@ -171,13 +172,19 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         marginTop: 10,
+        marginBottom: 5,
     },
     picker: {
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 5,
-        marginBottom: 20,
+        marginBottom: 10,
+        height: 120,
     },
+    pickerItem: {
+        fontSize: 20, 
+        height: 120,  
+      },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
@@ -185,11 +192,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 12,
         fontSize: 16,
-        marginBottom: 20,
+        marginBottom: 10,
     },
     descriptionInput: {
-        height: 100,
-        textAlignVertical: 'top',
+        height: 150,
+        textAlignVertical: 'top'
+        
     },
     submitButton: {
         backgroundColor: '#FFD700',
