@@ -41,7 +41,13 @@ async function getUser(req, res) {
 const getAllUsers = async (req, res) => {
   try {
     const listOfUser = await User.findAll({
-      attributes: ["userId", "username", "profileImage", "isActive"],
+      attributes: [
+        "userId",
+        "username",
+        "profileImage",
+        "isActive",
+        "userType",
+      ],
     });
 
     const usersWithProfileImages = listOfUser.map((user) => {

@@ -154,9 +154,16 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Review, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: "userId",
+        name: "reviewerId",
       },
-      as: "reviews",
+      as: "reviewsPosted",
+    });
+    User.hasMany(models.Review, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: "revieweeId",
+      },
+      as: "reviewsReceived",
     });
     User.hasMany(models.Chat, {
       onDelete: "CASCADE",
@@ -173,11 +180,11 @@ module.exports = (sequelize, DataTypes) => {
       as: "senderChats",
     });
     User.belongsToMany(models.Property, {
-      through: 'UserFavourites',
-      foreignKey: 'userId',
-      otherKey: 'propertyId',
-      as: 'favouriteProperties',
-  });
+      through: "UserFavourites",
+      foreignKey: "userId",
+      otherKey: "propertyId",
+      as: "favouriteProperties",
+    });
     User.hasMany(models.Property, {
       onDelete: "CASCADE",
       foreignKey: {

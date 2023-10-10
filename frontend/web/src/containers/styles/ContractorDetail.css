@@ -1,4 +1,4 @@
-.userdetail {
+.contractordetail {
   background-color: #0000000D;
   width: calc(100% - 180px);
   top: 60px;
@@ -8,42 +8,36 @@
   overflow-y: auto;
 }
 
-.container {
+.container-contractor {
   margin-left: 30px;
   background-color: white;
-  /* width: 1210px; */
   height: 100%;
   font-size: 14px;
 }
 
-.username {
+.username-contractor {
   display: flex;
   padding: 30px 30px 20px 30px;
   align-items: center;
 }
 
-.status-transaction {
-  display: flex;
-}
-
-.status-box {
+.status-box-contractor {
   background-color: #FFD700;
-  /* background-color: pink; */
-  height: 240px;
-  width: 460px;
+  height: 300px;
+  width: 480px;
   margin-left: 30px;
   border-radius: 8px;
 }
 
-.deactivated-box {
+.deactivated-box-contractor {
   background-color: #FF6666;
-  height: 240px;
-  width: 460px;
+  height: 300px;
+  width: 480px;
   margin-left: 30px;
   border-radius: 8px;
 }
 
-.rating {
+.rating-contractor {
   background-color: #FFFDCE;
   width: 90px;
   height: 90px;
@@ -55,32 +49,7 @@
   justify-content: center;
 }
 
-.document-area {
-  /* background-color: pink; */
-  height: 250px;
-  width: 1205px;
-  margin-left: 30px;
-  margin-top: 10px;
-  border-radius: 8px;
-  padding: 15px;
-}
-
-.documents-boxes {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.document {
-  display: flex;
-  flex-direction: column;
-}
-
-.document-title {
-  padding: 10px;
-}
-
-.folder-icon {
+.folder-contractor {
   width: 90px;
   height: 90px;
   cursor: pointer;
@@ -94,10 +63,38 @@
   word-break: break-all;
   /* padding: 5px; */
   margin: 15px;
-  /* background-color: pink; */
 }
 
-.reviews {
+.document-area-contractor {
+  /* background-color: pink; */
+  height: 250px;
+  width: 1205px;
+  margin-left: 30px;
+  margin-top: 50px;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.documents-boxes-contractor {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.document-contractor {
+  display: flex;
+  flex-direction: column;
+}
+
+.document-title-contractor {
+  padding: 10px;
+}
+
+.status-transaction {
+  display: flex;
+}
+
+.reviews-contractor {
   background-color: #FFFDCE;
   width: 650px;
   height: 350px;
@@ -110,7 +107,7 @@
   flex-direction: column;
 }
 
-.individual-review {
+.individual-review-contractor {
   background-color: #FFD700;
   height: 120px;
   width: 620px;
@@ -118,7 +115,7 @@
   border-radius: 8px;
 }
 
-.review-description {
+.review-description-contractor {
   padding: 5px 10px 0px 10px;
   background-color: #FFFDCE;
   width: 600px;
@@ -133,11 +130,11 @@
   display: flex;
 }
 
-.review-rating {
+.review-rating-contractor {
   font-weight: 600;
 }
 
-.review-username {
+.review-username-contractor {
   display: flex;
   padding: 10px;
   align-items: center;

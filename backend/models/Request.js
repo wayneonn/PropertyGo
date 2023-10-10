@@ -58,6 +58,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "requestId",
       as: "transactions",
     });
+    Request.hasMany(models.Review, {
+      foreignKey: "requestId",
+      as: "reviews",
+    });
   };
 
   // Request.belongsTo(sequelize.models.Users, {

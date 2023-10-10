@@ -1,19 +1,17 @@
 import { React, useState, useEffect } from "react";
 import { Card, Button, Form, Modal, Spinner } from "react-bootstrap";
-import "./styles/UserDetail.css";
+import "./styles/ContractorDetail.css";
 import API from "../services/API";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { useParams, useNavigate } from "react-router-dom";
-import base64 from "react-native-base64";
 
 import { BsRocketTakeoff, BsRocketTakeoffFill } from "react-icons/bs";
 import { FaStar } from "react-icons/fa";
 import { FcFolder, FcOpenedFolder } from "react-icons/fc";
 
-const UserDetail = () => {
-  const [user, setUser] = useState({});
-  const { userId } = useParams();
-  const [properties, setProperties] = useState([]);
+const ContractorDetail = () => {
+  const [contractor, setContractor] = useState({});
+  const { contractorId } = useParams();
   const [reviews, setReviews] = useState([]);
   const [aveRating, setAveRating] = useState(0);
   const [folders, setFolders] = useState([]);
@@ -35,28 +33,18 @@ const UserDetail = () => {
   const fetchData = async () => {
     try {
       const response = await API.get(
-        `http://localhost:3000/admin/users/getUser/${userId}`
+        `http://localhost:3000/admin/users/getUser/${contractorId}`
       );
-      setUser(response.data);
+      setContractor(response.data);
 
       setIsActive(response.data.isActive);
-
-      const responseProperty = await API.get(
-        `http://localhost:3000/admin/properties`
-      );
-
-      const properties = responseProperty.data.filter(
-        (property) => property.userId == userId
-      );
-
-      setProperties(properties);
 
       const responseReview = await API.get(
         `http://localhost:3000/admin/reviews`
       );
 
       const reviews = responseReview.data.reviews.filter(
-        (review) => review.revieweeId == userId
+        (review) => review.revieweeId == contractorId
       );
 
       let rating = 0.0;
@@ -78,7 +66,7 @@ const UserDetail = () => {
       );
 
       const folders = responseFolder.data.folders.filter(
-        (folder) => folder.userId == userId
+        (folder) => folder.userId == contractorId
       );
 
       setFolders(folders);
@@ -133,9 +121,11 @@ const UserDetail = () => {
 
   const handleDeactivate = async () => {
     try {
-      const response = await API.patch(`/admin/users/deactivate/${userId}`);
+      const response = await API.patch(
+        `/admin/users/deactivate/${contractorId}`
+      );
 
-      setUser(response.data);
+      setContractor(response.data);
       setIsActive(false);
 
       if (response.status === 200) {
@@ -149,9 +139,9 @@ const UserDetail = () => {
 
   const handleActivate = async () => {
     try {
-      const response = await API.patch(`/admin/users/activate/${userId}`);
+      const response = await API.patch(`/admin/users/activate/${contractorId}`);
 
-      setUser(response.data);
+      setContractor(response.data);
       setIsActive(true);
 
       if (response.status === 200) {
@@ -242,7 +232,7 @@ const UserDetail = () => {
   };
 
   return (
-    <div className="userdetail">
+    <div className="contractordetail">
       <div
         style={{
           marginTop: "10px",
@@ -252,18 +242,18 @@ const UserDetail = () => {
         }}
       >
         <BreadCrumb
-          names={["Home", "Users"]}
-          lastname="User Detail"
-          links={["/", "/users"]}
+          names={["Home", "Contractors"]}
+          lastname="Contractor Detail"
+          links={["/", "/contractors"]}
         ></BreadCrumb>
       </div>
-      <div className="container">
-        <div className="username">
+      <div className="container-contractor">
+        <div className="username-contractor">
           <td>
-            {user.profileImage ? (
+            {contractor.profileImage ? (
               <>
                 <img
-                  src={`data:image/jpeg;base64,${user.profileImage.toString(
+                  src={`data:image/jpeg;base64,${contractor.profileImage.toString(
                     "base64"
                   )}`}
                   style={{ height: "30px", width: "30px" }}
@@ -285,13 +275,15 @@ const UserDetail = () => {
           <span
             style={{ marginLeft: "12px", fontWeight: "600", fontSize: "18px" }}
           >
-            {user.userName}
+            {contractor.userName}
           </span>
         </div>
         <div className="status-transaction">
           <div
             className={
-              user.isActive === true ? "status-box" : "deactivated-box"
+              contractor.isActive === true
+                ? "status-box-contractor"
+                : "deactivated-box-contractor"
             }
           >
             <div style={{ padding: "15px" }}>
@@ -304,7 +296,7 @@ const UserDetail = () => {
               >
                 <div>
                   <span style={{ padding: "10px 0px 10px 10px" }}>
-                    CURRENT USER STATUS
+                    CURRENT CONTRACTOR STATUS
                   </span>
                   <div
                     style={{
@@ -347,7 +339,7 @@ const UserDetail = () => {
                     )}
                   </div>
                 </div>
-                <div className="rating">
+                <div className="rating-contractor">
                   <span
                     style={{
                       fontSize: "18px",
@@ -380,12 +372,26 @@ const UserDetail = () => {
                 }}
               >
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                  <span>Account holder since:</span>
-                  <span>{formatUserCreatedAt(user.createdAt)}</span>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <span>Account holder since:</span>
+                    <span>{formatUserCreatedAt(contractor.createdAt)}</span>
+                  </div>
+                  <div
+                    style={{
+                      marginTop: "10px",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <span>Company:</span>
+                    <span>{contractor.companyName}</span>
+                  </div>
                 </div>
-                <span style={{ marginLeft: "60px" }}>
-                  Listed property: {properties.length}
-                </span>
               </div>
               <div
                 style={{
@@ -406,7 +412,7 @@ const UserDetail = () => {
                     }}
                     onClick={toggleDeactivateModal}
                   >
-                    Deactivate lawyer
+                    Deactivate Contractor
                   </Button>
                 ) : (
                   <Button
@@ -418,27 +424,13 @@ const UserDetail = () => {
                     }}
                     onClick={toggleActivateModal}
                   >
-                    Activate lawyer
+                    Activate Contractor
                   </Button>
                 )}
-                <Button
-                  style={{
-                    backgroundColor: "white",
-                    border: "0",
-                    borderRadius: "160px",
-                    color: "black",
-                    marginLeft: "50px",
-                  }}
-                  onClick={() =>
-                    navigate(`/users/details/${user.userId}/property-listing`)
-                  }
-                >
-                  View Listed Property
-                </Button>
               </div>
             </div>
           </div>
-          <div className="reviews">
+          <div className="reviews-contractor">
             <span
               style={{
                 display: "flex",
@@ -452,14 +444,17 @@ const UserDetail = () => {
             {Array.isArray(reviews) && reviews.length > 0 ? (
               reviews.map((review, index) => {
                 return (
-                  <div key={review.reviewId} className="individual-review">
+                  <div
+                    key={review.reviewId}
+                    className="individual-review-contractor"
+                  >
                     <div
                       style={{
                         display: "flex",
                         alignItems: "center",
                       }}
                     >
-                      <div className="review-username">
+                      <div className="review-username-contractor">
                         <td>
                           {reviewers[index] &&
                             (reviewers[index].profileImage ? (
@@ -496,7 +491,7 @@ const UserDetail = () => {
                           </span>
                         )}
                       </div>
-                      <div className="review-rating">
+                      <div className="review-rating-contractor">
                         <span
                           style={{
                             display: "flex",
@@ -510,7 +505,7 @@ const UserDetail = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="review-description">
+                    <div className="review-description-contractor">
                       <span>{review.description}</span>
                     </div>
                   </div>
@@ -530,14 +525,14 @@ const UserDetail = () => {
             )}
           </div>
         </div>
-        <div className="document-area">
+        <div className="document-area-lawyer">
           <span style={{ fontSize: "18px", fontWeight: "500" }}>Folders</span>
           <hr />
-          <div className="documents-boxes">
+          <div className="documents-boxes-lawyer">
             {Array.isArray(folders) && folders.length > 0 ? (
               folders.map((folder, index) => (
                 <div
-                  className="folder-icon"
+                  className="folder-lawyer"
                   key={folder.id}
                   onClick={() => toggleDocumentModal(folder.folderId)}
                   onMouseOver={() => handleHoverChange(index, true)}
@@ -580,10 +575,10 @@ const UserDetail = () => {
           {fetching ? (
             <Spinner animation="border" variant="warning" />
           ) : (
-            <div className="document">
+            <div className="document-lawyer">
               {Array.isArray(documents) && documents.length > 0 ? (
                 documents.map((document) => (
-                  <div className="document-title">
+                  <div className="document-title-lawyer">
                     <span>
                       <a
                         href="#"
@@ -611,7 +606,7 @@ const UserDetail = () => {
           <Modal.Title>Deactivate</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Are you sure you want to deactivate this lawyer?</p>
+          <p>Are you sure you want to deactivate this contractor?</p>
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -658,7 +653,7 @@ const UserDetail = () => {
           <Modal.Title>Activate</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Are you sure you want to activate this lawyer?</p>
+          <p>Are you sure you want to activate this contractor?</p>
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -699,4 +694,4 @@ const UserDetail = () => {
   );
 };
 
-export default UserDetail;
+export default ContractorDetail;
