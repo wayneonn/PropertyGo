@@ -22,12 +22,12 @@
   flex-wrap: wrap;
   gap: 10px;
   overflow-x: auto;
-  margin-left: 15px;
+  margin-left: 10px;
   /* white-space: nowrap; */
 }
 
 .property-card {
-  width: calc(25% - 20px);
+  width: calc(25% - 10px);
   /* max-height: 348px;
   overflow-y: auto; */
 }

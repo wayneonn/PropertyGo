@@ -22,3 +22,17 @@
   align-items: center;
   padding: 5px 5px 5px 5px;
 }
+
+.searchbar-users {
+  width: 200px;
+  background-color: #F2F3F480;
+  align-items: center;
+  margin-left: 50px;
+  border-radius: 4px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

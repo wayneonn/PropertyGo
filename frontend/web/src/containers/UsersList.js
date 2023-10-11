@@ -14,6 +14,8 @@ const UsersList = () => {
   const [users, setUsers] = useState([]);
   const [naUsers, setNaUsers] = useState([]);
   const [aUsers, setAUsers] = useState([]);
+  const [searchQueryActive, setSearchQueryActive] = useState("");
+  const [searchQueryInactive, setSearchQueryInactive] = useState("");
 
   const itemsPerPage = 4;
 
@@ -72,6 +74,37 @@ const UsersList = () => {
     fetchData();
   }, []);
 
+  const searchActiveUsers = async (searchQueryActive) => {
+    const fetchData = async () => {
+      try {
+        const response = await API.get(
+          `http://localhost:3000/admin/users/search/active/users?q=${searchQueryActive}`
+        );
+
+        setAUsers(response.data);
+        console.log("A users :" + response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  };
+
+  const searchInactiveUsers = async (searchQueryInactive) => {
+    const fetchData = async () => {
+      try {
+        const response = await API.get(
+          `http://localhost:3000/admin/users/search/inactive/users?q=${searchQueryInactive}`
+        );
+
+        setNaUsers(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  };
+
   return (
     <div className="users">
       <div
@@ -101,6 +134,34 @@ const UsersList = () => {
           >
             Active Users
           </h3>
+          <div className="searchbar-users">
+            <img
+              src={imageBasePath + "search.webp"}
+              alt="search"
+              style={{
+                width: "18px",
+                height: "18px",
+                cursor: "pointer",
+                marginLeft: "5px",
+                marginRight: "5px",
+              }}
+              onClick={() => searchActiveUsers(searchQueryActive)}
+            />
+            <input
+              placeholder="Search username"
+              value={searchQueryActive}
+              onChange={(e) => setSearchQueryActive(e.target.value)}
+              style={{
+                border: "0",
+                backgroundColor: "#F2F3F480",
+                fontSize: "14px",
+                color: "black",
+                marginLeft: "0.2em",
+                height: "30px",
+                width: "169px",
+              }}
+            />
+          </div>
         </div>
         <div>
           <Table hover responsive="sm" size="md">
@@ -151,7 +212,7 @@ const UsersList = () => {
                           </>
                         )}
                       </td>
-                      <td>{user.username}</td>
+                      <td>{user.userName}</td>
                       <td>
                         <Button
                           size="sm"
@@ -215,6 +276,34 @@ const UsersList = () => {
           >
             Non active Users
           </h3>
+          <div className="searchbar-users">
+            <img
+              src={imageBasePath + "search.webp"}
+              alt="search"
+              style={{
+                width: "18px",
+                height: "18px",
+                cursor: "pointer",
+                marginLeft: "5px",
+                marginRight: "5px",
+              }}
+              onClick={() => searchInactiveUsers(searchQueryInactive)}
+            />
+            <input
+              placeholder="Search username"
+              value={searchQueryInactive}
+              onChange={(e) => setSearchQueryInactive(e.target.value)}
+              style={{
+                border: "0",
+                backgroundColor: "#F2F3F480",
+                fontSize: "14px",
+                color: "black",
+                marginLeft: "0.2em",
+                height: "30px",
+                width: "169px",
+              }}
+            />
+          </div>
         </div>
         <div>
           <Table hover responsive="sm" size="md">
@@ -262,7 +351,7 @@ const UsersList = () => {
                           </>
                         )}
                       </td>
-                      <td>{user.username}</td>
+                      <td>{user.userName}</td>
                       <td>
                         <Button
                           size="sm"

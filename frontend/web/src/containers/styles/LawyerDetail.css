@@ -95,7 +95,7 @@
 }
 
 .reviews-lawyer {
-  background-color: #FFFDCE;
+  background-color: #FFD700;
   width: 650px;
   height: 350px;
   margin-left: 50px;
@@ -109,12 +109,12 @@
 
 .review-username-lawyer {
   display: flex;
-  padding: 10px;
+  padding: 6px;
   align-items: center;
 }
 
 .individual-review-lawyer {
-  background-color: #FFD700;
+  background-color: #FFFDCE;
   height: 120px;
   width: 620px;
   margin-top: 10px;
@@ -122,14 +122,13 @@
 }
 
 .review-description-lawyer {
-  padding: 5px 10px 0px 10px;
   background-color: #FFFDCE;
   width: 600px;
   margin-left: 10px;
   margin-right: 10px;
   margin-bottom: 8px;
-  max-height: 65px;
-  height: 65px;
+  max-height: 68px;
+  height: 68px;
   border-radius: 8px;
   overflow-y: auto;
   flex-wrap: wrap;
