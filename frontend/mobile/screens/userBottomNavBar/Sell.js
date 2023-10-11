@@ -46,21 +46,38 @@ export default function PropertyListing() {
   const [documents, setDocuments] = useState([]);
 
   const [property, setProperty] = useState({
-    title: 'Sample Title',
-    description:
-      'Sample Description (You can add a longer description here.)',
-    price: '100000', // Add a dollar symbol to the price
-    offeredPrice: '90000', // Add a dollar symbol to the offered price
-    bed: '2',
-    bathroom: '2',
-    size: '1200',
-    tenure: 1,
+    // title: 'Sample Title',
+    // description:
+    //   'Sample Description (You can add a longer description here.)',
+    // price: '100000', // Add a dollar symbol to the price
+    // offeredPrice: '90000', // Add a dollar symbol to the offered price
+    // bed: '2',
+    // bathroom: '2',
+    // size: '1200',
+    // tenure: 1,
+    // propertyType: '',
+    // propertyStatus: 'ACTIVE',
+    // userId: user.user.userId,
+    // postalCode: '822126',
+    // address: '',
+    // unitNumber: '17-360',
+    // area: '',
+    // region: '',
+    // longitude: '',
+    // latitude: '',
+    title: '',
+    description:'',
+    price: '', // Add a dollar symbol to the price
+    bed: '',
+    bathroom: '',
+    tenure: '',
+    size: '',
     propertyType: '',
     propertyStatus: 'ACTIVE',
     userId: user.user.userId,
-    postalCode: '822126',
+    postalCode: '',
     address: '',
-    unitNumber: '17-360',
+    unitNumber: '',
     area: '',
     region: '',
     longitude: '',
@@ -101,7 +118,7 @@ export default function PropertyListing() {
       setPrevDocuments(documents);
       setFilteredDocs(documents);
       setSelectedFolder(defaultFolderId.toString());
-      console.log(user);
+      // console.log(user);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -227,7 +244,7 @@ export default function PropertyListing() {
 
             // Update the address in the property state
             setProperty({ ...property, address, postalCode, area, region, latitude, longitude });
-            console.log("address: ", address);
+            // console.log("address: ", address);
           } else {
             // No address found, alert the user and clear the address field
             Alert.alert('Invalid Postal Code', 'No address found for the postal code.');
@@ -315,7 +332,7 @@ export default function PropertyListing() {
         {
           ...property,
           price: price, // Use the parsed price here
-          offeredPrice: property.offeredPrice.replace(/\$/g, ''),
+          // offeredPrice: property.offeredPrice.replace(/\$/g, ''),
           propertyType: propertyTypeUpperCase,
         },
         images
@@ -341,10 +358,12 @@ export default function PropertyListing() {
             });
 
             // Append the Blob to the FormData object
-            documentData.append("documents", 
-            {uri: fileUri,
-            name: selectedDocument.assets[0].name,
-            type: "application/pdf"});
+            documentData.append("documents",
+              {
+                uri: fileUri,
+                name: selectedDocument.assets[0].name,
+                type: "application/pdf"
+              });
 
             // Add other necessary data to the FormData object
             documentData.append('propertyId', propertyListingId);
@@ -411,7 +430,11 @@ export default function PropertyListing() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps="handled" // Add this prop
+      >
         <View style={styles.headerContainer}>
           <Text style={styles.header}>List A Property</Text>
         </View>
@@ -453,6 +476,7 @@ export default function PropertyListing() {
           <TextInput
             placeholder="$ Price"
             value={formattedPrice}
+            keyboardType="numeric"
             onChangeText={handlePriceChange}
             style={styles.input}
           />
@@ -463,6 +487,7 @@ export default function PropertyListing() {
           <TextInput
             placeholder="Size (sqm)"
             value={property.size}
+            keyboardType="numeric"
             onChangeText={(text) => setProperty({ ...property, size: text })}
             style={styles.input}
           />
@@ -473,6 +498,7 @@ export default function PropertyListing() {
           <TextInput
             placeholder="Bed"
             value={property.bed}
+            keyboardType="numeric"
             onChangeText={(text) => setProperty({ ...property, bed: text })}
             style={styles.input}
           />
@@ -483,6 +509,7 @@ export default function PropertyListing() {
           <TextInput
             placeholder="Bathroom"
             value={property.bathroom}
+            keyboardType="numeric"
             onChangeText={(text) =>
               setProperty({ ...property, bathroom: text })
             }
@@ -514,6 +541,17 @@ export default function PropertyListing() {
           />
         </View>
 
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Tenure</Text>
+          <TextInput
+            placeholder="Tenure"
+            maxLength={3} // Restrict input to 6 characters
+            keyboardType="numeric" // Show numeric keyboard
+            value={property.tenure}
+            onChangeText={(text) => setProperty({ ...property, tenure: text })}
+            style={styles.input}
+          />
+        </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Unit Number</Text>
@@ -779,5 +817,8 @@ const styles = StyleSheet.create({
     color: 'white', // Change the text color as needed
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  scrollViewContent: {
+    paddingBottom: 100, // Adjust this value as needed to ensure the input field is visible
   },
 });
