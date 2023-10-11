@@ -219,9 +219,7 @@ const Property = () => {
                     <div className="image-container">
                       <img
                         className="image"
-                        src={`data:image/jpeg;base64,${image.toString(
-                          "base64"
-                        )}`}
+                        src={`http://localhost:3000/image/${image.toString()}`}
                         alt="property image"
                       />
                     </div>

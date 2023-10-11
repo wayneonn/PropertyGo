@@ -166,17 +166,23 @@ const PropertyListing = () => {
               >
                 {Array.isArray(property.images) &&
                 property.images.length > 0 ? (
-                  <Card.Img
-                    variant="top"
-                    src={`data:image/jpeg;base64,${property.images[0]}`}
-                    alt={`Property Image for ${property.title}`}
-                  />
+                  <div className="image-container-listing">
+                    <Card.Img
+                      variant="top"
+                      src={`http://localhost:3000/image/${property.images[0].toString()}`}
+                      alt={`Property Image for ${property.title}`}
+                      className="image-listing"
+                    />
+                  </div>
                 ) : (
-                  <Card.Img
-                    variant="top"
-                    src={imageBasePath + "login.jpeg"}
-                    alt={`Property Image for ${property.title}`}
-                  />
+                  <div className="image-container-listing">
+                    <Card.Img
+                      variant="top"
+                      src={imageBasePath + "login.jpeg"}
+                      alt={`Property Image for ${property.title}`}
+                      className="image-listing"
+                    />
+                  </div>
                 )}
                 <Card.Body>
                   <Card.Title className="truncate-text">

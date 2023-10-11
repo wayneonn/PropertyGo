@@ -190,7 +190,7 @@ const HomePagePartner = ({navigation}) => {
         loadBuyerIdTransactions().then(r => console.log("Finished fetching Buyer ID transaction value data."))
     }, []);
 
-    useEffect(async () => {
+    useEffect( async () => {
         await fetchData(); // Initial fetch
         const intervalId = setInterval(fetchData, 5000); // Set interval for repeated fetches
         return () => clearInterval(intervalId); // Cleanup function to clear the interval
@@ -233,11 +233,11 @@ const HomePagePartner = ({navigation}) => {
     );
 
     const fetchData = async () => {
-        await loadRecentlyAddedTransactions();
+        const recentAddedTransactions = await loadRecentlyAddedTransactions();
         console.log("Finished fetching top transactions.", topTransactions);
-        await loadMonthTransctions();
+        const loadMonth = await loadMonthTransctions();
         console.log("Finished fetching monthly transaction value data.", monthTransactions);
-        await loadBuyerIdTransactions();
+        const buyerId = await loadBuyerIdTransactions();
         console.log("Finished fetching Buyer ID transaction value data.", buyerIdTransactions);
     };
 
@@ -517,7 +517,7 @@ const HomePagePartner = ({navigation}) => {
                         <MyBarChart/>
                     </View>
 
-                    {/* Regions Section */}
+                    {/*Regions Section */}
                     <View style={styles.sectionContainer}>
                         <Text style={styles.sectionTitle}> {' '}<Ionicons name="navigate-circle-outline" size={24}
                                                                           style={styles.titleIcon}/>
