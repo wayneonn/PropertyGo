@@ -7,6 +7,6 @@ const upload = multer({ storage: storage });
 const { getRatingForUser } = require('../../controllers/user/reviewController'); // Import the image controller
 
 // Define a route to get images by property ID
-router.get('/getRatingForUser/:userId', getRatingForUser);
+router.get('/getRatingForUser/:revieweeId', getRatingForUser);
 
 module.exports = router;

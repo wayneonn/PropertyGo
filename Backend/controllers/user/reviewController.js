@@ -3,11 +3,11 @@ const sharp = require('sharp');
 
 async function getRatingForUser(req, res) {
   try {
-    const { userId } = req.params;
+    const { revieweeId } = req.params;
 
     // Fetch reviews associated with the user
     const userReviews = await Review.findAll({
-      where: { userId },
+      where: { revieweeId },
     });
 
     // Calculate the user's rating by averaging the ratings from reviews
@@ -18,9 +18,9 @@ async function getRatingForUser(req, res) {
       }
       const userRating = totalRating / userReviews.length;
 
-      return res.json({ userId, userRating });
+      return res.json({ revieweeId, userRating });
     } else {
-      return res.json({ userId, userRating: 0 }); // If no reviews, return a default rating of 0
+      return res.json({ revieweeId, userRating: 0 }); // If no reviews, return a default rating of 0
     }
   } catch (error) {
     console.error('Error fetching user rating:', error);

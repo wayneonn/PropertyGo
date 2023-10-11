@@ -92,7 +92,7 @@ const ForumComment = ({ navigation }) => {
         } catch (error) {
             console.error(error);
         }
-        
+
     };
 
     const handleRefresh = async () => {
@@ -143,16 +143,16 @@ const ForumComment = ({ navigation }) => {
             });
         }
 
-        
+
         formData.append('message', message);
         formData.append('forumPostId', post.forumPostId);
 
         try {
             const forumComment = await createForumComment(user.user.userId, formData);
             useParentCallback();
-          } catch (error) {
+        } catch (error) {
             console.error(error);
-          }
+        }
 
         // Reset the input fields after submission
         setMessage('');
@@ -192,6 +192,7 @@ const ForumComment = ({ navigation }) => {
 
             </ScrollView>
             <View>
+                {imageUris.length !== 0 ? <Text style={styles.warningLabel}>Upload Maximum of 5 Images!</Text> : null}
                 <ScrollView horizontal>
                     {imageUris.map((uri, index) => (
                         <View key={index} style={{ margin: 5, position: 'relative' }}>
@@ -241,8 +242,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white', // Set background color
         // padding: 10, // Add padding to the container
         borderRadius: 10, // Add border radius for rounded corners
-        marginHorizontal:10,
-        borderWidth:1,
+        marginHorizontal: 10,
+        borderWidth: 1,
     },
     textInput: {
         flex: 1,
@@ -276,6 +277,14 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginTop: 5,
         alignItems: 'center',
+    },
+    warningLabel: {
+        fontSize: 12,
+        marginHorizontal: 5,
+        marginBottom: 5,
+        textAlign: 'left',
+        alignSelf: 'flex-start',
+        color: "red",
     },
 
 })
