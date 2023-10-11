@@ -44,8 +44,8 @@ const HomePagePartner = ({navigation}) => {
     const MyLineChart = () => {
         // Need to read the data from the transactions.
         // I need to use the summary data for each month.
-        const labels = monthTransactions.map(item => monthDigitToString(item.month));
-        const dataPoints = monthTransactions.map(item => item.totalOnHoldBalance);
+        const labels = monthTransactions.length !== 0 ? monthTransactions.map(item => monthDigitToString(item.month)) : ["Jan", "Feb", "Mar", "Apr", "May", "June"];
+        const dataPoints = monthTransactions.length !== 0 ? monthTransactions.map(item => item.totalOnHoldBalance) : [0,0,0,0,0,0];
 
         return (
             <LineChart
@@ -132,8 +132,8 @@ const HomePagePartner = ({navigation}) => {
     const MyBarChart = () => {
         // Need to read the data from the transactions.
         // I need to use the summary data for each month.
-        const labels = monthTransactions.map(item => monthDigitToString(item.month));
-        const dataPoints = monthTransactions.map(item => item.transactionCount);
+        const labels = monthTransactions.length !== 0 ? monthTransactions.map(item => monthDigitToString(item.month)) : ["Jan", "Feb", "Mar", "Apr", "May", "June"];
+        const dataPoints = monthTransactions.length !== 0 ? monthTransactions.map(item => item.transactionCount) : [0,0,0,0,0,0];
         return (
             <BarChart
                 data={{
@@ -191,43 +191,35 @@ const HomePagePartner = ({navigation}) => {
     }, []);
 
     useEffect(async () => {
-        const fetchData = async () => {
-            await loadRecentlyAddedTransactions();
-            console.log("Finished fetching top transactions.");
-            await loadMonthTransctions();
-            console.log("Finished fetching monthly transaction value data.");
-            await loadBuyerIdTransactions();
-            console.log("Finished fetching Buyer ID transaction value data.");
-        };
         await fetchData(); // Initial fetch
         const intervalId = setInterval(fetchData, 5000); // Set interval for repeated fetches
         return () => clearInterval(intervalId); // Cleanup function to clear the interval
     }, []);
 
-    useEffect(() => {
-        setBuyerIdTransactions(buyerIdTransactions)
-        console.log("Buyer ID transaction.", buyerIdTransactions)
-    }, [buyerIdTransactions])
-
-    useEffect(() => {
-        setMonthTransactions(monthTransactions)
-        console.log("Month Transactions. ", monthTransactions)
-    }, [monthTransactions])
-
-    useEffect(() => {
-        setTopTransactions(topTransactions)
-        console.log("Top Transactions. ", topTransactions)
-    }, [topTransactions])
-
-    useEffect(() => {
-        setBuyerUserProfile(buyerUserProfile)
-        console.log("Buyer Profile. ", buyerUserProfile)
-    }, [buyerUserProfile])
-
-    useEffect(() => {
-        setTopTenUserProfile(topTenUserProfile)
-        console.log("Ten user profile. ", topTenUserProfile)
-    }, [topTenUserProfile])
+    // useEffect(() => {
+    //     setBuyerIdTransactions(buyerIdTransactions)
+    //     console.log("Buyer ID transaction.", buyerIdTransactions)
+    // }, [buyerIdTransactions])
+    //
+    // useEffect(() => {
+    //     setMonthTransactions(monthTransactions)
+    //     console.log("Month Transactions. ", monthTransactions)
+    // }, [monthTransactions])
+    //
+    // useEffect(() => {
+    //     setTopTransactions(topTransactions)
+    //     console.log("Top Transactions. ", topTransactions)
+    // }, [topTransactions])
+    //
+    // useEffect(() => {
+    //     setBuyerUserProfile(buyerUserProfile)
+    //     console.log("Buyer Profile. ", buyerUserProfile)
+    // }, [buyerUserProfile])
+    //
+    // useEffect(() => {
+    //     setTopTenUserProfile(topTenUserProfile)
+    //     console.log("Ten user profile. ", topTenUserProfile)
+    // }, [topTenUserProfile])
 
 
     useFocusEffect(
@@ -239,6 +231,15 @@ const HomePagePartner = ({navigation}) => {
             setSearchQuery('');
         }, [])
     );
+
+    const fetchData = async () => {
+        await loadRecentlyAddedTransactions();
+        console.log("Finished fetching top transactions.", topTransactions);
+        await loadMonthTransctions();
+        console.log("Finished fetching monthly transaction value data.", monthTransactions);
+        await loadBuyerIdTransactions();
+        console.log("Finished fetching Buyer ID transaction value data.", buyerIdTransactions);
+    };
 
     const loadRecentlyAddedTransactions = async () => {
         try {
@@ -260,8 +261,8 @@ const HomePagePartner = ({navigation}) => {
     const loadMonthTransctions = async () => {
         try {
             const monthTransaction = await fetchMonthlyTransactions(userId);
-            console.log("Here are the monthly values: ", monthTransaction.transactions)
             setMonthTransactions(monthTransaction.transactions)
+            console.log("Here are the monthly values: ", monthTransactions)
         } catch (error) {
             console.error("Error fetching monthly transactions: ", error);
         }
@@ -269,14 +270,24 @@ const HomePagePartner = ({navigation}) => {
 
     const loadBuyerIdTransactions = async() => {
         try {
-            const buyerTransaction = await fetchBuyerIdTransactions(userId);
-            setBuyerIdTransactions(buyerTransaction.transactions)
+            const buyerTransactions = await fetchBuyerIdTransactions(userId);
+            setBuyerIdTransactions(buyerTransactions.transactions)
             console.log("Here are the buyerId values: ", buyerIdTransactions)
-            const usersInvolved = await fetchAllBuyers(buyerTransaction.transactions.map(item=>item.buyerId))
+            const usersInvolved = await fetchAllBuyers(buyerTransactions.transactions.map(item=>item.buyerId))
             setBuyerUserProfile(usersInvolved);
             console.log("Here are the buyer profiles: ", buyerUserProfile)
         } catch (error) {
             console.error("Error fetching buyerId transactions: ", error);
+        }
+    }
+
+    const loadBuyerProfiles = async() => {
+        try {
+            const usersInvolved = await fetchAllBuyers(buyerIdTransactions.transactions.map(item=>item.buyerId))
+            setBuyerUserProfile(usersInvolved);
+            console.log("Here are the buyer profiles: ", buyerUserProfile)
+        } catch (error) {
+            console.error("Error fetching buyer profiles.")
         }
     }
 
@@ -292,9 +303,11 @@ const HomePagePartner = ({navigation}) => {
 
     async function fetchAllBuyers(buyerIds) {
         try {
-            const promises = buyerIds.map(id => fetchUserById(id));
-            const users = await Promise.all(promises);
-            console.log("Gotten users: ", users, buyerIds)
+            const users = [];
+            for (let id of buyerIds) {
+                const user = await fetchUserById(id);
+                users.push(user);
+            }
             return users;
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -304,8 +317,11 @@ const HomePagePartner = ({navigation}) => {
 
     async function fetchAllTopTen(buyerIds) {
         try {
-            const promises = buyerIds.map(id => fetchUserById(id));
-            const users = await Promise.all(promises);
+            const users = [];
+            for (let id of buyerIds) {
+                const user = await fetchUserById(id);
+                users.push(user);
+            }
             return users;
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -509,7 +525,7 @@ const HomePagePartner = ({navigation}) => {
                         <Divider/>
                         {topTenUserProfile.map((transactions, userDetails) => (
                             <TouchableOpacity
-                                style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.2}]}
+                                style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.25}]}
                                 onPress={() => {
                                     navigation.navigate("")
                                 }}
@@ -530,6 +546,7 @@ const HomePagePartner = ({navigation}) => {
                                 <View style={styles.propertyDetails}>
                                     <Text style={styles.propertyTitle}>{transactions.transaction.status}</Text>
                                     <Text style={styles.propertyPrice}>{transactions.transaction.onHoldBalance}</Text>
+                                    {/*<Text style={styles.propertyPrice}>{userDetails.userDetails.userName}</Text>*/}
                                     <Text style={styles.propertyDetails}>{dateFormatter(transactions.transaction.createdAt)}</Text>
                                 </View>
                             </TouchableOpacity>
