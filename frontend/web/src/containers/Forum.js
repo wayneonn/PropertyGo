@@ -186,6 +186,10 @@ const Forum = () => {
     socket.on('newRemoveFlaggedForumTopicNotification', () => {
       fetchData();
     });
+
+    socket.on('newUserCreatedForumTopic', () => {
+      fetchData();
+    });
   }, []);
 
   return (

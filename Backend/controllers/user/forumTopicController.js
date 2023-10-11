@@ -11,6 +11,7 @@ const createForumTopic = async (req, res) => {
 
     try {
         const forumTopic = await ForumTopic.create(req.body);
+        req.io.emit("newUserCreatedForumTopic", "User created forum topic");
         res.status(201).json({ forumTopic });
     } catch (error) {
         console.error(error);
