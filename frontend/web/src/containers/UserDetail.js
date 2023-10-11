@@ -406,7 +406,7 @@ const UserDetail = () => {
                     }}
                     onClick={toggleDeactivateModal}
                   >
-                    Deactivate lawyer
+                    Deactivate User
                   </Button>
                 ) : (
                   <Button
@@ -418,7 +418,7 @@ const UserDetail = () => {
                     }}
                     onClick={toggleActivateModal}
                   >
-                    Activate lawyer
+                    Activate User
                   </Button>
                 )}
                 <Button
