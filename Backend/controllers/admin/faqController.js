@@ -8,7 +8,7 @@ const htmlToPlainText = (html) => {
 };
 
 // helper function
-const getFaqForUniqueness = async ({ question, faqType }) => {
+const getFaqForUniqueness = async ({ question, faqType, faqId = null }) => {
   const formattedQuestion = htmlToPlainText(question);
 
   const faqs = await FAQ.findAll({
@@ -18,13 +18,16 @@ const getFaqForUniqueness = async ({ question, faqType }) => {
       "faqType"
     ],
   });
-
+  
   for (const faq of faqs) {
     const faqFormattedQuestion = htmlToPlainText(faq.question);
     const faqFaqType = faq.faqType;
+    const faqFaqId = faq.faqId;
 
     if (formattedQuestion === faqFormattedQuestion && faqFaqType === faqType) {
-      return true;
+      if (!(faqId != null && faqId == faqFaqId)) {
+        return true;
+      } 
     }
   }
 
@@ -126,7 +129,7 @@ const updateFaq = async (req, res) => {
     return res.status(200).json({ faq: updatedFaq });
   }
 
-  const questionFound = await getFaqForUniqueness({ question, faqType });
+  const questionFound = await getFaqForUniqueness({ question, faqType, faqId });
 
   if (questionFound) {
     return res
