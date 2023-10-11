@@ -62,7 +62,7 @@ const Forum = () => {
   // validation message
   const [validationMessages, setValidationMessages] = useState({
     emptyForumTopicName: false,
-    forumTopicNameUnique: false
+    forumTopicNameUnique: false,
   });
 
   const handlePageChangeForumTopic = (pageNumber) => {
@@ -118,7 +118,7 @@ const Forum = () => {
   const handleEdit = async () => {
     const newMessage = {
       emptyForumTopicName: false,
-      forumTopicNameUnique: false
+      forumTopicNameUnique: false,
     };
 
     const forumTopicNameTrimmed = forumTopicName.trim();
@@ -134,12 +134,9 @@ const Forum = () => {
 
     try {
       // Save to database
-      const response = await API.patch(
-        `/admin/forumTopics/${forumTopicId}`,
-        {
-          topicName: forumTopicNameTrimmed
-        }
-      );
+      const response = await API.patch(`/admin/forumTopics/${forumTopicId}`, {
+        topicName: forumTopicNameTrimmed,
+      });
 
       if (response.status === 200) {
         setValidationMessages(newMessage);
@@ -160,12 +157,17 @@ const Forum = () => {
   };
 
   const handleEditStatus = async (typeOfResponse) => {
-    await API.patch(`/admin/forumTopics/updateForumTopicStatus/${editForumTopicId}`, {
-      adminId: localStorage.getItem("loggedInAdmin"),
-      typeOfResponse: typeOfResponse
-    });
+    await API.patch(
+      `/admin/forumTopics/updateForumTopicStatus/${editForumTopicId}`,
+      {
+        adminId: localStorage.getItem("loggedInAdmin"),
+        typeOfResponse: typeOfResponse,
+      }
+    );
     setShowEditStatusModal(false);
-    showToast(`mark as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"} of`);
+    showToast(
+      `mark as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"} of`
+    );
     fetchData();
   };
 
@@ -199,7 +201,10 @@ const Forum = () => {
       );
       setForumTopics(unflaggedForumTopics);
       response = await API.get(`/admin/forumTopics/getFlaggedForumTopics`);
-      const flaggedForumtopics = response.data.filter((forumTopic) => forumTopic.totalFlagged > 0 && !forumTopic.forumTopic.isInappropriate);
+      const flaggedForumtopics = response.data.filter(
+        (forumTopic) =>
+          forumTopic.totalFlagged > 0 && !forumTopic.forumTopic.isInappropriate
+      );
       flaggedForumtopics.sort((a, b) => b.totalFlagged - a.totalFlagged);
       setFlaggedForumTopics(flaggedForumtopics);
       setTotalPageForumTopics(
@@ -222,17 +227,17 @@ const Forum = () => {
   useEffect(() => {
     fetchData();
 
-    const socket = socketIOClient('http://localhost:3000');
+    const socket = socketIOClient("http://localhost:3000");
 
-    socket.on('newFlaggedForumTopicNotification', () => {
+    socket.on("newFlaggedForumTopicNotification", () => {
       fetchData();
     });
 
-    socket.on('newRemoveFlaggedForumTopicNotification', () => {
+    socket.on("newRemoveFlaggedForumTopicNotification", () => {
       fetchData();
     });
 
-    socket.on('newUserCreatedForumTopic', () => {
+    socket.on("newUserCreatedForumTopic", () => {
       fetchData();
     });
 
@@ -261,7 +266,9 @@ const Forum = () => {
           links={["/"]}
         ></BreadCrumb>
       </div>
-      <div style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}>
+      <div
+        style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}
+      >
         <Row>
           <Col xs={6}>
             <Toast
@@ -323,16 +330,16 @@ const Forum = () => {
                               textAlign: "center",
                             }}
                           >
-                            <td className="truncate-text">
+                            <td className="truncate-text-forum">
                               {forumTopic.topicName}
                             </td>
-                            <td className="truncate-text">
+                            <td className="truncate-text-forum">
                               {forumTopic.createdAt}
                             </td>
-                            <td className="truncate-text">
+                            <td className="truncate-text-forum">
                               {forumTopic.updatedAt}
                             </td>
-                            <td className="truncate-text">
+                            <td className="truncate-text-forum">
                               {forumTopic.actor.userName}
                             </td>
                             <td>
@@ -344,7 +351,11 @@ const Forum = () => {
                                   border: "0",
                                   marginRight: "10px",
                                 }}
-                                disabled={forumTopic.actor.adminId === null || forumTopic.actor.adminId != localStorage.getItem("loggedInAdmin")}
+                                disabled={
+                                  forumTopic.actor.adminId === null ||
+                                  forumTopic.actor.adminId !=
+                                    localStorage.getItem("loggedInAdmin")
+                                }
                                 onClick={() =>
                                   toggleEditModal(
                                     forumTopic.forumTopicId,
@@ -367,8 +378,14 @@ const Forum = () => {
                                   backgroundColor: "#FFD700",
                                   border: "0",
                                 }}
-                                disabled={forumTopic.actor.adminId === null || forumTopic.actor.adminId != localStorage.getItem("loggedInAdmin")}
-                                onClick={() => toggleDeleteModal(forumTopic.forumTopicId)}
+                                disabled={
+                                  forumTopic.actor.adminId === null ||
+                                  forumTopic.actor.adminId !=
+                                    localStorage.getItem("loggedInAdmin")
+                                }
+                                onClick={() =>
+                                  toggleDeleteModal(forumTopic.forumTopicId)
+                                }
                               >
                                 <MdDelete
                                   style={{
@@ -432,7 +449,7 @@ const Forum = () => {
                   </tr>
                 </thead>
                 {Array.isArray(flaggedForumTopics) &&
-                  flaggedForumTopics.length > 0 ? (
+                flaggedForumTopics.length > 0 ? (
                   <tbody>
                     {flaggedForumTopics
                       .slice(
@@ -446,10 +463,10 @@ const Forum = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td className="truncate-text">
+                          <td className="truncate-text-forum">
                             {flaggedForumTopic.forumTopic.topicName}
                           </td>
-                          <td className="truncate-text">
+                          <td className="truncate-text-forum">
                             {flaggedForumTopic.totalFlagged}
                           </td>
                           <td>
@@ -462,7 +479,9 @@ const Forum = () => {
                                 marginRight: "10px",
                               }}
                               onClick={() =>
-                                toggleEditStatusModal(flaggedForumTopic.forumTopic.forumTopicId)
+                                toggleEditStatusModal(
+                                  flaggedForumTopic.forumTopic.forumTopicId
+                                )
                               }
                             >
                               <IoMdFlag
@@ -600,7 +619,10 @@ const Forum = () => {
             </div>
           </div>
         </div>
-        <ForumTopicCreate showToast={showToast} fetchData={fetchData}></ForumTopicCreate>
+        <ForumTopicCreate
+          showToast={showToast}
+          fetchData={fetchData}
+        ></ForumTopicCreate>
         <Modal
           show={showEditModal}
           onHide={handleClose}
@@ -629,7 +651,8 @@ const Forum = () => {
               )}
               {validationMessages.forumTopicNameUnique && (
                 <Form.Control.Feedback type="invalid">
-                  Forum Topic Name already exists. Please type another Forum Topic Name.
+                  Forum Topic Name already exists. Please type another Forum
+                  Topic Name.
                 </Form.Control.Feedback>
               )}
             </div>

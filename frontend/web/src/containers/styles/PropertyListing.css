@@ -27,7 +27,9 @@
 }
 
 .property-card {
-  width: calc(25% - 10px);
+  /* width: calc(25% - 10px); */
+  width: 330px;
+  height: 360px;
   /* max-height: 348px;
   overflow-y: auto; */
 }
@@ -96,9 +98,22 @@
   margin-top: 230px;
 }
 
-.truncate-text {
+.truncate-text-pl {
   max-width: 400px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.image-container-listing {
+  width: 330px;
+  height: 200px;
+  overflow: hidden;
+}
+
+.image-listing {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.9;
 }
