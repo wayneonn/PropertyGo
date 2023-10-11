@@ -28,7 +28,7 @@ const Property = () => {
       );
       setProperty(response.data);
 
-      // console.log(propertyId);
+      console.log(propertyId);
 
       const sellerResponse = await API.get(
         `http://localhost:3000/admin/users/getUser/${response.data.userId}`
