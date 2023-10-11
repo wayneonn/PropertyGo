@@ -102,45 +102,74 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  Property.belongsTo(models.User, {
-    foreignKey: {
-      name: "userId",
-      allowNull: false,
-    },
-    as: "propertyAgent",
-  });
-  Property.belongsTo(models.User, {
-    foreignKey: {
-      name: "userId",
-      allowNull: false,
-    },
-    as: "seller",
-  });
-  Property.hasMany(models.Chat, {
-    foreignKey: "propertyId",
-    as: "chats",
-  });
-  Property.hasMany(models.Review, {
-    foreignKey: "propertyId",
-    as: "reviews",
-  });
-  Property.hasOne(models.Transaction, {
-    foreignKey: {
-      name: "transactionId",
-      allowNull: false,
-    }, // This will be the foreign key in the Transaction model
-    onDelete: "CASCADE", // If an invoice is deleted, delete the associated transaction
-  });
-  // Property.hasMany(models.Image, {
-  //     foreignKey: 'imageId',
-  //     as: 'propertyImages',
-  // });
-  Property.belongsToMany(models.User, {
-    through: "UserFavourites", // This is the name of the join table
-    foreignKey: "propertyId",
-    otherKey: "userId",
-    as: "favouritedByUsers",
-  });
-};
+  Property.prototype.changePrice = function (newPrice) {
+    this.price = newPrice;
+    return this.save();
+  };
 
-return Property;
+  Property.prototype.changeDescription = function (newDescription) {
+    this.description = newDescription;
+    return this.save();
+  };
+
+  Property.prototype.changeImages = function (newImages) {
+    this.images = newImages;
+    return this.save();
+  };
+
+  Property.prototype.changeTitle = function (newTitle) {
+    this.title = newTitle;
+    return this.save();
+  };
+
+  Property.associate = (models) => {
+    Property.belongsTo(models.User, {
+      foreignKey: {
+        name: "userId",
+        allowNull: false,
+      },
+      as: "buyer",
+    });
+    Property.belongsTo(models.User, {
+      foreignKey: {
+        name: "userId",
+        allowNull: false,
+      },
+      as: "propertyAgent",
+    });
+    Property.belongsTo(models.User, {
+      foreignKey: {
+        name: "userId",
+        allowNull: false,
+      },
+      as: "seller",
+    });
+    Property.hasMany(models.Chat, {
+      foreignKey: "propertyId",
+      as: "chats",
+    });
+    Property.hasMany(models.Review, {
+      foreignKey: "propertyId",
+      as: "reviews",
+    });
+    Property.hasOne(models.Transaction, {
+      foreignKey: {
+        name: "transactionId",
+        allowNull: false,
+      }, // This will be the foreign key in the Transaction model
+      onDelete: "CASCADE", // If an invoice is deleted, delete the associated transaction
+    });
+    // Property.hasMany(models.Image, {
+    //     foreignKey: 'imageId',
+    //     as: 'propertyImages',
+    // });
+    Property.belongsToMany(models.User, {
+      through: "UserFavourites", // This is the name of the join table
+      foreignKey: "propertyId",
+      otherKey: "userId",
+      as: "favouritedByUsers",
+    });
+  };
+
+  return Property;
+};
