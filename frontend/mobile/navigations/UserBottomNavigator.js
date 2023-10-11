@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomePage from '../screens/userBottomNavBar/HomePage';
 import Favourite from '../screens/userBottomNavBar/Favourite';
@@ -9,10 +9,13 @@ import {Ionicons, MaterialCommunityIcons, MaterialIcons} from '@expo/vector-icon
 import PropertyListingsStackGroup from './PropertyListingsStackGroup';
 import FavouriteStackGroup from './FavouriteStackGroup';
 import HomeStackGroup from './HomeStackGroup';
+import {AuthContext} from "../AuthContext";
+import HomeStackGroupPartner from "./HomeStackGroupPartner";
 
 const Tab = createBottomTabNavigator();
 
 const UserBottomNavigator = () => {
+    const {user} = useContext(AuthContext)
 
     return (
         <Tab.Navigator
@@ -50,8 +53,10 @@ const UserBottomNavigator = () => {
                     fontWeight: 'bold',
                 },
             })}
-        >
-            <Tab.Screen name="Home" component={HomeStackGroup} />
+        >{["LAWYER", "CONTRACTOR", "PROPERTY AGENT"].includes(user.user.userType) ?
+            <Tab.Screen name="Home" component={HomeStackGroupPartner} /> :
+            <Tab.Screen name={"Home"} component={HomeStackGroup}/>
+        }
             <Tab.Screen name="Favourite" component={FavouriteStackGroup} />
             <Tab.Screen name="Sell" component={PropertyListingsStackGroup} />
             <Tab.Screen name="Forum" component={Forum} />

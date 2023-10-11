@@ -1,5 +1,20 @@
-const {PartnerApplication, Folder} = require("../../models")
+const {PartnerApplication, User} = require("../../models")
 const globalEmitter = require('../../globalEmitter')
+const {updateAdminPassword} = require("../admin/adminController");
+const nodemailer = require("nodemailer")
+
+const smtpTransport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        type: 'OAuth2',
+        user: 'jzhongzhi@gmail.com',
+        clientId: '842279693113-fnnvu6fh818atmjea5a0unoqp7d1v46n.apps.googleusercontent.com',
+        clientSecret: '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',
+        refreshToken: '1//04GOygHNHBBFVCgYIARAAGAQSNgF-L9IrM-SfuftJl9hpyMKZsDXbuHZ1JFBV46kVkBnJYYFBSNWzERBkGjMOIvj1UvqrcmlUFg',
+        accessToken: 'ya29.a0AfB_byAlcFnc29QM-5wMqnBQe510Gub2hY0TrOngMcFsJiO7pIMWNo0jeOGqSRjHoq68g0Qnxf8A0vpL-QYbe1en5is5qGEhgA2R0xyU7JH9UhQnekcHWu6NuW3ZYDzXQNuaSva6vukR1bR9gnbl_fqrtznJqlENHbDzaCgYKAaASARISFQGOcNnCcOavpuzvT3ettveX1XxzKQ0171' // this is optional and can be left out. The library will automatically request a new access token if it's missing or expired.
+    }
+});
+
 
 /*
 * Partner Application Controller.
@@ -62,22 +77,69 @@ exports.postPartnerApplicationByUserID = async (req, res) => {
     }
 };
 
+// Also need to update user data ---> Done.
+// Done NodeMailer.
 exports.updatePartnerApplicationByID = async (req, res) => {
     console.log(req.body);
-    // const today = new Date();
-    // const nextYear = new Date(today);
-    // nextYear.setFullYear(today.getFullYear() + 1);
     try {
-        const updatedApp = await PartnerApplication.update({ approved: true },
+        const updatedApp = await PartnerApplication.update({approved: true},
             {
                 where: {
                     partnerApplicationId: req.params.id
                 }
             }
         );
+        if (updatedApp[0] === 1) {
+            console.log("Approved partner application from: ", updatedApp);
+            try {
+                const partnerAppUpdated = await PartnerApplication.findOne({
+                    where: {
+                        partnerApplicationId: req.params.id
+                    }
+                })
+                console.log("This is the updated PartnerApp: ", partnerAppUpdated.dataValues)
+                const userId = partnerAppUpdated.dataValues.userId
+                const userType = partnerAppUpdated.dataValues.userRole
+                const companyName = partnerAppUpdated.dataValues.companyName
+                console.log(`This is the: ${userType} ${userId} ${companyName}`)
+                const updatedUser = await User.update({
+                    userType: userType,
+                    companyName: companyName
+                }, {
+                    where: {
+                        userId: userId
+                    }
+                })
+                console.log("This is the updated User status: ", updatedUser)
+                const updatedUser2 = await User.findOne({
+                    where: {
+                        userId: userId
+                    }
+                })
+                const email = updatedUser2.email
+                const mailOptions = {
+                    from: 'jzhongzhi@gmail.com',
+                    to: email,
+                    subject: `Your application to be a ${userType}!`,
+                    text: 'Hello, this is a email from PropertyGo! We have approved your application to be partner!'
+                };
+                await smtpTransport.sendMail(mailOptions, (error, response) => {
+                    if (error) {
+                        console.log('Error sending email:', error);
+                    } else {
+                        console.log('Email sent:', response);
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error updating User from PartnerApplication', error)
+                res.status(500).send({error: 'Error updating User from PartnerApplication'})
+            }
+
+        }
         globalEmitter.emit('partnerApprovalUpdate');
         res.status(201).json(updatedApp);
-    } catch(error) {
+    } catch (error) {
         console.error('Error updating PartnerApplication', error);
         res.status(500).send({error: 'Error updating PartnerApplication'});
     }
@@ -87,15 +149,53 @@ exports.rejectPartnerApplicationByID = async (req, res) => {
     console.log(req.body);
     const description = req.body.description;
     try {
-        const updatedApp = await PartnerApplication.update({ adminNotes: description },
+        const updatedApp = await PartnerApplication.update({adminNotes: description, approved: false},
             {
                 where: {
                     partnerApplicationId: req.params.id
                 }
             }
         );
+
+        if (updatedApp[0] === 1) {
+            console.log("Rejected partner application: ", updatedApp);
+            try {
+                const partnerAppUpdated = await PartnerApplication.findOne({
+                    where: {
+                        partnerApplicationId: req.params.id
+                    }
+                })
+                console.log("This is the rejected PartnerApp: ", partnerAppUpdated.dataValues)
+                const userId = partnerAppUpdated.dataValues.userId
+                const userType = partnerAppUpdated.dataValues.userType
+                const updatedUser = await User.findOne({
+                    where: {
+                        userId: userId
+                    }
+                })
+                const email = updatedUser.email
+                const mailOptions = {
+                    from: 'jzhongzhi@gmail.com',
+                    to: email,
+                    subject: `Your application to be a ${userType}!`,
+                    text: 'Hello, this is a email from PropertyGo! We have rejected your application to be partner!\n' +
+                        `This is reason why we rejected you: ${description}`,
+                };
+                await smtpTransport.sendMail(mailOptions, (error, response) => {
+                    if (error) {
+                        console.log('Error sending email:', error);
+                    } else {
+                        console.log('Email sent:', response);
+                    }
+                });
+            } catch (error) {
+                console.error('Error sending PartnerApplication rejection email.', error);
+                res.status(500).send({error: 'Error updating PartnerApplication'});
+            }
+        }
+        globalEmitter.emit('partnerRejectionUpdate');
         res.status(201).json(updatedApp);
-    } catch(error) {
+    } catch (error) {
         console.error('Error updating PartnerApplication', error);
         res.status(500).send({error: 'Error updating PartnerApplication'});
     }
