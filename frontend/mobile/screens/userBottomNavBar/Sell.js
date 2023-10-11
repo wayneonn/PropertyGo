@@ -29,6 +29,7 @@ import * as FileSystem from 'expo-file-system'; // Import FileSystem from expo-f
 import * as Permissions from 'expo-permissions';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as Sharing from 'expo-sharing';
+import FullScreenImage from '../propertyListings/FullScreenImage';
 
 const propertyTypes = [
   { label: 'Select Property Type', value: '' },
@@ -44,6 +45,7 @@ export default function PropertyListing() {
     setProperty({ ...property, area, region });
   };
   const [documents, setDocuments] = useState([]);
+  const [fullScreenImage, setFullScreenImage] = useState(null);
 
   const [property, setProperty] = useState({
     // title: 'Sample Title',
@@ -140,7 +142,7 @@ export default function PropertyListing() {
   
     const options = {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+      // allowsEditing: true,
       quality: 1,
     };
   
@@ -158,12 +160,17 @@ export default function PropertyListing() {
       'Do you want to replace or remove this image?',
       [
         {
+          text: 'View Image',
+          onPress: () => viewImage(index),
+        },
+        {
           text: 'Replace',
           onPress: () => replaceImage(index),
         },
         {
           text: 'Remove',
           onPress: () => removeImage(index),
+          style: 'destructive',
         },
         {
           text: 'Cancel',
@@ -198,9 +205,6 @@ export default function PropertyListing() {
     }
   };
 
-
-
-
   const replaceImage = async (index) => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -224,6 +228,11 @@ export default function PropertyListing() {
       setImages(updatedImages);
     }
   };
+
+  const viewImage = (index) => {
+    console.log("View Image: ", images[index].uri)
+    setFullScreenImage(images[index].uri)
+  }
 
   const removeImage = (index) => {
     const updatedImages = [...images];
@@ -467,10 +476,16 @@ export default function PropertyListing() {
           </ScrollView>
         </View>
 
+        <FullScreenImage
+            imageUrl={fullScreenImage}
+            onClose={() => setFullScreenImage(null)} // Close the full-screen image view
+          />
+
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Title</Text>
           <TextInput
-            placeholder="Title"
+            placeholder="Listing Title"
+            placeholderTextColor="gray"
             value={property.title}
             onChangeText={(text) => setProperty({ ...property, title: text })}
             style={styles.input}
@@ -481,6 +496,7 @@ export default function PropertyListing() {
           <Text style={styles.label}>Price</Text>
           <TextInput
             placeholder="$ Price"
+            placeholderTextColor="gray"
             value={formattedPrice}
             keyboardType="numeric"
             onChangeText={handlePriceChange}
@@ -492,6 +508,7 @@ export default function PropertyListing() {
           <Text style={styles.label}>Size (sqm)</Text>
           <TextInput
             placeholder="Size (sqm)"
+            placeholderTextColor="gray"
             value={property.size}
             keyboardType="numeric"
             onChangeText={(text) => setProperty({ ...property, size: text })}
@@ -500,9 +517,10 @@ export default function PropertyListing() {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Bed</Text>
+          <Text style={styles.label}>Bedrooms</Text>
           <TextInput
-            placeholder="Bed"
+            placeholder="Number of Bedrooms"
+            placeholderTextColor="gray"
             value={property.bed}
             keyboardType="numeric"
             onChangeText={(text) => setProperty({ ...property, bed: text })}
@@ -511,9 +529,10 @@ export default function PropertyListing() {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Bathroom</Text>
+          <Text style={styles.label}>Bathrooms</Text>
           <TextInput
-            placeholder="Bathroom"
+            placeholder="Number of Bathrooms"
+            placeholderTextColor="gray"
             value={property.bathroom}
             keyboardType="numeric"
             onChangeText={(text) =>
@@ -527,6 +546,7 @@ export default function PropertyListing() {
           <Text style={styles.label}>Postal Code</Text>
           <TextInput
             placeholder="Postal Code"
+            placeholderTextColor="gray"
             maxLength={6} // Restrict input to 6 characters
             keyboardType="numeric" // Show numeric keyboard
             value={property.postalCode}
@@ -539,6 +559,7 @@ export default function PropertyListing() {
           <Text style={styles.label}>Address</Text>
           <TextInput
             placeholder="Address"
+            placeholderTextColor="gray"
             value={property.address}
             onChangeText={(text) => setProperty({ ...property, address: text })}
             style={[styles.input, styles.mediumTypeInput]}
@@ -550,7 +571,8 @@ export default function PropertyListing() {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Tenure</Text>
           <TextInput
-            placeholder="Tenure"
+            placeholder="Tenure (e.g. 99 years)"
+            placeholderTextColor="gray"
             maxLength={3} // Restrict input to 6 characters
             keyboardType="numeric" // Show numeric keyboard
             value={property.tenure}
@@ -562,7 +584,8 @@ export default function PropertyListing() {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Unit Number</Text>
           <TextInput
-            placeholder="Unit Number"
+            placeholder="Unit Number (e.g. #17-360)"
+            placeholderTextColor="gray"
             value={property.unitNumber}
             onChangeText={(text) => setProperty({ ...property, unitNumber: text })}
             style={styles.input}
@@ -573,7 +596,8 @@ export default function PropertyListing() {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Description</Text>
           <TextInput
-            placeholder="Description"
+            placeholder="Description of Listing"
+            placeholderTextColor="gray"
             value={property.description}
             onChangeText={(text) =>
               setProperty({ ...property, description: text })
