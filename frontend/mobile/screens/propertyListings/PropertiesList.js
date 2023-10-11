@@ -54,30 +54,32 @@ const PropertiesList = ({ route }) => {
           onChangeText={(text) => setSearchText(text)}
           value={searchText}
         />
-        <TouchableOpacity style={styles.toggleButton} onPress={toggleCardLayout}>
-          <View style={styles.toggleContainer}>
-            <TouchableOpacity style={[styles.toggleMapButton]} onPress={toggleMapView}>
-              <Ionicons
-                name={isMapVisible ? 'stop-outline' : 'map'} // Change icon based on map visibility
-                size={20}
-                color="white"
-                style={{ marginLeft: 5 }}
-              />
-              <Text style={styles.toggleMapButtonText}>
-                {isMapVisible ? 'Hide Map' : 'Show Map'}{' '}
-              </Text>
-            </TouchableOpacity>
-            <Text>{'                                            '}</Text>
+
+        <View style={styles.toggleContainer}>
+          <TouchableOpacity style={[styles.toggleMapButton]} onPress={toggleMapView}>
+            <Ionicons
+              name={isMapVisible ? 'stop-outline' : 'map'} // Change icon based on map visibility
+              size={20}
+              color="white"
+              style={{ marginLeft: 5 }}
+            />
+            <Text style={styles.toggleMapButtonText}>
+              {isMapVisible ? 'Hide Map' : 'Show Map'}{' '}
+            </Text>
+          </TouchableOpacity>
+          <Text>{'                                            '}</Text>
+          <TouchableOpacity style={styles.toggleButton} onPress={toggleCardLayout}>
             <Ionicons
               name={isSquareLayout ? 'list' : 'grid'}
               size={24}
               color="#333"
+              style={{ marginLeft: -5 }}
             />
             <Text style={styles.toggleLabel}>
               {isSquareLayout ? 'List' : 'Grid'}
             </Text>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
 
         {/* Conditionally render the MapView based on isMapVisible */}
         {isMapVisible && (
@@ -152,16 +154,21 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   toggleButton: {
+    flexDirection: 'row',
     alignItems: 'flex-end',
-    marginBottom: 10,
+    marginBottom: 1,
+    padding: 2,
+    marginRight: 10,
+
   },
   toggleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingRight: 5,
+    paddingRight: 10,
   },
   toggleLabel: {
     marginLeft: 5,
+    marginBottom: 3,
     fontSize: 16,
     color: '#333',
   },

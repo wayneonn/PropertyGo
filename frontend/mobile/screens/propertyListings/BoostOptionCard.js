@@ -6,7 +6,7 @@ const BoostOptionCard = ({ boostOption, onPressBoost }) => {
   const { days, tokens } = boostOption;
 
   return (
-    <Card style={styles.card}>
+    <Card style={[styles.card, styles.whiteBackground]}>
       <View style={styles.container}>
         <View style={styles.leftSide}>
           <Text style={styles.boostDays}>{`${days} Days`}</Text>
@@ -58,6 +58,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
+  },
+  whiteBackground: { // Add this style for white background
+    backgroundColor: 'white',
   },
 });
 

@@ -21,7 +21,7 @@ const TopBar = () => {
             <View style={styles.iconsContainer}>
                 <TouchableOpacity
                     onPress={() => {
-                        // Handle your action here
+                      navigation.navigate('Token')
                     }}
                     style={styles.coinIcon}
                 >

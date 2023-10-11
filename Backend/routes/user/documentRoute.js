@@ -54,6 +54,10 @@ router.post(
       name: "folderId",
       maxCount: 1,
     },
+    {
+      name: "propertyId",
+      maxCount: 1,
+    },
   ]),
     uploadDocuments
 );
