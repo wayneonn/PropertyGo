@@ -2,8 +2,8 @@ import configData from "../config.json"
 
 // const BASE_URL = "http://localhost:3000";
 // Please change it back to whatever your IP address is.
-// const BASE_URL = configData.BASE_URL;
-const BASE_URL = "http://10.0.0.17:3000"; //Wayne's IP address
+const BASE_URL = configData.BASE_URL;
+//const BASE_URL = "http://10.0.0.17:3000"; //Wayne's IP address
 const USER_ENDPOINT = "user";
 const PROPERTY_ENDPOINT = "property";
 const IMAGE_ENDPOINT = "image";

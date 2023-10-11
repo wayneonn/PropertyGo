@@ -11,6 +11,7 @@
   "dependencies": {
     "expo": "^49.0.10",
     "html-to-text": "^9.0.5",
-    "react-native-image-converter": "^0.4.2"
+    "react-native-image-converter": "^0.4.2",
+    "react-native-render-html": "^6.3.4"
   }
 }

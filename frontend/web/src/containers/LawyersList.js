@@ -1,8 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { Card, Button, Form, Table } from "react-bootstrap";
-import "./styles/UsersList.css";
+import "./styles/LawyersList.css";
 import API from "../services/API";
-import { formats, modules } from "../components/Common/RichTextEditor";
 import { useNavigate } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import Pagination from "react-bootstrap/Pagination";
@@ -10,10 +9,10 @@ import base64 from "react-native-base64";
 
 import { MdPreview } from "react-icons/md";
 
-const UsersList = () => {
-  const [users, setUsers] = useState([]);
-  const [naUsers, setNaUsers] = useState([]);
-  const [aUsers, setAUsers] = useState([]);
+const LawyersList = () => {
+  const [lawyers, setLawyers] = useState([]);
+  const [naLawyers, setNaLawyers] = useState([]);
+  const [aLawyers, setALawyers] = useState([]);
   const [searchQueryActive, setSearchQueryActive] = useState("");
   const [searchQueryInactive, setSearchQueryInactive] = useState("");
 
@@ -51,20 +50,18 @@ const UsersList = () => {
 
       console.log(users);
 
-      const buyerSeller = users.filter(
-        (user) => user.userType == "BUYER_SELLER"
-      );
+      const lawyers = users.filter((user) => user.userType == "LAWYER");
 
-      const naUsers = buyerSeller.filter((user) => user.isActive === false);
+      const naLawyers = lawyers.filter((user) => user.isActive === false);
 
-      const aUsers = buyerSeller.filter((user) => user.isActive === true);
+      const aLawyers = lawyers.filter((user) => user.isActive === true);
 
-      setUsers(users);
-      setNaUsers(naUsers);
-      setAUsers(aUsers);
+      setLawyers(lawyers);
+      setNaLawyers(naLawyers);
+      setALawyers(aLawyers);
 
-      setTotalPageNa(Math.ceil(naUsers.length / itemsPerPage));
-      setTotalPageA(Math.ceil(aUsers.length / itemsPerPage));
+      setTotalPageNa(Math.ceil(naLawyers.length / itemsPerPage));
+      setTotalPageA(Math.ceil(aLawyers.length / itemsPerPage));
     } catch (error) {
       console.error(error);
     }
@@ -74,14 +71,14 @@ const UsersList = () => {
     fetchData();
   }, []);
 
-  const searchActiveUsers = async (searchQueryActive) => {
+  const searchActiveLawyers = async (searchQueryActive) => {
     const fetchData = async () => {
       try {
         const response = await API.get(
-          `http://localhost:3000/admin/users/search/active/users?q=${searchQueryActive}`
+          `http://localhost:3000/admin/users/search/active/lawyers?q=${searchQueryActive}`
         );
 
-        setAUsers(response.data);
+        setALawyers(response.data);
         console.log("A users :" + response.data);
       } catch (error) {
         console.error(error);
@@ -90,14 +87,14 @@ const UsersList = () => {
     fetchData();
   };
 
-  const searchInactiveUsers = async (searchQueryInactive) => {
+  const searchInactiveLawyers = async (searchQueryInactive) => {
     const fetchData = async () => {
       try {
         const response = await API.get(
-          `http://localhost:3000/admin/users/search/inactive/users?q=${searchQueryInactive}`
+          `http://localhost:3000/admin/users/search/inactive/lawyers?q=${searchQueryInactive}`
         );
 
-        setNaUsers(response.data);
+        setNaLawyers(response.data);
       } catch (error) {
         console.error(error);
       }
@@ -106,7 +103,7 @@ const UsersList = () => {
   };
 
   return (
-    <div className="users">
+    <div className="lawyers">
       <div
         style={{
           marginTop: "10px",
@@ -117,11 +114,11 @@ const UsersList = () => {
       >
         <BreadCrumb
           names={["Home"]}
-          lastname="Users"
+          lastname="Lawyers"
           links={["/"]}
         ></BreadCrumb>
       </div>
-      <div className="usersList">
+      <div className="lawyersList">
         <div className="heading">
           <h3
             style={{
@@ -132,9 +129,9 @@ const UsersList = () => {
               padding: "5px 10px 5px 10px",
             }}
           >
-            Active Users
+            Active Lawyers
           </h3>
-          <div className="searchbar-users">
+          <div className="searchbar-lawyers">
             <img
               src={imageBasePath + "search.webp"}
               alt="search"
@@ -145,7 +142,7 @@ const UsersList = () => {
                 marginLeft: "5px",
                 marginRight: "5px",
               }}
-              onClick={() => searchActiveUsers(searchQueryActive)}
+              onClick={() => searchActiveLawyers(searchQueryActive)}
             />
             <input
               placeholder="Search username"
@@ -176,9 +173,9 @@ const UsersList = () => {
                 <th>Action</th>
               </tr>
             </thead>
-            {Array.isArray(aUsers) && aUsers.length > 0 ? (
+            {Array.isArray(aLawyers) && aLawyers.length > 0 ? (
               <tbody>
-                {aUsers
+                {aLawyers
                   .slice(indexOfFirstItemA, indexOfLastItemA)
                   .map((user) => (
                     <tr
@@ -223,7 +220,7 @@ const UsersList = () => {
                             marginRight: "10px",
                           }}
                           onClick={() =>
-                            navigate(`/users/details/${user.userId}`)
+                            navigate(`/lawyers/details/${user.userId}`)
                           }
                         >
                           <MdPreview
@@ -242,7 +239,7 @@ const UsersList = () => {
               <tbody>
                 <tr>
                   <td colSpan="3" style={{ textAlign: "center" }}>
-                    There are no users
+                    There are no lawyers
                   </td>
                 </tr>
               </tbody>
@@ -250,7 +247,7 @@ const UsersList = () => {
           </Table>
         </div>
         <div>
-          <Pagination className="users-paginate">
+          <Pagination className="lawyers-paginate">
             {Array.from({ length: totalPageA }).map((_, index) => (
               <Pagination.Item
                 key={index}
@@ -263,7 +260,7 @@ const UsersList = () => {
           </Pagination>
         </div>
       </div>
-      <div className="usersList">
+      <div className="lawyersList">
         <div className="heading">
           <h3
             style={{
@@ -274,9 +271,9 @@ const UsersList = () => {
               padding: "5px 10px 5px 10px",
             }}
           >
-            Non active Users
+            Non active Lawyers
           </h3>
-          <div className="searchbar-users">
+          <div className="searchbar-lawyers">
             <img
               src={imageBasePath + "search.webp"}
               alt="search"
@@ -287,7 +284,7 @@ const UsersList = () => {
                 marginLeft: "5px",
                 marginRight: "5px",
               }}
-              onClick={() => searchInactiveUsers(searchQueryInactive)}
+              onClick={() => searchInactiveLawyers(searchQueryInactive)}
             />
             <input
               placeholder="Search username"
@@ -318,9 +315,9 @@ const UsersList = () => {
                 <th>Action</th>
               </tr>
             </thead>
-            {Array.isArray(naUsers) && naUsers.length > 0 ? (
+            {Array.isArray(naLawyers) && naLawyers.length > 0 ? (
               <tbody>
-                {naUsers
+                {naLawyers
                   .slice(indexOfFirstItemNa, indexOfLastItemNa)
                   .map((user) => (
                     <tr
@@ -362,7 +359,7 @@ const UsersList = () => {
                             marginRight: "10px",
                           }}
                           onClick={() =>
-                            navigate(`/users/details/${user.userId}`)
+                            navigate(`/lawyers/details/${user.userId}`)
                           }
                         >
                           <MdPreview
@@ -381,7 +378,7 @@ const UsersList = () => {
               <tbody>
                 <tr>
                   <td colSpan="3" style={{ textAlign: "center" }}>
-                    There are no users
+                    There are no lawyers
                   </td>
                 </tr>
               </tbody>
@@ -389,7 +386,7 @@ const UsersList = () => {
           </Table>
         </div>
         <div>
-          <Pagination className="users-paginate">
+          <Pagination className="lawyers-paginate">
             {Array.from({ length: totalPageNa }).map((_, index) => (
               <Pagination.Item
                 key={index}
@@ -406,4 +403,4 @@ const UsersList = () => {
   );
 };
 
-export default UsersList;
+export default LawyersList;

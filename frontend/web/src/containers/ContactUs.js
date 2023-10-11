@@ -408,7 +408,12 @@ const ContactUs = () => {
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div className="displayContactus">
           <div
-            style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}
+            style={{
+              position: "absolute",
+              top: "1%",
+              left: "40%",
+              zIndex: "1",
+            }}
           >
             <Row>
               <Col xs={6}>
@@ -456,7 +461,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(pendingContactus) &&
-                  pendingContactus.length > 0 ? (
+                pendingContactus.length > 0 ? (
                   <tbody>
                     {pendingContactus
                       .slice(indexOfFirstItemPending, indexOfLastItemPending)
@@ -467,15 +472,17 @@ const ContactUs = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td className="truncate-text">{contactus.title}</td>
-                          <td className="truncate-text">{contactus.message}</td>
-                          <td className="truncate-text">{contactus.reason}</td>
-                          <td className="truncate-text">
-                            {contactus.createdAt}
+                          <td className="truncate-text-cs">
+                            {contactus.title}
                           </td>
-                          <td className="truncate-text">
-                            {userNames[contactus.userId]}
+                          <td className="truncate-text-cs">
+                            {contactus.message}
                           </td>
+                          <td className="truncate-text-cs">
+                            {contactus.reason}
+                          </td>
+                          <td>{contactus.createdAt}</td>
+                          <td>{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
@@ -561,7 +568,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(repliedContactus) &&
-                  repliedContactus.length > 0 ? (
+                repliedContactus.length > 0 ? (
                   <tbody>
                     {repliedContactus
                       .slice(indexOfFirstItemReplied, indexOfLastItemReplied)
@@ -572,18 +579,18 @@ const ContactUs = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td className="truncate-text">{contactus.title}</td>
-                          <td className="truncate-text">{contactus.message}</td>
-                          <td className="truncate-text">{contactus.reason}</td>
-                          <td className="truncate-text">
-                            {contactus.createdAt}
+                          <td className="truncate-text-cs">
+                            {contactus.title}
                           </td>
-                          <td className="truncate-text">
-                            {contactus.updatedAt}
+                          <td className="truncate-text-cs">
+                            {contactus.message}
                           </td>
-                          <td className="truncate-text">
-                            {userNames[contactus.userId]}
+                          <td className="truncate-text-cs">
+                            {contactus.reason}
                           </td>
+                          <td>{contactus.createdAt}</td>
+                          <td>{contactus.updatedAt}</td>
+                          <td>{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
@@ -616,7 +623,9 @@ const ContactUs = () => {
                                 marginRight: "10px",
                               }}
                               onClick={() =>
-                                toggleShowCloseContactUsModal(contactus.contactUsId)
+                                toggleShowCloseContactUsModal(
+                                  contactus.contactUsId
+                                )
                               }
                             >
                               <MdCurtainsClosed
@@ -710,7 +719,7 @@ const ContactUs = () => {
                   </tr>
                 </thead>
                 {Array.isArray(closedContactus) &&
-                  closedContactus.length > 0 ? (
+                closedContactus.length > 0 ? (
                   <tbody>
                     {closedContactus
                       .slice(indexOfFirstItemClosed, indexOfLastItemClosed)
@@ -721,18 +730,18 @@ const ContactUs = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td className="truncate-text">{contactus.title}</td>
-                          <td className="truncate-text">{contactus.message}</td>
-                          <td className="truncate-text">{contactus.reason}</td>
-                          <td className="truncate-text">
-                            {contactus.createdAt}
+                          <td className="truncate-text-cs">
+                            {contactus.title}
                           </td>
-                          <td className="truncate-text">
-                            {contactus.updatedAt}
+                          <td className="truncate-text-cs">
+                            {contactus.message}
                           </td>
-                          <td className="truncate-text">
-                            {userNames[contactus.userId]}
+                          <td className="truncate-text-cs">
+                            {contactus.reason}
                           </td>
+                          <td>{contactus.createdAt}</td>
+                          <td>{contactus.updatedAt}</td>
+                          <td>{userNames[contactus.userId]}</td>
                           <td>
                             <Button
                               size="sm"
@@ -1041,7 +1050,10 @@ const ContactUs = () => {
                         maxWidth: "60%",
                       }}
                     >
-                      <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
+                      <span
+                        className="muted-text"
+                        style={{ alignSelf: "flex-end", marginRight: "4em" }}
+                      >
                         {adminNames[response.adminId]}
                       </span>
                       <div className="adminResponse">
@@ -1053,7 +1065,7 @@ const ContactUs = () => {
                             resize: "none",
                             overflowY: "auto",
                             padding: "5px",
-                            margin: "0.5em"
+                            margin: "0.5em",
                           }}
                           dangerouslySetInnerHTML={{ __html: response.message }}
                         ></div>
@@ -1083,10 +1095,13 @@ const ContactUs = () => {
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                          <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
-                            updated at: {response.updatedAt}
-                          </span>
-                        )}
+                        <span
+                          className="muted-text"
+                          style={{ alignSelf: "flex-end", marginRight: "4em" }}
+                        >
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
                     </div>
                   ) : (
                     <div
@@ -1097,7 +1112,10 @@ const ContactUs = () => {
                         maxWidth: "50%",
                       }}
                     >
-                      <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
+                      <span
+                        className="muted-text"
+                        style={{ alignSelf: "flex-end", marginRight: "4em" }}
+                      >
                         {userNames[response.userId]}
                       </span>
                       <TextareaAutosize
@@ -1114,10 +1132,13 @@ const ContactUs = () => {
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                          <span className="muted-text" style={{ alignSelf: "flex-end", marginRight: "4em" }}>
-                            updated at: {response.updatedAt}
-                          </span>
-                        )}
+                        <span
+                          className="muted-text"
+                          style={{ alignSelf: "flex-end", marginRight: "4em" }}
+                        >
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1215,10 +1236,10 @@ const ContactUs = () => {
                       </div>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                          <span className="muted-text">
-                            updated at: {response.updatedAt}
-                          </span>
-                        )}
+                        <span className="muted-text">
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
                     </div>
                   ) : (
                     <div
@@ -1243,10 +1264,10 @@ const ContactUs = () => {
                       />
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
-                          <span className="muted-text">
-                            updated at: {response.updatedAt}
-                          </span>
-                        )}
+                        <span className="muted-text">
+                          updated at: {response.updatedAt}
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>

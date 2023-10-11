@@ -5,13 +5,14 @@ import { Octicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import ForumItemHeader from './ForumItemHeader';
 import ForumModal from './ForumModal';
-import { getForumTopicVoteDetails, updateForumTopicVote, updateForumTopicName } from '../../utils/forumTopicApi';
+import { getForumTopicVoteDetails, getAllForumTopicUnrestricted, updateForumTopicVote, updateForumTopicName } from '../../utils/forumTopicApi';
 import EditForumTopicModal from './EditForumTopicModal';
 
-const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress, onReport, onDelete, useParentCallback , flagged}) => {
+const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress, onReport, onDelete, useParentCallback, flagged }) => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [voteDetails, setVoteDetails] = useState([]);
     const [isEditModalVisible, setEditModalVisible] = useState(false);
+    const [forumTopicsUnrestricted, setforumTopicsUnrestricted] = useState([]);
 
     const forumItemCallback = useCallback(() => {
 
@@ -19,6 +20,9 @@ const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress
             try {
                 const voteData = await getForumTopicVoteDetails(userId, topicId);
                 setVoteDetails(voteData);
+                const forumTopicDataUnrestricted = await getAllForumTopicUnrestricted();
+                // console.log(forumTopicDataUnrestricted);
+                setforumTopicsUnrestricted(forumTopicDataUnrestricted);
             } catch (error) {
                 console.error(error);
             }
@@ -35,7 +39,7 @@ const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress
 
     const toggleEditModal = () => {
         setEditModalVisible(!isEditModalVisible);
-      };
+    };
 
     const handleUpvote = async () => {
         try {
@@ -62,15 +66,15 @@ const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress
 
         if (!topicName) {
             return;
-          }
-      
-          try {
+        }
+
+        try {
             const updatedTopic = { topicName }
             const forumTopic = await updateForumTopicName(userId, topicId, updatedTopic);
             useParentCallback();
-          } catch (error) {
+        } catch (error) {
             console.error(error);
-          }
+        }
 
     };
 
@@ -100,11 +104,11 @@ const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress
                     </View>
                 </View>
             </View>
-            <EditForumTopicModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEdit} oldTopicName={topicName}/>
+            <EditForumTopicModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEdit} oldTopicName={topicName} forumTopics={forumTopicsUnrestricted}/>
             {topicUserId === userId ?
-                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Topic"} onDelete={onDelete} flagged={flagged}/>
+                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Topic"} onDelete={onDelete} flagged={flagged} />
                 :
-                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Topic"} flagged={flagged}/>
+                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Topic"} flagged={flagged} />
             }
         </TouchableOpacity>
     );

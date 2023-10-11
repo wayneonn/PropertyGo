@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { Document } = require("../../models");
+const { Document, User, Notification } = require("../../models");
 
 exports.uploadDocuments = async (req, res) => {
   // Handle the uploaded files
@@ -60,6 +60,24 @@ exports.uploadDocuments = async (req, res) => {
         propertyId: propertyId,
       });
     }
+
+    if (partnerApplicationId !== null) {
+      const user = await User.findByPk(userId);
+
+      req.body = {
+        "content": `A new Partner Application has been created by ${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}`,
+        "isRecent": false,
+        "isPending": true,
+        "isCompleted": false,
+        "hasRead": false,
+        "userId": userId
+      };
+
+      await Notification.create(req.body);
+
+      req.io.emit("newPartnerApplicationNotification", req.body.content);
+    }
+
     res.json({ message: "File upload successful" });
   } catch (error) {
     // Handle any errors

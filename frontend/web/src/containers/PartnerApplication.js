@@ -1,22 +1,21 @@
-// This is the page for React Partner Application.
-
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Modal, Table, Pagination } from 'react-bootstrap';
+import { Button, Form, Modal, Table, Pagination, Toast, Row, Col } from 'react-bootstrap';
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import axios from "axios";
+import socketIOClient from 'socket.io-client';
 
 import "./styles/PartnerApplication.css";
 
 const PartnerApplication = () => {
     const [applications, setApplications] = useState([]); // Replace with actual data fetching
-    const [showModal, setShowModal] = useState(false);
     const [showDocumentModal, setShowDocumentModal] = useState(false);
     const [documentDetails, setDocumentDetails] = useState([]);
-    const [approvedSuccess, setApprovedSuccess] = useState(false);
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectionNote, setRejectionNote] = useState('');
     const [rejectId, setRejectId] = useState(0);
-    const [selectedApplication, setSelectedApplication] = useState(null);
+
+    const [showAcceptPartnerApplicationModal, setShowAcceptPartnerApplicationModal] = useState(false);
+    const [partnerApplicationId, setPartnerApplicationId] = useState(0);
 
     const itemsPerPage = 9;
 
@@ -26,28 +25,35 @@ const PartnerApplication = () => {
     const indexOfLastItemPartnerApplication = currentPagePartnerApplication * itemsPerPage;
     const indexOfFirstItemPartnerApplication = indexOfLastItemPartnerApplication - itemsPerPage;
 
+    // toast message
+    const [show, setShow] = useState(false);
+    const [toastAction, setToastAction] = useState("");
+
+    // validation
+    const [validationMessages, setValidationMessages] = useState({
+        emptyRejectionMessage: false,
+    });
+
+    const showToast = (action) => {
+        setToastAction(action);
+        setShow(true);
+    };
+
     const handlePageChangePartnerApplication = (pageNumber) => {
         setCurrentPagePartnerApplication(pageNumber);
     };
 
     useEffect(() => {
         // Fetch applications from the server here
-        // setApplications(fetchedData);
         fetchApplicationDataFromServer().then(r => console.log("Fetch data from server activated."));
     }, []);
 
     useEffect(() => {
-        // const intervalId = setInterval(() => {
-        //     // Your API call or other logic here
-        //     console.log('Polling API...');
-        //     fetchApplicationDataFromServer().then(r => console.log("Data polled from API."))
-        // }, 5000); // Polls every 5 seconds
+        const socket = socketIOClient('http://localhost:3000');
 
-        // return () => {
-        //     clearInterval(intervalId); // Cleanup when the component unmounts
-        // };
-        console.log('Polling API...');
-        fetchApplicationDataFromServer().then(r => console.log("Data polled from API."))
+        socket.on('newPartnerApplicationNotification', () => {
+            fetchApplicationDataFromServer();
+        });
     }, []);
 
     useEffect(() => {
@@ -61,16 +67,31 @@ const PartnerApplication = () => {
         console.log("Application details updated. ", applications)
     }, [applications]);
 
-    const handleApprove = async (applicationId) => {
+    const handleAcceptPartnerApplicationModal = () => {
+        setShowAcceptPartnerApplicationModal(false);
+    };
+
+    const handleCloseRejectionReason = () => {
+        setValidationMessages({});
+        setShowRejectModal(false);
+    };
+
+    const handleApprove = async () => {
         try {
-            const res = await axios.put(`http://127.0.0.1:3000/user/partner/admin/approve/${applicationId}`);
-            console.log(res);
-            setApprovedSuccess(true);
-            fetchApplicationDataFromServer().then(r => console.log("Updated table successfully"));
+            await axios.put(`http://127.0.0.1:3000/user/partner/admin/approve/${partnerApplicationId}`);
+            setShowAcceptPartnerApplicationModal(false);
+            fetchApplicationDataFromServer();
+
+            showToast("approved");
         } catch (error) {
             console.error("Error approving application: ", error);
         }
     };
+
+    const toggleAcceptPartnerApplicationModal = (partnerApplicationId) => {
+        setShowAcceptPartnerApplicationModal(!showAcceptPartnerApplicationModal);
+        setPartnerApplicationId(partnerApplicationId);
+    }
 
     const handleReject = (application) => {
         setShowRejectModal(true);
@@ -79,6 +100,18 @@ const PartnerApplication = () => {
     }
 
     const handleRejectNoteSubmission = async () => {
+        const newMessage = {
+            emptyRejectionMessage: false,
+        };
+
+        const rejectionNoteTrimmed = rejectionNote.trim();
+
+        if (rejectionNoteTrimmed === "") {
+            newMessage.emptyRejectionMessage = true;
+            setValidationMessages(newMessage);
+            return;
+        }
+
         try {
             const headers = {
                 'Content-Type': 'application/json'
@@ -89,6 +122,8 @@ const PartnerApplication = () => {
             console.log("Server response: ", res);
             fetchApplicationDataFromServer().then(r => "Updated rejection successfully.");
             setShowRejectModal(false);
+            setValidationMessages({});
+            showToast("rejected");
         } catch (error) {
             console.error("Error updating rejection reason: ", error);
         }
@@ -100,7 +135,6 @@ const PartnerApplication = () => {
             console.log(response);
             setShowDocumentModal(true);
             setDocumentDetails(response.data)
-
         } catch (error) {
             console.error("Error fetching documents: ", error);
         }
@@ -134,7 +168,10 @@ const PartnerApplication = () => {
         try {
             const response = await axios.get('http://127.0.0.1:3000/user/partner/admin/approval');
             console.log("Response is: ", response.data.partnerApp);
-            setApplications(response.data.partnerApp); // Assuming the data is directly in the response object
+
+            const partnerApp = response.data.partnerApp.filter((pa) => pa.adminNotes === null);
+
+            setApplications(partnerApp); // Assuming the data is directly in the response object
             console.log("Applications are: ", applications);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -174,6 +211,24 @@ const PartnerApplication = () => {
             }}>
                 <BreadCrumb names={["Home"]} lastname="Partner Application" links={["/"]}></BreadCrumb>
             </div>
+            <div style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}>
+                <Row>
+                    <Col xs={6}>
+                        <Toast
+                            bg="warning"
+                            onClose={() => setShow(false)}
+                            show={show}
+                            delay={4000}
+                            autohide
+                        >
+                            <Toast.Header>
+                                <strong className="me-auto">Successful</strong>
+                            </Toast.Header>
+                            <Toast.Body>{`You have ${toastAction} the Partner Application successfully!`}</Toast.Body>
+                        </Toast>
+                    </Col>
+                </Row>
+            </div>
             <div style={{ display: "flex", marginTop: "10px" }}>
                 <div className="display-partner-application">
                     <div className="partner-application">
@@ -186,7 +241,7 @@ const PartnerApplication = () => {
                                 padding: "5px 5px 5px 5px",
                             }}
                         >
-                            Partner Application
+                            PARTNER APPLICATION
                         </h3>
                         <div>
                             <div>
@@ -197,24 +252,24 @@ const PartnerApplication = () => {
                                         }}
                                     >
                                         <tr>
-                                            <th>Application ID</th>
-                                            <th>Name</th>
-                                            <th>Date Submitted</th>
-                                            <th>Role Applied For</th>
-                                            <th>Action</th>
+                                            <th>NAME</th>
+                                            <th>DATE SUBMITTED</th>
+                                            <th>ROLE APPLIED FOR</th>
+                                            <th>SUBMITTED BY</th>
+                                            <th>ACTION</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {applications.length > 0 ? (
                                             applications.slice(indexOfFirstItemPartnerApplication, indexOfLastItemPartnerApplication).map((application) => (
                                                 <tr key={application.partnerApplicationId} style={{ textAlign: "center" }}>
-                                                    <td>{application.partnerApplicationId}</td>
                                                     <td>{application.companyName}</td>
                                                     <td>{formatUserCreatedAt(application.createdAt)}</td>
                                                     <td>{application.userRole}</td>
+                                                    <td>{application.username}</td>
                                                     <td>
                                                         <Button variant="warning"
-                                                            onClick={() => handleApprove(application.partnerApplicationId)}>Approve</Button>&nbsp;
+                                                            onClick={() => toggleAcceptPartnerApplicationModal(application.partnerApplicationId)}>Approve</Button>&nbsp;
                                                         <Button variant="warning"
                                                             onClick={() => handleReject(application)}>Reject</Button>&nbsp;
                                                         <Button variant="warning"
@@ -247,6 +302,53 @@ const PartnerApplication = () => {
                     </div>
                 </div>
             </div>
+            <Modal
+                show={showAcceptPartnerApplicationModal}
+                onHide={handleAcceptPartnerApplicationModal}
+                backdrop="static"
+                keyboard={false}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Approval of Partner Application</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Are you sure you want to approve this Partner Application?</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        style={{
+                            backgroundColor: "#F5F6F7",
+                            border: "0",
+                            width: "92px",
+                            height: "40px",
+                            borderRadius: "160px",
+                            color: "black",
+                            font: "Public Sans",
+                            fontWeight: "600",
+                            fontSize: "14px",
+                        }}
+                        onClick={handleAcceptPartnerApplicationModal}
+                    >
+                        Close
+                    </Button>
+                    <Button
+                        style={{
+                            backgroundColor: "#FFD700",
+                            border: "0",
+                            width: "92px",
+                            height: "40px",
+                            borderRadius: "160px",
+                            color: "black",
+                            font: "Public Sans",
+                            fontWeight: "600",
+                            fontSize: "14px",
+                        }}
+                        onClick={() => handleApprove()}
+                    >
+                        Yes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <Modal show={showDocumentModal} onHide={() => setShowDocumentModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Document Details</Modal.Title>
@@ -254,8 +356,7 @@ const PartnerApplication = () => {
                 <Modal.Body>
                     <Table>
                         <thead>
-                            <tr style={{textAlign: "center"}}>
-                                <th>ID</th>
+                            <tr style={{ textAlign: "center" }}>
                                 <th>Title</th>
                                 <th>Description</th>
                                 <th>Action</th>
@@ -264,7 +365,6 @@ const PartnerApplication = () => {
                         <tbody>
                             {documentDetails.map(doc => (
                                 <tr key={doc.documentId} style={{ textAlign: "center" }}>
-                                    <td>{doc.documentId}</td>
                                     <td>{doc.title}</td>
                                     <td>{doc.description}</td>
                                     <td>
@@ -276,21 +376,25 @@ const PartnerApplication = () => {
                     </Table>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowDocumentModal(false)}>Close</Button>
-                </Modal.Footer>
-            </Modal>
-            <Modal show={approvedSuccess} onHide={() => setApprovedSuccess(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Approval Status</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Application approved successfully!</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setApprovedSuccess(false)}>
+                    <Button
+                        style={{
+                            backgroundColor: "#F5F6F7",
+                            border: "0",
+                            width: "92px",
+                            height: "40px",
+                            borderRadius: "160px",
+                            color: "black",
+                            font: "Public Sans",
+                            fontWeight: "600",
+                            fontSize: "14px",
+                        }}
+                        onClick={() => setShowDocumentModal(false)}
+                    >
                         Close
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <Modal show={showRejectModal} onHide={() => setShowRejectModal(false)}>
+            <Modal show={showRejectModal} onHide={handleCloseRejectionReason}>
                 <Modal.Header closeButton>
                     <Modal.Title>Rejection Reason</Modal.Title>
                 </Modal.Header>
@@ -304,7 +408,15 @@ const PartnerApplication = () => {
                                 value={rejectionNote}
                                 maxLength={100}
                                 onChange={(e) => setRejectionNote(e.target.value)}
+                                isInvalid={
+                                    validationMessages.emptyRejectionMessage
+                                }
                             />
+                            {validationMessages.emptyRejectionMessage && (
+                                <Form.Control.Feedback type="invalid">
+                                    Rejection Note is required.
+                                </Form.Control.Feedback>
+                            )}
                         </Form.Group>
                         <Form.Text className="text-muted">
                             {`${rejectionNote.length}/100 characters`}
@@ -312,11 +424,31 @@ const PartnerApplication = () => {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowRejectModal(false)}>
+                    <Button style={{
+                        backgroundColor: "#F5F6F7",
+                        border: "0",
+                        width: "92px",
+                        height: "40px",
+                        borderRadius: "160px",
+                        color: "black",
+                        font: "Public Sans",
+                        fontWeight: "600",
+                        fontSize: "14px",
+                    }} onClick={handleCloseRejectionReason}>
                         Close
                     </Button>
-                    <Button variant="danger" onClick={handleRejectNoteSubmission}>
-                        Submit Rejection
+                    <Button style={{
+                        backgroundColor: "#FFD700",
+                        border: "0",
+                        width: "92px",
+                        height: "40px",
+                        borderRadius: "160px",
+                        color: "black",
+                        font: "Public Sans",
+                        fontWeight: "600",
+                        fontSize: "14px",
+                    }} onClick={handleRejectNoteSubmission}>
+                        Submit
                     </Button>
                 </Modal.Footer>
             </Modal>

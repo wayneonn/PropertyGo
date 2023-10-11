@@ -5,11 +5,10 @@ import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import { IoMdFlag } from "react-icons/io";
 import ForumTopicCreate from "./ForumTopicCreate";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import the styles
+import "react-quill/dist/quill.snow.css";
+import socketIOClient from "socket.io-client";
 
 import API from "../services/API";
-import { htmlToPlainText } from "../services/richTextEditor";
 
 import Pagination from "react-bootstrap/Pagination";
 
@@ -49,7 +48,7 @@ const Forum = () => {
   // validation message
   const [validationMessages, setValidationMessages] = useState({
     emptyForumTopicName: false,
-    forumTopicNameUnique: false
+    forumTopicNameUnique: false,
   });
 
   const handlePageChangeForumTopic = (pageNumber) => {
@@ -74,7 +73,7 @@ const Forum = () => {
   const toggleEditStatusModal = (forumTopicId) => {
     setShowEditStatusModal(!showEditStatusModal);
     setEditForumTopicId(forumTopicId);
-  }
+  };
 
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
@@ -82,22 +81,17 @@ const Forum = () => {
 
   const handleEditStatusModal = () => {
     setShowEditStatusModal(false);
-  }
+  };
 
   const handleClose = () => {
     setShowEditModal(false);
     setValidationMessages({});
   };
 
-  const handleCloseEditStatusModal = () => {
-    setShowEditStatusModal(false);
-    setValidationMessages({});
-  }
-
   const handleEdit = async () => {
     const newMessage = {
       emptyForumTopicName: false,
-      forumTopicNameUnique: false
+      forumTopicNameUnique: false,
     };
 
     const forumTopicNameTrimmed = forumTopicName.trim();
@@ -113,12 +107,9 @@ const Forum = () => {
 
     try {
       // Save to database
-      const response = await API.patch(
-        `/admin/forumTopics/${forumTopicId}`,
-        {
-          topicName: forumTopicNameTrimmed
-        }
-      );
+      const response = await API.patch(`/admin/forumTopics/${forumTopicId}`, {
+        topicName: forumTopicNameTrimmed,
+      });
 
       if (response.status === 200) {
         setValidationMessages(newMessage);
@@ -126,6 +117,7 @@ const Forum = () => {
         setShowEditModal(false);
 
         showToast("updated");
+        fetchData();
       }
     } catch (error) {
       const status = error.response.status;
@@ -137,16 +129,26 @@ const Forum = () => {
     }
   };
 
-  const handleEditStatus = async () => {
-    await API.patch(`/admin/forumTopics/updateForumTopicStatus/${editForumTopicId}`);
+  const handleEditStatus = async (typeOfResponse) => {
+    await API.patch(
+      `/admin/forumTopics/updateForumTopicStatus/${editForumTopicId}`,
+      {
+        adminId: localStorage.getItem("loggedInAdmin"),
+        typeOfResponse: typeOfResponse,
+      }
+    );
     setShowEditStatusModal(false);
-    showToast("updated from 'Inappropriate' to 'Appropriate' status of");
-  }
+    showToast(
+      `mark as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"} of`
+    );
+    fetchData();
+  };
 
   const handleDelete = async () => {
     await API.delete(`/admin/forumTopics/${deleteForumTopicId}`);
     setShowDeleteModal(false);
     showToast("deleted");
+    fetchData();
   };
 
   const showToast = (action) => {
@@ -154,36 +156,49 @@ const Forum = () => {
     setShow(true);
   };
 
+  const fetchData = async () => {
+    try {
+      let response = await API.get(`/admin/forumTopics`);
+      const forumTopics = response.data.forumTopics;
+      const unflaggedForumTopics = forumTopics.filter(
+        (forumTopic) => !forumTopic.isInappropriate
+      );
+      setForumTopics(unflaggedForumTopics);
+      response = await API.get(`/admin/forumTopics/getFlaggedForumTopics`);
+      const flaggedForumtopics = response.data.filter(
+        (forumTopic) =>
+          forumTopic.totalFlagged > 0 && !forumTopic.forumTopic.isInappropriate
+      );
+      flaggedForumtopics.sort((a, b) => b.totalFlagged - a.totalFlagged);
+      setFlaggedForumTopics(flaggedForumtopics);
+      setTotalPageForumTopics(
+        Math.ceil(unflaggedForumTopics.length / ITEMS_PER_PAGE)
+      );
+      setTotalPageFlaggedForumTopics(
+        Math.ceil(flaggedForumTopics.length / ITEMS_PER_PAGE)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await API.get(`/admin/forumTopics`);
-        const forumTopics = response.data.forumTopics;
-        const unflaggedForumTopics = forumTopics.filter(
-          (forumTopic) => !forumTopic.isInappropriate
-        ).filter((forumTopic) => forumTopic.adminId === parseInt(localStorage.getItem("loggedInAdmin")));
-        setForumTopics(unflaggedForumTopics);
-        const flaggedForumtopics = forumTopics.filter(
-          (forumTopic) => forumTopic.isInappropriate
-        );
-        flaggedForumtopics.sort((a, b) => {
-          const timestampA = new Date(a.updatedAt).getTime();
-          const timestampB = new Date(b.updatedAt).getTime();
-          return timestampB - timestampA;
-        });
-        setFlaggedForumTopics(flaggedForumtopics);
-        setTotalPageForumTopics(
-          Math.ceil(unflaggedForumTopics.length / ITEMS_PER_PAGE)
-        );
-        setTotalPageFlaggedForumTopics(
-          Math.ceil(flaggedForumTopics.length / ITEMS_PER_PAGE)
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchData();
-  }, [forumTopics]);
+
+    const socket = socketIOClient("http://localhost:3000");
+
+    socket.on("newFlaggedForumTopicNotification", () => {
+      fetchData();
+    });
+
+    socket.on("newRemoveFlaggedForumTopicNotification", () => {
+      fetchData();
+    });
+
+    socket.on("newUserCreatedForumTopic", () => {
+      fetchData();
+    });
+  }, []);
 
   return (
     <div className="faq">
@@ -201,7 +216,9 @@ const Forum = () => {
           links={["/"]}
         ></BreadCrumb>
       </div>
-      <div style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}>
+      <div
+        style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}
+      >
         <Row>
           <Col xs={6}>
             <Toast
@@ -245,6 +262,7 @@ const Forum = () => {
                       <th>TOPIC NAME</th>
                       <th>DATE CREATED</th>
                       <th>UPDATED AT</th>
+                      <th>CREATED BY</th>
                       <th>ACTION</th>
                     </tr>
                   </thead>
@@ -262,14 +280,17 @@ const Forum = () => {
                               textAlign: "center",
                             }}
                           >
-                            <td className="truncate-text">
+                            <td className="truncate-text-forum">
                               {forumTopic.topicName}
                             </td>
-                            <td className="truncate-text">
+                            <td className="truncate-text-forum">
                               {forumTopic.createdAt}
                             </td>
-                            <td className="truncate-text">
+                            <td className="truncate-text-forum">
                               {forumTopic.updatedAt}
+                            </td>
+                            <td className="truncate-text-forum">
+                              {forumTopic.actor.userName}
                             </td>
                             <td>
                               <Button
@@ -280,6 +301,11 @@ const Forum = () => {
                                   border: "0",
                                   marginRight: "10px",
                                 }}
+                                disabled={
+                                  forumTopic.actor.adminId === null ||
+                                  forumTopic.actor.adminId !=
+                                    localStorage.getItem("loggedInAdmin")
+                                }
                                 onClick={() =>
                                   toggleEditModal(
                                     forumTopic.forumTopicId,
@@ -302,7 +328,14 @@ const Forum = () => {
                                   backgroundColor: "#FFD700",
                                   border: "0",
                                 }}
-                                onClick={() => toggleDeleteModal(forumTopic.forumTopicId)}
+                                disabled={
+                                  forumTopic.actor.adminId === null ||
+                                  forumTopic.actor.adminId !=
+                                    localStorage.getItem("loggedInAdmin")
+                                }
+                                onClick={() =>
+                                  toggleDeleteModal(forumTopic.forumTopicId)
+                                }
                               >
                                 <MdDelete
                                   style={{
@@ -360,14 +393,13 @@ const Forum = () => {
               <Table hover responsive style={{ width: "51em" }}>
                 <thead style={{ textAlign: "center" }}>
                   <tr>
-                    <th>FORUM TOPIC</th>
-                    <th>DATE CREATED</th>
-                    <th>UPDATED AT</th>
+                    <th>TOPIC NAME</th>
+                    <th>TOTAL FLAGGED</th>
                     <th>ACTION</th>
                   </tr>
                 </thead>
                 {Array.isArray(flaggedForumTopics) &&
-                  flaggedForumTopics.length > 0 ? (
+                flaggedForumTopics.length > 0 ? (
                   <tbody>
                     {flaggedForumTopics
                       .slice(
@@ -376,31 +408,30 @@ const Forum = () => {
                       )
                       .map((flaggedForumTopic) => (
                         <tr
-                          key={flaggedForumTopics.forumTopicId}
+                          key={flaggedForumTopic.forumTopic.forumTopicId}
                           style={{
                             textAlign: "center",
                           }}
                         >
-                          <td className="truncate-text">
-                            {flaggedForumTopic.topicName}
+                          <td className="truncate-text-forum">
+                            {flaggedForumTopic.forumTopic.topicName}
                           </td>
-                          <td className="truncate-text">
-                            {flaggedForumTopic.createdAt}
-                          </td>
-                          <td className="truncate-text">
-                            {flaggedForumTopic.updatedAt}
+                          <td className="truncate-text-forum">
+                            {flaggedForumTopic.totalFlagged}
                           </td>
                           <td>
                             <Button
                               size="sm"
-                              title="Unflag Inappropriate Forum Topic"
+                              title="Flag Forum Topic as Appropriate/Inappropriate"
                               style={{
                                 backgroundColor: "#FFD700",
                                 border: "0",
                                 marginRight: "10px",
                               }}
                               onClick={() =>
-                                toggleEditStatusModal(flaggedForumTopic.forumTopicId)
+                                toggleEditStatusModal(
+                                  flaggedForumTopic.forumTopic.forumTopicId
+                                )
                               }
                             >
                               <IoMdFlag
@@ -410,23 +441,6 @@ const Forum = () => {
                                   color: "black",
                                 }}
                               ></IoMdFlag>
-                            </Button>
-                            <Button
-                              size="sm"
-                              title="Delete"
-                              style={{
-                                backgroundColor: "#FFD700",
-                                border: "0",
-                              }}
-                              onClick={() => toggleDeleteModal(flaggedForumTopic.forumTopicId)}
-                            >
-                              <MdDelete
-                                style={{
-                                  width: "18px",
-                                  height: "18px",
-                                  color: "black",
-                                }}
-                              ></MdDelete>
                             </Button>
                           </td>
                         </tr>
@@ -462,7 +476,10 @@ const Forum = () => {
             </div>
           </div>
         </div>
-        <ForumTopicCreate showToast={showToast}></ForumTopicCreate>
+        <ForumTopicCreate
+          showToast={showToast}
+          fetchData={fetchData}
+        ></ForumTopicCreate>
         <Modal
           show={showEditModal}
           onHide={handleClose}
@@ -491,7 +508,8 @@ const Forum = () => {
               )}
               {validationMessages.forumTopicNameUnique && (
                 <Form.Control.Feedback type="invalid">
-                  Forum Topic Name already exists. Please type another Forum Topic Name.
+                  Forum Topic Name already exists. Please type another Forum
+                  Topic Name.
                 </Form.Control.Feedback>
               )}
             </div>
@@ -585,15 +603,15 @@ const Forum = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Update Status of Forum Topic</Modal.Title>
+            <Modal.Title>Appropriate/Inappropriate Forum Topic</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>Are you sure you want to update the status to "Appropriate" for this Forum Topic?</p>
+            <p>Are you sure this Forum Topic is inappropriate?</p>
           </Modal.Body>
           <Modal.Footer>
             <Button
               style={{
-                backgroundColor: "#F5F6F7",
+                backgroundColor: "#FFD700",
                 border: "0",
                 width: "92px",
                 height: "40px",
@@ -603,7 +621,7 @@ const Forum = () => {
                 fontWeight: "600",
                 fontSize: "14px",
               }}
-              onClick={handleCloseEditStatusModal}
+              onClick={() => handleEditStatus("no")}
             >
               No
             </Button>
@@ -619,7 +637,7 @@ const Forum = () => {
                 fontWeight: "600",
                 fontSize: "14px",
               }}
-              onClick={() => handleEditStatus()}
+              onClick={() => handleEditStatus("yes")}
             >
               Yes
             </Button>

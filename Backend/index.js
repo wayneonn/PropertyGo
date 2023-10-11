@@ -68,6 +68,7 @@ const forumPostUserRouter = require("./routes/user/forumPostRoute");
 const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
 const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
 const reviewRoute = require("./routes/user/reviewRoute");
+const faqRoute = require("./routes/user/faqRoute")
 const e = require("express");
 
 app.use(cors());
@@ -96,26 +97,21 @@ app.use("/admin/transactions", transactionAdminRouter);
 
 app.use(
   "/user",
+  injectIo(io),
   userRoute,
   loginRoute,
   documentRoute,
   folderRoute,
   transactionRoute,
-  injectIo(io),
   contactUsUserRouter,
   forumTopicUserRouter,
   forumPostUserRouter,
   forumCommentUserRouter,
-  partnerApplicationUserRouter
+  partnerApplicationUserRouter,
+  faqRoute
 );
 
 io.on("connection", (socket) => {
-  console.log(`Client connected: ${socket.id}`);
-
-  socket.on("newContactUsNotification", (message) => {
-    io.emit("newContactUsNotification", message);
-  });
-
   // Handle disconnects
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);
@@ -230,13 +226,6 @@ db.sequelize
       );
     }
 
-    // FAQ
-    // if (existingFaqRecordsCount === 0) {
-    //   try {
-    //     for (const faqData of faqTestData) {
-    //       await db.FAQ.create(faqData);
-    //     }
-
     if (existingContactUsRecordsCount === 0) {
       try {
         for (const contactUsData of contactUsTestData) {
@@ -262,14 +251,6 @@ db.sequelize
     } else {
       console.log("Response test data already exists in the database.");
     }
-
-    //     console.log('Faq test data inserted successfully.');
-    //   } catch (error) {
-    //     console.error('Error inserting Faq test data:', error);
-    //   }
-    // } else {
-    //   console.log('Admin test data already exists in the database.');
-    // }
 
     // Property
     if (existingPropertyRecordsCount === 0) {
@@ -386,32 +367,32 @@ db.sequelize
     }
 
     // FAQ
-    // if (existingFaqRecordsCount === 0) {
-    //   try {
-    //     for (const faqData of faqTestData) {
-    //       await db.FAQ.create(faqData);
-    //     }
+    if (existingFaqRecordsCount === 0) {
+      try {
+        for (const faqData of faqTestData) {
+          await db.FAQ.create(faqData);
+        }
 
-    //     if (existingContactUsRecordsCount === 0) {
-    //       try {
-    //         for (const contactUsData of contactUsTestData) {
-    //           await db.ContactUs.create(contactUsData);
-    //         }
-    //         console.log('Contact Us test data inserted successfully.');
-    //       } catch (error) {
-    //         console.error('Error inserting Contact Us test data:', error);
-    //       }
-    //     } else {
-    //       console.log('Contact Us test data already exists in the database.');
-    //     }
+        if (existingContactUsRecordsCount === 0) {
+          try {
+            for (const contactUsData of contactUsTestData) {
+              await db.ContactUs.create(contactUsData);
+            }
+            console.log('Contact Us test data inserted successfully.');
+          } catch (error) {
+            console.error('Error inserting Contact Us test data:', error);
+          }
+        } else {
+          console.log('Contact Us test data already exists in the database.');
+        }
 
-    //     console.log('Faq test data inserted successfully.');
-    //   } catch (error) {
-    //     console.error('Error inserting Faq test data:', error);
-    //   }
-    // } else {
-    //   console.log('Admin test data already exists in the database.');
-    // }
+        console.log('Faq test data inserted successfully.');
+      } catch (error) {
+        console.error('Error inserting Faq test data:', error);
+      }
+    } else {
+      console.log('Admin test data already exists in the database.');
+    }
 
     // Images
     // if (existingImageRecordsCount === 0) {

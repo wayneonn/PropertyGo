@@ -320,20 +320,25 @@ const EditPropertyListing = ({ route }) => {
 
   const handleChoosePhoto = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
+  
     if (permissionResult.granted === false) {
       console.warn('Permission to access photos was denied');
       return;
     }
-
+  
+    if (images.length >= 10) {
+      Alert.alert('Maximum Photos Reached', 'You cannot select more than 10 photos.');
+      return;
+    }
+  
     const options = {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     };
-
+  
     let response = await ImagePicker.launchImageLibraryAsync(options);
-
+  
     if (!response.cancelled) {
       // Upload the selected image to the backend
       try {
@@ -341,12 +346,12 @@ const EditPropertyListing = ({ route }) => {
           propertyListingId, // Pass the propertyListingId
           response // Pass the whole response object
         );
-
+  
         if (success) {
           // Add the newly uploaded image to the state
           const updatedImages = [...images, { uri: data.imageId }];
           setImages(updatedImages);
-
+  
           // Show an alert for successful upload
           Alert.alert('Image Uploaded', 'The image has been successfully uploaded.');
         } else {
@@ -359,6 +364,7 @@ const EditPropertyListing = ({ route }) => {
       }
     }
   };
+  
 
 
   const handleUpdateImage = async (index, imageId) => {

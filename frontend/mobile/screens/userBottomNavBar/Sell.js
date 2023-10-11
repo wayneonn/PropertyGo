@@ -125,26 +125,32 @@ export default function PropertyListing() {
   };
 
   const handleChoosePhoto = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
     if (permissionResult.granted === false) {
       console.warn('Permission to access photos was denied');
       return;
     }
-
+  
+    // Check if the number of selected photos is already 10 or more
+    if (images.length >= 10) {
+      Alert.alert('Limit Exceeded', 'You can only select up to 10 photos.');
+      return;
+    }
+  
     const options = {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     };
-
+  
     let response = await ImagePicker.launchImageLibraryAsync(options);
-
+  
     if (!response.cancelled) {
       setImages([...images, response]);
     }
   };
+  
 
   const handleImagePress = (index) => {
     Alert.alert(
