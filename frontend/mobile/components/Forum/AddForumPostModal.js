@@ -33,7 +33,7 @@ const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
             quality: 1,
             multiple: true,
         });
-    
+
         if (!result.canceled) {
             const selectedImages = result.assets.map(asset => asset.uri);
             // Check the number of selected images before adding them
@@ -126,6 +126,7 @@ const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
                             onChangeText={handleMessageChange}
                         />
 
+                        {imageUris.length !== 0 ? <Text style={styles.warningLabel}>Upload Maximum of 5 Images!</Text> : null}
                         <ScrollView horizontal>
                             {imageUris.map((uri, index) => (
                                 <View key={index} style={{ margin: 5, position: 'relative' }}>
@@ -141,6 +142,7 @@ const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
 
                             ))}
                         </ScrollView>
+                        {/* <Text style={styles.warningLabel}>Upload Maximum of 5 Images!</Text> */}
                         <Button title="Upload Image" onPress={handleImageUpload} />
                     </View>
                     <View style={styles.buttonContainer}>
@@ -196,6 +198,14 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         textAlign: 'left',
         alignSelf: 'flex-start',
+    },
+    warningLabel: {
+        fontSize: 12,
+        // marginTop: 10,
+        // marginBottom: 5,
+        textAlign: 'left',
+        alignSelf: 'flex-start',
+        color: "red",
     },
     inputContainer: {
         width: '100%',
