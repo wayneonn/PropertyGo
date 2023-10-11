@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, StyleSheet, TouchableHighlight } from 'react-native';
 
-const AddForumTopicModal = ({ isVisible, onCancel, onSubmit }) => {
+const AddForumTopicModal = ({ isVisible, onCancel, onSubmit, forumTopics }) => {
     const [topicName, setTopicName] = useState('');
 
     const handleTopicNameChange = (text) => {
@@ -54,11 +54,11 @@ const AddForumTopicModal = ({ isVisible, onCancel, onSubmit }) => {
                             style={[
                                 styles.button,
                                 { backgroundColor: '#FFD700' }, // Yellow background for submit button
-                                topicName.trim() === '' && styles.buttonDisabled, // disabled when topicName is empty
+                                (topicName.trim() === '' || forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase())) && styles.buttonDisabled, // disabled when topicName is empty
                             ]}
                             onPress={handleSubmit}
                             underlayColor="#EAEAEA"
-                            disabled={topicName.trim() === ''} // Disable the button if topicName is empty
+                            disabled={(topicName.trim() === '' || forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase()))} // Disable the button if topicName is empty
                         >
                             <Text style={styles.buttonText}>Submit</Text>
                         </TouchableHighlight>

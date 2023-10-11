@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  FlatList,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -20,6 +21,14 @@ import { AuthContext } from '../../AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import PropertyListingScreen from '../propertyListings/PropertyListing';
 import { getAreaAndRegion } from '../../services/GetAreaAndRegion';
+import { DocumentSelector } from '../../components/PropertyDocumentSelector';
+import * as DocumentPicker from 'expo-document-picker';
+import { BASE_URL, fetchFolders, fetchTransactions } from "../../utils/documentApi";
+import { Linking } from 'react-native';
+import * as FileSystem from 'expo-file-system'; // Import FileSystem from expo-file-system
+import * as Permissions from 'expo-permissions';
+import * as IntentLauncher from 'expo-intent-launcher';
+import * as Sharing from 'expo-sharing';
 
 const propertyTypes = [
   { label: 'Select Property Type', value: '' },
@@ -34,23 +43,41 @@ export default function PropertyListing() {
     const { area, region } = await getAreaAndRegion(postalCode);
     setProperty({ ...property, area, region });
   };
+  const [documents, setDocuments] = useState([]);
 
   const [property, setProperty] = useState({
-    title: 'Sample Title',
-    description:
-      'Sample Description (You can add a longer description here.)',
-    price: '100000', // Add a dollar symbol to the price
-    offeredPrice: '90000', // Add a dollar symbol to the offered price
-    bed: '2',
-    bathroom: '2',
-    size: '1200',
-    tenure: 1,
+    // title: 'Sample Title',
+    // description:
+    //   'Sample Description (You can add a longer description here.)',
+    // price: '100000', // Add a dollar symbol to the price
+    // offeredPrice: '90000', // Add a dollar symbol to the offered price
+    // bed: '2',
+    // bathroom: '2',
+    // size: '1200',
+    // tenure: 1,
+    // propertyType: '',
+    // propertyStatus: 'ACTIVE',
+    // userId: user.user.userId,
+    // postalCode: '822126',
+    // address: '',
+    // unitNumber: '17-360',
+    // area: '',
+    // region: '',
+    // longitude: '',
+    // latitude: '',
+    title: '',
+    description:'',
+    price: '', // Add a dollar symbol to the price
+    bed: '',
+    bathroom: '',
+    tenure: '',
+    size: '',
     propertyType: '',
     propertyStatus: 'ACTIVE',
     userId: user.user.userId,
-    postalCode: '822126',
+    postalCode: '',
     address: '',
-    unitNumber: '17-360',
+    unitNumber: '',
     area: '',
     region: '',
     longitude: '',
@@ -62,17 +89,40 @@ export default function PropertyListing() {
   const [formattedPrice, setFormattedPrice] = useState('');
   const [rawPrice, setRawPrice] = useState('');
 
-    // Function to format the price with dollar sign and commas
-    const formatPrice = (price) => {
-      return `$${price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
-    };
-  
-    // Function to remove dollar sign and commas and save raw price
-    const handlePriceChange = (text) => {
-      const raw = text.replace(/[^0-9]/g, '');
-      setFormattedPrice(formatPrice(raw));
-      setRawPrice(raw);
-    };
+  //For Document
+  const [prevDocuments, setPrevDocuments] = useState([]);
+  const [filteredDocs, setFilteredDocs] = useState(prevDocuments);
+  const [folders, setFolders] = useState([]);
+  const [selectedFolder, setSelectedFolder] = useState("");
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [isDocumentUploaded, setIsDocumentUploaded] = useState(false);
+
+
+  // Function to format the price with dollar sign and commas
+  const formatPrice = (price) => {
+    return `$${price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
+  };
+
+  // Function to remove dollar sign and commas and save raw price
+  const handlePriceChange = (text) => {
+    const raw = text.replace(/[^0-9]/g, '');
+    setFormattedPrice(formatPrice(raw));
+    setRawPrice(raw);
+  };
+
+  const fetchData = async () => {
+    try {
+      const documents = await fetchDocuments(USER_ID);
+      const folders = await fetchFolders(USER_ID);
+      setFolders(folders);
+      setPrevDocuments(documents);
+      setFilteredDocs(documents);
+      setSelectedFolder(defaultFolderId.toString());
+      // console.log(user);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   const handleChoosePhoto = async () => {
     const permissionResult =
@@ -115,7 +165,35 @@ export default function PropertyListing() {
         },
       ]
     );
-};
+  };
+
+  const handleSelectDocument = async () => {
+    try {
+      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+      console.log('Media library permission status:', status);
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'application/pdf', // Set the desired document type
+      });
+
+      console.log('Result from DocumentPicker:', result);
+
+      if (!result.cancelled) {
+        // The user selected a document, you can now proceed with the upload logic
+        console.log('Selected document:', result.assets[0].uri);
+
+        // Update the selected document and clear the uploaded status
+        setSelectedDocument(result);
+        setIsDocumentUploaded(false);
+      } else {
+        console.log('Document selection canceled or failed.');
+      }
+    } catch (error) {
+      console.error('Error selecting document:', error);
+    }
+  };
+
+
+
 
   const replaceImage = async (index) => {
     const permissionResult =
@@ -166,7 +244,7 @@ export default function PropertyListing() {
 
             // Update the address in the property state
             setProperty({ ...property, address, postalCode, area, region, latitude, longitude });
-            console.log("address: ", address);
+            // console.log("address: ", address);
           } else {
             // No address found, alert the user and clear the address field
             Alert.alert('Invalid Postal Code', 'No address found for the postal code.');
@@ -203,35 +281,35 @@ export default function PropertyListing() {
       Alert.alert('No images selected', 'Please select at least one image.');
       return;
     }
-  
+
     // Parse the formatted price to remove dollar sign and commas
     const price = rawPrice ? parseInt(rawPrice, 10) : 0;
-  
+
     if (!price || price <= 0) {
       Alert.alert('Invalid Price', 'Price must be a numeric value.');
       return;
     }
-  
+
     if (!/^\d+$/.test(property.size)) {
       Alert.alert('Invalid Size', 'Size must be a numeric value.');
       return;
     }
-  
+
     if (!/^\d+$/.test(property.bed)) {
       Alert.alert('Invalid Bed', 'Bed must be a numeric value.');
       return;
     }
-  
+
     if (!/^\d+$/.test(property.bathroom)) {
       Alert.alert('Invalid Bathroom', 'Bathroom must be a numeric value.');
       return;
     }
-  
+
     if (property.propertyType === '') {
       Alert.alert('Property Type Not Selected', 'Please select a property type.');
       return;
     }
-  
+
     if (
       property.title.trim() === '' ||
       property.description.trim() === '' ||
@@ -242,24 +320,24 @@ export default function PropertyListing() {
       Alert.alert('Missing Information', 'Please fill in all fields.');
       return;
     }
-  
+
     // Other checks and API call
     let propertyTypeUpperCase = property.propertyType.toUpperCase();
     if (propertyTypeUpperCase === 'NEW LAUNCH') {
       propertyTypeUpperCase = 'NEW_LAUNCH';
     }
-  
+
     try {
       const { success, data, message } = await createProperty(
         {
           ...property,
           price: price, // Use the parsed price here
-          offeredPrice: property.offeredPrice.replace(/\$/g, ''),
+          // offeredPrice: property.offeredPrice.replace(/\$/g, ''),
           propertyType: propertyTypeUpperCase,
         },
         images
       );
-  
+
       if (success) {
         const propertyListingId = data.propertyListingId;
         console.log('Property created successfully:', propertyListingId);
@@ -267,6 +345,48 @@ export default function PropertyListing() {
           'Property Created',
           'The property listing has been created successfully.'
         );
+
+        if (selectedDocument) {
+          try {
+            // Create a FormData object to send the document as a Blob
+            const documentData = new FormData();
+            const fileUri = selectedDocument.assets[0].uri;
+
+            // Use FileSystem to read the file and get a Blob representation
+            const blob = await FileSystem.readAsStringAsync(fileUri, {
+              encoding: FileSystem.EncodingType.Blob,
+            });
+
+            // Append the Blob to the FormData object
+            documentData.append("documents",
+              {
+                uri: fileUri,
+                name: selectedDocument.assets[0].name,
+                type: "application/pdf"
+              });
+
+            // Add other necessary data to the FormData object
+            documentData.append('propertyId', propertyListingId);
+            documentData.append('folderId', 1);
+            documentData.append('userId', user.user.userId);
+
+            // Send the FormData object with the document to the server
+            const response = await fetch(`${BASE_URL}/user/documents/upload`, {
+              method: 'post',
+              body: documentData,
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              console.log('Document upload response:', data);
+            } else {
+              console.log('Document upload failed');
+            }
+          } catch (error) {
+            console.log('Error uploading document:', error);
+          }
+        }
+
         navigation.navigate('Property Listing', { propertyListingId });
       } else {
         Alert.alert('Error', `Failed to create property: ${message}`);
@@ -279,13 +399,42 @@ export default function PropertyListing() {
       );
     }
   };
-  
-  
+
+  const openPdf = async (filePath) => {
+    try {
+      // Define a target URI for the file. This can be a directory in the app's 
+      // document directory or any other appropriate location.
+      const fileName = filePath.split('/').pop();
+      const targetUri = `${FileSystem.documentDirectory}${fileName}`;
+
+      // Copy the file from the source location to the target location.
+      await FileSystem.copyAsync({
+        from: filePath,
+        to: targetUri,
+      });
+
+      if (!(await Sharing.isAvailableAsync())) {
+        alert("Uh oh, sharing isn't available on your platform");
+        return;
+      }
+
+      // Share the file with the user
+      await Sharing.shareAsync(targetUri);
+      console.log('File saved to:', targetUri);
+    } catch (error) {
+      console.error('Error while downloading the file:', error);
+    }
+  };
+
 
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps="handled" // Add this prop
+      >
         <View style={styles.headerContainer}>
           <Text style={styles.header}>List A Property</Text>
         </View>
@@ -323,20 +472,22 @@ export default function PropertyListing() {
         </View>
 
         <View style={styles.inputContainer}>
-        <Text style={styles.label}>Price</Text>
-        <TextInput
-          placeholder="$ Price"
-          value={formattedPrice}
-          onChangeText={handlePriceChange}
-          style={styles.input}
-        />
-      </View>
+          <Text style={styles.label}>Price</Text>
+          <TextInput
+            placeholder="$ Price"
+            value={formattedPrice}
+            keyboardType="numeric"
+            onChangeText={handlePriceChange}
+            style={styles.input}
+          />
+        </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Size (sqm)</Text>
           <TextInput
             placeholder="Size (sqm)"
             value={property.size}
+            keyboardType="numeric"
             onChangeText={(text) => setProperty({ ...property, size: text })}
             style={styles.input}
           />
@@ -347,6 +498,7 @@ export default function PropertyListing() {
           <TextInput
             placeholder="Bed"
             value={property.bed}
+            keyboardType="numeric"
             onChangeText={(text) => setProperty({ ...property, bed: text })}
             style={styles.input}
           />
@@ -357,6 +509,7 @@ export default function PropertyListing() {
           <TextInput
             placeholder="Bathroom"
             value={property.bathroom}
+            keyboardType="numeric"
             onChangeText={(text) =>
               setProperty({ ...property, bathroom: text })
             }
@@ -388,6 +541,17 @@ export default function PropertyListing() {
           />
         </View>
 
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Tenure</Text>
+          <TextInput
+            placeholder="Tenure"
+            maxLength={3} // Restrict input to 6 characters
+            keyboardType="numeric" // Show numeric keyboard
+            value={property.tenure}
+            onChangeText={(text) => setProperty({ ...property, tenure: text })}
+            style={styles.input}
+          />
+        </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Unit Number</Text>
@@ -462,8 +626,73 @@ export default function PropertyListing() {
             </View>
           </View>
         </Modal>
-      </ScrollView>
 
+
+        {/* Upload Document Section */}
+        {/* <View style={styles.inputContainer}>
+          <Text style={styles.label}>Select Document</Text>
+          {selectedDocument ? (
+            <View>
+              <TouchableOpacity
+                style={styles.selectedDocumentContainer}
+                onPress={async () => {
+                  if (selectedDocument && selectedDocument.assets[0].uri) {
+
+                    const filePath = selectedDocument.assets[0].uri;
+                    console.log('Opening document:', filePath);
+
+                    // Check if the file exists
+                    const fileInfo = await FileSystem.getInfoAsync(filePath);
+                    // console.log('File exists:', fileInfo)
+                    if (fileInfo.exists) {
+                      // Request permission to access the file
+                      console.log('File exists:', filePath)
+                      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+                      openPdf(filePath);
+                    } else {
+                      console.warn('Selected document file does not exist.');
+                    }
+                  } else {
+                    console.warn('Selected document URI is not valid.');
+                  }
+                }}
+              >
+                <Text style={styles.selectedDocumentText}>Selected Document</Text>
+                <Text style={styles.selectedDocumentName}>
+                  {selectedDocument.assets[0].name}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.uploadDocumentButton}
+                onPress={handleSelectDocument}
+              >
+                <Text style={styles.uploadDocumentButtonText}>
+                  {isDocumentUploaded ? 'Replace Document' : 'Upload Document'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.removeDocumentButton}
+                onPress={() => {
+                  // Handle removing the selected document
+                  setSelectedDocument(null);
+                  setIsDocumentUploaded(false);
+                }}
+              >
+                <Text style={styles.removeDocumentButtonText}>Remove Document</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.selectDocumentButton}
+              onPress={handleSelectDocument}
+            >
+              <Text style={styles.selectDocumentButtonText}>Select Document</Text>
+            </TouchableOpacity>
+          )}
+        </View> */}
+
+
+      </ScrollView>
       <TouchableOpacity style={styles.saveChangesButton} onPress={handleSubmit}>
         <Ionicons name="save-outline" size={18} color="white" />
         <Text style={styles.saveChangesButtonText}>Submit</Text>
@@ -575,5 +804,21 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 90,
+  },
+  selectDocumentButton: {
+    backgroundColor: '#3498db', // Change the background color as needed
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  selectDocumentButtonText: {
+    color: 'white', // Change the text color as needed
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  scrollViewContent: {
+    paddingBottom: 100, // Adjust this value as needed to ensure the input field is visible
   },
 });

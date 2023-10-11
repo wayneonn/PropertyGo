@@ -6,7 +6,7 @@ const TokenCard = ({ tokenData, onPressBuy }) => {
   const { tokenName, tokenPrice, tokenAmount } = tokenData;
 
   return (
-    <Card style={styles.card}>
+    <Card style={[styles.card, styles.whiteBackground]}>
       <View style={styles.container}>
         <View style={styles.leftSide}>
           <Text style={styles.tokenName}>{tokenName}</Text>
@@ -65,6 +65,9 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     color: 'black',
+  },
+  whiteBackground: { // Add this style for white background
+    backgroundColor: 'white',
   },
 });
 

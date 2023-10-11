@@ -134,15 +134,192 @@ const getAllForumPostById = async (req, res) => {
 
         const forumPost = await ForumPost.findByPk(forumPostId, {
             include: [
-              {
-                model: Image,
-                as: 'images',
-              },
+                {
+                    model: Image,
+                    as: 'images',
+                },
             ],
-          });
+        });
 
         res.status(200).json(forumPost);
 
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllForumPostByUserId = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumPosts = await user.getForumPosts({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [Sequelize.Op.not]: true,
+                },
+            },
+            include: [
+                {
+                    model: Image,
+                    as: 'images',
+                },
+            ],
+        })
+
+        // console.log(forumPosts)
+        res.status(200).json(forumPosts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllUserUpvotedForumPost = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumPosts = await ForumPost.findAll({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [Sequelize.Op.not]: true,
+                },
+                forumPostId: {
+                    [Sequelize.Op.notIn]: Sequelize.literal(
+                        `(SELECT forumPostId FROM \`UserPostFlagged\` AS \`UserPostFlagged\` WHERE \`ForumPost\`.\`forumPostId\` = \`UserPostFlagged\`.\`forumPostId\` AND \`UserPostFlagged\`.\`userId\` = ${userId})`
+                    ),
+                    [Sequelize.Op.in]: Sequelize.literal(
+                        `(SELECT forumPostId FROM \`UserPostUpvoted\` AS \`UserPostUpvoted\` WHERE \`ForumPost\`.\`forumPostId\` = \`UserPostUpvoted\`.\`forumPostId\` AND \`UserPostUpvoted\`.\`userId\` = ${userId})`
+                    ),
+                },
+            },
+            include: [
+                {
+                    model: Image,
+                    as: 'images',
+                },
+            ],
+        });
+
+        // console.log(forumPosts)
+        res.status(200).json(forumPosts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllUserDownvotedForumPost = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumPosts = await ForumPost.findAll({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [Sequelize.Op.not]: true,
+                },
+                forumPostId: {
+                    [Sequelize.Op.notIn]: Sequelize.literal(
+                        `(SELECT forumPostId FROM \`UserPostFlagged\` AS \`UserPostFlagged\` WHERE \`ForumPost\`.\`forumPostId\` = \`UserPostFlagged\`.\`forumPostId\` AND \`UserPostFlagged\`.\`userId\` = ${userId})`
+                    ),
+                    [Sequelize.Op.in]: Sequelize.literal(
+                        `(SELECT forumPostId FROM \`UserPostDownvoted\` AS \`UserPostDownvoted\` WHERE \`ForumPost\`.\`forumPostId\` = \`UserPostDownvoted\`.\`forumPostId\` AND \`UserPostDownvoted\`.\`userId\` = ${userId})`
+                    ),
+                },
+            },
+            include: [
+                {
+                    model: Image,
+                    as: 'images',
+                },
+            ],
+        });
+
+        // console.log(forumPosts)
+        res.status(200).json(forumPosts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllUserFlaggedForumPost = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumPosts = await ForumPost.findAll({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [Sequelize.Op.not]: true,
+                },
+                forumPostId: {
+                    [Sequelize.Op.in]: Sequelize.literal(
+                        `(SELECT forumPostId FROM \`UserPostFlagged\` AS \`UserPostFlagged\` WHERE \`ForumPost\`.\`forumPostId\` = \`UserPostFlagged\`.\`forumPostId\` AND \`UserPostFlagged\`.\`userId\` = ${userId})`
+                    ),
+                },
+            },
+            include: [
+                {
+                    model: Image,
+                    as: 'images',
+                },
+            ],
+        });
+
+        // console.log(forumPosts)
+        res.status(200).json(forumPosts);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -351,5 +528,9 @@ module.exports = {
     updateForumPostVote,
     updateForumPost,
     deleteForumPost,
-    getAllForumPostById
+    getAllForumPostById,
+    getAllForumPostByUserId,
+    getAllUserUpvotedForumPost,
+    getAllUserDownvotedForumPost,
+    getAllUserFlaggedForumPost
 };

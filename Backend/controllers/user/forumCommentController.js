@@ -116,6 +116,184 @@ const getAllForumComment = async (req, res) => {
     }
 };
 
+const getAllForumCommentByUserId = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumComments = await user.getForumComments({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [Sequelize.Op.not]: true,
+                },
+            },
+            include: [
+                {
+                    model: Image,
+                    as: 'images',
+                },
+            ],
+        })
+
+        console.log(forumComments)
+        res.status(200).json(forumComments);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllUserUpvotedForumComment = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumComments = await ForumComment.findAll({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [Sequelize.Op.not]: true,
+                },
+                forumCommentId: {
+                    [Sequelize.Op.notIn]: Sequelize.literal(
+                        `(SELECT forumCommentId FROM \`UserCommentFlagged\` AS \`UserCommentFlagged\` WHERE \`ForumComment\`.\`forumCommentId\` = \`UserCommentFlagged\`.\`forumCommentId\` AND \`UserCommentFlagged\`.\`userId\` = ${userId})`
+                    ),
+                    [Sequelize.Op.in]: Sequelize.literal(
+                        `(SELECT forumCommentId FROM \`UserCommentUpvoted\` AS \`UserCommentUpvoted\` WHERE \`ForumComment\`.\`forumCommentId\` = \`UserCommentUpvoted\`.\`forumCommentId\` AND \`UserCommentUpvoted\`.\`userId\` = ${userId})`
+                    ),
+                },
+            },
+            include: [
+                {
+                    model: Image,
+                    as: 'images',
+                },
+            ],
+        });
+
+        // console.log(forumComments)
+        res.status(200).json(forumComments);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllUserDownvotedForumComment = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumComments = await ForumComment.findAll({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [Sequelize.Op.not]: true,
+                },
+                forumCommentId: {
+                    [Sequelize.Op.notIn]: Sequelize.literal(
+                        `(SELECT forumCommentId FROM \`UserCommentFlagged\` AS \`UserCommentFlagged\` WHERE \`ForumComment\`.\`forumCommentId\` = \`UserCommentFlagged\`.\`forumCommentId\` AND \`UserCommentFlagged\`.\`userId\` = ${userId})`
+                    ),
+                    [Sequelize.Op.in]: Sequelize.literal(
+                        `(SELECT forumCommentId FROM \`UserCommentDownvoted\` AS \`UserCommentDownvoted\` WHERE \`ForumComment\`.\`forumCommentId\` = \`UserCommentDownvoted\`.\`forumCommentId\` AND \`UserCommentDownvoted\`.\`userId\` = ${userId})`
+                    ),
+                },
+            },
+            include: [
+                {
+                    model: Image,
+                    as: 'images',
+                },
+            ],
+        });
+
+        // console.log(forumComments)
+        res.status(200).json(forumComments);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getAllUserFlaggedForumComment = async (req, res) => {
+    try {
+        const increase = JSON.parse(req.query.increase);
+        const userId = parseInt(req.params.userId);
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let orderCriteria = [['updatedAt', 'DESC']];
+
+        if (increase) {
+            orderCriteria = [['updatedAt', 'ASC']];
+        }
+
+        const forumComments = await ForumComment.findAll({
+            order: orderCriteria,
+            where: {
+                isInappropriate: {
+                    [Sequelize.Op.not]: true,
+                },
+                forumCommentId: {
+                    [Sequelize.Op.in]: Sequelize.literal(
+                        `(SELECT forumCommentId FROM \`UserCommentFlagged\` AS \`UserCommentFlagged\` WHERE \`ForumComment\`.\`forumCommentId\` = \`UserCommentFlagged\`.\`forumCommentId\` AND \`UserCommentFlagged\`.\`userId\` = ${userId})`
+                    ),
+                },
+            },
+            include: [
+                {
+                    model: Image,
+                    as: 'images',
+                },
+            ],
+        });
+
+        // console.log(forumComments)
+        res.status(200).json(forumComments);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+
 const getForumCommentVoteDetails = async (req, res) => {
     try {
 
@@ -315,6 +493,10 @@ module.exports = {
     updateForumCommentVote,
     updateForumComment,
     deleteForumComment,
-    getForumCommentVoteDetails
+    getForumCommentVoteDetails,
+    getAllForumCommentByUserId,
+    getAllUserUpvotedForumComment,
+    getAllUserDownvotedForumComment,
+    getAllUserFlaggedForumComment
 
 };

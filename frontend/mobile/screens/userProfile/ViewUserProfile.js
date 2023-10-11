@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, } from 'react-native';
 import { AuthContext } from '../../AuthContext';
 import base64 from 'react-native-base64';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icon library
-import { getUserById } from '../../utils/api';
+import { getUserById, getRatingByUser } from '../../utils/api';
 import StarRating from 'react-native-star-rating';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -12,6 +12,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
   // const { user, logout } = useContext(AuthContext);
   // console.log('loggedInUser:', user);
   const [userDetails, setUser] = useState(null);
+  const [rating, setRating] = useState(null);
 
   const fetchUser = async (userId) => {
     try {
@@ -19,7 +20,22 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
 
       if (success) {
         // Handle the user data here
-        console.log('User Data:', data);
+        return data;
+      } else {
+        // Handle the error here
+        console.error('Error fetching user:', message);
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
+  };
+
+  const fetchRating = async (userId) => {
+    try {
+      const { success, data, message } = await getRatingByUser(userId);
+
+      if (success) {
+        // Handle the user data here
         return data;
       } else {
         // Handle the error here
@@ -32,10 +48,13 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
 
 
   useEffect(() => {
-    console.log('Received userId:', userId);
     // Fetch user details based on the provided userId
     fetchUser(userId).then((userData) => {
       setUser(userData);
+    });
+    fetchRating(userId).then((rating) => {
+      setRating(rating);
+      console.log("rating: ", rating.userRating);
     });
   }, [userId]);
 
@@ -79,32 +98,38 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
         )}
         <Text style={styles.heading}>Profile Picture</Text>
       </View>
-      <View style={styles.profileInfo}>
-        <View style={styles.row}>
-          <Text style={styles.label}>Name:</Text>
-          <Text style={styles.value}>{userDetails.name}</Text>
+      {rating !== null ? (
+        <View style={styles.profileInfo}>
+          <View style={styles.row}>
+            <Text style={styles.label}>Name:</Text>
+            <Text style={styles.value}>{userDetails.name}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Country:</Text>
+            <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Rating:</Text>
+            <Text style={styles.value}>
+              {rating.userRating !== null
+                ? rating.userRating.toFixed(1)
+                : '0.0 [New User]'}
+            </Text>
+          </View>
+          <View style={styles.ratingContainer}>
+            <StarRating
+              disabled={true}
+              maxStars={5}
+              rating={rating.userRating !== null ? rating.userRating : 0}
+              fullStarColor="gold"
+              emptyStarColor="gold"
+              starSize={24}
+            />
+          </View>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Country:</Text>
-          <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Rating:</Text>
-          <Text style={styles.value}>{userDetails.rating.toFixed(1)}</Text>
-        </View>
-        <View style={styles.ratingContainer}>
-
-          <StarRating
-            disabled={true} // Set to true if you don't want users to interact with the rating
-            maxStars={5} // Maximum number of stars
-            rating={userDetails.rating !== null ? userDetails.rating : 0}// The rating value (e.g., 4.5)
-            fullStarColor="gold" // Color for full stars
-            emptyStarColor="gold" // Color for empty stars
-            starSize={24} // Size of the stars
-          />
-        </View>
-
-      </View>
+      ) : (
+        <ActivityIndicator size="large" color="dodgerblue" />
+      )}
       <TouchableOpacity
         style={styles.editProfileButton}
         onPress={() => {
@@ -217,7 +242,7 @@ const styles = StyleSheet.create({
     // marginRight: 20,
     marginLeft: -80,
     marginBottom: 60,
-},
+  },
 });
 
 export default ViewUserProfile;

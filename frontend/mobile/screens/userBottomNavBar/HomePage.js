@@ -7,6 +7,7 @@ import RegionPropertyList from '../propertyListings/RegionPropertyList';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Swiper from 'react-native-swiper';
+import ImageSwiper from '../propertyListings/ImageSwiper';
 
 
 const SearchBar = () => {
@@ -30,6 +31,8 @@ const HomePage = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [searchTimeout, setSearchTimeout] = useState(null);
+  const [sortedPopularProperties, setSortedPopularProperties] = useState([]);
+  const [sortedRecentlyAddedProperties, setSortedRecentlyAddedProperties] = useState([]);
 
   const handlePropertyPress = (propertyListingId) => {
     // Navigate to the Property Listing screen with the given propertyListingId
@@ -41,12 +44,12 @@ const HomePage = ({ navigation }) => {
     loadPopularProperties();
     // Load recently added properties
     loadRecentlyAddedProperties();
-  }, []);
+  }, []);  
 
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log('Home page gained focus');
+      // console.log('Home page gained focus');
       loadPopularProperties();
       loadRecentlyAddedProperties();
       setSearchQuery('');
@@ -58,11 +61,8 @@ const HomePage = ({ navigation }) => {
       const { success, data } = await getPropertiesByFavoriteCount();
 
       if (success) {
-        // Assuming data is an array of properties
-        const top10Properties = data
-          .sort((a, b) => b.favoriteCount - a.favoriteCount)
-          .slice(0, 10);
-        setPopularProperties(top10Properties);
+        // const sortedProperties = data.sort((a, b) => b.favoriteCount - a.favoriteCount).slice(0, 10);
+        setPopularProperties(data);
       } else {
         console.error('Error loading popular properties:', data.message);
       }
@@ -76,19 +76,15 @@ const HomePage = ({ navigation }) => {
       const { success, data } = await getRecentlyAddedProperties();
 
       if (success) {
-        // Assuming data is an array of properties
-        const top10Properties = data
-          .sort((a, b) => b.favoriteCount - a.favoriteCount)
-          .slice(0, 10);
-        setPopularProperties(top10Properties);
-        setRecentlyAddedProperties(top10Properties);
+        // const sortedProperties = data.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)).slice(0, 10);
+        setRecentlyAddedProperties(data);
       } else {
         console.error('Error loading recently added properties:', data.message);
       }
     } catch (error) {
       console.error('Error loading recently added properties:', error.message);
     } finally {
-      setIsLoading(false); // Set loading to false when data is loaded or an error occurs
+      setIsLoading(false);
     }
   };
 
@@ -99,30 +95,7 @@ const HomePage = ({ navigation }) => {
   const handleTitlePress = (title, properties) => {
     navigation.navigate('Properties List', { title: title, properties: properties, navigation: navigation });
   };
-
-  const ImageSwiper = () => {
-    const images = [
-      require('../../assets/Home-Image.jpeg'),
-      require('../../assets/Buying-Home.jpg'),
-      require('../../assets/HDB-Flats-Near-MRT.jpg'),
-      // Add more image paths as needed
-    ];
-
-    return (
-      <View style={styles.swiperContainer}>
-        <Swiper
-          showsButtons={false} loop={true} autoplay={true} autoplayTimeout={5}
-        >
-          {images.map((image, index) => (
-            <View key={index}>
-              <Image source={image} style={styles.swiperImage} />
-            </View>
-          ))}
-        </Swiper>
-      </View>
-    );
-  };
-
+  
   const handleSearch = async () => {
     if (searchQuery.trim() === '') {
       return;
@@ -230,9 +203,9 @@ const HomePage = ({ navigation }) => {
               </View>
             </TouchableOpacity>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {popularProperties.map((property) => (
+              {popularProperties.slice(0, 10).map((property) => (
                 <PropertyCard
-                  key={property.propertyId}
+                  key={property.propertyListingId}
                   property={property}
                   onPress={() => handlePropertyPress(property.propertyListingId)}
                 />
@@ -249,9 +222,9 @@ const HomePage = ({ navigation }) => {
               </View>
             </TouchableOpacity>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {recentlyAddedProperties.map((property) => (
+              {recentlyAddedProperties.slice(0, 10).map((property) => (
                 <PropertyCard
-                  key={property.propertyId}
+                  key={property.propertyListingId}
                   property={property}
                   onPress={() => handlePropertyPress(property.propertyListingId)}
                 />
@@ -359,16 +332,6 @@ const styles = StyleSheet.create({
   },
   titleIcon: {
     marginRight: 10, // Add right margin for the icon
-  },
-  swiperImage: {
-    width: '100%',
-    height: '100%', // Adjust the height as needed
-  },
-  swiperContainer: {
-    height: 130, // Set the desired height
-    marginLeft: 15, // Add left padding
-    marginRight: 15, // Add right padding
-    alignSelf: 'center', // Center horizontally
   },
   suggestionsContainer: {
     width: '80%', // Take up 80% width

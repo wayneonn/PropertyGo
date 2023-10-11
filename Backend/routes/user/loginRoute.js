@@ -19,6 +19,10 @@ router.post("/login", async (req, res) => {
     }
     await user.save();
 
+    if(user.isActive === false){
+      return res.status(400).json({ message: "Your account is deactivated." });
+    }
+
     res.json({ message: "Login successful", user });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });

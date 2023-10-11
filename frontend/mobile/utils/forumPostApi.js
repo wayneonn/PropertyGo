@@ -39,10 +39,53 @@ export const getAllForumPost = async (userId, forumTopicId, sort, order) => {
     }
 };
 
-// Function to get ForumPost records for a specific user
 export const getAllForumPostById = async (forumPostId) => {
     try {
         const response = await axios.get(`${BASE_URL}/user/forumPost/${forumPostId}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumPost records for a specific user
+export const getAllUserUpvotedForumPost = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumPostsUserUpvoted?increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumPost records for a specific user
+export const getAllUserDownvotedForumPost = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumPostsUserDownvoted?increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumPost records for a specific user
+export const getAllUserFlaggedForumPost = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumPostsUserFlagged?increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumPost records for a specific user
+export const getAllForumPostByUserId = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumPostsByUserId?increase=${order}`);
         return response.data;
     } catch (error) {
         console.error(error);

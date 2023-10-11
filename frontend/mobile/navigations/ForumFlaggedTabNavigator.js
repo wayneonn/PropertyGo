@@ -1,8 +1,8 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import YourContributionTopics from '../screens/forum/YourContributionTopics';
-import YourContributionPosts from '../screens/forum/YourContributionPosts';
-import YourContributionComments from '../screens/forum/YourContributionComments';
+import FlaggedTopics from '../screens/forum/FlaggedTopics'
+import FlaggedPosts from '../screens/forum/FlaggedPosts'
+import FlaggedComments from '../screens/forum/FlaggedComments'
 import { MaterialIcons } from '@expo/vector-icons';
 import { View, Text } from 'react-native'; // Import Text and View from react-native
 import { useRoute } from '@react-navigation/native';
@@ -16,7 +16,7 @@ const CustomTabLabel = ({ label, color, icon }) => (
     </View>
 );
 
-const YourContributionTabNavigator = () => {
+const ForumFlaggedTabNavigator = () => {
 
     const route = useRoute();
     // console.log(topic);
@@ -40,8 +40,8 @@ const YourContributionTabNavigator = () => {
             }}
         >
             <Tab.Screen
-                name="Your Contribution Topics"
-                component={YourContributionTopics}
+                name="Flagged Topics"
+                component={FlaggedTopics}
                 // initialParams={{ topic }}
                 options={{
                     tabBarLabel: ({ color, focused }) => (
@@ -50,8 +50,8 @@ const YourContributionTabNavigator = () => {
                 }}
             />
             <Tab.Screen
-                name="Your Contribution Posts"
-                component={YourContributionPosts}
+                name="Flagged Posts"
+                component={FlaggedPosts}
                 // initialParams={{ topic }}
                 options={{
                     tabBarLabel: ({ color, focused }) => (
@@ -61,8 +61,8 @@ const YourContributionTabNavigator = () => {
             />
 
             <Tab.Screen
-                name="Your Contribution Comments"
-                component={YourContributionComments}
+                name="Flagged Comments"
+                component={FlaggedComments}
                 // initialParams={{ topic }}
                 options={{
                     tabBarLabel: ({ color, focused }) => (
@@ -74,4 +74,4 @@ const YourContributionTabNavigator = () => {
     );
 };
 
-export default YourContributionTabNavigator;
+export default ForumFlaggedTabNavigator;

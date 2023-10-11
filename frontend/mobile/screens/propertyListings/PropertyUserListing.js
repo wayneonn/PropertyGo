@@ -32,6 +32,7 @@ const PropertyUserListingScreen = ({ route }) => {
   const { user } = useContext(AuthContext);
   const isCurrentUserPropertyOwner = userDetails && userDetails.userId === user.user.userId;
   const [favoriteCount, setFavoriteCount] = useState(0);
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
   const [region, setRegion] = useState({
     latitude: 1.36922522142582,
     longitude: 103.848493192474,
@@ -45,6 +46,7 @@ const PropertyUserListingScreen = ({ route }) => {
       fetchPropertyListing(propertyListingId);
       checkIfPropertyIsFavorite();
       fetchFavoriteCount();
+      setCacheBuster(Date.now());
     }, [])
   );
 
@@ -85,7 +87,6 @@ const PropertyUserListingScreen = ({ route }) => {
   // Fetch the number of users who have favorited the property
   const fetchFavoriteCount = async () => {
     const { success, data, message } = await countUsersFavoritedProperty(propertyListingId);
-    console.log('countUsersFavoritedProperty:', success, data, message);
     if (success) {
       setFavoriteCount(data.count); // Assuming the count is in data.count
     } else {
@@ -124,6 +125,7 @@ const PropertyUserListingScreen = ({ route }) => {
     fetchPropertyListing(propertyListingId);
     checkIfPropertyIsFavorite();
     fetchFavoriteCount();
+    setCacheBuster(Date.now());
   }, [propertyListingId]);
 
   const checkIfPropertyIsFavorite = async () => {
@@ -266,7 +268,7 @@ const PropertyUserListingScreen = ({ route }) => {
                 const imageUri = getImageUriById(imageId);
                 return (
                   <View key={index} style={styles.slide}>
-                    <Image source={{ uri: `${imageUri}?timestamp=${new Date().getTime()}` }} style={styles.image} />
+                    <Image source={{ uri: `${imageUri}?timestamp=${cacheBuster}` }} style={styles.image} />
                   </View>
                 );
               })
