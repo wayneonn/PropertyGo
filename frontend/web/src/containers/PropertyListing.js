@@ -168,7 +168,7 @@ const PropertyListing = () => {
                 property.images.length > 0 ? (
                   <Card.Img
                     variant="top"
-                    src={`data:image/jpeg;base64,${property.images[0]}`}
+                    src={`http://localhost:3000/image/${property.images[0].toString()}`}
                     alt={`Property Image for ${property.title}`}
                   />
                 ) : (
