@@ -117,7 +117,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
     // This then uploads the documents you selected.
     // Web: Data stored in URI need to convert to Blob.
     // Mobile: Data stored not in URI can send directly.
-    const handleUpload = async () => {
+    const handleUpload = async (propertyListingId, userId) => {
         try {
             const fileData = new FormData();
             selectedDocuments.forEach((document) => {
@@ -159,7 +159,8 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
                     fileData.append("partnerApplicationId", partnerApp.partnerApp[0].partnerApplicationId)
                 }
                 fileData.append("folderId", folderId);
-                fileData.append("userId", USER_ID);
+                fileData.append("propertyListingId", propertyListingId);
+                fileData.append("userId", userId);
             });
 
             console.log(fileData)
@@ -277,7 +278,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
                                 <AntDesign name="addfile" size={24} color="black"/>
                             </TouchableOpacity>
                             <Text> &nbsp;&nbsp;&nbsp; </Text>
-                            <TouchableOpacity onPress={handleUpload}>
+                            <TouchableOpacity onPress={handleUpload(1, USER_ID)}>
                                 <AntDesign name="clouduploado" size={24} color="black"/>
                             </TouchableOpacity>
                         </View>

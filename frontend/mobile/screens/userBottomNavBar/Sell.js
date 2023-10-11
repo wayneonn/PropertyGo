@@ -24,6 +24,11 @@ import { getAreaAndRegion } from '../../services/GetAreaAndRegion';
 import { DocumentSelector } from '../../components/PropertyDocumentSelector';
 import * as DocumentPicker from 'expo-document-picker';
 import { BASE_URL, fetchFolders, fetchTransactions } from "../../utils/documentApi";
+import { Linking } from 'react-native';
+import * as FileSystem from 'expo-file-system'; // Import FileSystem from expo-file-system
+import * as Permissions from 'expo-permissions';
+import * as IntentLauncher from 'expo-intent-launcher';
+import * as Sharing from 'expo-sharing';
 
 const propertyTypes = [
   { label: 'Select Property Type', value: '' },
@@ -72,6 +77,9 @@ export default function PropertyListing() {
   const [filteredDocs, setFilteredDocs] = useState(prevDocuments);
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState("");
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [isDocumentUploaded, setIsDocumentUploaded] = useState(false);
+
 
   // Function to format the price with dollar sign and commas
   const formatPrice = (price) => {
@@ -141,6 +149,34 @@ export default function PropertyListing() {
       ]
     );
   };
+
+  const handleSelectDocument = async () => {
+    try {
+      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+      console.log('Media library permission status:', status);
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'application/pdf', // Set the desired document type
+      });
+
+      console.log('Result from DocumentPicker:', result);
+
+      if (!result.cancelled) {
+        // The user selected a document, you can now proceed with the upload logic
+        console.log('Selected document:', result.assets[0].uri);
+
+        // Update the selected document and clear the uploaded status
+        setSelectedDocument(result);
+        setIsDocumentUploaded(false);
+      } else {
+        console.log('Document selection canceled or failed.');
+      }
+    } catch (error) {
+      console.error('Error selecting document:', error);
+    }
+  };
+
+
+
 
   const replaceImage = async (index) => {
     const permissionResult =
@@ -292,7 +328,46 @@ export default function PropertyListing() {
           'Property Created',
           'The property listing has been created successfully.'
         );
-        await documentSelectorRef.handleUpload();
+
+        if (selectedDocument) {
+          try {
+            // Create a FormData object to send the document as a Blob
+            const documentData = new FormData();
+            const fileUri = selectedDocument.assets[0].uri;
+
+            // Use FileSystem to read the file and get a Blob representation
+            const blob = await FileSystem.readAsStringAsync(fileUri, {
+              encoding: FileSystem.EncodingType.Blob,
+            });
+
+            // Append the Blob to the FormData object
+            documentData.append("documents", 
+            {uri: fileUri,
+            name: selectedDocument.assets[0].name,
+            type: "application/pdf"});
+
+            // Add other necessary data to the FormData object
+            documentData.append('propertyId', propertyListingId);
+            documentData.append('folderId', 1);
+            documentData.append('userId', user.user.userId);
+
+            // Send the FormData object with the document to the server
+            const response = await fetch(`${BASE_URL}/user/documents/upload`, {
+              method: 'post',
+              body: documentData,
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              console.log('Document upload response:', data);
+            } else {
+              console.log('Document upload failed');
+            }
+          } catch (error) {
+            console.log('Error uploading document:', error);
+          }
+        }
+
         navigation.navigate('Property Listing', { propertyListingId });
       } else {
         Alert.alert('Error', `Failed to create property: ${message}`);
@@ -306,6 +381,31 @@ export default function PropertyListing() {
     }
   };
 
+  const openPdf = async (filePath) => {
+    try {
+      // Define a target URI for the file. This can be a directory in the app's 
+      // document directory or any other appropriate location.
+      const fileName = filePath.split('/').pop();
+      const targetUri = `${FileSystem.documentDirectory}${fileName}`;
+
+      // Copy the file from the source location to the target location.
+      await FileSystem.copyAsync({
+        from: filePath,
+        to: targetUri,
+      });
+
+      if (!(await Sharing.isAvailableAsync())) {
+        alert("Uh oh, sharing isn't available on your platform");
+        return;
+      }
+
+      // Share the file with the user
+      await Sharing.shareAsync(targetUri);
+      console.log('File saved to:', targetUri);
+    } catch (error) {
+      console.error('Error while downloading the file:', error);
+    }
+  };
 
 
 
@@ -488,11 +588,72 @@ export default function PropertyListing() {
             </View>
           </View>
         </Modal>
-        <DocumentSelector
-          documentFetch={fetchData} // Replace with your document fetching function
-          folderState={folders} // Pass your folder state here
-          isTransaction={true} // Replace with a boolean indicating the transaction status
-        />
+
+
+        {/* Upload Document Section */}
+        {/* <View style={styles.inputContainer}>
+          <Text style={styles.label}>Select Document</Text>
+          {selectedDocument ? (
+            <View>
+              <TouchableOpacity
+                style={styles.selectedDocumentContainer}
+                onPress={async () => {
+                  if (selectedDocument && selectedDocument.assets[0].uri) {
+
+                    const filePath = selectedDocument.assets[0].uri;
+                    console.log('Opening document:', filePath);
+
+                    // Check if the file exists
+                    const fileInfo = await FileSystem.getInfoAsync(filePath);
+                    // console.log('File exists:', fileInfo)
+                    if (fileInfo.exists) {
+                      // Request permission to access the file
+                      console.log('File exists:', filePath)
+                      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+                      openPdf(filePath);
+                    } else {
+                      console.warn('Selected document file does not exist.');
+                    }
+                  } else {
+                    console.warn('Selected document URI is not valid.');
+                  }
+                }}
+              >
+                <Text style={styles.selectedDocumentText}>Selected Document</Text>
+                <Text style={styles.selectedDocumentName}>
+                  {selectedDocument.assets[0].name}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.uploadDocumentButton}
+                onPress={handleSelectDocument}
+              >
+                <Text style={styles.uploadDocumentButtonText}>
+                  {isDocumentUploaded ? 'Replace Document' : 'Upload Document'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.removeDocumentButton}
+                onPress={() => {
+                  // Handle removing the selected document
+                  setSelectedDocument(null);
+                  setIsDocumentUploaded(false);
+                }}
+              >
+                <Text style={styles.removeDocumentButtonText}>Remove Document</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.selectDocumentButton}
+              onPress={handleSelectDocument}
+            >
+              <Text style={styles.selectDocumentButtonText}>Select Document</Text>
+            </TouchableOpacity>
+          )}
+        </View> */}
+
+
       </ScrollView>
       <TouchableOpacity style={styles.saveChangesButton} onPress={handleSubmit}>
         <Ionicons name="save-outline" size={18} color="white" />
@@ -605,5 +766,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 90,
+  },
+  selectDocumentButton: {
+    backgroundColor: '#3498db', // Change the background color as needed
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  selectDocumentButtonText: {
+    color: 'white', // Change the text color as needed
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

@@ -151,6 +151,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
                         name: filename,
                         type: filetype
                     });
+                    console.log("fileUri: ", fileuri)
                 }
                 fileData.append("description", descriptions);
                 if (isTransaction) {
