@@ -1,5 +1,5 @@
 const moment = require("moment");
-const { ForumTopic, ForumPost, Admin, User } = require("../../models");
+const { ForumTopic, ForumPost, Admin, User, Notification } = require("../../models");
 
 // helper function
 const getForumTopicForUniqueness = ({ topicName }) => {
@@ -179,17 +179,39 @@ const deleteForumTopic = async (req, res) => { // this includes both deleting no
 const markForumTopicInappropriate = async (req, res) => {
     const { id: forumTopicId } = req.params;
 
-    const { typeOfResponse } = req.body;
+    const { typeOfResponse, adminId } = req.body;
 
     const forumTopic = await ForumTopic.findByPk(forumTopicId);
 
     if (typeOfResponse === "no") {
-        forumTopic.totalFlagged = 0;
+        const forumTopics = await ForumTopic.findByPk(forumTopicId, {
+            include: {
+              model: User,
+              as: 'usersFlagged', 
+            }
+          });
+
+        for (const usersFlaggedForumTopic of forumTopics.usersFlagged) {
+            const userIdFlagged = usersFlaggedForumTopic.dataValues.userId;
+
+            await forumTopic.removeUsersFlagged(userIdFlagged);
+        }
     } else {
         forumTopic.isInappropriate = true;
     }
 
     await forumTopic.save();
+
+    req.body = {
+        "content": `You have successfully flagged the forum topic of "${forumTopic.topicName}" as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"}`,
+        "isRecent": false,
+        "isPending": false,
+        "isCompleted": true,
+        "hasRead": false,
+        "adminId": adminId
+    };
+
+    await Notification.create(req.body);
 
     res.status(200).json({ forumTopic });
 };

@@ -133,7 +133,10 @@ const Forum = () => {
   };
 
   const handleEditStatus = async (typeOfResponse) => {
-    await API.patch(`/admin/forumTopics/updateForumTopicStatus/${editForumTopicId}`, typeOfResponse);
+    await API.patch(`/admin/forumTopics/updateForumTopicStatus/${editForumTopicId}`, {
+      adminId: localStorage.getItem("loggedInAdmin"),
+      typeOfResponse: typeOfResponse
+    });
     setShowEditStatusModal(false);
     showToast(`mark as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"} of`);
     fetchData();
