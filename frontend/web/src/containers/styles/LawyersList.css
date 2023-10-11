@@ -1,4 +1,4 @@
-.users {
+.lawyers {
   background-color: #0000000D;
   width: calc(100% - 180px);
   top: 60px;
@@ -8,7 +8,7 @@
   overflow-y: auto;
 }
 
-.usersList {
+.lawyersList {
   background-color: #FFFFFF;
   width: 1000px;
   height: 350px;
@@ -17,7 +17,7 @@
   margin-left: 130px;
 }
 
-.users-paginate {
+.lawyers-paginate {
   justify-content: center;
   align-items: center;
   padding: 5px 5px 5px 5px;

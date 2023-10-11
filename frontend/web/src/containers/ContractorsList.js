@@ -1,8 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { Card, Button, Form, Table } from "react-bootstrap";
-import "./styles/UsersList.css";
+import "./styles/ContractorsList.css";
 import API from "../services/API";
-import { formats, modules } from "../components/Common/RichTextEditor";
 import { useNavigate } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import Pagination from "react-bootstrap/Pagination";
@@ -10,10 +9,10 @@ import base64 from "react-native-base64";
 
 import { MdPreview } from "react-icons/md";
 
-const UsersList = () => {
-  const [users, setUsers] = useState([]);
-  const [naUsers, setNaUsers] = useState([]);
-  const [aUsers, setAUsers] = useState([]);
+const ContractorsList = () => {
+  const [contractors, setContractors] = useState([]);
+  const [naContractors, setNaContractors] = useState([]);
+  const [aContractors, setAContractors] = useState([]);
   const [searchQueryActive, setSearchQueryActive] = useState("");
   const [searchQueryInactive, setSearchQueryInactive] = useState("");
 
@@ -51,17 +50,15 @@ const UsersList = () => {
 
       console.log(users);
 
-      const buyerSeller = users.filter(
-        (user) => user.userType == "BUYER_SELLER"
-      );
+      const contractors = users.filter((user) => user.userType == "CONTRACTOR");
 
-      const naUsers = buyerSeller.filter((user) => user.isActive === false);
+      const naUsers = contractors.filter((user) => user.isActive === false);
 
-      const aUsers = buyerSeller.filter((user) => user.isActive === true);
+      const aUsers = contractors.filter((user) => user.isActive === true);
 
-      setUsers(users);
-      setNaUsers(naUsers);
-      setAUsers(aUsers);
+      setContractors(users);
+      setNaContractors(naUsers);
+      setAContractors(aUsers);
 
       setTotalPageNa(Math.ceil(naUsers.length / itemsPerPage));
       setTotalPageA(Math.ceil(aUsers.length / itemsPerPage));
@@ -74,14 +71,14 @@ const UsersList = () => {
     fetchData();
   }, []);
 
-  const searchActiveUsers = async (searchQueryActive) => {
+  const searchActiveContractors = async (searchQueryActive) => {
     const fetchData = async () => {
       try {
         const response = await API.get(
-          `http://localhost:3000/admin/users/search/active/users?q=${searchQueryActive}`
+          `http://localhost:3000/admin/users/search/active/contractors?q=${searchQueryActive}`
         );
 
-        setAUsers(response.data);
+        setAContractors(response.data);
         console.log("A users :" + response.data);
       } catch (error) {
         console.error(error);
@@ -90,14 +87,14 @@ const UsersList = () => {
     fetchData();
   };
 
-  const searchInactiveUsers = async (searchQueryInactive) => {
+  const searchInactiveContractors = async (searchQueryInactive) => {
     const fetchData = async () => {
       try {
         const response = await API.get(
-          `http://localhost:3000/admin/users/search/inactive/users?q=${searchQueryInactive}`
+          `http://localhost:3000/admin/users/search/inactive/contractors?q=${searchQueryInactive}`
         );
 
-        setNaUsers(response.data);
+        setNaContractors(response.data);
       } catch (error) {
         console.error(error);
       }
@@ -106,7 +103,7 @@ const UsersList = () => {
   };
 
   return (
-    <div className="users">
+    <div className="contractors">
       <div
         style={{
           marginTop: "10px",
@@ -117,11 +114,11 @@ const UsersList = () => {
       >
         <BreadCrumb
           names={["Home"]}
-          lastname="Users"
+          lastname="Contractors"
           links={["/"]}
         ></BreadCrumb>
       </div>
-      <div className="usersList">
+      <div className="contractorsList">
         <div className="heading">
           <h3
             style={{
@@ -132,9 +129,9 @@ const UsersList = () => {
               padding: "5px 10px 5px 10px",
             }}
           >
-            Active Users
+            Active Contractors
           </h3>
-          <div className="searchbar-users">
+          <div className="searchbar-contractors">
             <img
               src={imageBasePath + "search.webp"}
               alt="search"
@@ -145,7 +142,7 @@ const UsersList = () => {
                 marginLeft: "5px",
                 marginRight: "5px",
               }}
-              onClick={() => searchActiveUsers(searchQueryActive)}
+              onClick={() => searchActiveContractors(searchQueryActive)}
             />
             <input
               placeholder="Search username"
@@ -176,9 +173,9 @@ const UsersList = () => {
                 <th>Action</th>
               </tr>
             </thead>
-            {Array.isArray(aUsers) && aUsers.length > 0 ? (
+            {Array.isArray(aContractors) && aContractors.length > 0 ? (
               <tbody>
-                {aUsers
+                {aContractors
                   .slice(indexOfFirstItemA, indexOfLastItemA)
                   .map((user) => (
                     <tr
@@ -223,7 +220,7 @@ const UsersList = () => {
                             marginRight: "10px",
                           }}
                           onClick={() =>
-                            navigate(`/users/details/${user.userId}`)
+                            navigate(`/contractors/details/${user.userId}`)
                           }
                         >
                           <MdPreview
@@ -242,7 +239,7 @@ const UsersList = () => {
               <tbody>
                 <tr>
                   <td colSpan="3" style={{ textAlign: "center" }}>
-                    There are no users
+                    There are no contractors
                   </td>
                 </tr>
               </tbody>
@@ -250,7 +247,7 @@ const UsersList = () => {
           </Table>
         </div>
         <div>
-          <Pagination className="users-paginate">
+          <Pagination className="contractors-paginate">
             {Array.from({ length: totalPageA }).map((_, index) => (
               <Pagination.Item
                 key={index}
@@ -263,7 +260,7 @@ const UsersList = () => {
           </Pagination>
         </div>
       </div>
-      <div className="usersList">
+      <div className="contractorsList">
         <div className="heading">
           <h3
             style={{
@@ -274,9 +271,9 @@ const UsersList = () => {
               padding: "5px 10px 5px 10px",
             }}
           >
-            Non active Users
+            Non active Contractors
           </h3>
-          <div className="searchbar-users">
+          <div className="searchbar-contractors">
             <img
               src={imageBasePath + "search.webp"}
               alt="search"
@@ -287,7 +284,7 @@ const UsersList = () => {
                 marginLeft: "5px",
                 marginRight: "5px",
               }}
-              onClick={() => searchInactiveUsers(searchQueryInactive)}
+              onClick={() => searchInactiveContractors(searchQueryInactive)}
             />
             <input
               placeholder="Search username"
@@ -318,9 +315,9 @@ const UsersList = () => {
                 <th>Action</th>
               </tr>
             </thead>
-            {Array.isArray(naUsers) && naUsers.length > 0 ? (
+            {Array.isArray(naContractors) && naContractors.length > 0 ? (
               <tbody>
-                {naUsers
+                {naContractors
                   .slice(indexOfFirstItemNa, indexOfLastItemNa)
                   .map((user) => (
                     <tr
@@ -362,7 +359,7 @@ const UsersList = () => {
                             marginRight: "10px",
                           }}
                           onClick={() =>
-                            navigate(`/users/details/${user.userId}`)
+                            navigate(`/contractors/details/${user.userId}`)
                           }
                         >
                           <MdPreview
@@ -381,7 +378,7 @@ const UsersList = () => {
               <tbody>
                 <tr>
                   <td colSpan="3" style={{ textAlign: "center" }}>
-                    There are no users
+                    There are no contractors
                   </td>
                 </tr>
               </tbody>
@@ -389,7 +386,7 @@ const UsersList = () => {
           </Table>
         </div>
         <div>
-          <Pagination className="users-paginate">
+          <Pagination className="contractors-paginate">
             {Array.from({ length: totalPageNa }).map((_, index) => (
               <Pagination.Item
                 key={index}
@@ -406,4 +403,4 @@ const UsersList = () => {
   );
 };
 
-export default UsersList;
+export default ContractorsList;

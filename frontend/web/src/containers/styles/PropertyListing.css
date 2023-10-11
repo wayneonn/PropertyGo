@@ -12,22 +12,22 @@
 .filter {
   width: 300px;
   height: 40px;
-  margin-right: 20px;
-  margin-bottom: 10px;
+  margin-right: 10px;
+  margin-bottom: 15px;
   display: flex;
 }
 
 .property-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 10px;
   overflow-x: auto;
-  margin-left: 15px;
+  margin-left: 10px;
   /* white-space: nowrap; */
 }
 
 .property-card {
-  width: calc(25% - 20px);
+  width: calc(25% - 10px);
   /* max-height: 348px;
   overflow-y: auto; */
 }
@@ -40,7 +40,7 @@
 }
 
 .property-card-link:hover {
-  background-color: #f0f0f0; /* Change background color on hover */
+  background-color: #EBEBEB;
 }
 
 .status-active {
@@ -89,6 +89,11 @@
   justify-content: center;
   display: flex;
   color: red;
+}
+
+.no-property {
+  margin-left: 490px;
+  margin-top: 230px;
 }
 
 .truncate-text {

@@ -1,5 +1,6 @@
 const { User } = require("../../models");
 const moment = require("moment");
+const { Op } = require("sequelize");
 
 const getUserName = async (req, res) => {
   try {
@@ -41,7 +42,13 @@ async function getUser(req, res) {
 const getAllUsers = async (req, res) => {
   try {
     const listOfUser = await User.findAll({
-      attributes: ["userId", "username", "profileImage", "isActive", "userType"],
+      attributes: [
+        "userId",
+        "userName",
+        "profileImage",
+        "isActive",
+        "userType",
+      ],
     });
 
     const usersWithProfileImages = listOfUser.map((user) => {
@@ -97,10 +104,201 @@ const activateUser = async (req, res) => {
   }
 };
 
+async function searchActiveUsers(req, res) {
+  try {
+    const { q } = req.query;
+
+    const results = await User.findAll({
+      where: {
+        isActive: true,
+        userType: "BUYER_SELLER",
+        userName: { [Op.like]: `%${q}%` },
+      },
+    });
+
+    console.log(results);
+
+    const usersWithProfileImages = results.map((user) => {
+      const userJSON = user.toJSON();
+      if (userJSON.profileImage) {
+        userJSON.profileImage = userJSON.profileImage.toString("base64");
+      }
+
+      return userJSON;
+    });
+
+    res.json(usersWithProfileImages);
+  } catch (error) {
+    console.log("Error in searchActiveUsers:", error);
+    res.status(500).json({ error: error });
+  }
+}
+
+async function searchInactiveUsers(req, res) {
+  try {
+    const { q } = req.query;
+
+    const results = await User.findAll({
+      where: {
+        isActive: false,
+        userType: "BUYER_SELLER",
+        userName: { [Op.like]: `%${q}%` },
+      },
+    });
+
+    const usersWithProfileImages = results.map((user) => {
+      const userJSON = user.toJSON();
+      if (userJSON.profileImage) {
+        userJSON.profileImage = userJSON.profileImage.toString("base64");
+      }
+
+      return userJSON;
+    });
+
+    res.json(usersWithProfileImages);
+
+    // const userIds = results.map((user) => user);
+
+    // res.json(userIds);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+}
+
+async function searchActiveLawyers(req, res) {
+  try {
+    const { q } = req.query;
+
+    const results = await User.findAll({
+      where: {
+        isActive: true,
+        userType: "LAWYER",
+        userName: { [Op.like]: `%${q}%` },
+      },
+    });
+
+    const usersWithProfileImages = results.map((user) => {
+      const userJSON = user.toJSON();
+      if (userJSON.profileImage) {
+        userJSON.profileImage = userJSON.profileImage.toString("base64");
+      }
+
+      return userJSON;
+    });
+
+    res.json(usersWithProfileImages);
+
+    // const userIds = results.map((user) => user);
+
+    // res.json(userIds);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+}
+
+async function searchInactiveLawyers(req, res) {
+  try {
+    const { q } = req.query;
+
+    const results = await User.findAll({
+      where: {
+        isActive: false,
+        userType: "LAWYER",
+        userName: { [Op.like]: `%${q}%` },
+      },
+    });
+
+    const usersWithProfileImages = results.map((user) => {
+      const userJSON = user.toJSON();
+      if (userJSON.profileImage) {
+        userJSON.profileImage = userJSON.profileImage.toString("base64");
+      }
+
+      return userJSON;
+    });
+
+    res.json(usersWithProfileImages);
+
+    // const userIds = results.map((user) => user);
+
+    // res.json(userIds);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+}
+
+async function searchActiveContractors(req, res) {
+  try {
+    const { q } = req.query;
+
+    const results = await User.findAll({
+      where: {
+        isActive: true,
+        userType: "CONTRACTOR",
+        userName: { [Op.like]: `%${q}%` },
+      },
+    });
+
+    const usersWithProfileImages = results.map((user) => {
+      const userJSON = user.toJSON();
+      if (userJSON.profileImage) {
+        userJSON.profileImage = userJSON.profileImage.toString("base64");
+      }
+
+      return userJSON;
+    });
+
+    res.json(usersWithProfileImages);
+
+    // const userIds = results.map((user) => user);
+
+    // res.json(userIds);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+}
+
+async function searchInactiveContractors(req, res) {
+  try {
+    const { q } = req.query;
+
+    const results = await User.findAll({
+      where: {
+        isActive: false,
+        userType: "CONTRACTOR",
+        userName: { [Op.like]: `%${q}%` },
+      },
+    });
+
+    const usersWithProfileImages = results.map((user) => {
+      const userJSON = user.toJSON();
+      if (userJSON.profileImage) {
+        userJSON.profileImage = userJSON.profileImage.toString("base64");
+      }
+
+      return userJSON;
+    });
+
+    res.json(usersWithProfileImages);
+
+    // const userIds = results.map((user) => user);
+
+    // res.json(userIds);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+}
+
 module.exports = {
   getUserName,
   getUser,
   getAllUsers,
   deactivateUser,
   activateUser,
+  searchActiveUsers,
+  searchInactiveUsers,
+  searchActiveLawyers,
+  searchInactiveLawyers,
+  searchActiveContractors,
+  searchInactiveContractors,
 };

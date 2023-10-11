@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { LiaBedSolid, LiaBathSolid } from "react-icons/lia";
 import { RxDimensions } from "react-icons/rx";
+import { FcDocument } from "react-icons/fc";
 
 import API from "../services/API";
 
@@ -327,6 +328,9 @@ const Property = () => {
                   key={document.documentId}
                   onClick={() => handleDownload(document.documentId)}
                 >
+                  <FcDocument
+                    style={{ width: "100px", height: "100px" }}
+                  ></FcDocument>
                   <span>{document.title}</span>
                 </div>
               ))
