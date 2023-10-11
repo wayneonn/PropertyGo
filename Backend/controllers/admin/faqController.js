@@ -2,11 +2,11 @@ const moment = require("moment");
 const { FAQ } = require("../../models");
 
 // helper function
-const getFaqForUniqueness = ({ question, faqType }) => {
+const getFaqForUniqueness = async ({ question, faqType }) => {
   return FAQ.findOne({
     where: {
-      question,
-      faqType,
+      question: question,
+      faqType: faqType,
     },
   });
 };
@@ -149,5 +149,5 @@ module.exports = {
   getSingleFaq,
   createFaq,
   updateFaq,
-  deleteFaq
+  deleteFaq,
 };
