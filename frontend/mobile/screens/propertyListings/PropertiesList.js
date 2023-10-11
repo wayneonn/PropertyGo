@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   map: {
+    marginTop: 15,
     height: 300, // Adjust the map height as needed
   },
   headerContainer: {

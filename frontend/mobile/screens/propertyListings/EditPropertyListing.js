@@ -44,6 +44,7 @@ const EditPropertyListing = ({ route }) => {
     price: '',
     bed: '',
     bathroom: '',
+    tenure: '',
     size: '',
     postalCode: '',
     address: '',
@@ -263,6 +264,7 @@ const EditPropertyListing = ({ route }) => {
         title: data.title,
         description: data.description,
         price: data.price.toString(),
+        tenure: data.tenure.toString(),
         bed: data.bed.toString(),
         bathroom: data.bathroom.toString(),
         size: data.size.toString(),
@@ -479,7 +481,11 @@ const EditPropertyListing = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps="handled" // Add this prop
+      >
         <View style={styles.headerContainer}>
           {/* Back button */}
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -603,6 +609,18 @@ const EditPropertyListing = ({ route }) => {
             style={[styles.input, styles.mediumTypeInput]}
             multiline={true}
             numberOfLines={2}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Tenure</Text>
+          <TextInput
+            placeholder="Tenure"
+            maxLength={3} // Restrict input to 6 characters
+            keyboardType="numeric" // Show numeric keyboard
+            value={propertyData.tenure}
+            onChangeText={(text) => setProperty({ ...property, tenure: text })}
+            style={styles.input}
           />
         </View>
 
@@ -791,6 +809,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 40,
+  },
+  scrollViewContent: {
+    paddingBottom: 100, // Adjust this value as needed to ensure the input field is visible
   },
 });
 
