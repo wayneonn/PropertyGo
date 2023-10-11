@@ -146,7 +146,8 @@ const HomePage = ({ navigation }) => {
       {/* Search bar */}
       <View style={styles.searchBar}>
         <TextInput
-          placeholder="Enter Postal Code/MRT Address/District"
+          placeholder="Enter Postal Code/ District"
+          placeholderTextColor="gray"
           style={styles.searchInput}
           value={searchQuery}
           onChangeText={handleSearchInputChange}

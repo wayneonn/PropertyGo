@@ -21,6 +21,7 @@ import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available.webp';
 import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import FullScreenImage from './FullScreenImage';
 
 
 const PropertyUserListingScreen = ({ route }) => {
@@ -33,6 +34,7 @@ const PropertyUserListingScreen = ({ route }) => {
   const isCurrentUserPropertyOwner = userDetails && userDetails.userId === user.user.userId;
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
+  const [fullScreenImage, setFullScreenImage] = useState(null);
   const [region, setRegion] = useState({
     latitude: 1.36922522142582,
     longitude: 103.848493192474,
@@ -267,20 +269,26 @@ const PropertyUserListingScreen = ({ route }) => {
               propertyListing.images.map((imageId, index) => {
                 const imageUri = getImageUriById(imageId);
                 return (
-                  <View key={index} style={styles.slide}>
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setFullScreenImage(imageUri)} // Set the fullScreenImage state when tapped
+                    style={styles.slide} // Apply styles to TouchableOpacity
+                  >
                     <Image source={{ uri: `${imageUri}?timestamp=${cacheBuster}` }} style={styles.image} />
-                  </View>
+                  </TouchableOpacity>
                 );
               })
             ) : (
               <View style={styles.slide}>
-                <Image
-                  source={DefaultImage} // Use the placeholder image here
-                  style={styles.image}
-                />
+                <Image source={DefaultImage} style={styles.image} />
               </View>
             )}
           </Swiper>
+
+          <FullScreenImage
+            imageUrl={fullScreenImage}
+            onClose={() => setFullScreenImage(null)} // Close the full-screen image view
+          />
 
           {/* Add your square boxes for images here. You might need another package or custom UI for this. */}
         </View>
@@ -337,8 +345,14 @@ const PropertyUserListingScreen = ({ route }) => {
           <FontAwesome name="calendar" size={16} color="#333" />
           <Text style={styles.dateText}>{formatDate(propertyListing.createdAt)}</Text>
         </View>
+        <Text style={styles.dateContainer}>
+          <Ionicons name="time-outline" size={17} color="#333" />
+          {" "}
+          <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
+        </Text>
         <Text style={styles.descriptionHeader}>Description:</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
+        <Text style={styles.description}>{"\n"}</Text>
 
         {/* Location Details */}
         <Text style={styles.locationTitle}>Location</Text>
@@ -366,7 +380,7 @@ const PropertyUserListingScreen = ({ route }) => {
           </MapView>
         </View>
 
-        <View style={styles.zoomButtonContainer}>
+        {/* <View style={styles.zoomButtonContainer}>
           <TouchableOpacity
             style={styles.zoomButton}
             onPress={() => {
@@ -396,7 +410,7 @@ const PropertyUserListingScreen = ({ route }) => {
           >
             <Ionicons name="remove-circle" size={24} color="white" />
           </TouchableOpacity>
-        </View>
+        </View> */}
 
       </ScrollView>
 
@@ -511,11 +525,14 @@ const styles = StyleSheet.create({
   infoWindowTitle: {
     fontWeight: 'bold',
     fontSize: 16,
+    marginHorizontal: 10,
     marginBottom: 4,
   },
   infoWindowText: {
     fontSize: 12,
-    width: '100%',
+    width: '90%',
+    marginHorizontal: 10,
+    marginBottom: 2,
   },
   userProfileImage: {
     width: 50,
