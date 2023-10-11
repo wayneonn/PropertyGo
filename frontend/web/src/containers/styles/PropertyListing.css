@@ -94,7 +94,8 @@
 }
 
 .no-property {
-  margin-left: 490px;
+  /* margin-left: 490px; */
+  margin-left: calc((100% - 180px) / 2);
   margin-top: 230px;
 }
 
