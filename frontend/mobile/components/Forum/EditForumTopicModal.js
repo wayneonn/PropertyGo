@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, StyleSheet, TouchableHighlight } from 'react-native';
 
-const EditForumTopicModal = ({ isVisible, onCancel, onSubmit, oldTopicName }) => {
+const EditForumTopicModal = ({ isVisible, onCancel, onSubmit, oldTopicName, forumTopics }) => {
     const [topicName, setTopicName] = useState(oldTopicName);
 
     const handleTopicNameChange = (text) => {
@@ -37,6 +37,7 @@ const EditForumTopicModal = ({ isVisible, onCancel, onSubmit, oldTopicName }) =>
                             value={topicName}
                             onChangeText={handleTopicNameChange}
                         />
+                        {forumTopics && forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase()) && topicName.trim().toUpperCase() !== oldTopicName.trim().toUpperCase() ? <Text style={styles.warningLabel}>Topic Name Exist!</Text> : null}
                     </View>
                     <View style={styles.buttonContainer}>
                         <TouchableHighlight
@@ -50,11 +51,11 @@ const EditForumTopicModal = ({ isVisible, onCancel, onSubmit, oldTopicName }) =>
                             style={[
                                 styles.button,
                                 { backgroundColor: '#FFD700' }, // Yellow background for submit button
-                                topicName.trim() === '' && styles.buttonDisabled, // disabled when topicName is empty
+                                forumTopics && (topicName.trim() === '' || forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase())) && styles.buttonDisabled, // disabled when topicName is empty
                             ]}
                             onPress={handleSubmit}
                             underlayColor="#EAEAEA"
-                            disabled={topicName.trim() === ''} // Disable the button if topicName is empty
+                            disabled={(forumTopics && (topicName.trim() === '' || forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase())))} // Disable the button if topicName is empty
                         >
                             <Text style={styles.buttonText}>Submit</Text>
                         </TouchableHighlight>
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderColor: '#ccc',
         borderWidth: 1,
-        marginBottom: 10,
+        // marginBottom: 10,
         paddingHorizontal: 10,
         paddingVertical: 12,
         width: '100%', // Make the input take full width
@@ -110,6 +111,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '90%',
+        marginTop: 10,
     },
     button: {
         width: '45%', // Set button width
@@ -125,6 +127,14 @@ const styles = StyleSheet.create({
         opacity: 0.5,
         backgroundColor: 'gray',
       },
+      warningLabel: {
+        fontSize: 14,
+        // marginTop: 10,
+        // marginBottom: 5,
+        textAlign: 'left',
+        alignSelf: 'flex-start',
+        color: "red",
+    },
 });
 
 export default EditForumTopicModal;
