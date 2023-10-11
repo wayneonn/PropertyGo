@@ -1,14 +1,34 @@
 const moment = require("moment");
 const { FAQ } = require("../../models");
+const cheerio = require('cheerio');
+
+const htmlToPlainText = (html) => {
+  const $ = cheerio.load(html);
+  return $.text();
+};
 
 // helper function
 const getFaqForUniqueness = async ({ question, faqType }) => {
-  return FAQ.findOne({
-    where: {
-      question: question,
-      faqType: faqType,
-    },
+  const formattedQuestion = htmlToPlainText(question);
+
+  const faqs = await FAQ.findAll({
+    attributes: [
+      "faqId",
+      "question",
+      "faqType"
+    ],
   });
+
+  for (const faq of faqs) {
+    const faqFormattedQuestion = htmlToPlainText(faq.question);
+    const faqFaqType = faq.faqType;
+
+    if (formattedQuestion === faqFormattedQuestion && faqFaqType === faqType) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 const getAllFaqs = async (req, res) => {
@@ -80,7 +100,7 @@ const createFaq = async (req, res) => {
 
   res.status(201).json({ faq });
 
-  req.io.emit("newFaqRecordNotification", "A new FAQ has been added.");
+  // req.io.emit("newFaqRecordNotification", "A new FAQ has been added.");
 };
 
 const updateFaq = async (req, res) => {
