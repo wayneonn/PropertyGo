@@ -19,7 +19,7 @@ const LoginPortal = () => {
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign Up Screen')}>
                 <Text style={styles.buttonText}>Sign Up</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonWork} onPress={() => navigation.navigate('Intro')}>
+            <TouchableOpacity style={styles.buttonWork} onPress={() => navigation.navigate('Sign Up Screen (Partner)')}>
                 <Text style={styles.buttonTextWork}><Ionicons name="briefcase-outline" size={20} color="black" />{' '}Work With Us</Text>
             </TouchableOpacity>
         </View>

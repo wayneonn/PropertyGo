@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react';
 import {Alert, Image, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {AuthContext} from '../../AuthContext';
 import {loginUser} from '../../utils/api';
+import {fetchPartnerApplication} from "../../utils/partnerApplicationApi";
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icon library
 
 function LoginScreen({navigation}) {
@@ -29,10 +30,26 @@ function LoginScreen({navigation}) {
 
         if (success) {
             login(data);
-            showMessage('Login successful');
-            setTimeout(() => {
-                navigation.navigate('Side Navigator', {user: data});
-            }, 500);
+            // This has to be conditional on the type of user login in.
+            console.log("This is the data: ", data.user.userType)
+            const userType = data.user.userType;
+            const partnerApp = await fetchPartnerApplication(data.user.userId);
+            console.log(partnerApp.partnerApp)
+            const approval_status = partnerApp.partnerApp.length !== 0 ? partnerApp.partnerApp[0].approved : true
+            if (['LAWYER','CONTRACTOR','PROPERTY AGENT'].includes(userType) && approval_status !== false) {
+                console.log("This is a partner.")
+                showMessage('Login successful');
+                setTimeout(() => {
+                    navigation.navigate('Side Navigator (Partner)', {user: data});
+                }, 500);
+            } else if (approval_status === false) {
+                Alert.alert("Your partner application has not been approved. Check your e-mail for approval.")
+            } else {
+                showMessage('Login successful');
+                setTimeout(() => {
+                    navigation.navigate('Side Navigator', {user: data});
+                }, 500);
+            }
         } else {
             Alert.alert("Error", message);
         }

@@ -103,7 +103,7 @@ const AnimatedInput = ({fieldName, keyboardType, isDatePicker}) => {
             {isDatePicker ? (
                 <View>
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, {width: 100}]}
                         onChangeText={helpers.setValue}
                         onBlur={field.onBlur(fieldName)}
                         value={field.value}
@@ -140,7 +140,7 @@ const CreditCardInfoScreen = () => {
         // If submission is successful, pass it on to the next screen, or just store it in the form data.
         // Also need to enforce creation?
         console.log(res)
-        navigation.navigate('Document Selection')
+        navigation.navigate('Document Submission')
         // Here you can add your final submission logic or navigate to another screen
     };
 
@@ -158,7 +158,7 @@ const CreditCardInfoScreen = () => {
             keyboardVerticalOffset={30}
         >
             <ScrollView contentContainerStyle={styles.container}>
-                <Text style={styles.title}>Credit Card Information</Text>
+                <Text style={styles.title}>Payment Details</Text>
                 <Formik
                     initialValues={{
                         cardNumber: formData.cardNumber || '',
@@ -177,11 +177,13 @@ const CreditCardInfoScreen = () => {
                             <Text style={styles.label}>Card Holder Name</Text>
                             <AnimatedInput fieldName="cardHolderName"/>
 
-                            <Text style={styles.label}>CVC</Text>
-                            <AnimatedInput fieldName="cvc" keyboardType="number-pad"/>
+                            <View style={{justifyContent: "space-between", alignItems:"flex-start"}}>
+                                <Text style={styles.label}>CVC</Text>
+                                <AnimatedInput fieldName="cvc" keyboardType="number-pad"/>
 
-                            <Text style={styles.label}>Expiry Date</Text>
-                            <AnimatedInput fieldName="expiryDate" isDatePicker={true}/>
+                                <Text style={styles.label}>Expiry Date</Text>
+                                <AnimatedInput fieldName="expiryDate" isDatePicker={true}/>
+                            </View>
                             <Text>&nbsp;&nbsp;</Text>
                             <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={!isValid}>
                                 <Text style={styles.buttonText}>Next</Text>
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         backgroundColor: '#f2f2f2',
         paddingBottom: 20,
     },
@@ -219,7 +221,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 12,
         marginBottom: 20,
-        width: '100%',
+        width: 250,
     },
     button: {
         flexDirection: 'row',
@@ -234,6 +236,7 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 12,
         marginBottom: 8,
+        marginTop: -8
     },
     buttonText: {
         color: '#fff',

@@ -143,12 +143,9 @@ globalEmitter.on("newUserCreated", async (user) => {
   });
 });
 
-// globalEmitter.on('partnerApprovalUpdate', async() => {
-//     console.log("Received partner approval update notice.")
-//     wss.clients.forEach((client) => {
-//         client.send("partnerApprovalUpdate");
-//     });
-// })
+globalEmitter.on('partnerApprovalUpdate', async() => {
+    console.log("Received partner approval update notice.")
+})
 //
 // globalEmitter.on('partnerCreated', async() => {
 //     console.log("========================== Partner created =============================");
