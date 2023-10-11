@@ -126,6 +126,14 @@ const TopBar = () => {
       fetchData();
     });
 
+    socket.on('newAdminFlaggedForumTopic', () => {
+      fetchData();
+    });
+
+    socket.on('newAdminResetAppropriateForumTopic', () => {
+      fetchData();
+    });
+
     fetchData();
 
     return () => {

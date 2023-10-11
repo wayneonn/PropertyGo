@@ -89,6 +89,14 @@ const Notification = () => {
             fetchData();
         });
 
+        socket.on('newAdminFlaggedForumTopic', () => {
+            fetchData();
+        });
+
+        socket.on('newAdminResetAppropriateForumTopic', () => {
+            fetchData();
+        });
+
         fetchData();
     }, [selectedCategory]);
 
