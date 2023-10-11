@@ -43,8 +43,8 @@
   padding: 5px 5px 5px 5px;
 }
 
-.truncate-text {
-  max-width: 130px;
+.truncate-text-cs {
+  max-width: 80px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
