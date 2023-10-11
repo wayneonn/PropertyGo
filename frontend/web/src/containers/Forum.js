@@ -4,9 +4,10 @@ import "./styles/Forum.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import { IoMdFlag } from "react-icons/io";
+import { LuFlagOff } from "react-icons/lu";
 import ForumTopicCreate from "./ForumTopicCreate";
 import "react-quill/dist/quill.snow.css";
-import socketIOClient from "socket.io-client";
+import socketIOClient from 'socket.io-client';
 
 import API from "../services/API";
 
@@ -15,6 +16,7 @@ import Pagination from "react-bootstrap/Pagination";
 const Forum = () => {
   const [forumTopics, setForumTopics] = useState([]);
   const [flaggedForumTopics, setFlaggedForumTopics] = useState([]);
+  const [inappropriateForumTopics, setInappropriateForumTopics] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [forumTopicId, setForumTopicId] = useState(0);
   const [forumTopicName, setForumTopicName] = useState("");
@@ -22,6 +24,8 @@ const Forum = () => {
   const [showEditStatusModal, setShowEditStatusModal] = useState(false);
   const [deleteForumTopicId, setDeleteForumTopicId] = useState(0);
   const [editForumTopicId, setEditForumTopicId] = useState(0);
+  const [showResetInapprorpiateForumTopicModal, setShowResetInapprorpiateForumTopicModal] = useState(false);
+  const [appropriateForumTopicId, setAppropriateForumTopicId] = useState(0);
 
   const ITEMS_PER_PAGE = 4;
 
@@ -41,6 +45,16 @@ const Forum = () => {
   const indexOfFirstItemFlaggedForumTopic =
     indexOfLastItemFlaggedForumTopic - ITEMS_PER_PAGE;
 
+  const [currentPageInappropriateForumTopic, setCurrentPageInappropriateForumTopic] =
+    useState(1);
+  const [totalPageInappropriateForumTopics, setTotalPageInappropriateForumTopics] =
+    useState(0);
+
+  const indexOfLastItemInappropriateForumTopic =
+    currentPageInappropriateForumTopic * ITEMS_PER_PAGE;
+  const indexOfFirstItemInappropriateForumTopic =
+    indexOfLastItemInappropriateForumTopic - ITEMS_PER_PAGE;
+
   // toast message
   const [show, setShow] = useState(false);
   const [toastAction, setToastAction] = useState("");
@@ -59,6 +73,10 @@ const Forum = () => {
     setCurrentPageFlaggedForumTopic(pageNumber);
   };
 
+  const handlePageChangeInappropriateForumTopic = (pageNumber) => {
+    setCurrentPageInappropriateForumTopic(pageNumber);
+  };
+
   const toggleEditModal = (forumTopicId, topicName) => {
     setShowEditModal(!showEditModal);
     setForumTopicId(forumTopicId);
@@ -75,6 +93,11 @@ const Forum = () => {
     setEditForumTopicId(forumTopicId);
   };
 
+  const toggleAppropriateForumTopicStatusModal = (forumTopicId) => {
+    setShowResetInapprorpiateForumTopicModal(!showResetInapprorpiateForumTopicModal);
+    setAppropriateForumTopicId(forumTopicId);
+  }
+
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
   };
@@ -82,6 +105,10 @@ const Forum = () => {
   const handleEditStatusModal = () => {
     setShowEditStatusModal(false);
   };
+
+  const handleResetInappropriateForumTopicModal = () => {
+    setShowResetInapprorpiateForumTopicModal(false);
+  }
 
   const handleClose = () => {
     setShowEditModal(false);
@@ -151,6 +178,15 @@ const Forum = () => {
     fetchData();
   };
 
+  const handleResetForumTopicToAppropriate = async () => {
+    await API.patch(`/admin/forumTopics/resetAppropriateForumTopic/${appropriateForumTopicId}`, {
+      adminId: localStorage.getItem("loggedInAdmin")
+    });
+    setShowResetInapprorpiateForumTopicModal(false);
+    showToast("reset back to Appropriate of");
+    fetchData();
+  };
+
   const showToast = (action) => {
     setToastAction(action);
     setShow(true);
@@ -177,6 +213,12 @@ const Forum = () => {
       setTotalPageFlaggedForumTopics(
         Math.ceil(flaggedForumTopics.length / ITEMS_PER_PAGE)
       );
+
+      const inappropriateForumtopics = response.data.filter((forumTopic) => forumTopic.forumTopic.isInappropriate);
+      setInappropriateForumTopics(inappropriateForumtopics);
+      setTotalPageInappropriateForumTopics(
+        Math.ceil(inappropriateForumtopics.length / ITEMS_PER_PAGE)
+      );
     } catch (error) {
       console.error(error);
     }
@@ -196,6 +238,14 @@ const Forum = () => {
     });
 
     socket.on("newUserCreatedForumTopic", () => {
+      fetchData();
+    });
+
+    socket.on('newUserUpdatedForumTopic', () => {
+      fetchData();
+    });
+
+    socket.on('newUserDeletedForumTopic', () => {
       fetchData();
     });
   }, []);
@@ -475,6 +525,99 @@ const Forum = () => {
               </div>
             </div>
           </div>
+          <br />
+          <div className="buyerfaq">
+            <h3
+              style={{
+                color: "black",
+                font: "Montserrat",
+                fontWeight: "700",
+                fontSize: "16px",
+                padding: "5px 5px 5px 5px",
+              }}
+            >
+              INAPPROPRIATE FORUM TOPIC
+            </h3>
+            <div>
+              <Table hover responsive style={{ width: "51em" }}>
+                <thead style={{ textAlign: "center" }}>
+                  <tr>
+                    <th>TOPIC NAME</th>
+                    <th>ACTION</th>
+                  </tr>
+                </thead>
+                {Array.isArray(inappropriateForumTopics) &&
+                  inappropriateForumTopics.length > 0 ? (
+                  <tbody>
+                    {inappropriateForumTopics
+                      .slice(
+                        indexOfFirstItemInappropriateForumTopic,
+                        indexOfLastItemInappropriateForumTopic
+                      )
+                      .map((inappropriateForumTopic) => (
+                        <tr
+                          key={inappropriateForumTopic.forumTopic.forumTopicId}
+                          style={{
+                            textAlign: "center",
+                          }}
+                        >
+                          <td className="truncate-text">
+                            {inappropriateForumTopic.forumTopic.topicName}
+                          </td>
+                          <td>
+                            <Button
+                              size="sm"
+                              title="Reset Inappropriate Forum Topic to Appropriate"
+                              style={{
+                                backgroundColor: "#FFD700",
+                                border: "0",
+                                marginRight: "10px",
+                              }}
+                              onClick={() =>
+                                toggleAppropriateForumTopicStatusModal(inappropriateForumTopic.forumTopic.forumTopicId)
+                              }
+                            >
+                              <LuFlagOff
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  color: "black",
+                                }}
+                              ></LuFlagOff>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                ) : (
+                  <tbody>
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: "center" }}>
+                        No Inappropriate Forum Topics available
+                      </td>
+                    </tr>
+                  </tbody>
+                )}
+              </Table>
+              <div>
+                <Pagination className="faq-paginate">
+                  {Array.from({ length: totalPageInappropriateForumTopics }).map(
+                    (_, index) => (
+                      <Pagination.Item
+                        key={index}
+                        active={index + 1 === currentPageInappropriateForumTopic}
+                        onClick={() =>
+                          handlePageChangeInappropriateForumTopic(index + 1)
+                        }
+                      >
+                        {index + 1}
+                      </Pagination.Item>
+                    )
+                  )}
+                </Pagination>
+              </div>
+            </div>
+          </div>
         </div>
         <ForumTopicCreate
           showToast={showToast}
@@ -638,6 +781,53 @@ const Forum = () => {
                 fontSize: "14px",
               }}
               onClick={() => handleEditStatus("yes")}
+            >
+              Yes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal
+          show={showResetInapprorpiateForumTopicModal}
+          onHide={handleResetInappropriateForumTopicModal}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Appropriate Forum Topic</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Reset the current forum topic to Appropriate?</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#F5F6F7",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleResetInappropriateForumTopicModal}
+            >
+              Close
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={() => handleResetForumTopicToAppropriate()}
             >
               Yes
             </Button>
