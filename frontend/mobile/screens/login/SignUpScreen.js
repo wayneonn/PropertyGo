@@ -85,7 +85,7 @@ const SignUpScreen = () => {
                 startTime: null,
                 endTime: null,
                 contractorSpecialization: null,
-                userType: 'BUYER',
+                userType: 'BUYER_SELLER',
             };
 
             const signUpResult = await signUpUser(userData);

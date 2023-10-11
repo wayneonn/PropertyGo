@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {
     ActivityIndicator,
     Dimensions,
-    Image,
+    Image, Modal,
     ScrollView,
     StyleSheet,
     Text,
@@ -16,7 +16,12 @@ import {useFocusEffect} from '@react-navigation/native';
 import {Ionicons} from '@expo/vector-icons';
 import Swiper from 'react-native-swiper';
 import {BarChart, LineChart, PieChart} from 'react-native-chart-kit';
-import {fetchBuyerIdTransactions, fetchMonthlyTransactions, fetchTopTransactions} from "../../utils/transactionApi";
+import {
+    fetchBuyerIdTransactions,
+    fetchMonthlyTransactions,
+    fetchTopTransactions,
+    fetchTopTransactionsWithUsers
+} from "../../utils/transactionApi";
 import {TransactionCard} from "../partnerApplication/TransactionCardSmall"
 import {Divider} from '@rneui/themed';
 import {BASE_URL} from "../../utils/documentApi";
@@ -35,11 +40,14 @@ const HomePagePartner = ({navigation}) => {
     const [isLoading, setIsLoading] = useState(false); // Add loading state
     const {user} = useContext(AuthContext);
     const userId = user.user.userId;
+    const companyName = user.user.companyName
     const [canRunEffect, setCanRunEffect] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [searchTimeout, setSearchTimeout] = useState(null);
     const cardSize = Dimensions.get('window').width;
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedTransaction, setSelectedTransaction] = useState(null);
 
     const MyLineChart = () => {
         // Need to read the data from the transactions.
@@ -87,15 +95,15 @@ const HomePagePartner = ({navigation}) => {
             <PieChart
                 data={[
                     {
-                        name: 'Seoul',
-                        population: 215,
+                        name: 'Singapore',
+                        population: 20,
                         color: 'rgba(131, 167, 234, 1)',
                         legendFontColor: '#7F7F7F',
                         legendFontSize: 15,
                     },
                     {
-                        name: 'Toronto',
-                        population: 280,
+                        name: 'Malaysia',
+                        population: 2,
                         color: '#F00',
                         legendFontColor: '#7F7F7F',
                         legendFontSize: 15,
@@ -186,7 +194,7 @@ const HomePagePartner = ({navigation}) => {
 
     useEffect(() => {
         loadRecentlyAddedTransactions().then(r => console.log("Finished fetching top transactions."));
-        loadMonthTransctions().then(r => console.log("Finished fetching monthly transaction value data."))
+        loadMonthTransactions().then(r => console.log("Finished fetching monthly transaction value data."))
         loadBuyerIdTransactions().then(r => console.log("Finished fetching Buyer ID transaction value data."))
     }, []);
 
@@ -195,38 +203,12 @@ const HomePagePartner = ({navigation}) => {
         const intervalId = setInterval(fetchData, 5000); // Set interval for repeated fetches
         return () => clearInterval(intervalId); // Cleanup function to clear the interval
     }, []);
-
-    // useEffect(() => {
-    //     setBuyerIdTransactions(buyerIdTransactions)
-    //     console.log("Buyer ID transaction.", buyerIdTransactions)
-    // }, [buyerIdTransactions])
-    //
-    // useEffect(() => {
-    //     setMonthTransactions(monthTransactions)
-    //     console.log("Month Transactions. ", monthTransactions)
-    // }, [monthTransactions])
-    //
-    // useEffect(() => {
-    //     setTopTransactions(topTransactions)
-    //     console.log("Top Transactions. ", topTransactions)
-    // }, [topTransactions])
-    //
-    // useEffect(() => {
-    //     setBuyerUserProfile(buyerUserProfile)
-    //     console.log("Buyer Profile. ", buyerUserProfile)
-    // }, [buyerUserProfile])
-    //
-    // useEffect(() => {
-    //     setTopTenUserProfile(topTenUserProfile)
-    //     console.log("Ten user profile. ", topTenUserProfile)
-    // }, [topTenUserProfile])
-
-
+    
     useFocusEffect(
         React.useCallback(() => {
             console.log('Home page gained focus');
             loadRecentlyAddedTransactions().then(r => console.log("Finish reloading recent transactions."))
-            loadMonthTransctions().then(r => console.log("Finished fetching monthly transaction value data."))
+            loadMonthTransactions().then(r => console.log("Finished fetching monthly transaction value data."))
             loadBuyerIdTransactions().then(r => console.log("Finished fetching Buyer ID transaction value data."))
             setSearchQuery('');
         }, [])
@@ -235,7 +217,7 @@ const HomePagePartner = ({navigation}) => {
     const fetchData = async () => {
         const recentAddedTransactions = await loadRecentlyAddedTransactions();
         console.log("Finished fetching top transactions.", topTransactions);
-        const loadMonth = await loadMonthTransctions();
+        const loadMonth = await loadMonthTransactions();
         console.log("Finished fetching monthly transaction value data.", monthTransactions);
         const buyerId = await loadBuyerIdTransactions();
         console.log("Finished fetching Buyer ID transaction value data.", buyerIdTransactions);
@@ -243,22 +225,15 @@ const HomePagePartner = ({navigation}) => {
 
     const loadRecentlyAddedTransactions = async () => {
         try {
-            const topTransactionsRecv = await fetchTopTransactions(userId)
-            setTopTransactions(topTransactionsRecv.transactions)
-            console.log("Here are the top ten transactions. ", topTransactions)
-            const usersInvolved = await fetchAllTopTen(topTransactionsRecv.transactions.map(item => item.buyerId))
-            const mergedData = topTransactionsRecv.transactions.map((transaction, index) => ({
-                transaction: transaction,
-                userDetails: usersInvolved[index]
-            }));
-            setTopTenUserProfile(mergedData);
+            const topTransactionsRecv = await fetchTopTransactionsWithUsers(userId)
+            setTopTenUserProfile(topTransactionsRecv.mergedData);
             console.log("Here are the ten user profiles: ", topTenUserProfile)
         } catch (error) {
             console.error("Error fetching top ten transactions: ", error)
         }
     }
 
-    const loadMonthTransctions = async () => {
+    const loadMonthTransactions = async () => {
         try {
             const monthTransaction = await fetchMonthlyTransactions(userId);
             setMonthTransactions(monthTransaction.transactions)
@@ -273,65 +248,13 @@ const HomePagePartner = ({navigation}) => {
             const buyerTransactions = await fetchBuyerIdTransactions(userId);
             setBuyerIdTransactions(buyerTransactions.transactions)
             console.log("Here are the buyerId values: ", buyerIdTransactions)
-            const usersInvolved = await fetchAllBuyers(buyerTransactions.transactions.map(item=>item.buyerId))
-            setBuyerUserProfile(usersInvolved);
-            console.log("Here are the buyer profiles: ", buyerUserProfile)
         } catch (error) {
             console.error("Error fetching buyerId transactions: ", error);
         }
     }
 
-    const loadBuyerProfiles = async() => {
-        try {
-            const usersInvolved = await fetchAllBuyers(buyerIdTransactions.transactions.map(item=>item.buyerId))
-            setBuyerUserProfile(usersInvolved);
-            console.log("Here are the buyer profiles: ", buyerUserProfile)
-        } catch (error) {
-            console.error("Error fetching buyer profiles.")
-        }
-    }
-
-    async function fetchUserById(id) {
-        return fetch(`${BASE_URL}/user/${id}`).then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error(`Failed to fetch user with id: ${id}`);
-            }
-        });
-    }
-
-    async function fetchAllBuyers(buyerIds) {
-        try {
-            const users = [];
-            for (let id of buyerIds) {
-                const user = await fetchUserById(id);
-                users.push(user);
-            }
-            return users;
-        } catch (error) {
-            console.error('Error fetching users:', error);
-            throw error;
-        }
-    }
-
-    async function fetchAllTopTen(buyerIds) {
-        try {
-            const users = [];
-            for (let id of buyerIds) {
-                const user = await fetchUserById(id);
-                users.push(user);
-            }
-            return users;
-        } catch (error) {
-            console.error('Error fetching users:', error);
-            throw error;
-        }
-    }
-
     const dateFormatter = (dateString) => {
         const dateObj = new Date(dateString);
-
         const formattedDate = dateObj.toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -341,7 +264,6 @@ const HomePagePartner = ({navigation}) => {
             second: '2-digit',
             timeZoneName: 'short'
         });
-
         return formattedDate;
     }
 
@@ -424,7 +346,7 @@ const HomePagePartner = ({navigation}) => {
     return (
         <ScrollView style={styles.container}>
             <View style={{paddingHorizontal: 10, paddingTop: 10}}>
-                <Text style={styles.sectionTitle}> Howard and Co LLP. </Text>
+                <Text style={styles.sectionTitle}> {companyName} </Text>
             </View>
             {/* Search bar */}
             <View style={styles.searchBar}>
@@ -480,15 +402,14 @@ const HomePagePartner = ({navigation}) => {
                 <>
                     {/* Total Earnings Section */}
                     <View style={styles.sectionContainer}>
-                        <TouchableOpacity onPress={() => handleTitlePress('Popular Properties', popularProperties)}>
+                        <TouchableOpacity onPress={() => null}>
                             <View style={[styles.titleContainer, {marginTop: 10}]}>
                                 <Text style={styles.sectionTitle}> {' '}<Ionicons name="trending-up-outline" size={24}
                                                                                   style={styles.titleIcon}/>
                                     {' '}Total Earnings </Text>
                             </View>
-                            <MyLineChart/>
                         </TouchableOpacity>
-
+                        <MyLineChart/>
                     </View>
 
                     {/* Customer/Request Section */}
@@ -517,41 +438,74 @@ const HomePagePartner = ({navigation}) => {
                         <MyBarChart/>
                     </View>
 
-                    {/*Regions Section */}
+                    {/*Recent Transactions Section */}
                     <View style={styles.sectionContainer}>
+                        <TouchableOpacity
+                            onPress={() => handleTitlePress('Top Transactions', topTransactions)}>
                         <Text style={styles.sectionTitle}> {' '}<Ionicons name="navigate-circle-outline" size={24}
                                                                           style={styles.titleIcon}/>
                             {' '}Recent Transactions </Text>
+                        </TouchableOpacity>
                         <Divider/>
-                        {topTenUserProfile.map((transactions, userDetails) => (
+                        {topTenUserProfile.length !== 0 ?  topTenUserProfile.map((item) => (
                             <TouchableOpacity
                                 style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.25}]}
                                 onPress={() => {
-                                    navigation.navigate("")
+                                    setSelectedTransaction(item);
+                                    setModalVisible(true);
                                 }}
                             >
-                                    <View style={styles.profileHeader}>
-                                        {false ? (
-                                            <Image
-                                                source={{uri: `data:image/jpeg;base64,${convertImage(userDetails.profileImage.data)}`}}
-                                                style={styles.profileImage}
-                                            />
-                                        ) : (
-                                            <Image
-                                                source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                                style={{width: 50, height: 50, borderRadius: 120}}
-                                            />
-                                        )}
-                                    </View>
+                                <View style={styles.profileHeader}>
+                                    {item.userDetails.profileImage !== null ? (
+                                        <Image
+                                            source={{uri: `data:image/jpeg;base64,${convertImage(item.userDetails.profileImage.data)}`}}
+                                            style={styles.profileImage}
+                                        />
+                                    ) : (
+                                        <Image
+                                            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                                            style={{width: 50, height: 50, borderRadius: 120}}
+                                        />
+                                    )}
+                                </View>
                                 <View style={styles.propertyDetails}>
-                                    <Text style={styles.propertyTitle}>{transactions.transaction.status}</Text>
-                                    <Text style={styles.propertyPrice}>{transactions.transaction.onHoldBalance}</Text>
-                                    {/*<Text style={styles.propertyPrice}>{userDetails.userDetails.userName}</Text>*/}
-                                    <Text style={styles.propertyDetails}>{dateFormatter(transactions.transaction.createdAt)}</Text>
+                                    <Text style={styles.propertyTitle}>{item.transaction.status}</Text>
+                                    <Text style={styles.propertyPrice}>{item.transaction.onHoldBalance}</Text>
+                                    <Text style={styles.propertyPrice}>{item.userDetails.userName}</Text>
+                                    <Text style={styles.propertyDetails}>{dateFormatter(item.transaction.createdAt)}</Text>
                                 </View>
                             </TouchableOpacity>
-                        ))}
+                        )) : <Text> No data </Text> }
                     </View>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                            setModalVisible(false);
+                        }}
+                    >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                {/* Render more details about the selectedTransaction */}
+                                <Text style={styles.propertyTitle}>{selectedTransaction?.transaction.status}</Text>
+                                <Text style={styles.propertyPrice}>{selectedTransaction?.transaction.onHoldBalance}</Text>
+                                <Image
+                                    source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                                    style={{width: 50, height: 50, borderRadius: 120}}
+                                />
+                                <Text style={styles.propertyPrice}>{selectedTransaction?.userDetails.userName}</Text>
+                                <Text style={styles.propertyDetails}>Invoice ID: {selectedTransaction?.transaction.invoiceId}</Text>
+                                <Text style={styles.propertyDetails}>{dateFormatter(selectedTransaction?.transaction.createdAt)}</Text>
+                                <TouchableOpacity
+                                    style={[styles.button, styles.buttonClose]}
+                                    onPress={() => setModalVisible(!modalVisible)}
+                                >
+                                    <Text style={styles.textStyle}>Hide</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
                 </>
             )}
         </ScrollView>
@@ -591,7 +545,7 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginBottom: 5,
         letterSpacing: 1,
     },
     rightIcons: {
@@ -735,7 +689,6 @@ const styles = StyleSheet.create({
     },
     noResultsContainer: {
         alignItems: 'center',
-        marginTop: 10,
         position: 'absolute',
         top: 50, // Adjust the top position as needed
         left: 8,
@@ -752,6 +705,40 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 2}, // Add shadow (iOS)
         shadowOpacity: 0.8, // Add shadow (iOS)
         shadowRadius: 2, // Add shadow (iOS)
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2
+    },
+    buttonClose: {
+        backgroundColor: "#2196F3",
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
     },
     noResultsText: {
         marginTop: 10,

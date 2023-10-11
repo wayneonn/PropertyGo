@@ -95,7 +95,8 @@ const SignUpScreen = () => {
                 handleLogin();
                 Alert.alert('Move on to input your partner details!', 'Signup successful.');
                 // This basically logs them in and brings them to the partnerapp page.
-                navigation.navigate('Intro to Partner App');
+                // Slight lag to make sure it loads fully?
+                setTimeout(() => {navigation.navigate('Intro to Partner App');}, 500)
             } else if (signUpResult.message) {
                 if (signUpResult.message.includes('Username')) {
                     Alert.alert('Sign Up Failed', 'Username is already taken. Please choose another.');

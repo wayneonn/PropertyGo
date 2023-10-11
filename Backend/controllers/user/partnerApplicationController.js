@@ -215,28 +215,6 @@ exports.rejectPartnerApplicationByID = async (req, res) => {
             }
         );
 
-        const pa = await PartnerApplication.findByPk(req.params.id);
-        const user = await User.findByPk(pa.userId);
-
-        const userNotifications = await Notification.findAll({where: {userId: user.userId}});
-        const userPANotification = userNotifications.filter((userNotifcation) => userNotifcation.content.toLowerCase().includes("partner application"));
-        const userPANotifcationId = userPANotification[0].dataValues.notificationId;
-
-        const deletedUserPANotification = await Notification.findByPk(userPANotifcationId);
-
-        await deletedUserPANotification.destroy();
-
-        req.body = {
-            "content": `You have successfully rejected ${user.userName}'s Partner Application`,
-            "isRecent": false,
-            "isPending": false,
-            "isCompleted": true,
-            "hasRead": false,
-            "adminId": pa.adminId
-        };
-
-        await Notification.create(req.body);
-        req.io.emit("newRejectPartnerApplicationNotification", `Rejected Partner Application`);
         if (updatedApp[0] === 1) {
             console.log("Rejected partner application: ", updatedApp);
             try {
@@ -274,6 +252,29 @@ exports.rejectPartnerApplicationByID = async (req, res) => {
             }
         }
         globalEmitter.emit('partnerRejectionUpdate');
+
+        const pa = await PartnerApplication.findByPk(req.params.id);
+        const user = await User.findByPk(pa.userId);
+
+        const userNotifications = await Notification.findAll({where: {userId: user.userId}});
+        const userPANotification = userNotifications.filter((userNotifcation) => userNotifcation.content.toLowerCase().includes("partner application"));
+        const userPANotifcationId = userPANotification[0].dataValues.notificationId;
+
+        const deletedUserPANotification = await Notification.findByPk(userPANotifcationId);
+
+        await deletedUserPANotification.destroy();
+
+        req.body = {
+            "content": `You have successfully rejected ${user.userName}'s Partner Application`,
+            "isRecent": false,
+            "isPending": false,
+            "isCompleted": true,
+            "hasRead": false,
+            "adminId": pa.adminId
+        };
+
+        await Notification.create(req.body);
+        req.io.emit("newRejectPartnerApplicationNotification", `Rejected Partner Application`);
         res.status(201).json(updatedApp);
     } catch (error) {
         console.error('Error updating PartnerApplication', error);

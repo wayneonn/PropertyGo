@@ -1,4 +1,4 @@
-const { Transaction } = require("../../models")
+const { Transaction, User } = require("../../models")
 const { Op, Sequelize } = require('sequelize');
 
 exports.getTransactions = async (req, res) => {
@@ -49,7 +49,8 @@ exports.getTransactionValueByLastSixMonths = async (req, res) => {
                 sellerId: req.params.id,  // Replace with the sellerId you're interested in
                 createdAt: {
                     [Op.gte]: sixMonthsAgo
-                }
+                },
+                status: "PAID"
             },
             group: [Sequelize.fn('YEAR', Sequelize.col('createdAt')), Sequelize.fn('MONTH', Sequelize.col('createdAt'))],
             order: [[Sequelize.fn('YEAR', Sequelize.col('createdAt')), 'DESC'], [Sequelize.fn('MONTH', Sequelize.col('createdAt')), 'DESC']]
@@ -84,5 +85,107 @@ exports.getTransactionValueByBuyerId = async (req, res) => {
         res.status(500).json({message: "Error fetching monthly transaction value by ID: ", error: error.message});
     }
  }
+
+ exports.getTopTenTransactionsWithUsers = async (req, res) => {
+     try {
+         const transactions = await Transaction.findAll({
+             where: {
+                 sellerId: req.params.id,
+             },
+             order: [
+                 ['createdAt', 'DESC']  // 'DESC' for descending order; use 'ASC' for ascending if preferred
+             ],
+             limit: 10
+         })
+         const buyerId = transactions.map(item => item.buyerId);
+         const users = []
+         for (let id of buyerId) {
+             const user = await User.findOne({
+                 where: {
+                     userId: id
+                 }
+             });
+             users.push(user);
+         }
+
+         const mergedData = transactions.map((transaction, index) => ({
+             transaction: transaction,
+             userDetails: users[index]
+         }));
+
+         res.status(200).json({mergedData: mergedData});
+     } catch (error) {
+         res.status(500).json({message: "Error fetching top ten transactions: ", error: error.message});
+     }
+ }
+
+exports.getTopTenTransactionsWithUsersPaid = async (req, res) => {
+    try {
+        const transactions = await Transaction.findAll({
+            where: {
+                sellerId: req.params.id,
+                status: "PAID",
+            },
+            order: [
+                ['createdAt', 'DESC']  // 'DESC' for descending order; use 'ASC' for ascending if preferred
+            ],
+            limit: 10
+        })
+        const buyerId = transactions.map(item => item.buyerId);
+        const users = []
+        for (let id of buyerId) {
+            const user = await User.findOne({
+                where: {
+                    userId: id
+                }
+            });
+            users.push(user);
+        }
+
+        const mergedData = transactions.map((transaction, index) => ({
+            transaction: transaction,
+            userDetails: users[index]
+        }));
+
+        res.status(200).json({mergedData: mergedData});
+    } catch (error) {
+        res.status(500).json({message: "Error fetching top ten transactions: ", error: error.message});
+    }
+}
+
+exports.getTopTenTransactionsWithUsersPending = async (req, res) => {
+    try {
+        const transactions = await Transaction.findAll({
+            where: {
+                sellerId: req.params.id,
+                status: "PENDING"
+            },
+            order: [
+                ['createdAt', 'DESC']  // 'DESC' for descending order; use 'ASC' for ascending if preferred
+            ],
+            limit: 10
+        })
+        const buyerId = transactions.map(item => item.buyerId);
+        const users = []
+        for (let id of buyerId) {
+            const user = await User.findOne({
+                where: {
+                    userId: id
+                }
+            });
+            users.push(user);
+        }
+
+        const mergedData = transactions.map((transaction, index) => ({
+            transaction: transaction,
+            userDetails: users[index]
+        }));
+
+        res.status(200).json({mergedData: mergedData});
+    } catch (error) {
+        res.status(500).json({message: "Error fetching top ten transactions: ", error: error.message});
+    }
+}
+
 
 
