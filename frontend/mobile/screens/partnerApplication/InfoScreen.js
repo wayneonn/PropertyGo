@@ -1,11 +1,14 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Animated, Button, FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Animated, FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {AntDesign} from '@expo/vector-icons';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {fetchPartnerApplication} from "../../utils/partnerApplicationApi";
 import {fetchDocumentById} from "../../utils/documentApi";
 import {AuthContext} from "../../AuthContext";
-import Divider from "../../components/Common/Divider";
+// import Divider from "../../components/Common/Divider";
+
+// EXPERIMENTING FOR UI STYLING.
+import { Button, Text, Divider } from '@rneui/themed';
 
 
 /*
@@ -101,12 +104,12 @@ const IntroScreen = () => {
         }
     };
 
-    /*
+    /**
     * Display the status of an approval.
     * 1. Input -> {} in partner [].
     * 2. Output -> Single field in the Approval.
     * 3. Possible options: Document submission should be tied to it?
-    * */
+    * **/
     const renderPartnerApp = ({item}) => (
         <View style={{padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc'}}>
             <Text>Application ID: {item.partnerApplicationId}</Text>
@@ -117,6 +120,17 @@ const IntroScreen = () => {
         </View>
     );
 
+    const CustomTitle = () => {
+        return (
+            <View style={{ flexDirection: 'column' }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 18, color:"white"}}>Let's Start!</Text>
+                <Text style={{ fontStyle: 'italic', fontSize: 12, color:"white" }}>
+                    Press next to begin.
+                </Text>
+            </View>
+        );
+    };
+
 
     return (
         <View style={styles.container}>
@@ -126,10 +140,10 @@ const IntroScreen = () => {
                         <Text style={styles.titleApproved}>Your Application is successful, welcome to the team!</Text>
                         <Text style={styles.subtitle}>View your profile to see what else you can do as a partner.</Text>
                         <Text>&nbsp;</Text>
-                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('User Profile')}>
+                        <Button onPress={() => navigation.navigate('User Profile')}>
                             <Text style={styles.buttonText}> View Profile </Text>
                             <AntDesign name="arrowright" size={20} color="black"/>
-                        </TouchableOpacity>
+                        </Button>
                     </View>
                 ) : (
                     <View style={styles.box}>
@@ -159,10 +173,32 @@ const IntroScreen = () => {
                         <Text style={styles.subtitle}>Let's get started on your journey to working on our
                             platform - be a lawyer, contractor or property agent.</Text>
                     </Animated.View>
-                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Company Info')}>
-                        <Text style={styles.buttonText}>Start Application</Text>
-                        <AntDesign name="arrowright" size={20} color="black"/>
-                    </TouchableOpacity>
+                    <Divider inset={true} insetType="right" />
+                    <Button
+                        title={<CustomTitle />}
+                        titleStyle={{ fontWeight: 'bold', fontSize: 18 }}
+                        buttonStyle={{
+                            borderWidth: 0,
+                            borderColor: 'transparent',
+                            borderRadius: 20,
+                        }}
+                        containerStyle={{
+                            width: 200,
+                            marginHorizontal: 50,
+                            marginVertical: 10,
+                            color: "#5F5859"
+                        }}
+                        icon={{
+                            name: 'arrow-right',
+                            type: 'font-awesome',
+                            size: 15,
+                            color: 'white',
+                        }}
+                        iconRight
+                        iconContainerStyle={{ marginLeft: 10, marginRight: -10 }}
+                        color={"#5F5859"}
+                        onPress={() => navigation.navigate("Company Info")}
+                    />
                 </View>
             )}
         </View>

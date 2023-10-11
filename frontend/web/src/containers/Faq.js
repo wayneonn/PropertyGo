@@ -193,7 +193,9 @@ const Faq = () => {
       >
         <BreadCrumb names={["Home"]} lastname="FAQ" links={["/"]}></BreadCrumb>
       </div>
-      <div style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}>
+      <div
+        style={{ position: "absolute", top: "1%", left: "40%", zIndex: "1" }}
+      >
         <Row>
           <Col xs={6}>
             <Toast
@@ -252,14 +254,14 @@ const Faq = () => {
                               textAlign: "center",
                             }}
                           >
-                            <td className="truncate-text">
+                            <td className="truncate-text-faq">
                               {htmlToPlainText(faq.question)}
                             </td>
-                            <td className="truncate-text">
+                            <td className="truncate-text-faq">
                               {htmlToPlainText(faq.answer)}
                             </td>
-                            <td className="truncate-text">{faq.createdAt}</td>
-                            <td className="truncate-text">{faq.updatedAt}</td>
+                            <td>{faq.createdAt}</td>
+                            <td>{faq.updatedAt}</td>
                             <td>
                               <Button
                                 size="sm"
@@ -367,14 +369,14 @@ const Faq = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td className="truncate-text">
+                          <td className="truncate-text-faq">
                             {htmlToPlainText(faq.question)}
                           </td>
-                          <td className="truncate-text">
+                          <td className="truncate-text-faq">
                             {htmlToPlainText(faq.answer)}
                           </td>
-                          <td className="truncate-text">{faq.createdAt}</td>
-                          <td className="truncate-text">{faq.updatedAt}</td>
+                          <td>{faq.createdAt}</td>
+                          <td>{faq.updatedAt}</td>
                           <td>
                             <Button
                               size="sm"

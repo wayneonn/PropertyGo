@@ -1,7 +1,11 @@
 import React from 'react';
-import {createDrawerNavigator, DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer';
-import {createDrawerScreen} from '../components/DrawerScreen';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { createDrawerScreen } from '../components/DrawerScreen';
 import ForumStackGroup from './ForumStackGroup';
+import YourContributionTabNavigator from './YourContributionTabNavigator';
+import ForumUpvoteTabNavigator from './ForumUpvoteTabNavigator';
+import ForumDownvoteTabNavigator from './ForumDownvoteTabNavigator';
+import ForumFlaggedTabNavigator from './ForumFlaggedTabNavigator';
 import ForumTopNavBar from '../components/Forum/ForumTopNavBar';
 
 const CustomDrawerContent = (props) => {
@@ -66,7 +70,11 @@ const CustomDrawerContent = (props) => {
 
 const drawerScreens = [
     createDrawerScreen('Forum Stack Group', ForumStackGroup, "forum", "Forum"),
-    
+    createDrawerScreen('Your Contribution Tab Navigator', YourContributionTabNavigator, "file-tray-stacked", "Your Contributions"),
+    createDrawerScreen('Forum Upvote Tab Navigator', ForumUpvoteTabNavigator, "ios-thumbs-up", "Upvoted"),
+    createDrawerScreen('Forum Downvote Tab Navigator', ForumDownvoteTabNavigator, "ios-thumbs-down", "Downvoted"),
+    createDrawerScreen('Forum Flagged Tab Navigator', ForumFlaggedTabNavigator, "ios-flag", "Flagged"),
+
 ];
 
 const Drawer = createDrawerNavigator();
@@ -81,16 +89,21 @@ const ForumSideNavigator = () => {
                 drawerPosition: 'right',
                 drawerActiveTintColor: "#FFD700",
                 // header: () => <ForumTopNavBar/>,
-                headerShown: false,
+                // headerShown: false,
             })}
-            >
+        >
             {drawerScreens.map((screen) => (
                 <Drawer.Screen
                     key={screen.name}
                     name={screen.name}
                     component={screen.component}
-                    options={screen.options}
+                    options={
+                        screen.name === 'Forum Stack Group'
+                            ? {...screen.options, headerShown: false }
+                            : { ...screen.options, header: () => <ForumTopNavBar /> }
+                    }
                 />
+
             ))}
         </Drawer.Navigator>
     );

@@ -35,7 +35,7 @@ const DocumentSubmissionScreen = ({route}) => {
 
     const uploadSucceed = () => {
         console.log("Upload Done.")
-        navigation.navigate("Intro");
+        navigation.navigate("Login Portal");
     }
 
     // Slight bit of repeat here, need to clean this up.

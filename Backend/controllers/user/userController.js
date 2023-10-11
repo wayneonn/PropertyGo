@@ -47,9 +47,10 @@ async function createUser(req, res) {
     if (existingEmail) {
       return res.status(400).json({ error: "Email already exists" });
     }
-
+    console.log("This is the data sent in: ", user)
     // If neither the username nor email exists, create the user
     const createdUser = await User.create(user);
+    console.log("Attempting to create a user: ", createdUser)
 
     if (req.file) {
       const profileImage = req.file.buffer;

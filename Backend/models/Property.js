@@ -20,17 +20,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
       price: {
         type: DataTypes.DOUBLE,
         allowNull: false,
       },
       offeredPrice: {
         type: DataTypes.DOUBLE,
-        allowNull: false,
+        allowNull: true,
       },
       title: {
         type: DataTypes.STRING,
@@ -125,17 +121,6 @@ module.exports = (sequelize, DataTypes) => {
     this.title = newTitle;
     return this.save();
   };
-
-  // Property.associate = function(models) {
-  //     Property.hasOne(models.Transaction, {
-  //         foreignKey: 'propertyId',
-  //         as: 'transaction',
-  //     });
-
-  //     Property.belongsTo(models.Buyer, {
-  //         foreignKey: 'buyerId',
-  //         as: 'buyer',
-  //     });
 
   Property.associate = (models) => {
     Property.belongsTo(models.User, {

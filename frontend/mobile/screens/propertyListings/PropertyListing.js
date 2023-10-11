@@ -32,6 +32,7 @@ const PropertyListingScreen = ({ route }) => {
   const [userDetails, setUser] = useState(null);
   const { user } = useContext(AuthContext);
   const [favoriteCount, setFavoriteCount] = useState(0);
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
   const isCurrentUserPropertyOwner = userDetails && userDetails.userId === user.user.userId;
   const [region, setRegion] = useState({
     latitude: 1.36922522142582,
@@ -47,6 +48,7 @@ const PropertyListingScreen = ({ route }) => {
     // For example, you can refetch data or perform any other actions
     fetchFavoriteCount();
     checkIfPropertyIsFavorite();
+    setCacheBuster(Date.now());
   };
 
   // Wrap the handleFocus function with useFocusEffect
@@ -67,13 +69,13 @@ const PropertyListingScreen = ({ route }) => {
       fetchPropertyListing(propertyListingId);
       checkIfPropertyIsFavorite();
       fetchFavoriteCount();
+      setCacheBuster(Date.now());
     }, [])
   );
 
   // Fetch the number of users who have favorited the property
   const fetchFavoriteCount = async () => {
     const { success, data, message } = await countUsersFavoritedProperty(propertyListingId);
-    console.log('countUsersFavoritedProperty:', success, data, message);
     if (success) {
       setFavoriteCount(data.count); // Assuming the count is in data.count
     } else {
@@ -146,6 +148,7 @@ const PropertyListingScreen = ({ route }) => {
     fetchPropertyListing(propertyListingId);
     checkIfPropertyIsFavorite();
     fetchFavoriteCount();
+    setCacheBuster(Date.now());
     console.log('User:', user);
   }, [propertyListingId, user.user.userId]);
 
@@ -290,7 +293,7 @@ const PropertyListingScreen = ({ route }) => {
                 const imageUri = getImageUriById(imageId);
                 return (
                   <View key={index} style={styles.slide}>
-                    <Image source={{ uri: `${imageUri}?timestamp=${new Date().getTime()}` }} style={styles.image} />
+                    <Image source={{ uri: `${imageUri}?timestamp=${cacheBuster}` }} style={styles.image} />
                   </View>
                 );
               })

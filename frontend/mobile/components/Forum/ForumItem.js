@@ -8,7 +8,7 @@ import ForumModal from './ForumModal';
 import { getForumTopicVoteDetails, updateForumTopicVote, updateForumTopicName } from '../../utils/forumTopicApi';
 import EditForumTopicModal from './EditForumTopicModal';
 
-const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress, onReport, onDelete, useParentCallback}) => {
+const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress, onReport, onDelete, useParentCallback , flagged}) => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [voteDetails, setVoteDetails] = useState([]);
     const [isEditModalVisible, setEditModalVisible] = useState(false);
@@ -102,9 +102,9 @@ const ForumItem = ({ userId, topicUserId, topicId, topicName, updatedAt, onPress
             </View>
             <EditForumTopicModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEdit} oldTopicName={topicName}/>
             {topicUserId === userId ?
-                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Topic"} onDelete={onDelete} />
+                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Topic"} onDelete={onDelete} flagged={flagged}/>
                 :
-                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Topic"} />
+                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Topic"} flagged={flagged}/>
             }
         </TouchableOpacity>
     );

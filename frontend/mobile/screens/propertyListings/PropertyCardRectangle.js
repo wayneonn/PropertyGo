@@ -14,6 +14,7 @@ import DefaultImage from '../../assets/No-Image-Available-Small.jpg';
 const PropertyCardRectangle = ({ property, onPress, reloadPropertyCard, disableFavButton }) => {
   const [propertyImageUri, setPropertyImageUri] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
   const { user } = useContext(AuthContext);
 
   const formatPrice = (price) => {
@@ -24,10 +25,11 @@ const PropertyCardRectangle = ({ property, onPress, reloadPropertyCard, disableF
       return 'N/A'; // Handle the case when price is null, undefined, or not a number
     }
   };
-
+  
   useEffect(() => {
     loadPropertyDetails();
-  }, [property, reloadPropertyCard]);
+    setCacheBuster(Date.now());
+  }, [property]);
 
   const loadPropertyDetails = async () => {
     // Retrieve and set the image URI based on the smallest imageId
@@ -89,7 +91,7 @@ const PropertyCardRectangle = ({ property, onPress, reloadPropertyCard, disableF
     <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
       <View style={styles.imageContainer}>
         {propertyImageUri ? (
-          <Image source={{ uri: `${propertyImageUri}?timestamp=${new Date().getTime()}` }} style={styles.propertyImage} />
+          <Image source={{ uri: `${propertyImageUri}?timestamp=${cacheBuster}` }} style={styles.propertyImage} />
         ) : (
           <View style={styles.placeholderImage}>
             <Image source={DefaultImage} style={styles.placeholderImageImage} />

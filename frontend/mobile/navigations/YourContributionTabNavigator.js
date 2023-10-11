@@ -19,7 +19,6 @@ const CustomTabLabel = ({ label, color, icon }) => (
 const YourContributionTabNavigator = () => {
 
     const route = useRoute();
-    const { topic } = route.params;
     // console.log(topic);
 
     return (

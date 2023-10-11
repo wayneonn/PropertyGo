@@ -356,6 +356,12 @@ async function getRecentlyAddedProperties(req, res) {
     try {
         // Find all properties and sort them by postedAt datetime in descending order
         const properties = await Property.findAll({
+            include: [
+                {
+                    model: User,
+                    as: 'favouritedByUsers',
+                },
+            ],
             order: [['postedAt', 'DESC']],
         });
 
@@ -374,15 +380,17 @@ async function getRecentlyAddedProperties(req, res) {
         });
 
         // Create an array to store property data along with image IDs
-        const recentlyAddedPropertiesWithImageIds = properties.map(property => {
+        const propertiesWithImagesAndLikes = properties.map(property => {
+            const favoriteCount = property.favouritedByUsers.length;
             const propertyJSON = property.toJSON();
             const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
             propertyJSON.images = imageIds;
+            propertyJSON.favoriteCount = favoriteCount;
             return propertyJSON;
         });
 
         // Respond with the sorted list of properties including image IDs
-        res.json(recentlyAddedPropertiesWithImageIds);
+        res.json(propertiesWithImagesAndLikes);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -496,9 +504,9 @@ async function editProperty(req, res) {
         where: {
           // Use Sequelize operators to search in relevant fields (address, area, postal code)
           [Op.or]: [
-            { address: { [Op.like]: `%${q}%` } }, // Use [Op.like] for case-insensitive matching
-            { area: { [Op.like]: `%${q}%` } },    // Use [Op.like] for case-insensitive matching
-            { postalCode: { [Op.like]: `%${q}%` } }, // Use [Op.like] for case-insensitive matching
+            { address: { [Op.like]: `%${q}%` } },
+            { area: { [Op.like]: `%${q}%` } },    
+            { postalCode: { [Op.like]: `%${q}%` } }, 
           ],
         },
       });
