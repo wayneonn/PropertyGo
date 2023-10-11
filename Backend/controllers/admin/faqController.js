@@ -7,6 +7,18 @@ const htmlToPlainText = (html) => {
   return $.text();
 };
 
+const cleanEmptyStylingTags = (html) => {
+  const $ = cheerio.load(html, { decodeEntities: false });
+
+  $('*:contains(" ")').each(function () {
+    if ($(this).text().trim() === '') {
+      $(this).replaceWith($(this).text());
+    }
+  });
+
+  return $.html();
+}
+
 // helper function
 const getFaqForUniqueness = async ({ question, faqType, faqId = null }) => {
   const formattedQuestion = htmlToPlainText(question);
@@ -89,7 +101,10 @@ const createFaq = async (req, res) => {
 
   const { question, faqType } = req.body;
 
-  const questionFound = await getFaqForUniqueness({ question, faqType });
+  // removing styling spaces of the question first
+  const formattedQuestion = cleanEmptyStylingTags(question);
+  
+  const questionFound = await getFaqForUniqueness({ question: formattedQuestion, faqType });
 
   if (questionFound) {
     return res
@@ -97,6 +112,7 @@ const createFaq = async (req, res) => {
       .json({ message: `Question already exist in ${faqType}.` });
   }
 
+  req.body.question = formattedQuestion;
   req.body.adminId = adminId;
 
   const faq = await FAQ.create(req.body);
@@ -111,10 +127,13 @@ const updateFaq = async (req, res) => {
 
   const { question, answer, faqType } = req.body;
 
+  // removing styling spaces of the question first
+  const formattedQuestion = cleanEmptyStylingTags(question);
+
   const faq = await FAQ.findByPk(faqId);
 
   if (
-    faq.question === question &&
+    faq.question === formattedQuestion &&
     faq.answer === answer &&
     faq.faqType === faqType
   ) {
@@ -122,6 +141,7 @@ const updateFaq = async (req, res) => {
   }
 
   if (faq.question === question && faq.answer !== answer) {
+    req.body.question = formattedQuestion;
     await faq.update(req.body);
 
     const updatedFaq = await FAQ.findByPk(faqId);
@@ -129,7 +149,7 @@ const updateFaq = async (req, res) => {
     return res.status(200).json({ faq: updatedFaq });
   }
 
-  const questionFound = await getFaqForUniqueness({ question, faqType, faqId });
+  const questionFound = await getFaqForUniqueness({ question: formattedQuestion, faqType, faqId });
 
   if (questionFound) {
     return res
@@ -144,6 +164,7 @@ const updateFaq = async (req, res) => {
       return res.status(404).json({ message: "FAQ not found" });
     }
 
+    req.body.question = formattedQuestion;
     await faq.update(req.body);
 
     const updatedFaq = await FAQ.findByPk(faqId);
