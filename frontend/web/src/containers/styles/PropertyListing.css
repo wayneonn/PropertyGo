@@ -96,7 +96,7 @@
   margin-top: 230px;
 }
 
-.truncate-text {
+.truncate-text-pl {
   max-width: 400px;
   white-space: nowrap;
   overflow: hidden;
