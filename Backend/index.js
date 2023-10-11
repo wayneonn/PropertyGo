@@ -95,12 +95,12 @@ app.use("/admin/transactions", transactionAdminRouter);
 
 app.use(
   "/user",
+  injectIo(io),
   userRoute,
   loginRoute,
   documentRoute,
   folderRoute,
   transactionRoute,
-  injectIo(io),
   contactUsUserRouter,
   forumTopicUserRouter,
   forumPostUserRouter,
@@ -109,12 +109,6 @@ app.use(
 );
 
 io.on("connection", (socket) => {
-  console.log(`Client connected: ${socket.id}`);
-
-  socket.on("newContactUsNotification", (message) => {
-    io.emit("newContactUsNotification", message);
-  });
-
   // Handle disconnects
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);
@@ -227,13 +221,6 @@ db.sequelize
       );
     }
 
-    // FAQ
-    // if (existingFaqRecordsCount === 0) {
-    //   try {
-    //     for (const faqData of faqTestData) {
-    //       await db.FAQ.create(faqData);
-    //     }
-
     if (existingContactUsRecordsCount === 0) {
       try {
         for (const contactUsData of contactUsTestData) {
@@ -259,14 +246,6 @@ db.sequelize
     } else {
       console.log("Response test data already exists in the database.");
     }
-
-    //     console.log('Faq test data inserted successfully.');
-    //   } catch (error) {
-    //     console.error('Error inserting Faq test data:', error);
-    //   }
-    // } else {
-    //   console.log('Admin test data already exists in the database.');
-    // }
 
     // Property
     if (existingPropertyRecordsCount === 0) {

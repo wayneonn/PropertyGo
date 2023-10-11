@@ -50,17 +50,31 @@ module.exports = (sequelize, DataTypes) => {
   Review.associate = function (models) {
     Review.belongsTo(models.User, {
       foreignKey: {
-        name: "userId",
+        name: "reviewerId",
         allowNull: false,
       },
-      as: "user",
+      as: "reviewer",
+    });
+    Review.belongsTo(models.User, {
+      foreignKey: {
+        name: "revieweeId",
+        allowNull: false,
+      },
+      as: "reviewee",
     });
     Review.belongsTo(models.Property, {
       foreignKey: {
         name: "propertyId",
-        allowNull: false,
+        allowNull: true,
       },
       as: "property",
+    });
+    Review.belongsTo(models.Request, {
+      foreignKey: {
+        name: "requestId",
+        allowNull: true,
+      },
+      as: "request",
     });
     Review.belongsTo(models.Image, {
       foreignKey: "imageId",

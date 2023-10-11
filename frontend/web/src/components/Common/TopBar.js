@@ -98,8 +98,31 @@ const TopBar = () => {
   useEffect(() => {
     const socket = socketIOClient('http://localhost:3000');
 
-    socket.on('newContactUsNotification', (message) => {
+    socket.on('newContactUsNotification', () => {
       showToast();
+      fetchData();
+    });
+
+    socket.on('newPartnerApplicationNotification', () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on('newFlaggedForumTopicNotification', () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on('newRemoveFlaggedForumTopicNotification', () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on('newAcceptPartnerApplicationNotification', () => {
+      fetchData();
+    });
+
+    socket.on('newRejectPartnerApplicationNotification', () => {
       fetchData();
     });
 

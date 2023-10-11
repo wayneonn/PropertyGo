@@ -7,7 +7,7 @@ import {
   AiOutlineFolderOpen,
   AiOutlineBook,
   AiOutlineCreditCard,
-  AiOutlineQuestionCircle
+  AiOutlineQuestionCircle,
 } from "react-icons/ai";
 import { PiPuzzlePiece, PiHouseLine } from "react-icons/pi";
 import { GoPerson } from "react-icons/go";
@@ -47,7 +47,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="*">
+          <Nav.Link className="a" href="/lawyers">
             <AiOutlineFolderOpen
               style={{ marginRight: "1em" }}
             ></AiOutlineFolderOpen>
@@ -55,7 +55,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="*">
+          <Nav.Link className="a" href="/contractors">
             <PiPuzzlePiece style={{ marginRight: "1em" }}></PiPuzzlePiece>
             Contractors
           </Nav.Link>
