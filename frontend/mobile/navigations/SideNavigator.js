@@ -92,7 +92,7 @@ const drawerScreens = [
     createDrawerScreen('Mortgage Calculator', MortgageCalculator, 'calculator', 'Mortgage Calculator'),
     createDrawerScreen('FAQ', FAQ, 'help-circle', 'FAQ'),
     createDrawerScreen('Contact Us Group', ContactUsStackGroup, 'mail', 'Contact Us'),
-    createDrawerScreen('Work With Us', WorkWithUs, 'briefcase', 'Work With Us'),
+    // createDrawerScreen('Work With Us', WorkWithUs, 'briefcase', 'Work With Us'),
 ];
 
 const SideBar = ({route}) => {

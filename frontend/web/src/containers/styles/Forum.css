@@ -66,8 +66,8 @@
   padding: 9px 15px 9px 15px;
 }
 
-.truncate-text {
-  max-width: 130px;
+.truncate-text-forum {
+  max-width: 80px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
