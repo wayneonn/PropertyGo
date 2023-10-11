@@ -13,16 +13,18 @@ import creditCardInfoScreen from "../screens/partnerApplication/CreditCardInfoSc
 const Stack = createStackNavigator();
 
 // This needs to change depending on status.
-export default function App() {
+export default function PartnerApp() {
     return (
-        <NavigationContainer>
+        <NavigationContainer independent={true} >
             <FormDataProvider>
                 <Stack.Navigator initialRouteName="Intro">
-                    <Stack.Screen name="Intro" component={IntroScreen}/>
+                    <Stack.Screen name="Intro" component={IntroScreen} options={{ headerShown: false }}/>
                     <Stack.Screen name="Company Info" component={CompanyInfoScreen}/>
                     <Stack.Screen name="User Role" component={UserRoleScreen}/>
-                    <Stack.Screen name="Credit Card Info" component={creditCardInfoScreen}/>
-                    <Stack.Screen name="Document Submission" component={documentSubmissionScreen}/>
+                    <Stack.Screen name="Credit Card Info" component={creditCardInfoScreen} />
+                    <Stack.Screen name="Document Submission" component={documentSubmissionScreen} options={{
+                        headerLeft: () => null,
+                    }}/>
                 </Stack.Navigator>
             </FormDataProvider>
         </NavigationContainer>

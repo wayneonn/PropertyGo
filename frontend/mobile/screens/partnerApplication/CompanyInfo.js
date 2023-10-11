@@ -38,7 +38,7 @@ const CompanyInfoScreen = () => {
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.container}>
-            <Text style={styles.title}>Company Information</Text>
+            <Text style={styles.title}>Company Name</Text>
             <Text style={styles.subtitle}>Tell us what your company is. </Text>
             <Formik
                 initialValues={{companyName: formData.companyName || ''}}
@@ -62,6 +62,7 @@ const CompanyInfoScreen = () => {
                         {/* Character count indicator */}
                         <Text>{values.companyName.length}/50</Text>
                         {errors.companyName && <Text style={styles.errorText}>{errors.companyName}</Text>}
+                        <Text>&nbsp;</Text>
                         <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={!isValid}>
                             <Text style={styles.buttonText}>Next</Text>
                             <AntDesign name="arrowright" size={20} color="black"/>
@@ -77,8 +78,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         backgroundColor: '#f2f2f2',
+        paddingLeft: 70,
     },
     box: {
         justifyContent: 'center',
@@ -104,10 +106,10 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderStyle: "dashed",
         borderRadius: 8,
         padding: 12,
-        width: '100%',
+        width: 160,
     },
     button: {
         flexDirection: 'row',

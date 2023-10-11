@@ -10,10 +10,10 @@ const ForumStackGroup = () => {
 
     return (
 
-        <ForumStack.Navigator screenOptions={{ header: () => <ForumTopNavBar/> }}>
-            <ForumStack.Screen name="Forum Topic Tab Navigator" component={ForumTopicTabNavigator}/>
-            <ForumStack.Screen name="Forum Post Tab Navigator" component={ForumPostTabNavigator}/>
-            <ForumStack.Screen name="Forum Comment" component={ForumComment}/>
+        <ForumStack.Navigator>
+            <ForumStack.Screen name="Forum Topic Tab Navigator" component={ForumTopicTabNavigator} options={{ header: () => <ForumTopNavBar/> }}/>
+            <ForumStack.Screen name="Forum Post Tab Navigator" component={ForumPostTabNavigator} options={{ header: () => <ForumTopNavBar/> }}/>
+            <ForumStack.Screen name="Forum Comment" component={ForumComment} options={{ header: () => <ForumTopNavBar/> }}/>
         </ForumStack.Navigator>
     );
 };

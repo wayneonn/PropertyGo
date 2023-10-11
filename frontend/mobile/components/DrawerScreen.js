@@ -6,7 +6,7 @@ export const createDrawerScreen = (name, component, iconName, label, hideHeader 
     return {
         name,
         component,
-        options: () => ({
+        options: ({
             drawerLabel: label,
             drawerIcon: ({focused, color, size}) => (
                 label === "Forum" ? <MaterialCommunityIcons

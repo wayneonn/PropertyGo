@@ -25,6 +25,7 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [isBoostActive, setIsBoostActive] = useState(false); // Added state for boost status
   const { user } = useContext(AuthContext);
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
   const cardSize = Dimensions.get('window').width;
 
   const formatPrice = (price) => {
@@ -37,8 +38,9 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
   };
 
   const fetchFavoriteCount = async () => {
+    // console.log('Favorite count:', property.favoriteCount);
+    // setFavoriteCount(property.favoriteCount);
     const { success, data, message } = await countUsersFavoritedProperty(property.propertyListingId);
-    console.log('countUsersFavoritedProperty:', success, data, message);
     if (success) {
       setFavoriteCount(data.count);
     } else {
@@ -55,9 +57,12 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
     }
 
     // Calculate boost status and fetch property favorite status/count
+    setCacheBuster(Date.now());
+    checkIfPropertyIsFavorite();
     calculateBoostStatus();
-    fetchPropertyDetails();
-  }, [property, reloadPropertyCard]);
+    // fetchPropertyDetails();
+    fetchFavoriteCount();
+  }, [property]);
 
   const calculateBoostStatus = () => {
     if (property.boostListingEndDate) {
@@ -68,6 +73,22 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
       setIsBoostActive(false); // No boost end date means not active
     }
   };
+
+  const checkIfPropertyIsFavorite = async () => {
+    const userId = user.user.userId;
+    try {
+        const { success, data } = await isPropertyInFavorites(userId, property.propertyListingId);
+
+        if (success) {
+            setIsFavorite(data.isLiked);
+            setFavoriteCount(data.favoriteCount); // Set the favorite count from the API response
+        } else {
+            console.error('Error checking if property is in favorites:', data.message);
+        }
+    } catch (error) {
+        console.error('Error checking if property is in favorites:', error);
+    }
+};
 
   const fetchPropertyDetails = async () => {
     const userId = user.user.userId;
@@ -136,7 +157,7 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
     >
       <View style={styles.imageContainer}>
         {propertyImageUri ? (
-          <Image source={{ uri: `${propertyImageUri}?timestamp=${new Date().getTime()}` }} style={styles.propertyImage} />
+          <Image source={{ uri: `${propertyImageUri}?timestamp=${cacheBuster}` }} style={styles.propertyImage} />
         ) : (
           <View style={styles.placeholderImage}>
             <Image source={DefaultImage} style={styles.placeholderImageImage} />

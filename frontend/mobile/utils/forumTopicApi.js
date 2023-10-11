@@ -18,9 +18,63 @@ export const createForumTopic = async (userId, forumTopicData) => {
 };
 
 // Function to get ForumTopic records for a specific user
+export const getAllForumTopicUnrestricted = async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/forumTopic/Unrestricted`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
 export const getAllForumTopic = async (userId, sort, order) => {
     try {
         const response = await axios.get(`${BASE_URL}/user/${userId}/forumTopic?sort=${sort}&increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumTopic records for a specific user
+export const getAllUserUpvotedForumTopic = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumTopicsUserUpvoted?increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumTopic records for a specific user
+export const getAllUserDownvotedForumTopic = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumTopicsUserDownvoted?increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumTopic records for a specific user
+export const getAllUserFlaggedForumTopic = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumTopicsUserFlagged?increase=${order}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+// Function to get ForumTopic records for a specific user
+export const getAllForumTopicByUserId = async (userId, order) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/${userId}/forumTopicsByUserId?increase=${order}`);
         return response.data;
     } catch (error) {
         console.error(error);

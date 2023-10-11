@@ -10,12 +10,32 @@ const {
     updateForumTopicName,
     deleteForumTopicName,
     getForumTopicVoteDetails,
+    getAllForumTopicByUserId,
+    getAllUserUpvotedForumTopic,
+    getAllUserDownvotedForumTopic,
+    getAllUserFlaggedForumTopic,
+    getAllForumTopicUnrestricted,
 } = require('../../controllers/user/forumTopicController');
 
+
+router.route('/forumTopic/Unrestricted')
+    .get(getAllForumTopicUnrestricted)
 
 router.route('/:userId/forumTopic')
     .post(createForumTopic)
     .get(getAllForumTopic)
+
+router.route('/:userId/forumTopicsUserUpvoted')
+    .get(getAllUserUpvotedForumTopic)
+
+router.route('/:userId/forumTopicsUserDownvoted')
+    .get(getAllUserDownvotedForumTopic)
+
+router.route('/:userId/forumTopicsUserFlagged')
+    .get(getAllUserFlaggedForumTopic)
+
+router.route('/:userId/forumTopicsByUserId')
+    .get(getAllForumTopicByUserId)
 
 router.route('/:userId/forumTopic/:forumTopicId/voteDetails')
     .get(getForumTopicVoteDetails)

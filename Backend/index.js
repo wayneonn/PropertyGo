@@ -67,6 +67,7 @@ const forumTopicUserRouter = require("./routes/user/forumTopicRoute");
 const forumPostUserRouter = require("./routes/user/forumPostRoute");
 const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
 const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
+const reviewRoute = require("./routes/user/reviewRoute");
 const e = require("express");
 
 app.use(cors());
@@ -125,6 +126,11 @@ app.use(
   imageRoute,
 );
 
+app.use(
+  "/review",
+  reviewRoute,
+);
+
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})
@@ -137,12 +143,9 @@ globalEmitter.on("newUserCreated", async (user) => {
   });
 });
 
-// globalEmitter.on('partnerApprovalUpdate', async() => {
-//     console.log("Received partner approval update notice.")
-//     wss.clients.forEach((client) => {
-//         client.send("partnerApprovalUpdate");
-//     });
-// })
+globalEmitter.on('partnerApprovalUpdate', async() => {
+    console.log("Received partner approval update notice.")
+})
 //
 // globalEmitter.on('partnerCreated', async() => {
 //     console.log("========================== Partner created =============================");
