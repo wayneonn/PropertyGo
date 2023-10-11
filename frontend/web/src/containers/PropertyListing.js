@@ -185,10 +185,10 @@ const PropertyListing = () => {
                   </div>
                 )}
                 <Card.Body>
-                  <Card.Title className="truncate-text">
+                  <Card.Title className="truncate-text-pl">
                     {property.title}
                   </Card.Title>
-                  <Card.Text className="truncate-text">
+                  <Card.Text className="truncate-text-pl">
                     {property.description}
                   </Card.Text>
                   <Card.Text>
