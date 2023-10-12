@@ -407,6 +407,7 @@ const updateForumTopicName = async (req, res) => {
         forumTopic.topicName = topicName;
         await forumTopic.save();
 
+        req.io.emit("newUserUpdatedForumTopic", "User updated forum topic");
         res.status(200).json({ message: `Topic ID ${forumTopicId}: topic name successfully updated` });
     } catch (error) {
         console.error(error);
@@ -440,6 +441,7 @@ const deleteForumTopicName = async (req, res) => {
         // Delete the forum topic
         await forumTopic.destroy();
 
+        req.io.emit("newUserDeletedForumTopic", "User deleted forum topic");
         res.status(200).json({ message: `Topic ID ${forumTopicId}: topic successfully deleted` });
 
     } catch (error) {
