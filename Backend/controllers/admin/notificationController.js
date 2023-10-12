@@ -13,6 +13,7 @@ const getAllNotifications = async (req, res) => {
         "hasRead",
         "createdAt",
         "updatedAt",
+        "adminId"
       ],
     });
 
@@ -30,6 +31,7 @@ const getAllNotifications = async (req, res) => {
         updatedAt: moment(notification.updatedAt)
           .tz("Asia/Singapore")
           .format("YYYY-MM-DD HH:mm:ss"),
+        adminId: notification.adminId
       };
     });
 
