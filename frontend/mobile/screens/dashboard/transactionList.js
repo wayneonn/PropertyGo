@@ -13,7 +13,7 @@ import {fetchTopTransactionsWithUsersStatus} from "../../utils/transactionApi";
 import { AuthContext } from '../../AuthContext';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import base64 from "react-native-base64";
-
+import {createPDF, downloadAndOpenPDF} from "../../services/pdfReport";
 
 const TransactionList = () => {
     const {user} = useContext(AuthContext);
@@ -88,6 +88,10 @@ const TransactionList = () => {
         // Render your PAID array values here.
         <ScrollView>
             <View style={[styles.scene, { backgroundColor: '#f3f3f3' }]}>
+                <TouchableOpacity style={[styles.button, styles.buttonClose, {marginTop: 10, width:"80%"}]} onPress={() => {downloadAndOpenPDF(USER_ID)}}>
+                    <Text style={styles.textStyle}>Create PDF Report</Text>
+                </TouchableOpacity>
+                <Text>&nbsp;</Text>
                 {transactionPaid.length !== 0 ?  transactionPaid.map((item) => (
                     <TouchableOpacity
                         style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.25}]}
@@ -154,6 +158,10 @@ const TransactionList = () => {
         // Render your PENDING array values here.
         <ScrollView>
             <View style={[styles.scene, { backgroundColor: '#f3f3f3' }]}>
+                <TouchableOpacity style={[styles.button, styles.buttonClose, {marginTop: 10, width:"80%"}]} onPress={() => {downloadAndOpenPDF(USER_ID)}}>
+                    <Text style={styles.textStyle}>Create PDF Report</Text>
+                </TouchableOpacity>
+                <Text>&nbsp;</Text>
                 {transactionPending.length !== 0 ?  transactionPending.map((item) => (
                     <TouchableOpacity
                         style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.25}]}

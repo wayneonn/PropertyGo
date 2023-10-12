@@ -59,3 +59,13 @@ export const fetchBuyerIdTransactions = async(USER_ID) => {
         console.error(error);
     }
 }
+
+export const fetchTransactionCountryCount = async(USER_ID) => {
+    try {
+        const res = await fetch(`${BASE_URL}/user/transactions/countrycount/${USER_ID}`)
+        const results = await res.json();
+        return results;
+    } catch (error) {
+        console.error(error);
+    }
+}

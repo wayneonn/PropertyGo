@@ -103,6 +103,32 @@ exports.postPartnerApplicationByUserID = async (req, res) => {
             adminId,
             userId,
         });
+        const applyingUser = await User.findOne({
+            where: {
+                userId: userId
+            }
+        })
+        const mailOptions = {
+            from: 'jzhongzhi@gmail.com',
+            to: applyingUser.email,
+            subject: `PropertyGo: You applied to be a ${userRole}!`,
+            html: `<div style="background-color: #f7f9fc; padding: 30px; font-family: Arial, sans-serif; border-radius: 8px; width: 600px; margin: auto;">
+                        <h2 style="color: #2c3e50; font-weight: bold; border-bottom: 2px solid #e74c3c; display: inline-block; padding-bottom: 10px;">Hello ${applyingUser.userName},</h2>
+                        <p style="color: #7f8c8d; font-size: 16px; line-height: 1.5; margin-top: 20px;">
+                            Welcome to <span style="font-weight: bold; color: #e74c3c;">PropertyGo</span>! We're thrilled to inform you that we have received your application to be a partner.
+                        </p>
+                        <p style="color: #7f8c8d; font-size: 16px; line-height: 1.5;">
+                            Please be patient while we process your application. We'll be in touch soon!.
+                        </p>
+                    </div>`
+        };
+        await smtpTransport.sendMail(mailOptions, (error, response) => {
+            if (error) {
+                console.log('Error sending email:', error);
+            } else {
+                console.log('Email sent:', response);
+            }
+        });
         globalEmitter.emit("partnerCreated");
         res.status(201).json(newPartnerApplication);
     } catch (error) {
@@ -155,7 +181,14 @@ exports.updatePartnerApplicationByID = async (req, res) => {
                     from: 'jzhongzhi@gmail.com',
                     to: email,
                     subject: `Your application to be a ${userType}!`,
-                    text: 'Hello, this is a email from PropertyGo! We have approved your application to be partner!'
+                    html: '<div style="font-family: Arial, sans-serif; background-color: #e9f7fa; padding: 20px; border-radius: 5px; max-width: 600px; margin: auto;">\n' +
+                        '    <h2 style="color: #2c3e50; font-size: 20px; border-bottom: 2px solid #3498db; display: inline-block; padding-bottom: 10px; margin-top: 0;">\n' +
+                        '        Hello,\n' +
+                        '    </h2>\n' +
+                        '    <p style="color: #34495e; font-size: 16px; line-height: 1.5; margin-top: 20px;">\n' +
+                        '        This is an email from <strong style="color: #3498db;">PropertyGo</strong>! We have <span style="color: #27ae60; font-weight: bold;">approved</span> your application to be a partner!\n' +
+                        '    </p>\n' +
+                        '</div>'
                 };
                 await smtpTransport.sendMail(mailOptions, (error, response) => {
                     if (error) {
@@ -225,7 +258,7 @@ exports.rejectPartnerApplicationByID = async (req, res) => {
                 })
                 console.log("This is the rejected PartnerApp: ", partnerAppUpdated.dataValues)
                 const userId = partnerAppUpdated.dataValues.userId
-                const userType = partnerAppUpdated.dataValues.userType
+                const userType = partnerAppUpdated.dataValues.userRole
                 const updatedUser = await User.findOne({
                     where: {
                         userId: userId
@@ -236,8 +269,17 @@ exports.rejectPartnerApplicationByID = async (req, res) => {
                     from: 'jzhongzhi@gmail.com',
                     to: email,
                     subject: `Your application to be a ${userType}!`,
-                    text: 'Hello, this is a email from PropertyGo! We have rejected your application to be partner!\n' +
-                        `This is reason why we rejected you: ${description}`,
+                    html: `<div style="font-family: Arial, sans-serif; background-color: #ffebee; padding: 20px; border-radius: 5px; max-width: 600px; margin: auto;">
+                                <h2 style="color: #c0392b; font-size: 20px; border-bottom: 2px solid #e74c3c; display: inline-block; padding-bottom: 10px; margin-top: 0;">
+                                    Hello,
+                                </h2>
+                                <p style="color: #7f8c8d; font-size: 16px; line-height: 1.5; margin-top: 20px;">
+                                    This is an email from <strong style="color: #e74c3c;">PropertyGo</strong>! Unfortunately, we have <span style="color: #c0392b; font-weight: bold;">rejected</span> your application to be a partner.
+                                </p>
+                                <p style="color: #34495e; font-size: 16px; line-height: 1.5; margin-top: 10px;">
+                                    This is the reason why we rejected you: <em style="color: #c0392b;">${description}</em>
+                                </p>
+                            </div>`,
                 };
                 await smtpTransport.sendMail(mailOptions, (error, response) => {
                     if (error) {

@@ -20,7 +20,8 @@ import {
     fetchBuyerIdTransactions,
     fetchMonthlyTransactions,
     fetchTopTransactions,
-    fetchTopTransactionsWithUsers
+    fetchTopTransactionsWithUsers,
+    fetchTransactionCountryCount
 } from "../../utils/transactionApi";
 import {TransactionCard} from "../partnerApplication/TransactionCardSmall"
 import {Divider} from '@rneui/themed';
@@ -36,6 +37,7 @@ const HomePagePartner = ({navigation}) => {
     const [monthTransactions, setMonthTransactions] = useState([]);
     const [buyerIdTransactions, setBuyerIdTransactions] = useState([]);
     const [buyerUserProfile, setBuyerUserProfile] = useState([]);
+    const [transactionCountryCount, setTransactionCountryCount] = useState([])
     const [topTenUserProfile, setTopTenUserProfile] = useState([])
     const [isLoading, setIsLoading] = useState(false); // Add loading state
     const {user} = useContext(AuthContext);
@@ -91,25 +93,40 @@ const HomePagePartner = ({navigation}) => {
     };
 
     const MyPieChart = () => {
+
+        function transformToPieChartData() {
+            // Assuming buyerCounts looks like this:
+            // [
+            //     {countryOfOrigin: 'Singapore', transactionCount: 20},
+            //     {countryOfOrigin: 'Malaysia', transactionCount: 2},
+            //     ...more data
+            // ]
+
+            return transactionCountryCount.map(buyer => ({
+                name: buyer.countryOfOrigin,
+                population: buyer.transactionCount,
+                color: getColorForCountry(buyer.countryOfOrigin), // function to get color based on country
+                legendFontColor: '#7F7F7F',
+                legendFontSize: 15,
+            }));
+        }
+
+        function getColorForCountry(country) {
+            // You can have a predefined map of colors or generate colors dynamically.
+            const colorMap = {
+                'SINGAPORE': 'rgba(131, 167, 234, 1)',
+                'MALAYSIA': '#F00',
+                // ... other countries and colors
+            };
+
+            return colorMap[country] || '#000'; // Default color if country is not in map
+        }
+
+        const data_pie = transformToPieChartData()
+
         return (
             <PieChart
-                data={[
-                    {
-                        name: 'Singapore',
-                        population: 20,
-                        color: 'rgba(131, 167, 234, 1)',
-                        legendFontColor: '#7F7F7F',
-                        legendFontSize: 15,
-                    },
-                    {
-                        name: 'Malaysia',
-                        population: 2,
-                        color: '#F00',
-                        legendFontColor: '#7F7F7F',
-                        legendFontSize: 15,
-                    },
-                    // ...more data
-                ]}
+                data={data_pie}
                 width={Dimensions.get('window').width - 30}
                 height={220}
                 chartConfig={{
@@ -196,6 +213,7 @@ const HomePagePartner = ({navigation}) => {
         loadRecentlyAddedTransactions().then(r => console.log("Finished fetching top transactions."));
         loadMonthTransactions().then(r => console.log("Finished fetching monthly transaction value data."))
         loadBuyerIdTransactions().then(r => console.log("Finished fetching Buyer ID transaction value data."))
+        loadTransactionCountryCount()
     }, []);
 
     useEffect( async () => {
@@ -210,6 +228,7 @@ const HomePagePartner = ({navigation}) => {
             loadRecentlyAddedTransactions().then(r => console.log("Finish reloading recent transactions."))
             loadMonthTransactions().then(r => console.log("Finished fetching monthly transaction value data."))
             loadBuyerIdTransactions().then(r => console.log("Finished fetching Buyer ID transaction value data."))
+            loadTransactionCountryCount()
             setSearchQuery('');
         }, [])
     );
@@ -221,6 +240,7 @@ const HomePagePartner = ({navigation}) => {
         console.log("Finished fetching monthly transaction value data.", monthTransactions);
         const buyerId = await loadBuyerIdTransactions();
         console.log("Finished fetching Buyer ID transaction value data.", buyerIdTransactions);
+        const count = await loadTransactionCountryCount();
     };
 
     const loadRecentlyAddedTransactions = async () => {
@@ -250,6 +270,16 @@ const HomePagePartner = ({navigation}) => {
             console.log("Here are the buyerId values: ", buyerIdTransactions)
         } catch (error) {
             console.error("Error fetching buyerId transactions: ", error);
+        }
+    }
+
+    const loadTransactionCountryCount = async() => {
+        try {
+            const buyerTransactions = await fetchTransactionCountryCount(userId);
+            setTransactionCountryCount(buyerTransactions.buyer)
+            console.log("Here are the transaction counts: ", transactionCountryCount)
+        } catch (error) {
+            console.error("Error fetching transaction counts: ", error);
         }
     }
 
@@ -419,10 +449,10 @@ const HomePagePartner = ({navigation}) => {
                             <View style={styles.titleContainer}>
                                 <Text style={styles.sectionTitle}> {' '}<Ionicons name="time-outline" size={24}
                                                                                   style={styles.titleIcon}/>
-                                    {' '}Total Customers </Text>
+                                    {' '}Customers (Recent) </Text>
                             </View>
                         </TouchableOpacity>
-                        < MyPieChart/>
+                        <MyPieChart/>
                     </View>
 
                     {/* Recently Added Properties Section */}
