@@ -127,7 +127,11 @@ const SignUpScreen = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.containerView}>
+        <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.container}
+            keyboardShouldPersistTaps="handled">
             <View style={styles.headerContainer}>
                 <Image
                     source={require('../../assets/PropertyGo-HighRes-Logo.png')}
@@ -268,13 +272,14 @@ const SignUpScreen = () => {
                     </Modal>
                 </View>
             </View>
-            <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+        </ScrollView>
+        <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
                 <View style={styles.buttonContent}>
                     <Icon name="user-plus" size={24} color="white" style={styles.icon}/>
                     <Text style={styles.signUpButtonText}>Sign Up</Text>
                 </View>
             </TouchableOpacity>
-        </ScrollView>
+        </View>
     );
 };
 
@@ -283,6 +288,11 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         alignItems: 'center',
         padding: 16,
+        backgroundColor: '#FFFFFF',
+    },
+    containerView: {
+        flexGrow: 1,
+        padding: 1,
         backgroundColor: '#FFFFFF',
     },
     headerContainer: {
@@ -356,13 +366,17 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     signUpButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
+        marginVertical: 10,
+        flexDirection: 'row',
+        backgroundColor: '#1E90FF',
         padding: 15,
         borderRadius: 10,
-        backgroundColor: '#1E90FF',
-        marginVertical: 10,
+        marginBottom: 20,
+        alignItems: 'center', // Center horizontally
+        flexDirection: 'row',
+        justifyContent: 'center', // Center vertically
         width: '60%',
+        marginLeft: 70,
     },
     signUpButtonText: {
         fontSize: 18,
@@ -374,6 +388,13 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginLeft: 10,
+    },
+    scrollViewContent: {
+        paddingBottom: 100, // Adjust this value as needed to ensure the input field is visible
+    },
+    scrollView: {
+        flex: 1,
+        marginBottom: 10, // Adjust this margin to avoid overlap with the navigation bar
     },
 });
 
