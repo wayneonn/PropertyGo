@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
 exports.getTransactions = async (req, res) => {
     try {
         const transactions = await Transaction.findAll({
-            where: {userId: req.params.id},
+            where: {sellerId: req.params.id},
         });
         res.json({transactions});
     } catch (error) {

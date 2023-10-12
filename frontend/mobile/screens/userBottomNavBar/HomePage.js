@@ -135,7 +135,7 @@ const HomePage = ({ navigation }) => {
       }
       const timeout = setTimeout(() => {
         fetchSuggestions(text);
-      }, 100); // Adjust the delay as needed (e.g., 500 milliseconds)
+      }, 1); // Adjust the delay as needed (e.g., 500 milliseconds)
       setSearchTimeout(timeout);
     }
   };
