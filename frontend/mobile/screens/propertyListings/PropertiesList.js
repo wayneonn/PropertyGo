@@ -51,6 +51,7 @@ const PropertiesList = ({ route }) => {
         <TextInput
           style={styles.searchBar}
           placeholder="Search by property title"
+          placeholderTextColor="gray"
           onChangeText={(text) => setSearchText(text)}
           value={searchText}
         />
@@ -140,10 +141,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: 'bold',
     marginLeft: 50,
     // alignSelf: 'center',
+    alignContent: 'center',
+    paddingHorizontal: 20,
+    textAlign: 'center',
   },
   searchBar: {
     height: 40,
@@ -185,6 +189,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   map: {
+    marginTop: 15,
     height: 300, // Adjust the map height as needed
   },
   headerContainer: {

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
-import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons, FontAwesome } from '@expo/vector-icons'; 
+import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons, FontAwesome } from '@expo/vector-icons';
 import {
   getPropertyListing, getImageUriById, getUserById,
   addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites,
@@ -22,6 +22,7 @@ import { AuthContext } from '../../AuthContext';
 import DefaultImage from '../../assets/No-Image-Available.webp';
 import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import FullScreenImage from './FullScreenImage';
 
 
 const PropertyListingScreen = ({ route }) => {
@@ -33,6 +34,7 @@ const PropertyListingScreen = ({ route }) => {
   const { user } = useContext(AuthContext);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
+  const [fullScreenImage, setFullScreenImage] = useState(null);
   const isCurrentUserPropertyOwner = userDetails && userDetails.userId === user.user.userId;
   const [region, setRegion] = useState({
     latitude: 1.36922522142582,
@@ -292,21 +294,26 @@ const PropertyListingScreen = ({ route }) => {
               propertyListing.images.map((imageId, index) => {
                 const imageUri = getImageUriById(imageId);
                 return (
-                  <View key={index} style={styles.slide}>
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setFullScreenImage(imageUri)} // Set the fullScreenImage state when tapped
+                    style={styles.slide} // Apply styles to TouchableOpacity
+                  >
                     <Image source={{ uri: `${imageUri}?timestamp=${cacheBuster}` }} style={styles.image} />
-                  </View>
+                  </TouchableOpacity>
                 );
               })
             ) : (
               <View style={styles.slide}>
-                <Image
-                  source={DefaultImage} // Use the placeholder image here
-                  style={styles.image}
-                />
+                <Image source={DefaultImage} style={styles.image} />
               </View>
             )}
           </Swiper>
 
+          <FullScreenImage
+            imageUrl={fullScreenImage}
+            onClose={() => setFullScreenImage(null)} // Close the full-screen image view
+          />
 
           {/* Add your square boxes for images here. You might need another package or custom UI for this. */}
         </View>
@@ -361,17 +368,27 @@ const PropertyListingScreen = ({ route }) => {
         </View>
         <View style={styles.dateContainer}>
           <FontAwesome name="calendar" size={16} color="#333" />
-          <Text style={styles.dateText}>{formatDate(propertyListing.createdAt)}</Text>
+          <Text style={styles.dateText}>{"Listed on: "}{formatDate(propertyListing.createdAt)}</Text>
         </View>
-        <Text style={styles.descriptionHeader}>Description:</Text>
+
+        <Text style={styles.dateContainer}>
+          <Ionicons name="time-outline" size={17} color="#333" />
+          {" "}
+          <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
+        </Text>
+        {/* <Text >{"\n"}</Text> */}
+        <View style={styles.userInfoContainer}></View>
+        <Text style={styles.locationTitle}>Description</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
+        <Text style={styles.description}>{"\n"}</Text>
+
 
         {/* Location Details */}
         <Text style={styles.locationTitle}>Location</Text>
         <View style={styles.locationDetailsContainer}>
           <View style={styles.locationDetailsRow}>
             <Text style={styles.roomsAndSize}>
-              
+
               <Text style={styles.locationDetailsText}>{propertyListing.area}</Text>
               <MaterialCommunityIcons name="map-marker" size={18} color="#333" /> |
               {'  '}<Text style={styles.locationDetailsText}>{propertyListing.region}</Text>
@@ -392,7 +409,7 @@ const PropertyListingScreen = ({ route }) => {
           </MapView>
         </View>
 
-        <View style={styles.zoomButtonContainer}>
+        {/* <View style={styles.zoomButtonContainer}>
           <TouchableOpacity
             style={styles.zoomButton}
             onPress={() => {
@@ -422,7 +439,7 @@ const PropertyListingScreen = ({ route }) => {
           >
             <Ionicons name="remove-circle" size={24} color="white" />
           </TouchableOpacity>
-        </View>
+        </View> */}
 
       </ScrollView>
 
@@ -538,11 +555,14 @@ const styles = StyleSheet.create({
   infoWindowTitle: {
     fontWeight: 'bold',
     fontSize: 16,
+    marginHorizontal: 10,
     marginBottom: 4,
   },
   infoWindowText: {
     fontSize: 12,
-    width: '100%',
+    width: '90%',
+    marginHorizontal: 10,
+    marginBottom: 2,
   },
   userProfileImage: {
     width: 50,

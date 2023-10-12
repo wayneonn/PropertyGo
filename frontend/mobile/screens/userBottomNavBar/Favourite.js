@@ -69,6 +69,7 @@ const Favourite = ({ navigation }) => {
       <TextInput
         style={styles.searchBar}
         placeholder="Search by property title"
+        placeholderTextColor="gray"
         onChangeText={(text) => setSearchText(text)}
         value={searchText}
       />

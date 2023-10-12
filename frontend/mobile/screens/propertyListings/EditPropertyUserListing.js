@@ -27,6 +27,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import base64 from 'react-native-base64';
 import { getAreaAndRegion } from '../../services/GetAreaAndRegion';
+import FullScreenImage from './FullScreenImage';
 
 const EditPropertyListing = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -37,6 +38,7 @@ const EditPropertyListing = ({ route }) => {
   const { user } = useContext(AuthContext);
   const [propertyListing, setPropertyListing] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [fullScreenImage, setFullScreenImage] = useState(null);
 
   const [propertyData, setPropertyData] = useState({
     title: '',
@@ -45,6 +47,7 @@ const EditPropertyListing = ({ route }) => {
     bed: '',
     bathroom: '',
     size: '',
+    tenure: '',
     postalCode: '',
     address: '',
     propertyType: '', // You should also initialize propertyType here if it's part of propertyData
@@ -61,7 +64,11 @@ const EditPropertyListing = ({ route }) => {
   );
   const [rawPrice, setRawPrice] = useState(propertyData.price.toString());
 
-
+  const viewImage = (index) => {
+    console.log("View Image: ", images[index].uri)
+    const imageUri = getImageUriById(images[index].uri);
+    setFullScreenImage(`${imageUri}?timestamp=${new Date().getTime()}`)
+  }
 
   const [property, setProperty] = useState({
   });
@@ -150,6 +157,7 @@ const EditPropertyListing = ({ route }) => {
         propertyListingId, // Pass the propertyListingId
         {
           ...propertyData,
+          price: price,
           propertyType: propertyTypeUpperCase,
         }
       );
@@ -262,6 +270,7 @@ const EditPropertyListing = ({ route }) => {
         title: data.title,
         description: data.description,
         price: data.price.toString(),
+        tenure: data.tenure.toString(),
         bed: data.bed.toString(),
         bathroom: data.bathroom.toString(),
         size: data.size.toString(),
@@ -432,6 +441,10 @@ const EditPropertyListing = ({ route }) => {
       'Choose an action for this image:',
       [
         {
+          text: 'View Image',
+          onPress: () => viewImage(index),
+        },
+        {
           text: 'Update',
           onPress: () => handleUpdateImage(index, imageId),
         },
@@ -478,7 +491,11 @@ const EditPropertyListing = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps="handled" // Add this prop
+      >
         <View style={styles.headerContainer}>
           {/* Back button */}
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -522,7 +539,8 @@ const EditPropertyListing = ({ route }) => {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Title</Text>
           <TextInput
-            placeholder="Title"
+            placeholder="Listing Title"
+            placeholderTextColor="gray"
             value={propertyData.title}
             onChangeText={(text) =>
               setPropertyData({ ...propertyData, title: text }) // Fix the object reference to propertyData
@@ -535,6 +553,8 @@ const EditPropertyListing = ({ route }) => {
           <Text style={styles.label}>Price</Text>
           <TextInput
             placeholder="$ Price"
+            placeholderTextColor="gray"
+            keyboardType="numeric"
             value={formattedPrice}
             onChangeText={handlePriceChange}
             style={styles.input}
@@ -546,6 +566,8 @@ const EditPropertyListing = ({ route }) => {
           <Text style={styles.label}>Size (sqm)</Text>
           <TextInput
             placeholder="Size (sqm)"
+            placeholderTextColor="gray"
+            keyboardType="numeric"
             value={propertyData.size}
             onChangeText={(text) =>
               setPropertyData({ ...propertyData, size: text }) // Fix the object reference to propertyData
@@ -555,9 +577,11 @@ const EditPropertyListing = ({ route }) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Bed</Text>
+          <Text style={styles.label}>Bedrooms</Text>
           <TextInput
-            placeholder="Bed"
+            placeholder="Number of Bedrooms"
+            placeholderTextColor="gray"
+            keyboardType="numeric"
             value={propertyData.bed}
             onChangeText={(text) =>
               setPropertyData({ ...propertyData, bed: text }) // Fix the object reference to propertyData
@@ -567,9 +591,11 @@ const EditPropertyListing = ({ route }) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Bathroom</Text>
+          <Text style={styles.label}>Bathrooms</Text>
           <TextInput
-            placeholder="Bathroom"
+           placeholder="Number of Bathrooms"
+           placeholderTextColor="gray"
+           keyboardType="numeric"
             value={propertyData.bathroom}
             onChangeText={(text) =>
               setPropertyData({ ...propertyData, bathroom: text }) // Fix the object reference to propertyData
@@ -582,6 +608,7 @@ const EditPropertyListing = ({ route }) => {
           <Text style={styles.label}>Postal Code</Text>
           <TextInput
             placeholder="Postal Code"
+            placeholderTextColor="gray"
             maxLength={6}
             keyboardType="numeric"
             value={propertyData.postalCode} // Display the postalCode from propertyData
@@ -594,6 +621,7 @@ const EditPropertyListing = ({ route }) => {
           <Text style={styles.label}>Address</Text>
           <TextInput
             placeholder="Address"
+            placeholderTextColor="gray"
             value={propertyData.address}
             onChangeText={(text) =>
               setPropertyData({ ...propertyData, address: text }) // Fix the object reference to propertyData
@@ -605,9 +633,23 @@ const EditPropertyListing = ({ route }) => {
         </View>
 
         <View style={styles.inputContainer}>
+          <Text style={styles.label}>Tenure</Text>
+          <TextInput
+            placeholder="Tenure (e.g. 99 years)"
+            placeholderTextColor="gray"
+            maxLength={3} // Restrict input to 6 characters
+            keyboardType="numeric" // Show numeric keyboard
+            value={propertyData.tenure}
+            onChangeText={(text) => setPropertyData({ ...propertyData, tenure: text })}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
           <Text style={styles.label}>Unit Number</Text>
           <TextInput
-            placeholder="Unit Number"
+            placeholder="Unit Number (e.g. #17-360)"
+            placeholderTextColor="gray"
             value={propertyData.unitNumber}
             onChangeText={(text) =>
               setPropertyData({ ...propertyData, unitNumber: text }) // Fix the object reference to propertyData
@@ -619,7 +661,8 @@ const EditPropertyListing = ({ route }) => {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Description</Text>
           <TextInput
-            placeholder="Description"
+            placeholder="Description of Listing"
+            placeholderTextColor="gray"
             value={propertyData.description}
             onChangeText={(text) =>
               setPropertyData({ ...propertyData, description: text }) // Fix the object reference to propertyData
@@ -656,7 +699,7 @@ const EditPropertyListing = ({ route }) => {
             <Picker
               selectedValue={propertyData.propertyType}
               onValueChange={(value) =>
-                setPropertyData({ ...property, propertyType: value })
+                setPropertyData({ ...propertyData, propertyType: value })
               }
               style={styles.picker}
             >
@@ -682,6 +725,11 @@ const EditPropertyListing = ({ route }) => {
         <Ionicons name="save-outline" size={18} color="white" />
         <Text style={styles.saveChangesButtonText}>Update</Text>
       </TouchableOpacity>
+
+      <FullScreenImage
+        imageUrl={fullScreenImage}
+        onClose={() => setFullScreenImage(null)} // Close the full-screen image view
+      />
 
     </View>
   );
@@ -789,6 +837,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 40,
+  },
+  scrollViewContent: {
+    paddingBottom: 100, // Adjust this value as needed to ensure the input field is visible
   },
 });
 

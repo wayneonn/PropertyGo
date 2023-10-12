@@ -1,17 +1,17 @@
-import React, {useContext, useState} from 'react';
-import {Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
+import React, { useContext, useState } from 'react';
+import { Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {AuthContext} from '../../AuthContext';
-import {loginUser, signUpUser} from '../../utils/api';
-import {useNavigation} from '@react-navigation/native';
+import { AuthContext } from '../../AuthContext';
+import { loginUser, signUpUser } from '../../utils/api';
+import { useNavigation } from '@react-navigation/native';
 
 const countries = [
-    {label: 'Select Country', value: ''},
-    {label: 'Singapore', value: 'Singapore'},
-    {label: 'Indonesia', value: 'Indonesia'},
-    {label: 'Malaysia', value: 'Malaysia'},
+    { label: 'Select Country', value: '' },
+    { label: 'Singapore', value: 'Singapore' },
+    { label: 'Indonesia', value: 'Indonesia' },
+    { label: 'Malaysia', value: 'Malaysia' },
 ];
 
 const SignUpScreen = () => {
@@ -26,7 +26,7 @@ const SignUpScreen = () => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [isCountryPickerVisible, setCountryPickerVisibility] = useState(false);
     const [showPassword, setShowPassword] = useState(false); // Added showPassword state
-    const {login} = useContext(AuthContext);
+    const { login } = useContext(AuthContext);
 
     const handleSignUp = async () => {
         // Add email validation
@@ -95,7 +95,8 @@ const SignUpScreen = () => {
                 handleLogin();
                 Alert.alert('Move on to input your partner details!', 'Signup successful.');
                 // This basically logs them in and brings them to the partnerapp page.
-                navigation.navigate('Intro to Partner App');
+                // Slight lag to make sure it loads fully?
+                setTimeout(() => { navigation.navigate('Intro to Partner App'); }, 500)
             } else if (signUpResult.message) {
                 if (signUpResult.message.includes('Username')) {
                     Alert.alert('Sign Up Failed', 'Username is already taken. Please choose another.');
@@ -118,7 +119,7 @@ const SignUpScreen = () => {
     };
 
     const handleLogin = async () => {
-        const {success, data, message} = await loginUser(userName, password);
+        const { success, data, message } = await loginUser(userName, password);
 
         if (success) {
             login(data); // Use the login function from AuthContext to set the user
@@ -129,154 +130,162 @@ const SignUpScreen = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.headerContainer}>
-                <Image
-                    source={require('../../assets/PropertyGo-HighRes-Logo.png')}
-                    style={styles.headerImage}
-                />
-                <Text style={styles.headerText}>Sign Up (Partner) </Text>
-            </View>
-            <View style={styles.formContainer}>
-                <View style={styles.inputRow}>
-                    <Text style={styles.label}>Full Name:</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Full Name"
-                        placeholderTextColor="black"
-                        value={name}
-                        onChangeText={setName}
+        <View style={styles.containerView}>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.container}
+                keyboardShouldPersistTaps="handled">
+                <View style={styles.headerContainer}>
+                    <Image
+                        source={require('../../assets/PropertyGo-HighRes-Logo.png')}
+                        style={styles.headerImage}
                     />
+                    <Text style={styles.headerText}>Sign Up (Partner) </Text>
                 </View>
-                <View style={styles.inputRow}>
-                    <Text style={styles.label}>User Name:</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="User Name"
-                        placeholderTextColor="black"
-                        value={userName}
-                        onChangeText={setUserName}
-                    />
-                </View>
-                <View style={styles.inputRow}>
-                    <Text style={styles.label}>Password:</Text>
-                    <View style={styles.passwordInputContainer}>
+                <View style={styles.formContainer}>
+                    <View style={styles.inputRow}>
+                        <Text style={styles.label}>Full Name:</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="Password"
+                            placeholder="Full Name"
                             placeholderTextColor="black"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry={!showPassword} // Toggle secureTextEntry based on showPassword
+                            value={name}
+                            onChangeText={setName}
                         />
-                        <TouchableOpacity
-                            style={styles.passwordIcon}
-                            onPress={() => setShowPassword(!showPassword)} // Toggle showPassword state
-                        >
-                            <Icon
-                                name={showPassword ? 'eye' : 'eye-slash'}
-                                size={20}
-                                color="black"
-                            />
-                        </TouchableOpacity>
                     </View>
-                </View>
-                <View style={styles.inputRow}>
-                    <Text style={styles.label}>Confirm Password:</Text>
-                    <View style={styles.passwordInputContainer}>
+                    <View style={styles.inputRow}>
+                        <Text style={styles.label}>User Name:</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="Confirm Password"
+                            placeholder="User Name"
                             placeholderTextColor="black"
-                            value={confirmPassword}
-                            onChangeText={setConfirmPassword}
-                            secureTextEntry={!showPassword} // Toggle secureTextEntry based on showPassword
+                            value={userName}
+                            onChangeText={setUserName}
                         />
                     </View>
-                </View>
-                <View style={styles.inputRow}>
-                    <Text style={styles.label}>Email:</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email"
-                        placeholderTextColor="black"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                    />
-                </View>
-                <View style={styles.inputRow}>
-                    <Text style={styles.label}>Date of Birth:</Text>
-                    <TouchableOpacity
-                        style={styles.datePickerButton}
-                        onPress={() => setDatePickerVisibility(true)}
-                    >
-                        <Text style={styles.pickerText}>
-                            {dateOfBirth ? dateOfBirth.toDateString() : 'Date of Birth'}
-                        </Text>
-                    </TouchableOpacity>
-                    <Modal
-                        transparent={true}
-                        animationType="slide"
-                        visible={isDatePickerVisible}
-                        onRequestClose={() => setDatePickerVisibility(false)}
-                    >
-                        <View style={styles.modalView}>
-                            <DateTimePicker
-                                isVisible={isDatePickerVisible}
-                                mode="date"
-                                onConfirm={(date) => {
-                                    setDateOfBirth(date);
-                                    setDatePickerVisibility(false);
-                                }}
-                                onCancel={() => setDatePickerVisibility(false)}
+                    <View style={styles.inputRow}>
+                        <Text style={styles.label}>Password:</Text>
+                        <View style={styles.passwordInputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Password"
+                                placeholderTextColor="black"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword} // Toggle secureTextEntry based on showPassword
                             />
-                        </View>
-                    </Modal>
-                </View>
-                <View style={styles.inputRow}>
-                    <Text style={styles.label}>Country:</Text>
-                    <TouchableOpacity
-                        style={styles.countryPickerButton}
-                        onPress={() => setCountryPickerVisibility(true)}
-                    >
-                        <Text style={styles.pickerText}>
-                            {selectedCountry || 'Select Country'}
-                        </Text>
-                    </TouchableOpacity>
-                    <Modal
-                        transparent={true}
-                        animationType="slide"
-                        visible={isCountryPickerVisible}
-                        onRequestClose={() => setCountryPickerVisibility(false)}
-                    >
-                        <View style={styles.modalView}>
-                            <Picker
-                                selectedValue={selectedCountry}
-                                onValueChange={(itemValue) => {
-                                    setSelectedCountry(itemValue);
-                                    setCountryPickerVisibility(false);
-                                }}
+                            <TouchableOpacity
+                                style={styles.passwordIcon}
+                                onPress={() => setShowPassword(!showPassword)} // Toggle showPassword state
                             >
-                                {countries.map((country) => (
-                                    <Picker.Item
-                                        key={country.value}
-                                        label={country.label}
-                                        value={country.value}
-                                    />
-                                ))}
-                            </Picker>
+                                <Icon
+                                    name={showPassword ? 'eye' : 'eye-slash'}
+                                    size={20}
+                                    color="black"
+                                />
+                            </TouchableOpacity>
                         </View>
-                    </Modal>
+                    </View>
+                    <View style={styles.inputRow}>
+                        <Text style={styles.label}>Confirm Password:</Text>
+                        <View style={styles.passwordInputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Confirm Password"
+                                placeholderTextColor="black"
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                                secureTextEntry={!showPassword} // Toggle secureTextEntry based on showPassword
+                            />
+                        </View>
+                    </View>
+                    <View style={styles.inputRow}>
+                        <Text style={styles.label}>Email:</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email"
+                            placeholderTextColor="black"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                        />
+                    </View>
+                    <View style={styles.inputRow}>
+                        <Text style={styles.label}>Date of Birth:</Text>
+                        <TouchableOpacity
+                            style={styles.datePickerButton}
+                            onPress={() => setDatePickerVisibility(true)}
+                        >
+                            <Text style={styles.pickerText}>
+                                {dateOfBirth ? dateOfBirth.toDateString() : 'Date of Birth'}
+                            </Text>
+                        </TouchableOpacity>
+                        <Modal
+                            transparent={true}
+                            animationType="slide"
+                            visible={isDatePickerVisible}
+                            onRequestClose={() => setDatePickerVisibility(false)}
+                        >
+                            <View style={styles.modalView}>
+                                <DateTimePicker
+                                    isVisible={isDatePickerVisible}
+                                    mode="date"
+                                    onConfirm={(date) => {
+                                        setDateOfBirth(date);
+                                        setDatePickerVisibility(false);
+                                    }}
+                                    onCancel={() => setDatePickerVisibility(false)}
+                                />
+                            </View>
+                        </Modal>
+                    </View>
+                    <View style={styles.inputRow}>
+                        <Text style={styles.label}>Country:</Text>
+                        <TouchableOpacity
+                            style={styles.countryPickerButton}
+                            onPress={() => setCountryPickerVisibility(true)}
+                        >
+                            <Text style={styles.pickerText}>
+                                {selectedCountry || 'Select Country'}
+                            </Text>
+                        </TouchableOpacity>
+                        <Modal
+                            transparent={true}
+                            animationType="slide"
+                            visible={isCountryPickerVisible}
+                            onRequestClose={() => setCountryPickerVisibility(false)}
+                        >
+                            <View style={styles.modalView}>
+                                <Picker
+                                    selectedValue={selectedCountry}
+                                    onValueChange={(itemValue) => {
+                                        setSelectedCountry(itemValue);
+                                        setCountryPickerVisibility(false);
+                                    }}
+                                >
+                                    {countries.map((country) => (
+                                        <Picker.Item
+                                            key={country.value}
+                                            label={country.label}
+                                            value={country.value}
+                                        />
+                                    ))}
+                                </Picker>
+                            </View>
+                        </Modal>
+                    </View>
                 </View>
-            </View>
-            <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-                <View style={styles.buttonContent}>
-                    <Icon name="user-plus" size={24} color="white" style={styles.icon}/>
-                    <Text style={styles.signUpButtonText}>  Continue</Text>
-                </View>
-            </TouchableOpacity>
-        </ScrollView>
+                <Text style={styles.inputRow}>{"\n\n"}</Text>
+                {/* <Text style={styles.signUpButtonText}>{"\n"}</Text> */}
+
+            </ScrollView>
+                <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+                    <View style={styles.buttonContent}>
+                        <Icon name="user-plus" size={24} color="white" style={styles.icon} />
+                        <Text style={styles.signUpButtonText}>  Continue</Text>
+                    </View>
+                </TouchableOpacity>
+        </View>
     );
 };
 
@@ -287,7 +296,16 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: '#FFFFFF',
     },
+    containerView: {
+        flexGrow: 1,
+        padding: 1,
+        backgroundColor: '#FFFFFF',
+    },
     headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    buttonContainer: {
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -330,7 +348,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 10,
         top: '45%',
-        transform: [{translateY: -12}],
+        transform: [{ translateY: -12 }],
     },
     datePickerButton: {
         height: 40,
@@ -358,13 +376,17 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     signUpButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
+        marginVertical: 10,
+        flexDirection: 'row',
+        backgroundColor: '#1E90FF',
         padding: 15,
         borderRadius: 10,
-        backgroundColor: '#1E90FF',
-        marginVertical: 10,
+        marginBottom: 20,
+        alignItems: 'center', // Center horizontally
+        flexDirection: 'row',
+        justifyContent: 'center', // Center vertically
         width: '60%',
+        marginLeft: 70,
     },
     signUpButtonText: {
         fontSize: 18,
@@ -376,6 +398,13 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginLeft: 10,
+    },
+    scrollViewContent: {
+        paddingBottom: 100, // Adjust this value as needed to ensure the input field is visible
+    },
+    scrollView: {
+        flex: 1,
+        marginBottom: 10, // Adjust this margin to avoid overlap with the navigation bar
     },
 });
 

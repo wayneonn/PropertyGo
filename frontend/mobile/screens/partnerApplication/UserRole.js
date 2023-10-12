@@ -36,7 +36,7 @@ const UserRoleScreen = () => {
                     <View>
                         <Text style={styles.label}>User Role</Text>
                         <Picker
-                            style={{marginTop: -40, marginBottom: -10, borderStyle:"dashed"}}
+                            style={{marginTop: -40, marginBottom: -10, marginRight: 12, borderStyle:"dashed"}}
                             selectedValue={formData.userRole}
                             onValueChange={(itemValue) => {
                                 setFieldValue('userRole', itemValue);
