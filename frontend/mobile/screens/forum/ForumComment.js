@@ -34,7 +34,7 @@ const ForumComment = ({ navigation }) => {
             try {
                 const forumPost = await getAllForumPostById(post.forumPostId);
                 setPost(forumPost);
-                console.log(post)
+                // console.log(post)
 
             } catch (error) {
                 console.error(error);

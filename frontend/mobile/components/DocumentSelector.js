@@ -117,6 +117,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
     // This then uploads the documents you selected.
     // Web: Data stored in URI need to convert to Blob.
     // Mobile: Data stored not in URI can send directly.
+    // TODO: Need to disable the upload function if the selectedDocument is 0.
     const handleUpload = async () => {
         try {
             const fileData = new FormData();
@@ -278,9 +279,14 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
                                 <AntDesign name="addfile" size={24} color="black"/>
                             </TouchableOpacity>
                             <Text> &nbsp;&nbsp;&nbsp; </Text>
-                            <TouchableOpacity onPress={handleUpload}>
-                                <AntDesign name="clouduploado" size={24} color="black"/>
+                            <TouchableOpacity onPress={handleUpload} disabled={selectedDocuments.length === 0}>
+                                <AntDesign
+                                    name={selectedDocuments.length === 0 ? "cloudoff" : "clouduploado"}
+                                    size={24}
+                                    color={selectedDocuments.length === 0 ? "grey" : "black"}
+                                />
                             </TouchableOpacity>
+
                         </View>
                     </>
                 }

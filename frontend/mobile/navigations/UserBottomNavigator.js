@@ -7,6 +7,7 @@ import Forum from '../screens/userBottomNavBar/Forum';
 import Activity from '../screens/userBottomNavBar/Activity';
 import {Ionicons, MaterialCommunityIcons, MaterialIcons} from '@expo/vector-icons';
 import PropertyListingsStackGroup from './PropertyListingsStackGroup';
+import DashboardStackGroup from "./DashboardStackGroup"
 import FavouriteStackGroup from './FavouriteStackGroup';
 import HomeStackGroup from './HomeStackGroup';
 import {AuthContext} from "../AuthContext";
@@ -34,10 +35,12 @@ const UserBottomNavigator = () => {
                         iconName = focused ? "forum" : "forum-outline";
                     } else if (route.name === "Activity") {
                         iconName = focused ? "md-notifications-sharp" : "md-notifications-outline";
+                    } else if (route.name === "Dashboard") {
+                        iconName = "dashboard";
                     }
 
                     const iconComponent =
-                        route.name === "Favourite" ? (
+                        route.name === "Favourite" || route.name === "Dashboard" ? (
                             <MaterialIcons name={iconName} size={size} color={"#FFD700"}/>
                         ) : route.name === "Forum" ? (
                             <MaterialCommunityIcons name={iconName} size={size} color={"#FFD700"}/>
@@ -58,7 +61,10 @@ const UserBottomNavigator = () => {
             <Tab.Screen name={"Home"} component={HomeStackGroup}/>
         }
             <Tab.Screen name="Favourite" component={FavouriteStackGroup} />
-            <Tab.Screen name="Sell" component={PropertyListingsStackGroup} />
+            {["LAWYER", "CONTRACTOR", "PROPERTY AGENT"].includes(user.user.userType) ?
+                <Tab.Screen name={"Dashboard"} component={DashboardStackGroup}/> :
+                <Tab.Screen name="Sell" component={PropertyListingsStackGroup} />
+            }
             <Tab.Screen name="Forum" component={Forum} />
             <Tab.Screen name="Activity" component={Activity} />
         </Tab.Navigator>

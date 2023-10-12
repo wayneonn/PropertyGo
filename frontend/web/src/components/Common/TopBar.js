@@ -70,12 +70,16 @@ const TopBar = () => {
 
       const today = new Date().toDateString();
 
-      const filteredNotifications = notifications.filter((notification) => {
+      const adminNotifications = notifications.filter((notification) => {
+        return (notification.adminId == localStorage.getItem("loggedInAdmin") || (notification.userId !== null && notification.adminId === null));
+      });
+
+      const filteredNotifications = adminNotifications.filter((notification) => {
         const createdAtDate = new Date(notification.createdAt).toDateString();
         return createdAtDate === today;
       }).filter((notification) => {
         return notification.hasRead !== true;
-      }) .sort((a, b) => {
+      }).sort((a, b) => {
         const timestampA = new Date(a.createdAt).getTime();
         const timestampB = new Date(b.createdAt).getTime();
         return timestampB - timestampA;
@@ -208,7 +212,7 @@ const TopBar = () => {
           }}
         />
       </div>
-      <div style={{marginTop: "8em"}}>
+      <div style={{ marginTop: "8em" }}>
         <Row>
           <Col xs={6}>
             <Toast

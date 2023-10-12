@@ -41,6 +41,7 @@ const AddForumTopicModal = ({ isVisible, onCancel, onSubmit, forumTopics }) => {
                             value={topicName}
                             onChangeText={handleTopicNameChange}
                         />
+                        {forumTopics && forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase()) ? <Text style={styles.warningLabel}>Topic Name Exist!</Text> : null }
                     </View>
                     <View style={styles.buttonContainer}>
                         <TouchableHighlight
@@ -54,11 +55,11 @@ const AddForumTopicModal = ({ isVisible, onCancel, onSubmit, forumTopics }) => {
                             style={[
                                 styles.button,
                                 { backgroundColor: '#FFD700' }, // Yellow background for submit button
-                                (topicName.trim() === '' || forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase())) && styles.buttonDisabled, // disabled when topicName is empty
+                                forumTopics && (topicName.trim() === '' || forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase())) && styles.buttonDisabled, // disabled when topicName is empty
                             ]}
                             onPress={handleSubmit}
                             underlayColor="#EAEAEA"
-                            disabled={(topicName.trim() === '' || forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase()))} // Disable the button if topicName is empty
+                            disabled={(forumTopics && (topicName.trim() === '' || forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase())))}
                         >
                             <Text style={styles.buttonText}>Submit</Text>
                         </TouchableHighlight>
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderColor: '#ccc',
         borderWidth: 1,
-        marginBottom: 10,
+        // marginBottom: 10,
         paddingHorizontal: 10,
         paddingVertical: 12,
         width: '100%', // Make the input take full width
@@ -114,6 +115,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '90%',
+        marginTop: 10,
     },
     button: {
         width: '45%', // Set button width
@@ -128,6 +130,14 @@ const styles = StyleSheet.create({
     buttonDisabled: {
         opacity: 0.5,
         backgroundColor: 'gray',
+    },
+    warningLabel: {
+        fontSize: 14,
+        // marginTop: 10,
+        // marginBottom: 5,
+        textAlign: 'left',
+        alignSelf: 'flex-start',
+        color: "red",
     },
 });
 

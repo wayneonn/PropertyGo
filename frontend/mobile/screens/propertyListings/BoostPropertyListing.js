@@ -4,8 +4,9 @@ import { AuthContext } from '../../AuthContext';
 import { getUserById, editProperty, getPropertyListing, updateUserProfile } from '../../utils/api';
 import PropertyCard from './PropertyCardRectangle'; // Import your PropertyCard component
 import BoostOptionCard from './BoostOptionCard';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
 
 
 const BoostListingScreen = ({ route, navigation }) => {
@@ -18,13 +19,13 @@ const BoostListingScreen = ({ route, navigation }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-          console.log('Home page gained focus');
-          if (user && user.user) {
-            fetchUserData(user.user.userId);
-            fetchPropertyListingData(propertyListingId);
-        }
+            console.log('Home page gained focus');
+            if (user && user.user) {
+                fetchUserData(user.user.userId);
+                fetchPropertyListingData(propertyListingId);
+            }
         }, [])
-      );
+    );
 
     // Fetch user data by userId
     const fetchUserData = async (userId) => {
@@ -67,6 +68,23 @@ const BoostListingScreen = ({ route, navigation }) => {
         }
         console.log('Property Listing Data:', propertyListing);
     }, [user]);
+
+    const [currentColor, setCurrentColor] = useState('blue'); // Initial color
+    const colors = ['red', 'green', 'blue', 'orange']; // Define your desired colors
+    const animationDuration = 1000; // Duration for each color change (in milliseconds)
+
+    useEffect(() => {
+        // Create a timer to change the color at regular intervals
+        const colorChangeTimer = setInterval(() => {
+            // Get the next color in the array
+            const nextColorIndex = (colors.indexOf(currentColor) + 1) % colors.length;
+            const nextColor = colors[nextColorIndex];
+            setCurrentColor(nextColor);
+        }, animationDuration);
+
+        // Clear the timer when the component unmounts
+        return () => clearInterval(colorChangeTimer);
+    }, [currentColor]);
 
     // Define the boost options
     const boostOptions = [
@@ -196,10 +214,10 @@ const BoostListingScreen = ({ route, navigation }) => {
         const currentDate = new Date();
         const boostStartDate = property.boostListingStartDate ? new Date(property.boostListingStartDate) : null;
         const boostEndDate = property.boostListingEndDate ? new Date(property.boostListingEndDate) : null;
-    
+
         if (boostStartDate && boostEndDate) {
             const isActive = boostStartDate <= currentDate && boostEndDate >= currentDate;
-    
+
             return {
                 isActive,
                 validTill: boostEndDate,
@@ -211,7 +229,7 @@ const BoostListingScreen = ({ route, navigation }) => {
                 validTill: null,
             };
         }
-    };    
+    };
 
     // Inside your BoostListingScreen component
     return (
@@ -225,21 +243,24 @@ const BoostListingScreen = ({ route, navigation }) => {
             </View>
             {propertyListing && (
                 <>
-                    <Text style={styles.tokenAmountText}>{`Your Tokens: ${userData ? userData.token : 0}`}</Text>
+                    <Text style={styles.tokenAmountText}>{"\nYour Token Amount: "}
+                        <Text style={styles.bold}>{`${userData ? userData.token : 0}`}{" "}</Text><FontAwesome5 name="coins" size={20} color="black" />
+                    </Text>
+                    {/* <Text style={styles.tokenAmountText}>{`Your Tokens: ${userData ? userData.token : 0}`}</Text> */}
 
                     {/* Boost Status */}
                     {(
-                            <View style={styles.boostStatusContainer}>
-                                <Ionicons
-                                    name={calculateBoostStatus(propertyListing).isActive ? 'checkmark-circle' : 'close-circle'}
-                                    size={24}
-                                    color={calculateBoostStatus(propertyListing).isActive ? 'green' : 'red'}
-                                />
-                                <Text style={styles.boostStatusText}>
-                                    {calculateBoostStatus(propertyListing).isActive ? 'Active' : 'Inactive'}
-                                </Text>
-                            </View>
-                        )}
+                        <View style={styles.boostStatusContainer}>
+                            <Ionicons
+                                name={calculateBoostStatus(propertyListing).isActive ? 'checkmark-circle' : 'close-circle'}
+                                size={24}
+                                color={calculateBoostStatus(propertyListing).isActive ? 'green' : 'red'}
+                            />
+                            <Text style={styles.boostStatusText}>
+                                {calculateBoostStatus(propertyListing).isActive ? 'Active' : 'Inactive'}
+                            </Text>
+                        </View>
+                    )}
 
                     {/* Boost Listing Date Valid Till */}
                     {propertyListing.boostListingEndDate && (
@@ -254,6 +275,21 @@ const BoostListingScreen = ({ route, navigation }) => {
                                     minute: '2-digit',
                                 }
                             )}`}
+                        </Text>
+                    )}
+
+                    {!propertyListing.boostListingEndDate && (
+                        <Text style={styles.description}>
+                            {/* {"\nLooking to grab more attention for your listings? Introducing our new and exciting Bump Listing feature! 🌟"} */}
+                            {"Here's why you should consider using the Bump Listing Feature: "}
+                            <Text style={styles.headerDescription}>{"\n\n🚀 Boost Visibility: "}</Text>{"Listings with the Lightning Bolt are given premium placement, ensuring that your property is one of the first things users see when they browse our platform. Say goodbye to being buried in the search results!"}
+                            <Text style={styles.headerDescription}>{"\n\n"}</Text>
+                            <Text style={styles.headerDescription}>
+                                <Animatable.View animation="jello" easing="ease-out" iterationCount="infinite">
+                                    <Ionicons name="flash" size={24} color={currentColor} style={{}} />
+                                </Animatable.View>{"Highlight Your Listing:  "}</Text>{"The striking lightning icon signals that your property is something special. It's a visual cue that your listing offers unique value, whether it's an incredible deal, a stunning location, or standout features."}
+                            <Text style={styles.headerDescription}>{"\n\n💰 Maximize Your Earnings: "}</Text>{" In a competitive market, getting noticed is crucial. By using the Lightning Bolt, you're investing in the success of your listing, which can lead to quicker sales or rentals."}
+                            {"\n\nDon't miss out on this opportunity to boost your listing's visibility. Try the Lightning Bolt feature today and see the results for yourself!  "}
                         </Text>
                     )}
 
@@ -327,6 +363,24 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: 'center',
         marginBottom: 16,
+    },
+    description: {
+        fontSize: 13,
+        // textAlign: 'center',
+        // marginHorizontal: 20,
+        marginRight: 20,
+        marginLeft: 25,
+        marginBottom: 16,
+        letterSpacing: 0.4,
+    },
+    headerDescription: {
+        fontSize: 13,
+        fontWeight: 'bold',
+        marginHorizontal: 20,
+        marginBottom: 16,
+    },
+    bold: {
+        fontWeight: 'bold',
     },
 });
 
