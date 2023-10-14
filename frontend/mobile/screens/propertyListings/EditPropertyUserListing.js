@@ -106,7 +106,7 @@ const EditPropertyListing = ({ route }) => {
     console.log('Raw price:', rawPrice);
     const price = rawPrice ? parseInt(rawPrice, 10) : 0;
     console.log('Parsed price:', price);
-    if (!propertyData.price || propertyData.price <= 0) {
+    if (!price|| price <= 0) {
       Alert.alert('Invalid Price', 'Price must be a numeric value.');
       return;
     }
