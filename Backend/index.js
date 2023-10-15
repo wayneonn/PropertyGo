@@ -68,7 +68,9 @@ const forumPostUserRouter = require("./routes/user/forumPostRoute");
 const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
 const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
 const reviewRoute = require("./routes/user/reviewRoute");
-const faqRoute = require("./routes/user/faqRoute")
+const faqRoute = require("./routes/user/faqRoute");
+const scheduleRoute = require("./routes/user/scheduleRoute");
+const viewingAvailabilityRoute = require("./routes/user/viewingAvailabilityRoute");
 const e = require("express");
 
 app.use(cors());
@@ -121,6 +123,16 @@ io.on("connection", (socket) => {
 app.use(
   "/property",
   propertyRoute,
+);
+
+app.use(
+  "/schedule",
+  scheduleRoute,
+);
+
+app.use(
+  "/viewingAvailability",
+  viewingAvailabilityRoute,
 );
 
 app.use(
