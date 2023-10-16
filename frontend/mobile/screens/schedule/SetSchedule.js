@@ -11,7 +11,8 @@ import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { createViewingAvailability, getViewingAvailabilityByDateAndPropertyId, getViewingAvailabilityByPropertyId } from '../../utils/scheduleApi';
+import { createViewingAvailability, getViewingAvailabilityByDateAndPropertyId, 
+    getViewingAvailabilityByPropertyId, updateViewingAvailability } from '../../utils/scheduleApi';
 
 const SetSchedule = ({ route }) => {
     const { propertyListingId } = route.params;
@@ -27,43 +28,63 @@ const SetSchedule = ({ route }) => {
     // Define selected date state
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [availability, setAvailability] = useState([]);
+    const [isToBeUpdated, setIsToBeUpdated] = useState(false);
+    const [viewingAvailabilityId, setViewingAvailabilityId] = useState(null);
 
     useEffect(() => {
         fetchViewingAvailabilityByDateAndPropertyId();
         fetchViewingAvailabilityByPropertyId();
-        
+
     }, [selectedDate]);
 
     const fetchViewingAvailabilityByDateAndPropertyId = async () => {
         console.log('selectedDate: ', selectedDate)
         const { success, data, message } = await getViewingAvailabilityByDateAndPropertyId(
-            selectedDate, 
-            propertyListingId 
-          );
-      
-          if (success) {
+            selectedDate,
+            propertyListingId
+        );
+
+        if (success) {
             // console.log('data: ', data);
+
+            setIsToBeUpdated(true);
             setStartTimePickerDisplay(convertTimeTo12HourFormat(data[0].startTimeSlot))
             setEndTimePickerDisplay(convertTimeTo12HourFormat(data[0].endTimeSlot))
-          } else {
+            setStartTime(convertToDateTime(data[0].startTimeSlot))
+            setEndTime(convertToDateTime(data[0].endTimeSlot))
+            setViewingAvailabilityId(data[0].viewingAvailabilityId)
+        } else {
             console.error('Error:', message);
+            setIsToBeUpdated(false);
             setStartTimePickerDisplay(null);
             setEndTimePickerDisplay(null);
-          }
+        }
+    }
+
+    const convertToDateTime = (timeString) => {
+
+        const [hours, minutes, seconds] = timeString.split(':');
+        const formattedDate = new Date();
+        formattedDate.setHours(parseInt(hours, 10));
+        formattedDate.setMinutes(parseInt(minutes, 10));
+        formattedDate.setSeconds(parseInt(seconds, 10));
+
+        console.log("convertToDateTime: ", formattedDate)
+        return formattedDate;
     }
 
     const fetchViewingAvailabilityByPropertyId = async () => {
         // console.log('selectedDate: ', selectedDate)
         const { success, data, message } = await getViewingAvailabilityByPropertyId(
-            propertyListingId 
-          );
-      
-          if (success) {
+            propertyListingId
+        );
+
+        if (success) {
             console.log('data: ', data);
             setAvailability(data);
-          } else {
+        } else {
             console.error('Error fetchViewingAvailabilityByPropertyId:', message);
-          }
+        }
     }
 
     // Function to handle time slot selection
@@ -79,16 +100,16 @@ const SetSchedule = ({ route }) => {
         const [hours, minutes, seconds] = time.split(":");
         let period = "AM";
         let formattedHours = parseInt(hours);
-      
+
         if (formattedHours >= 12) {
-          period = "PM";
-          if (formattedHours > 12) {
-            formattedHours -= 12;
-          }
+            period = "PM";
+            if (formattedHours > 12) {
+                formattedHours -= 12;
+            }
         }
-      
+
         return `${formattedHours}:${minutes} ${period}`;
-      }
+    }
 
     // Handle time picker confirm for start time
     const handleStartTimeConfirm = (time) => {
@@ -164,54 +185,79 @@ const SetSchedule = ({ route }) => {
             Alert.alert('Incomplete Information', 'Please select a date, start time, and end time.');
             return;
         }
-
+        console.log("selectedDate --", selectedDate)
         // Create the viewing availability object to be submitted
         const availabilityData = {
             propertyListingId: propertyListingId,
-            date: selectedDate.toISOString().slice(0, 10), // Extract and format date component as DATEONLY
+            date: selectedDate,
+            // date: selectedDate.toISOString().slice(0, 10), // Extract and format date component as DATEONLY
             startTimeSlot: startTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
             endTimeSlot: endTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }), // Extract and format time component as TIME
         };
 
         // Call the API to create the viewing availability
         // Replace createViewingAvailability with your actual API call
-        const response = await createViewingAvailability(availabilityData);
 
-        // Placeholder response for testing
-        // const response = { success: true };
+        if (isToBeUpdated == false) {
+            const response = await createViewingAvailability(availabilityData);
 
-        if (response.success) {
-            // Show a success alert
-            Alert.alert('Success', 'Availability added successfully.');
+            // Placeholder response for testing
+            // const response = { success: true };
 
-            // Clear selected time and time range
-            setSelectedTime(null);
-            setStartTime(null);
-            setEndTime(null);
+            if (response.success) {
+                // Show a success alert
+                Alert.alert('Success', 'Availability added successfully.');
 
-            // Refresh the screen to reflect the new date
-            setSelectedDate(new Date());
+                // Clear selected time and time range
+                setSelectedTime(null);
+                setStartTime(null);
+                setEndTime(null);
 
-            // You can also navigate back to a different screen if needed
-            // navigation.navigate('SomeOtherScreen');
+                // Refresh the screen to reflect the new date
+                setSelectedDate(new Date());
+
+                // You can also navigate back to a different screen if needed
+                // navigation.navigate('SomeOtherScreen');
+            } else {
+                Alert.alert('Error', 'Failed to add availability. Please try again later.');
+            }
         } else {
-            Alert.alert('Error', 'Failed to add availability. Please try again later.');
+            const response = await updateViewingAvailability(availabilityData, viewingAvailabilityId);
+            if (response.success) {
+                // Show a success alert
+                Alert.alert('Success', 'Availability successfully updated.');
+
+                // Clear selected time and time range
+                setSelectedTime(null);
+                setStartTime(null);
+                setEndTime(null);
+
+                // Refresh the screen to reflect the new date
+                setSelectedDate(new Date());
+
+                // You can also navigate back to a different screen if needed
+                // navigation.navigate('SomeOtherScreen');
+            } else {
+                Alert.alert('Error', 'Failed to add availability. Please try again later.');
+                console.log("Error: ", response.message)
+            }
+            console.log("Not to be updated");
         }
     };
 
     const getMarkedDates = () => {
         const markedDates = {};
-    
+
         // Loop through the data and mark the dates
         availability.forEach((availability) => {
             const date = availability.date; // Get the date from the fetched data
-    
+
             // Specify how you want to mark the date
-            
+
             markedDates[date] = { selected: true, selectedColor: 'green' };
             markedDates[selectedDate] = { selected: true, selectedColor: 'blue' };
         });
-    
+
         return markedDates;
     };
 

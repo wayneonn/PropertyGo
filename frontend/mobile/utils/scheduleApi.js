@@ -68,6 +68,29 @@ export const createViewingAvailability = async (availabilityData) => {
   }
 };
 
+export const updateViewingAvailability = async (availabilityData, availabilityId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${VIEWING_AVAILABILITY_ENDPOINT}/${availabilityId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(availabilityData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+  
+
 export const getViewingAvailabilityById = async (availabilityId) => {
   try {
     const response = await fetch(`${BASE_URL}/${VIEWING_AVAILABILITY_ENDPOINT}/${availabilityId}`, {
