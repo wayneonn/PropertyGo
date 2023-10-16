@@ -88,3 +88,46 @@ export const getViewingAvailabilityById = async (availabilityId) => {
     return { success: false, message: error.message };
   }
 };
+
+export const getViewingAvailabilityByDateAndPropertyId = async (date, propertyId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${VIEWING_AVAILABILITY_ENDPOINT}/date-property?date=${date}&propertyId=${propertyId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+  
+  export const getViewingAvailabilityByPropertyId = async (propertyId) => {
+
+    try {
+      const response = await fetch(`${BASE_URL}/${VIEWING_AVAILABILITY_ENDPOINT}/property?propertyId=${propertyId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -11,7 +11,7 @@ import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { createViewingAvailability } from '../../utils/scheduleApi';
+import { createViewingAvailability, getViewingAvailabilityByDateAndPropertyId, getViewingAvailabilityByPropertyId } from '../../utils/scheduleApi';
 
 const SetSchedule = ({ route }) => {
     const { propertyListingId } = route.params;
@@ -24,7 +24,47 @@ const SetSchedule = ({ route }) => {
     const [endTimePickerDisplay, setEndTimePickerDisplay] = useState(null);
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
+    // Define selected date state
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [availability, setAvailability] = useState([]);
 
+    useEffect(() => {
+        fetchViewingAvailabilityByDateAndPropertyId();
+        fetchViewingAvailabilityByPropertyId();
+        
+    }, [selectedDate]);
+
+    const fetchViewingAvailabilityByDateAndPropertyId = async () => {
+        console.log('selectedDate: ', selectedDate)
+        const { success, data, message } = await getViewingAvailabilityByDateAndPropertyId(
+            selectedDate, 
+            propertyListingId 
+          );
+      
+          if (success) {
+            // console.log('data: ', data);
+            setStartTimePickerDisplay(convertTimeTo12HourFormat(data[0].startTimeSlot))
+            setEndTimePickerDisplay(convertTimeTo12HourFormat(data[0].endTimeSlot))
+          } else {
+            console.error('Error:', message);
+            setStartTimePickerDisplay(null);
+            setEndTimePickerDisplay(null);
+          }
+    }
+
+    const fetchViewingAvailabilityByPropertyId = async () => {
+        // console.log('selectedDate: ', selectedDate)
+        const { success, data, message } = await getViewingAvailabilityByPropertyId(
+            propertyListingId 
+          );
+      
+          if (success) {
+            console.log('data: ', data);
+            setAvailability(data);
+          } else {
+            console.error('Error fetchViewingAvailabilityByPropertyId:', message);
+          }
+    }
 
     // Function to handle time slot selection
     const handleTimeSlotSelect = (time) => {
@@ -35,45 +75,60 @@ const SetSchedule = ({ route }) => {
         }
     };
 
-// Handle time picker confirm for start time
-const handleStartTimeConfirm = (time) => {
-    const minutes = time.getMinutes();
-    const roundedMinutes = Math.round(minutes / 30) * 30; // Round to the nearest 30 minutes
-    time.setMinutes(roundedMinutes); // Update the minutes part of the time
-    const selectedStartTime = new Date(time); // Convert to Date object
-    const selectedEndTime = endTimePickerDisplay ? new Date(endTimePickerDisplay) : null;
-    console.log("selectedEndTime", endTime)
-    console.log("selectedStartTime", selectedStartTime)
-    // Check if the selected start time is later than the current end time
-    if (endTime && selectedStartTime >= endTime) {
-        Alert.alert('Invalid Time', 'Start time cannot be later than or equal to end time.');
-    } else {
-        const formattedTime = selectedStartTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        setStartTime(selectedStartTime);
-        setStartTimePickerDisplay(formattedTime);
-        setStartTimePickerVisible(false);
-    }
-};
+    function convertTimeTo12HourFormat(time) {
+        const [hours, minutes, seconds] = time.split(":");
+        let period = "AM";
+        let formattedHours = parseInt(hours);
+      
+        if (formattedHours >= 12) {
+          period = "PM";
+          if (formattedHours > 12) {
+            formattedHours -= 12;
+          }
+        }
+      
+        return `${formattedHours}:${minutes} ${period}`;
+      }
 
-// Handle time picker confirm for end time
-const handleEndTimeConfirm = (time) => {
-    const minutes = time.getMinutes();
-    const roundedMinutes = Math.round(minutes / 30) * 30; // Round to the nearest 30 minutes
-    time.setMinutes(roundedMinutes); // Update the minutes part of the time
-    const selectedEndTime = new Date(time); // Convert to Date object
-    const selectedStartTime = startTimePickerDisplay ? new Date(startTimePickerDisplay) : null;
-    console.log("selectedEndTime", selectedEndTime)
-    console.log("selectedStartTime", startTime)
-    // Check if the selected end time is earlier than the current start time
-    if (startTime && selectedEndTime <= startTime) {
-        Alert.alert('Invalid Time', 'End time cannot be earlier than or equal to start time.');
-    } else {
-        const formattedTime = selectedEndTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        setEndTime(selectedEndTime);
-        setEndTimePickerDisplay(formattedTime);
-        setEndTimePickerVisible(false);
-    }
-};
+    // Handle time picker confirm for start time
+    const handleStartTimeConfirm = (time) => {
+        const minutes = time.getMinutes();
+        const roundedMinutes = Math.round(minutes / 30) * 30; // Round to the nearest 30 minutes
+        time.setMinutes(roundedMinutes); // Update the minutes part of the time
+        const selectedStartTime = new Date(time); // Convert to Date object
+        const selectedEndTime = endTimePickerDisplay ? new Date(endTimePickerDisplay) : null;
+        console.log("selectedEndTime", endTime)
+        console.log("selectedStartTime", selectedStartTime)
+        // Check if the selected start time is later than the current end time
+        if (endTime && selectedStartTime >= endTime) {
+            Alert.alert('Invalid Time', 'Start time cannot be later than or equal to end time.');
+        } else {
+            const formattedTime = selectedStartTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            setStartTime(selectedStartTime);
+            setStartTimePickerDisplay(formattedTime);
+            setStartTimePickerVisible(false);
+        }
+    };
+
+    // Handle time picker confirm for end time
+    const handleEndTimeConfirm = (time) => {
+        const minutes = time.getMinutes();
+        const roundedMinutes = Math.round(minutes / 30) * 30; // Round to the nearest 30 minutes
+        time.setMinutes(roundedMinutes); // Update the minutes part of the time
+        const selectedEndTime = new Date(time); // Convert to Date object
+        const selectedStartTime = startTimePickerDisplay ? new Date(startTimePickerDisplay) : null;
+        console.log("selectedEndTime", selectedEndTime)
+        console.log("selectedStartTime", startTime)
+        // Check if the selected end time is earlier than the current start time
+        if (startTime && selectedEndTime <= startTime) {
+            Alert.alert('Invalid Time', 'End time cannot be earlier than or equal to start time.');
+        } else {
+            const formattedTime = selectedEndTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            setEndTime(selectedEndTime);
+            setEndTimePickerDisplay(formattedTime);
+            setEndTimePickerVisible(false);
+        }
+    };
 
     // Generate time slots in 1-hour intervals
     const generateTimeSlots = () => {
@@ -90,9 +145,6 @@ const handleEndTimeConfirm = (time) => {
         return timeSlots;
     };
 
-    // Define selected date state
-    const [selectedDate, setSelectedDate] = useState(new Date());
-
     // Function to handle day press in the calendar
     const handleDayPress = (day) => {
         setSelectedDate(day.dateString);
@@ -105,10 +157,6 @@ const handleEndTimeConfirm = (time) => {
         const options = { day: '2-digit', month: 'long', year: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
-
-    console.log("selectedTime", selectedTime)
-    console.log("startTimePickerDisplay", startTime)
-    console.log("endTimePickerDisplay", endTime)
 
     const handleSubmit = async () => {
         if (!selectedDate || !startTimePickerDisplay || !endTimePickerDisplay) {
@@ -151,6 +199,22 @@ const handleEndTimeConfirm = (time) => {
         }
     };
 
+    const getMarkedDates = () => {
+        const markedDates = {};
+    
+        // Loop through the data and mark the dates
+        availability.forEach((availability) => {
+            const date = availability.date; // Get the date from the fetched data
+    
+            // Specify how you want to mark the date
+            
+            markedDates[date] = { selected: true, selectedColor: 'green' };
+            markedDates[selectedDate] = { selected: true, selectedColor: 'blue' };
+        });
+    
+        return markedDates;
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView
@@ -182,9 +246,7 @@ const handleEndTimeConfirm = (time) => {
                             dayTextColor: '#2d4150',
                             textDisabledColor: '#d9e1e8',
                         }}
-                        markedDates={{
-                            [selectedDate]: { selected: true, selectedColor: 'blue' },
-                        }}
+                        markedDates={getMarkedDates()}
                     />
                 </View>
 

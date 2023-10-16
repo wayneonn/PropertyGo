@@ -90,10 +90,34 @@ async function getViewingAvailabilityByDateAndPropertyId(req, res) {
     }
 }
 
+async function getViewingAvailabilityByPropertyId(req, res) {
+    const { propertyId } = req.query;
+
+    try {
+        // Query the database to find viewing availability for the specified date and property ID
+        const availability = await ViewingAvailability.findAll({
+            where: {
+                propertyListingId: propertyId,
+            },
+        });
+
+        if (!availability || availability.length === 0) {
+            return res.status(404).json({ error: 'Viewing availability not found for the specified property ID' });
+        }
+
+        res.json(availability);
+    } catch (error) {
+        console.error('Error fetching viewing availability by property ID:', error);
+        res.status(500).json({ error: 'Error fetching viewing availability by property ID' });
+    }
+}
+
+
 module.exports = {
     createViewingAvailability,
     getViewingAvailabilityById,
     updateViewingAvailability,
     deleteViewingAvailability,
     getViewingAvailabilityByDateAndPropertyId,
+    getViewingAvailabilityByPropertyId
 };
