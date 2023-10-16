@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {
-    createViewingAvailability,
+    createSchedule,
     getViewingAvailabilityByDateAndPropertyId,
     getViewingAvailabilityByPropertyId,
     removeViewingAvailability,
@@ -25,6 +25,7 @@ const SetSchedule = ({ route }) => {
     const navigation = useNavigation();
 
     const [selectedTime, setSelectedTime] = useState(null);
+    const [selectedSchedule, setSelectedSchedule] = useState(null);
     const [startTimePickerVisible, setStartTimePickerVisible] = useState(false);
     const [endTimePickerVisible, setEndTimePickerVisible] = useState(false);
     const [startTimePickerDisplay, setStartTimePickerDisplay] = useState(null);
@@ -50,17 +51,13 @@ const SetSchedule = ({ route }) => {
         );
 
         if (success) {
-            setIsToBeUpdated(true);
-            setStartTimePickerDisplay(convertTimeTo12HourFormat(data[0].startTimeSlot));
-            setEndTimePickerDisplay(convertTimeTo12HourFormat(data[0].endTimeSlot));
+            // setIsToBeUpdated(true);
             setStartTime(convertToDateTime(data[0].startTimeSlot));
             setEndTime(convertToDateTime(data[0].endTimeSlot));
             setViewingAvailabilityId(data[0].viewingAvailabilityId);
         } else {
             console.error('Error:', message);
             setIsToBeUpdated(false);
-            setStartTimePickerDisplay(null);
-            setEndTimePickerDisplay(null);
         }
     };
 
@@ -89,8 +86,27 @@ const SetSchedule = ({ route }) => {
 
     // Function to handle time slot selection
     const handleTimeSlotSelect = (time) => {
+        // Combine the selected date with the parsed time to create a DateTime object
+        const selectedDateTime = new Date(selectedDate);
+        const [timeWithoutAmPm, period] = time.split(' '); // Split time and AM/PM
+        const [hours, minutes] = timeWithoutAmPm.split(':').map(Number);
+
+        // Calculate adjusted hours for PM
+        let adjustedHours = hours;
+        if (period === 'PM' && hours !== 12) {
+            adjustedHours += 12;
+        } else if (period === 'AM' && hours === 12) {
+            adjustedHours = 0; // Midnight (12:00 AM) is represented as 0 in 24-hour format
+        }
+
+        selectedDateTime.setHours(adjustedHours);
+        selectedDateTime.setMinutes(minutes);
+
         setSelectedTime(time);
+        setSelectedSchedule(selectedDateTime);
+        // console.log('setSelectedTime:', selectedDateTime);
     };
+
 
     function convertTimeTo12HourFormat(time) {
         const [hours, minutes, seconds] = time.split(':');
@@ -106,48 +122,6 @@ const SetSchedule = ({ route }) => {
 
         return `${formattedHours}:${minutes} ${period}`;
     }
-
-    // Handle time picker confirm for start time
-    const handleStartTimeConfirm = (time) => {
-        const minutes = time.getMinutes();
-        const roundedMinutes = Math.round(minutes / 30) * 30; // Round to the nearest 30 minutes
-        time.setMinutes(roundedMinutes); // Update the minutes part of the time
-        const selectedStartTime = new Date(time); // Convert to Date object
-
-        // Check if the selected start time is later than the current end time
-        if (endTime && selectedStartTime >= endTime) {
-            Alert.alert('Invalid Time', 'Start time cannot be later than or equal to end time.');
-        } else {
-            const formattedTime = selectedStartTime.toLocaleTimeString([], {
-                hour: 'numeric',
-                minute: '2-digit',
-            });
-            setStartTime(selectedStartTime);
-            setStartTimePickerDisplay(formattedTime);
-            setStartTimePickerVisible(false);
-        }
-    };
-
-    // Handle time picker confirm for end time
-    const handleEndTimeConfirm = (time) => {
-        const minutes = time.getMinutes();
-        const roundedMinutes = Math.round(minutes / 30) * 30; // Round to the nearest 30 minutes
-        time.setMinutes(roundedMinutes); // Update the minutes part of the time
-        const selectedEndTime = new Date(time); // Convert to Date object
-
-        // Check if the selected end time is earlier than the current start time
-        if (startTime && selectedEndTime <= startTime) {
-            Alert.alert('Invalid Time', 'End time cannot be earlier than or equal to start time.');
-        } else {
-            const formattedTime = selectedEndTime.toLocaleTimeString([], {
-                hour: 'numeric',
-                minute: '2-digit',
-            });
-            setEndTime(selectedEndTime);
-            setEndTimePickerDisplay(formattedTime);
-            setEndTimePickerVisible(false);
-        }
-    };
 
     // Generate hourly time slots between start and end times
     const generateTimeSlots = () => {
@@ -182,51 +156,35 @@ const SetSchedule = ({ route }) => {
     };
 
     const handleSubmit = async () => {
-        if (!selectedDate || !startTimePickerDisplay || !endTimePickerDisplay) {
+        if (!selectedDate || !selectedTime) {
             // Check if all fields are filled
             Alert.alert('Incomplete Information', 'Please select a date, start time, and end time.');
             return;
         }
 
         // Create the viewing availability object to be submitted
-        const availabilityData = {
-            propertyListingId: propertyListingId,
-            date: selectedDate,
-            startTimeSlot: startTime.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-            }),
-            endTimeSlot: endTime.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-            }),
+        const scheduleData = {
+            meetup: selectedSchedule
         };
 
         // Call the API to create or update the viewing availability
         let response;
 
         if (isToBeUpdated === false) {
-            response = await createViewingAvailability(availabilityData);
+            response = await createSchedule(scheduleData);
+            if (response.success) {
+                Alert.alert('Success', 'Schedule booked successfully.');
+            } else {
+                Alert.alert('Error', 'Failed to book. Please try again later.');
+            }
         } else {
-            response = await updateViewingAvailability(availabilityData, viewingAvailabilityId);
-        }
-
-        if (response.success) {
-            // Show a success alert
-            Alert.alert('Success', isToBeUpdated ? 'Availability updated successfully.' : 'Availability added successfully.');
-
-            // Clear selected time and time range
-            setSelectedTime(null);
-            setStartTime(null);
-            setEndTime(null);
-
-            // Refresh the screen to reflect the new date
-            setSelectedDate(new Date());
-        } else {
-            Alert.alert('Error', 'Failed to save availability. Please try again later.');
-            console.log('Error:', response.message);
+            Alert.alert('Success', 'Schedule updated successfully.');
+            response = await updateViewingAvailability(scheduleData, viewingAvailabilityId);
+            if (response.success) {
+                Alert.alert('Success', 'Schedule updated successfully.');
+            } else {
+                Alert.alert('Error', 'Failed to book. Please try again later.');
+            }
         }
     };
 
