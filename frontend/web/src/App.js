@@ -21,6 +21,8 @@ import LawyersList from "./containers/LawyersList";
 import LawyerDetail from "./containers/LawyerDetail";
 import ContractorsList from "./containers/ContractorsList";
 import ContractorDetail from "./containers/ContractorDetail";
+import AllProperties from "./containers/AllProperties";
+import AllProperty from "./containers/AllProperty";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -57,6 +59,8 @@ function App() {
             path="/contractors/details/:contractorId"
             element={<ContractorDetail />}
           />
+          <Route path="/properties" element={<AllProperties />} />
+          <Route path="/property/:propertyId" element={<AllProperty />} />
         </Route>
         <Route
           path="/"
