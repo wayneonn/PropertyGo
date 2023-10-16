@@ -138,6 +138,24 @@ const TopBar = () => {
       fetchData();
     });
 
+    socket.on("newFlaggedForumPostNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on("newRemoveFlaggedForumPostNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on('newAdminFlaggedForumPost', () => {
+      fetchData();
+    });
+
+    socket.on('newAdminResetAppropriateForumPost', () => {
+      fetchData();
+    });
+
     fetchData();
 
     return () => {
