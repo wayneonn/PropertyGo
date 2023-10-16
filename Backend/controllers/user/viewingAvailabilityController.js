@@ -60,7 +60,7 @@ async function deleteViewingAvailability(req, res) {
 
         await availability.destroy();
 
-        res.status(204).send();
+        res.json({ message: 'Availability removed successfully' });
     } catch (error) {
         console.error('Error deleting viewing availability:', error);
         res.status(500).json({ error: 'Error deleting viewing availability' });

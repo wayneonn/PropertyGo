@@ -11,8 +11,10 @@ import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { createViewingAvailability, getViewingAvailabilityByDateAndPropertyId, 
-    getViewingAvailabilityByPropertyId, updateViewingAvailability } from '../../utils/scheduleApi';
+import {
+    createViewingAvailability, getViewingAvailabilityByDateAndPropertyId,
+    getViewingAvailabilityByPropertyId, removeViewingAvailability, updateViewingAvailability
+} from '../../utils/scheduleApi';
 
 const SetSchedule = ({ route }) => {
     const { propertyListingId } = route.params;
@@ -35,7 +37,7 @@ const SetSchedule = ({ route }) => {
         fetchViewingAvailabilityByDateAndPropertyId();
         fetchViewingAvailabilityByPropertyId();
 
-    }, [selectedDate]);
+    }, [selectedDate, isToBeUpdated]);
 
     const fetchViewingAvailabilityByDateAndPropertyId = async () => {
         console.log('selectedDate: ', selectedDate)
@@ -84,6 +86,7 @@ const SetSchedule = ({ route }) => {
             setAvailability(data);
         } else {
             console.error('Error fetchViewingAvailabilityByPropertyId:', message);
+            setAvailability([]);
         }
     }
 
@@ -245,8 +248,34 @@ const SetSchedule = ({ route }) => {
         }
     };
 
+    const handleRemove = async () => {
+            const response = await removeViewingAvailability(viewingAvailabilityId);
+            console.log("response on removeViewingAvailability", response)
+            if (response.success) {
+                // Show a success alert
+                Alert.alert('Success', 'Availability successfully removed.');
+
+                // Clear selected time and time range
+                setSelectedTime(null);
+                setStartTime(null);
+                setEndTime(null);
+
+                // Refresh the screen to reflect the new date
+                setSelectedDate(new Date());
+                // fetchViewingAvailabilityByPropertyId()
+            } else {
+                Alert.alert('Error', 'Failed to remove availability. Please try again later.');
+                console.log("Error: ", response.message)
+            }
+        
+    };
+
     const getMarkedDates = () => {
         const markedDates = {};
+
+        if(availability.length == 0){
+            markedDates[selectedDate] = { selected: true, selectedColor: 'blue' };
+        }
 
         // Loop through the data and mark the dates
         availability.forEach((availability) => {
@@ -338,10 +367,16 @@ const SetSchedule = ({ route }) => {
                     />
                 </View>
             </ScrollView>
-            <TouchableOpacity style={styles.saveChangesButton} onPress={handleSubmit}>
-                <Ionicons name="save-outline" size={18} color="white" />
-                <Text style={styles.saveChangesButtonText}>Save</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.removeButton} onPress={handleRemove}>
+                    <Ionicons name="trash-outline" size={18} color="white" />
+                    {/* <Text style={styles.removeButtonText}>Remove</Text> */}
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.saveChangesButton} onPress={handleSubmit}>
+                    <Ionicons name="save-outline" size={18} color="white" />
+                    <Text style={styles.saveChangesButtonText}>Save</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -393,8 +428,8 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 22,
         fontWeight: 'bold',
-        marginLeft: 30,
-        marginTop: 5,
+        marginLeft: 0,
+        marginTop: 0,
     },
     saveChangesButton: {
         backgroundColor: 'green',
@@ -405,7 +440,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         width: '60%',
-        marginLeft: 70,
+        marginRight: 40,
+        marginLeft: 0,
     },
     saveChangesButtonText: {
         color: 'white',
@@ -418,6 +454,27 @@ const styles = StyleSheet.create({
     backButton: {
         padding: 10,
         marginRight: 20,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+    },
+    removeButton: {
+        backgroundColor: 'red',
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 10,
+        // alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        width: 50,
+        marginLeft: 50,
+        // flex: 1,
+    },
+    removeButtonText: {
+        color: 'white',
+        marginLeft: 10,
     },
 });
 
