@@ -181,6 +181,24 @@ const Faq = () => {
     return doc.body.textContent || "";
   }
 
+  const sanitizeQuestion = (content) => {
+    const sanitizedContent = content
+      .replace(/<u>\s<\/u>/g, " ")
+      .replace(/<b>\s<\/b>/g, " ")
+      .replace(/<i>\s<\/i>/g, " ");
+
+    setFaqQuestion(sanitizedContent);
+  };
+
+  const sanitizeAnswer = (content) => {
+    const sanitizedContent = content
+      .replace(/<u>\s<\/u>/g, " ")
+      .replace(/<b>\s<\/b>/g, " ")
+      .replace(/<i>\s<\/i>/g, " ");
+
+    setFaqAnswer(sanitizedContent);
+  };
+
   return (
     <div className="faq">
       <div
@@ -494,7 +512,7 @@ const Faq = () => {
             <Form.Group>
               <ReactQuill
                 value={faqQuestion}
-                onChange={setFaqQuestion}
+                onChange={sanitizeQuestion}
                 theme="snow"
                 className={
                   validationMessages.emptyFaqQuestion ||
@@ -529,7 +547,7 @@ const Faq = () => {
             <Form.Group>
               <ReactQuill
                 value={faqAnswer}
-                onChange={setFaqAnswer}
+                onChange={sanitizeAnswer}
                 theme="snow"
                 className={
                   validationMessages.emptyFaqAnswer ? "is-invalid" : ""

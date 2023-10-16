@@ -9,6 +9,11 @@ export const useFormData = () => {
 // Store the FormData in a context.
 export const FormDataProvider = ({children}) => {
     const [formData, setFormData] = useState({});
+
+    const clearFormData = () => {
+        setFormData({});
+    };
+
     return (
         <FormDataContext.Provider value={{formData, setFormData}}>
             {children}

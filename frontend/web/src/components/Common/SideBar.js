@@ -109,7 +109,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="*">
+          <Nav.Link className="a" href="/properties">
             <AiOutlineFolderOpen
               style={{ marginRight: "1em" }}
             ></AiOutlineFolderOpen>

@@ -73,6 +73,7 @@ const SearchResults = ({ route, navigation }) => {
         setInputValue(item.address);
         setSuggestions([]); // Clear suggestions
         fetchSearchResults(); // Trigger search when the suggestion is clicked
+        navigation.navigate('Search Results', { searchQuery: item.address });
     };
 
     const handlePropertyPress = (propertyListingId) => {
@@ -88,6 +89,14 @@ const SearchResults = ({ route, navigation }) => {
         setIsMapVisible((prevIsMapVisible) => !prevIsMapVisible);
     };
 
+    const handleSearch = async () => {
+        if (searchQuery.trim() === '') {
+          return;
+        }
+    
+        navigation.navigate('Search Results', { searchQuery });
+      };
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.container}>
@@ -99,7 +108,7 @@ const SearchResults = ({ route, navigation }) => {
                 </View>
                 <View style={styles.searchBar}>
                     <TextInput
-                        placeholder="Enter Postal Code/MRT Address/District"
+                        placeholder="Enter Postal Code/ District"
                         style={styles.searchInput}
                         onChangeText={(text) => {
                             setInputValue(text);
@@ -111,9 +120,10 @@ const SearchResults = ({ route, navigation }) => {
                                 }
                                 const timeout = setTimeout(() => {
                                     fetchSuggestions(text);
-                                }, 500);
+                                }, 1);
                                 setSearchTimeout(timeout);
                             }
+                            onSubmitEditing={handleSearch}
                         }}
                         value={inputValue} // Display the inputValue here
                     />
@@ -121,6 +131,7 @@ const SearchResults = ({ route, navigation }) => {
                         <Image
                             source={require('../../assets/Top-Navbar-Icons/search-icon.png')}
                             style={styles.searchIcon}
+                            onSubmitEditing={handleSearch}
                         />
                     </TouchableOpacity>
                 </View>
@@ -185,7 +196,11 @@ const SearchResults = ({ route, navigation }) => {
                                 onPress={() => handlePropertyPress(property.propertyListingId)}
                             >
                                 <Callout>
-                                    <Text>{property.address}</Text>
+                                    <View style={styles.infoWindowContainer}>
+                                        <Text style={styles.infoWindowTitle}>Address:</Text>
+                                        <Text style={styles.infoWindowText}>{property.address}</Text>
+                                    </View>
+                                    {/* <Text>{property.address}</Text> */}
                                 </Callout>
                             </Marker>
                         ))}
@@ -257,10 +272,10 @@ const styles = StyleSheet.create({
         height: 20,
     },
     suggestionsContainer: {
-        width: '80%',
+        width: '95%',
         backgroundColor: 'white',
         borderRadius: 10,
-        marginTop: 5,
+        marginTop: 110,
         marginBottom: 10,
         alignSelf: 'center',
         elevation: 5,
@@ -347,6 +362,24 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginRight: 5,
     },
+    infoWindowContainer: {
+        backgroundColor: 'white',
+        width: '90%',
+        padding: 10,
+        borderRadius: 8,
+      },
+      infoWindowTitle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        marginHorizontal: 10,
+        marginBottom: 4,
+      },
+      infoWindowText: {
+        fontSize: 12,
+        width: '80%',
+        marginHorizontal: 10,
+        marginBottom: 2,
+      },
 });
 
 export default SearchResults;

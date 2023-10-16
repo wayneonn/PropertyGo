@@ -1,17 +1,16 @@
 import { React, useState, useEffect } from "react";
 import { Card, Button, Form } from "react-bootstrap";
-import "./styles/PropertyListing.css";
+import "./styles/AllProperties.css";
 import { useParams, useNavigate } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 
 import API from "../services/API";
 
-const PropertyListing = () => {
-  const [user, setUser] = useState({});
-  const { userId } = useParams();
+const AllProperties = () => {
   const [properties, setProperties] = useState([]);
   const [propertyStatus, setPropertyStatus] = useState("");
   const [propertyType, setPropertyType] = useState("");
+  const [propertyApproval, setPropertyApproval] = useState("");
 
   const imageBasePath =
     window.location.protocol + "//" + window.location.host + "/images/";
@@ -20,49 +19,41 @@ const PropertyListing = () => {
 
   const fetchData = async () => {
     try {
-      const response = await API.get(
-        `http://localhost:3000/admin/users/getUser/${userId}`
-      );
-      setUser(response.data);
-
       const responseProperty = await API.get(
         `http://localhost:3000/admin/properties`
       );
 
-      const properties = responseProperty.data.filter(
-        (property) => property.userId == userId
-      );
+      const properties = responseProperty.data;
 
-      // if (propertyStatus === "" && propertyType === "") {
-      //   setProperties(properties);
-      // } else {
-      //   const filtered = properties
-      //     .filter(
-      //       (property) =>
-      //         property.propertyStatus === propertyStatus ||
-      //         property.propertyType
-      //     )
-      //     .filter((property) => property.propertyType === propertyType);
-      //   setProperties(filtered);
-      // }
+      console.log("properties:" + responseProperty.data.length);
 
-      if (propertyStatus === "" && propertyType === "") {
+      if (
+        propertyStatus === "" &&
+        propertyType === "" &&
+        propertyApproval === ""
+      ) {
         setProperties(properties);
-      } else if (propertyStatus === "") {
+      } else if (propertyStatus === "" && propertyApproval === "") {
         const filteredType = properties.filter(
           (property) => property.propertyType === propertyType
         );
         setProperties(filteredType);
-      } else if (propertyType === "") {
+      } else if (propertyType === "" && propertyApproval === "") {
         const filteredStatus = properties.filter(
           (property) => property.propertyStatus === propertyStatus
         );
         setProperties(filteredStatus);
+      } else if (propertyType === "" && propertyStatus === "") {
+        const filteredApproval = properties.filter(
+          (property) => property.approvalStatus === propertyApproval
+        );
+        setProperties(filteredApproval);
       } else {
         const filtered = properties.filter(
           (property) =>
             property.propertyType === propertyType &&
-            property.propertyStatus === propertyStatus
+            property.propertyStatus === propertyStatus &&
+            property.approvalStatus === propertyApproval
         );
         setProperties(filtered);
       }
@@ -73,7 +64,7 @@ const PropertyListing = () => {
 
   useEffect(() => {
     fetchData();
-  }, [propertyStatus, propertyType]);
+  }, [propertyStatus, propertyType, propertyApproval]);
 
   function getPropertyClassName(status) {
     if (status === "ACTIVE") {
@@ -90,6 +81,16 @@ const PropertyListing = () => {
       return "type-new";
     } else if (type === "RESALE") {
       return "type-resale";
+    }
+  }
+
+  function getApprovalStatusClassName(status) {
+    if (status === "PENDING") {
+      return "status-pending-all";
+    } else if (status === "APPROVED") {
+      return "status-approved-all";
+    } else if (status === "REJECTED") {
+      return "status-rejected-all";
     }
   }
 
@@ -117,7 +118,7 @@ const PropertyListing = () => {
   }
 
   return (
-    <div className="property-listing">
+    <div className="property-listing-all">
       <div
         style={{
           display: "flex",
@@ -134,12 +135,12 @@ const PropertyListing = () => {
           }}
         >
           <BreadCrumb
-            names={["Home", "Users", "User Detail"]}
+            names={["Home"]}
             lastname="Properties"
-            links={["/", "/users", `/users/details/${userId}`]}
+            links={["/"]}
           ></BreadCrumb>
         </div>
-        <div className="filter">
+        <div className="filter-all">
           <Form.Select
             aria-label="Default select example"
             onChange={(e) => setPropertyStatus(e.target.value)}
@@ -155,46 +156,60 @@ const PropertyListing = () => {
             aria-label="Default select example"
             onChange={(e) => setPropertyType(e.target.value)}
             value={propertyType}
+            style={{ marginRight: "10px" }}
           >
             <option value="">All types</option>
             <option value="RESALE">Resale</option>
             <option value="NEW_LAUNCH">New Launch</option>
           </Form.Select>
+          <Form.Select
+            aria-label="Default select example"
+            onChange={(e) => setPropertyApproval(e.target.value)}
+            value={propertyApproval}
+          >
+            <option value="">All Approval Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+          </Form.Select>
         </div>
       </div>
-      <div className="property-container">
+      <div className="property-container-all">
         {Array.isArray(properties) && properties.length > 0 ? (
           properties.map((property) => (
-            <Card className="property-card" key={property.propertyListingid}>
+            <Card
+              className="property-card-all"
+              key={property.propertyListingid}
+            >
               <a
                 href={`/users/property/${property.propertyListingId}`}
-                className="property-card-link"
+                className="property-card-link-all"
               >
                 {Array.isArray(property.images) &&
                 property.images.length > 0 ? (
-                  <div className="image-container-listing">
+                  <div className="image-container-listing-all">
                     <Card.Img
                       variant="top"
                       src={`http://localhost:3000/image/${property.images[0].toString()}`}
                       alt={`Property Image for ${property.title}`}
-                      className="image-listing"
+                      className="image-listing-all"
                     />
                   </div>
                 ) : (
-                  <div className="image-container-listing">
+                  <div className="image-container-listing-all">
                     <Card.Img
                       variant="top"
                       src={imageBasePath + "login.jpeg"}
                       alt={`Property Image for ${property.title}`}
-                      className="image-listing"
+                      className="image-listing-all"
                     />
                   </div>
                 )}
                 <Card.Body>
-                  <Card.Title className="truncate-text-pl">
+                  <Card.Title className="truncate-text-pl-all">
                     {property.title}
                   </Card.Title>
-                  <Card.Text className="truncate-text-pl">
+                  <Card.Text className="truncate-text-pl-all">
                     {property.description}
                   </Card.Text>
                   <Card.Text>
@@ -218,6 +233,13 @@ const PropertyListing = () => {
                       >
                         {property.propertyType}
                       </div>
+                      <div
+                        className={getApprovalStatusClassName(
+                          property.approvalStatus
+                        )}
+                      >
+                        {property.approvalStatus}
+                      </div>
                     </div>
                   </Card.Text>
                   <Card.Text style={{ fontSize: "12px", opacity: "0.8" }}>
@@ -228,7 +250,7 @@ const PropertyListing = () => {
             </Card>
           ))
         ) : (
-          <div className="no-property">
+          <div className="no-property-all">
             <h3>No Property Listed</h3>
           </div>
         )}
@@ -237,4 +259,4 @@ const PropertyListing = () => {
   );
 };
 
-export default PropertyListing;
+export default AllProperties;

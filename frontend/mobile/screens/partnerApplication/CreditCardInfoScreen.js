@@ -140,6 +140,7 @@ const CreditCardInfoScreen = () => {
         // If submission is successful, pass it on to the next screen, or just store it in the form data.
         // Also need to enforce creation?
         console.log(res)
+        setFormData({});
         navigation.navigate('Document Submission')
         // Here you can add your final submission logic or navigate to another screen
     };

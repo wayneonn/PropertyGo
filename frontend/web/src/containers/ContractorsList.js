@@ -131,32 +131,16 @@ const ContractorsList = () => {
           >
             Active Contractors
           </h3>
-          <div className="searchbar-contractors">
-            <img
-              src={imageBasePath + "search.webp"}
-              alt="search"
-              style={{
-                width: "18px",
-                height: "18px",
-                cursor: "pointer",
-                marginLeft: "5px",
-                marginRight: "5px",
-              }}
-              onClick={() => searchActiveContractors(searchQueryActive)}
-            />
+          <div className="searchbar-contractor">
             <input
               placeholder="Search username"
               value={searchQueryActive}
               onChange={(e) => setSearchQueryActive(e.target.value)}
-              style={{
-                border: "0",
-                backgroundColor: "#F2F3F480",
-                fontSize: "14px",
-                color: "black",
-                marginLeft: "0.2em",
-                height: "40px",
-                width: "169px",
-              }}
+            />
+            <img
+              src={imageBasePath + "search.svg"}
+              alt="search"
+              onClick={() => searchActiveContractors(searchQueryActive)}
             />
           </div>
         </div>
@@ -168,7 +152,7 @@ const ContractorsList = () => {
               }}
             >
               <tr>
-                <th style={{ width: "300px" }}>Profile Image</th>
+                <th style={{ width: "350px" }}>Profile Image</th>
                 <th>Username</th>
                 <th>Action</th>
               </tr>
@@ -213,7 +197,7 @@ const ContractorsList = () => {
                       <td>
                         <Button
                           size="sm"
-                          title="Respond"
+                          title="View profile"
                           style={{
                             backgroundColor: "#FFD700",
                             border: "0",
@@ -273,32 +257,16 @@ const ContractorsList = () => {
           >
             Non active Contractors
           </h3>
-          <div className="searchbar-contractors">
-            <img
-              src={imageBasePath + "search.webp"}
-              alt="search"
-              style={{
-                width: "18px",
-                height: "18px",
-                cursor: "pointer",
-                marginLeft: "5px",
-                marginRight: "5px",
-              }}
-              onClick={() => searchInactiveContractors(searchQueryInactive)}
-            />
+          <div className="searchbar-contractor">
             <input
               placeholder="Search username"
               value={searchQueryInactive}
               onChange={(e) => setSearchQueryInactive(e.target.value)}
-              style={{
-                border: "0",
-                backgroundColor: "#F2F3F480",
-                fontSize: "14px",
-                color: "black",
-                marginLeft: "0.2em",
-                height: "40px",
-                width: "169px",
-              }}
+            />
+            <img
+              src={imageBasePath + "search.svg"}
+              alt="search"
+              onClick={() => searchInactiveContractors(searchQueryInactive)}
             />
           </div>
         </div>
@@ -310,7 +278,7 @@ const ContractorsList = () => {
               }}
             >
               <tr>
-                <th style={{ width: "300px" }}>Profile Image</th>
+                <th style={{ width: "350px" }}>Profile Image</th>
                 <th>Username</th>
                 <th>Action</th>
               </tr>
@@ -352,7 +320,7 @@ const ContractorsList = () => {
                       <td>
                         <Button
                           size="sm"
-                          title="Respond"
+                          title="View profile"
                           style={{
                             backgroundColor: "#FFD700",
                             border: "0",
