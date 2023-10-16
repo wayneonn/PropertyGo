@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createViewingAvailability, getViewingAvailabilityById, updateViewingAvailability, deleteViewingAvailability } = require('../../controllers/user/viewingAvailabilityController.js');
+const { createViewingAvailability, getViewingAvailabilityById, updateViewingAvailability, deleteViewingAvailability } = require('../../controllers/user/viewingAvailabilityController');
 
 router.post('/', createViewingAvailability);
 router.get('/:availabilityId', getViewingAvailabilityById);

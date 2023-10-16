@@ -418,6 +418,12 @@ const PropertyUserListingScreen = ({ route }) => {
       <View style={styles.bottomButtonsContainer}>
         {isCurrentUserPropertyOwner ? (
           <>
+            <TouchableOpacity style={styles.calendarButton} onPress={() => {
+              navigation.navigate('Set Schedule');
+            }}
+            >
+              <Ionicons name="calendar-outline" size={24} color="black" />
+            </TouchableOpacity>
             <TouchableOpacity style={styles.bumpListingButton} onPress={() => {
               navigation.navigate('Boost Listing', { propertyListingId });
             }}
@@ -724,6 +730,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginLeft: 8,
     color: '#333',
+  },
+  calendarButton: {
+    padding: 6,
+    backgroundColor: 'white', // Choose your color
+    alignItems: 'center',
+    borderWidth: 1,       // Add border
+    borderColor: '#000',  // Border color
+    borderRadius: 10,     // Make it rounded
+    margin: 2,  // Margin for spacing between buttons
   },
 });
 

@@ -6,6 +6,7 @@ import EditPropertyUserListing from "../screens/propertyListings/EditPropertyUse
 import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListing";
 import TokenScreen from "../screens/token/TokenScreen";
+import SetSchedule from "../screens/schedule/SetSchedule";
 import Map from "../screens/propertyListings/map";
 
 const UserListingStack = createNativeStackNavigator();
@@ -23,6 +24,7 @@ const UserListingStackGroup = () => {
             <UserListingStack.Screen name="View Profile" component={ViewUserProfile}/>
             <UserListingStack.Screen name="Boost Listing" component={BoostPropertyListing}/>
             <UserListingStack.Screen name="Token" component={TokenScreen}/>
+            <UserListingStack.Screen name="Set Schedule" component={SetSchedule}/>
         </UserListingStack.Navigator>
     );
 };
