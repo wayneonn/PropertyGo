@@ -96,6 +96,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      approvalStatus: {
+        type: DataTypes.ENUM("PENDING", "APPROVED", "REJECTED"),
+        allowNull: false,
+        defaultValue: "PENDING",
+      },
+      adminNotes: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
     {
       freezeTableName: true,
