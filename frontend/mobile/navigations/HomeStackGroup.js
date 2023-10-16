@@ -9,6 +9,7 @@ import TokenScreen from "../screens/token/TokenScreen"; // Import your Coins scr
 import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListing";
 import SearchResults from '../screens/propertyListings/SearchResults';
 import SetSchedule from "../screens/schedule/SetSchedule";
+import Schedule from "../screens/schedule/Schedule";
 import Map from "../screens/propertyListings/map";
 
 const HomeListingsStack = createNativeStackNavigator();
@@ -29,6 +30,7 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="Boost Listing" component={BoostPropertyListing}/>
             <HomeListingsStack.Screen name="Search Results" component={SearchResults}/>
             <HomeListingsStack.Screen name="Set Schedule" component={SetSchedule}/>
+            <HomeListingsStack.Screen name="Schedule" component={Schedule}/>
         </HomeListingsStack.Navigator>
     );
 };

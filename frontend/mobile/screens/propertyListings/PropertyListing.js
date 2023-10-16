@@ -448,7 +448,7 @@ const PropertyListingScreen = ({ route }) => {
         {isCurrentUserPropertyOwner ? (
           <>
             <TouchableOpacity style={styles.calendarButton} onPress={() => {
-              navigation.navigate('Set Schedule', {propertyListingId});
+              navigation.navigate('Set Schedule', { propertyListingId });
             }}
             >
               <Ionicons name="calendar-outline" size={24} color="black" />
@@ -471,14 +471,20 @@ const PropertyListingScreen = ({ route }) => {
           </>
         ) : (
           <>
+            <TouchableOpacity style={styles.calendarButton} onPress={() => {
+              navigation.navigate('Schedule', { propertyListingId });
+            }}
+            >
+              <Ionicons name="calendar-outline" size={24} color="black" />
+            </TouchableOpacity>
             <TouchableOpacity style={styles.chatWithSellerButton}>
-              <Text style={styles.buttonText}>Chat With Seller</Text>
+              <Text style={styles.buttonTextUser}>Chat With Seller</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.viewScheduleButton}>
-              <Text style={styles.buttonText}>View Schedule</Text>
+              <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buyButton}>
-              <Text style={styles.buttonText}>Buy</Text>
+              <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>
           </>
         )}
@@ -604,7 +610,7 @@ const styles = StyleSheet.create({
 
   chatWithSellerButton: {
     flex: 1,
-    padding: 12,
+    padding: 6,
     backgroundColor: 'white', // Choose your color
     alignItems: 'center',
     borderWidth: 1,       // Add border
@@ -615,7 +621,7 @@ const styles = StyleSheet.create({
 
   viewScheduleButton: {
     flex: 1,
-    padding: 12,
+    padding: 6,
     backgroundColor: 'white', // Choose your color
     alignItems: 'center',
     borderWidth: 1,       // Add border
@@ -626,7 +632,7 @@ const styles = StyleSheet.create({
 
   buyButton: {
     flex: 1,
-    padding: 12,
+    padding: 6,
     backgroundColor: '#FFD700', // Yellow color
     alignItems: 'center',
     borderWidth: 1,        // Add border
@@ -670,6 +676,11 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 12,
     color: '#000',           // Black text color for all buttons
+  },
+  buttonTextUser: {
+    fontSize: 12,
+    color: '#000',           // Black text color for all buttons
+    marginTop: 4,         // Remove bottom margin for all buttons
   },
 
   mainContainer: {
@@ -761,7 +772,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   calendarButton: {
-    padding: 6,
+    padding: 4,
     backgroundColor: 'white', // Choose your color
     alignItems: 'center',
     borderWidth: 1,       // Add border
