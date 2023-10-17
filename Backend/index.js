@@ -51,6 +51,8 @@ const reviewAdminRouter = require("./routes/admin/reviewRoutes");
 const folderAdminRouter = require("./routes/admin/folderRoutes");
 const documentAdminRouter = require("./routes/admin/documentRoutes");
 const transactionAdminRouter = require("./routes/admin/transactionRoutes");
+const forumPostAdminRouter = require("./routes/admin/forumPostRoutes");
+const forumCommentAdminRouter = require("./routes/admin/forumCommentRoutes");
 
 //property routes
 const propertyRoute = require("./routes/user/propertyRoute");
@@ -94,6 +96,8 @@ app.use("/admin/reviews", reviewAdminRouter);
 app.use("/admin/documents", documentAdminRouter);
 app.use("/admin/folders", folderAdminRouter);
 app.use("/admin/transactions", transactionAdminRouter);
+app.use("/admin/forumPosts", injectIo(io), forumPostAdminRouter);
+app.use("/admin/forumComments", injectIo(io), forumCommentAdminRouter);
 
 app.use(
   "/user",
@@ -470,19 +474,19 @@ db.sequelize
       console.log("ForumComment test data already exists in the database.");
     }
 
-    if (existingNotificationRecordsCount === 0) {
-      try {
-        for (const notificationData of notificationTestData) {
-          await db.Notification.create(notificationData);
-        }
+    // if (existingNotificationRecordsCount === 0) {
+    //   try {
+    //     for (const notificationData of notificationTestData) {
+    //       await db.Notification.create(notificationData);
+    //     }
 
-        console.log("Notification test data inserted successfully.");
-      } catch (error) {
-        console.error("Error inserting Notification test data:", error);
-      }
-    } else {
-      console.log("Notification test data already exists in the database.");
-    }
+    //     console.log("Notification test data inserted successfully.");
+    //   } catch (error) {
+    //     console.error("Error inserting Notification test data:", error);
+    //   }
+    // } else {
+    //   console.log("Notification test data already exists in the database.");
+    // }
 
     // app.listen(3000, () => {
     //   console.log("Server running on port 3000");

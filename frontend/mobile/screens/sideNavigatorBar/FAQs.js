@@ -74,7 +74,7 @@ const FAQs = () => {
                             <View style={styles.faqHeader}>
                                 <View style={styles.question}><HTML source={{
                                     html: `<strong style="font-size: 15px;
-                                    ">${faq.question.replace(/<\/?p>/g, '')}</strong>`,
+                                    ">${faq.question.replace(/<\/?p>/g, '').replace(/<html>|<\/html>/g, '')}</strong>`,
                                 }}
                                     contentWidth={windowWidth} /></View>
                                 {/* {console.log(faq.question.replace(/<\/?p>/g, ''))} */}
@@ -83,7 +83,7 @@ const FAQs = () => {
                                     size={20}
                                 />
                             </View>
-                            {expandedIndices.includes(index) && <Text style={styles.answer}><HTML source={{ html: faq.answer.replace(/<\/?p>/g, '') }} contentWidth={windowWidth} /></Text>}
+                            {expandedIndices.includes(index) && <Text style={styles.answer}><HTML source={{ html: faq.answer.replace(/<\/?p>/g, '').replace(/<html>|<\/html>/g, '') }} contentWidth={windowWidth} /></Text>}
                         </View>
                     </TouchableOpacity>
                 ))}
@@ -95,7 +95,7 @@ const FAQs = () => {
                             <View style={styles.faqHeader}>
                                 <View style={styles.question}><HTML source={{
                                     html: `<strong style="font-size: 15px;
-                                    ">${faq.question.replace(/<\/?p>/g, '')}</strong>`,
+                                    ">${faq.question.replace(/<\/?p>/g, '').replace(/<html>|<\/html>/g, '')}</strong>`,
                                 }}
                                     contentWidth={windowWidth} /></View>
                                 <AntDesign
@@ -103,7 +103,7 @@ const FAQs = () => {
                                     size={20}
                                 />
                             </View>
-                            {expandedIndices.includes(index + sellerFAQ.length) && <Text style={styles.answer}><HTML source={{ html: faq.answer }} contentWidth={windowWidth} /></Text>}
+                            {expandedIndices.includes(index + sellerFAQ.length) && <Text style={styles.answer}><HTML source={{ html: faq.answer.replace(/<\/?p>/g, '').replace(/<html>|<\/html>/g, '')}} contentWidth={windowWidth} /></Text>}
                         </View>
                     </TouchableOpacity>
                 ))}

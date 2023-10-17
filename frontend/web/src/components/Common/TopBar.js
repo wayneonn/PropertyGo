@@ -13,6 +13,8 @@ const TopBar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
+  const unreadNotificationCount = notifications.filter((notification) => !notification.isRead).length;
+
   // toast message
   const [show, setShow] = useState(false);
 
@@ -153,6 +155,42 @@ const TopBar = () => {
       fetchData();
     });
 
+    socket.on("newFlaggedForumPostNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on("newRemoveFlaggedForumPostNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on('newAdminFlaggedForumPost', () => {
+      fetchData();
+    });
+
+    socket.on('newAdminResetAppropriateForumPost', () => {
+      fetchData();
+    });
+
+    socket.on("newFlaggedForumCommentNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on("newRemoveFlaggedForumCommentNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on('newAdminFlaggedForumComment', () => {
+      fetchData();
+    });
+
+    socket.on('newAdminResetAppropriateForumComment', () => {
+      fetchData();
+    });
+
     fetchData();
 
     return () => {
@@ -222,15 +260,16 @@ const TopBar = () => {
       </div>
       <div className="icons-container">
         {notificationIcon === "MdNotificationImportant" ? (
-          <MdNotificationImportant
-            className="notif"
-            onClick={handleAvailableNotification}
-          />
+          <div className="notification-icon-container" onClick={handleAvailableNotification}>
+            <MdNotificationImportant className="notif" />
+            {unreadNotificationCount > 0 && (
+              <div className="notification-badge">{unreadNotificationCount}</div>
+            )}
+          </div>
         ) : (
-          <IoMdNotificationsOutline
-            className="notif"
-            onClick={handleEmptyNotification}
-          />
+          <div className="notification-icon-container" onClick={handleEmptyNotification}>
+            <IoMdNotificationsOutline className="notif" />
+          </div>
         )}
 
         {showNotifications && (
