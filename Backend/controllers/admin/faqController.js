@@ -1,36 +1,32 @@
 const moment = require("moment");
 const { FAQ } = require("../../models");
-const cheerio = require('cheerio');
+const cheerio = require("cheerio");
 
 const htmlToPlainText = (html) => {
   const $ = cheerio.load(html);
   return $.text();
 };
 
-const cleanEmptyStylingTags = (html) => {
-  const $ = cheerio.load(html, { decodeEntities: false });
+// const cleanEmptyStylingTags = (html) => {
+//   const $ = cheerio.load(html, { decodeEntities: false });
 
-  $('*:contains(" ")').each(function () {
-    if ($(this).text().trim() === '') {
-      $(this).replaceWith($(this).text());
-    }
-  });
+//   $('*:contains(" ")').each(function () {
+//     if ($(this).text().trim() === "") {
+//       $(this).replaceWith($(this).text());
+//     }
+//   });
 
-  return $.html();
-}
+//   return $.html();
+// };
 
 // helper function
 const getFaqForUniqueness = async ({ question, faqType, faqId = null }) => {
   const formattedQuestion = htmlToPlainText(question);
 
   const faqs = await FAQ.findAll({
-    attributes: [
-      "faqId",
-      "question",
-      "faqType"
-    ],
+    attributes: ["faqId", "question", "faqType"],
   });
-  
+
   for (const faq of faqs) {
     const faqFormattedQuestion = htmlToPlainText(faq.question);
     const faqFaqType = faq.faqType;
@@ -39,7 +35,7 @@ const getFaqForUniqueness = async ({ question, faqType, faqId = null }) => {
     if (formattedQuestion === faqFormattedQuestion && faqFaqType === faqType) {
       if (!(faqId != null && faqId == faqFaqId)) {
         return true;
-      } 
+      }
     }
   }
 
@@ -102,9 +98,12 @@ const createFaq = async (req, res) => {
   const { question, faqType } = req.body;
 
   // removing styling spaces of the question first
-  const formattedQuestion = cleanEmptyStylingTags(question);
-  
-  const questionFound = await getFaqForUniqueness({ question: formattedQuestion, faqType });
+  // const formattedQuestion = cleanEmptyStylingTags(question);
+
+  const questionFound = await getFaqForUniqueness({
+    question: question,
+    faqType,
+  });
 
   if (questionFound) {
     return res
@@ -112,7 +111,7 @@ const createFaq = async (req, res) => {
       .json({ message: `Question already exist in ${faqType}.` });
   }
 
-  req.body.question = formattedQuestion;
+  req.body.question = question;
   req.body.adminId = adminId;
 
   const faq = await FAQ.create(req.body);
@@ -128,12 +127,12 @@ const updateFaq = async (req, res) => {
   const { question, answer, faqType } = req.body;
 
   // removing styling spaces of the question first
-  const formattedQuestion = cleanEmptyStylingTags(question);
+  // const formattedQuestion = cleanEmptyStylingTags(question);
 
   const faq = await FAQ.findByPk(faqId);
 
   if (
-    faq.question === formattedQuestion &&
+    faq.question === question &&
     faq.answer === answer &&
     faq.faqType === faqType
   ) {
@@ -141,7 +140,7 @@ const updateFaq = async (req, res) => {
   }
 
   if (faq.question === question && faq.answer !== answer) {
-    req.body.question = formattedQuestion;
+    req.body.question = question;
     await faq.update(req.body);
 
     const updatedFaq = await FAQ.findByPk(faqId);
@@ -149,7 +148,11 @@ const updateFaq = async (req, res) => {
     return res.status(200).json({ faq: updatedFaq });
   }
 
-  const questionFound = await getFaqForUniqueness({ question: formattedQuestion, faqType, faqId });
+  const questionFound = await getFaqForUniqueness({
+    question: question,
+    faqType,
+    faqId,
+  });
 
   if (questionFound) {
     return res
@@ -164,7 +167,7 @@ const updateFaq = async (req, res) => {
       return res.status(404).json({ message: "FAQ not found" });
     }
 
-    req.body.question = formattedQuestion;
+    req.body.question = question;
     await faq.update(req.body);
 
     const updatedFaq = await FAQ.findByPk(faqId);

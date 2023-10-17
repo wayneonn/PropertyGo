@@ -14,11 +14,39 @@
   height: 350px;
   border-radius: 5px;
   margin-bottom: 15px;
-  margin-left: 130px;
+  margin-left: 150px;
 }
 
 .contractors-paginate {
   justify-content: center;
   align-items: center;
   padding: 5px 5px 5px 5px;
+}
+
+.searchbar-contractor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchbar-contractor input {
+  border: none;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 5px;
+  margin: 10px 5px 5px 5px;
+  border-radius: 10px;
+
+  outline: none;
+  color: black;
+  background: #FFD700;
+  /* font-variant: all-petite-caps; */
+}
+
+.searchbar-contractor img {
+  width: 25px;
+  height: 25px;
+  padding: 2px;
+  margin: 10px 5px 5px 0px;
+  cursor: pointer;
 }
