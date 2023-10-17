@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     View,
     Text,
@@ -11,6 +11,7 @@ import {
 import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../AuthContext';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {
     createSchedule,
@@ -18,40 +19,62 @@ import {
     getViewingAvailabilityByPropertyId,
     removeViewingAvailability,
     updateViewingAvailability,
+    getScheduleByDateAndPropertyId,
+    updateSchedule,
+    removeSchedule,
 } from '../../utils/scheduleApi';
+import { set } from 'date-fns';
 
 const SetSchedule = ({ route }) => {
     const { propertyListingId } = route.params;
     const navigation = useNavigation();
-
+    const { user } = useContext(AuthContext);
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedSchedule, setSelectedSchedule] = useState(null);
-    const [startTimePickerVisible, setStartTimePickerVisible] = useState(false);
-    const [endTimePickerVisible, setEndTimePickerVisible] = useState(false);
-    const [startTimePickerDisplay, setStartTimePickerDisplay] = useState(null);
-    const [endTimePickerDisplay, setEndTimePickerDisplay] = useState(null);
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
+    const userId = user.user.userId;
     // Define selected date state
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [availability, setAvailability] = useState([]);
     const [isToBeUpdated, setIsToBeUpdated] = useState(false);
     const [viewingAvailabilityId, setViewingAvailabilityId] = useState(null);
+    const [scheduleId, setScheduleId] = useState(null);
+    const [bookedSlot, setBookedSlot] = useState(null);
+    const [timeSlots, setTimeSlots] = useState([]);
+    const [takenTimeSlots, setTakenTimeSlots] = useState([]);
     const numColumns = 3;
 
     useEffect(() => {
         fetchViewingAvailabilityByDateAndPropertyId();
         fetchViewingAvailabilityByPropertyId();
-    }, [selectedDate, isToBeUpdated]);
+        fetchScheduleData()
+    }, [selectedDate]);
+
+    const fetchScheduleData = async () => {
+        const { success, data, message } = await getScheduleByDateAndPropertyId(
+            selectedDate,
+            propertyListingId
+        );
+
+        if (success) {
+            setTakenTimeSlots(data);
+            setIsToBeUpdated(data.some(item => item.userId === userId));
+        } else {
+            console.error('Error fetching schedule data:', message);
+            setTakenTimeSlots([]);
+        }
+    };
 
     const fetchViewingAvailabilityByDateAndPropertyId = async () => {
+        console.log("Selected Date: ", selectedDate)
         const { success, data, message } = await getViewingAvailabilityByDateAndPropertyId(
             selectedDate,
             propertyListingId
         );
 
         if (success) {
-            // setIsToBeUpdated(true);
+            setIsToBeUpdated(false);
             setStartTime(convertToDateTime(data[0].startTimeSlot));
             setEndTime(convertToDateTime(data[0].endTimeSlot));
             setViewingAvailabilityId(data[0].viewingAvailabilityId);
@@ -85,7 +108,7 @@ const SetSchedule = ({ route }) => {
     };
 
     // Function to handle time slot selection
-    const handleTimeSlotSelect = (time) => {
+    const handleTimeSlotSelect = (time, scheduleId) => {
         // Combine the selected date with the parsed time to create a DateTime object
         const selectedDateTime = new Date(selectedDate);
         const [timeWithoutAmPm, period] = time.split(' '); // Split time and AM/PM
@@ -104,9 +127,15 @@ const SetSchedule = ({ route }) => {
 
         setSelectedTime(time);
         setSelectedSchedule(selectedDateTime);
-        // console.log('setSelectedTime:', selectedDateTime);
-    };
+        setScheduleId(scheduleId);
 
+        // Update the timeSlots array with the new userBooked value for the selected time slot
+        setTimeSlots((prevTimeSlots) =>
+            prevTimeSlots.map((slot) =>
+                slot.time === time ? { ...slot, userBooked: true } : slot
+            )
+        );
+    };
 
     function convertTimeTo12HourFormat(time) {
         const [hours, minutes, seconds] = time.split(':');
@@ -126,6 +155,7 @@ const SetSchedule = ({ route }) => {
     // Generate hourly time slots between start and end times
     const generateTimeSlots = () => {
         const timeSlots = [];
+        let userBookedFlag = false;
         if (startTime && endTime) {
             const startHour = startTime.getHours();
             const endHour = endTime.getHours();
@@ -133,14 +163,38 @@ const SetSchedule = ({ route }) => {
                 const hour = i % 12 || 12; // Convert to 12-hour format
                 const ampm = i < 12 ? 'AM' : 'PM';
                 const time = `${hour}:00 ${ampm}`;
+                const isTimeSlotTaken = takenTimeSlots.some(
+                    (takenSlot) => convertTimeTo12HourFormat(takenSlot.meetupTime) === time
+                );
+                const userBookedSlot = takenTimeSlots.find(
+                    (takenSlot) => 
+                        takenSlot.userId === userId && 
+                        convertTimeTo12HourFormat(takenSlot.meetupTime) === time
+                );
+    
+                const scheduleId = userBookedSlot ? userBookedSlot.scheduleId : null;
+
+                const isSlotDisabled = !userBookedSlot && isTimeSlotTaken;
                 timeSlots.push({
                     id: i.toString(),
                     time,
+                    isTimeSlotTaken,
+                    userBooked: !!userBookedSlot,
+                    isSlotDisabled,
+                    scheduleId, // Store the scheduleId if the slot is taken by a user
                 });
+
+                if(!!userBookedSlot)
+                {
+                    userBookedFlag = true;
+                }
             }
+            // setUpdateSchedule(userBookedFlag);
         }
+
         return timeSlots;
     };
+
 
     // Function to handle day press in the calendar
     const handleDayPress = (day) => {
@@ -156,6 +210,9 @@ const SetSchedule = ({ route }) => {
     };
 
     const handleSubmit = async () => {
+
+        console.log('scheduleId Here: ', scheduleId)
+        
         if (!selectedDate || !selectedTime) {
             // Check if all fields are filled
             Alert.alert('Incomplete Information', 'Please select a date, start time, and end time.');
@@ -164,7 +221,10 @@ const SetSchedule = ({ route }) => {
 
         // Create the viewing availability object to be submitted
         const scheduleData = {
-            meetup: selectedSchedule
+            meetupDate: selectedDate,
+            meetupTime: selectedSchedule.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            userId: userId,
+            propertyId: propertyListingId,
         };
 
         // Call the API to create or update the viewing availability
@@ -174,34 +234,46 @@ const SetSchedule = ({ route }) => {
             response = await createSchedule(scheduleData);
             if (response.success) {
                 Alert.alert('Success', 'Schedule booked successfully.');
+                setSelectedTime(null);
+                // setSelectedDate(new Date());
             } else {
                 Alert.alert('Error', 'Failed to book. Please try again later.');
             }
         } else {
-            Alert.alert('Success', 'Schedule updated successfully.');
-            response = await updateViewingAvailability(scheduleData, viewingAvailabilityId);
+            response = await updateSchedule(scheduleData, userId, selectedDate);
             if (response.success) {
                 Alert.alert('Success', 'Schedule updated successfully.');
+                setSelectedTime(null);
+                // setSelectedDate(new Date());
             } else {
-                Alert.alert('Error', 'Failed to book. Please try again later.');
+                Alert.alert('Error', 'Failed to update. Please try again later.');
             }
         }
     };
 
+    const findFirstNonNullScheduleId = () => {
+        for (const slot of timeSlots) {
+          if (slot.scheduleId !== null) {
+            return slot.scheduleId; // Return the first non-null scheduleId
+          }
+        }
+        return null; // Return null if no non-null scheduleId is found
+      };      
+
     const handleRemove = async () => {
-        if (viewingAvailabilityId) {
-            const response = await removeViewingAvailability(viewingAvailabilityId);
+        console.log('scheduleId: ', scheduleId)
+        if (scheduleId) {
+            const response = await removeSchedule(scheduleId);
             if (response.success) {
                 // Show a success alert
                 Alert.alert('Success', 'Availability successfully removed.');
 
                 // Clear selected time and time range
                 setSelectedTime(null);
-                setStartTime(null);
-                setEndTime(null);
+                setScheduleId(null);                
 
                 // Refresh the screen to reflect the new date
-                setSelectedDate(new Date());
+                // setSelectedDate(new Date());
             } else {
                 Alert.alert('Error', 'Failed to remove availability. Please try again later.');
                 console.log('Error:', response.message);
@@ -277,15 +349,27 @@ const SetSchedule = ({ route }) => {
                             keyExtractor={(item) => item.id}
                             numColumns={numColumns}
                             renderItem={({ item }) => (
-                                <TouchableOpacity
-                                    onPress={() => handleTimeSlotSelect(item.time)}
-                                    style={[
+                                // Conditionally render TouchableOpacity based on isSlotDisabled
+                                item.isSlotDisabled ? (
+                                    <View style={[
                                         styles.timeSlot,
-                                        selectedTime === item.time ? styles.selectedTimeSlot : null,
-                                    ]}
-                                >
-                                    <Text style={styles.timeText}>{item.time}</Text>
-                                </TouchableOpacity>
+                                        item.isTimeSlotTaken ? { backgroundColor: 'red' } : null, // Set the background color to red for taken time slots
+                                    ]}>
+                                        <Text style={styles.timeText}>{item.time}</Text>
+                                    </View>
+                                ) : (
+                                    <TouchableOpacity
+                                        onPress={() => handleTimeSlotSelect(item.time, item.scheduleId)}
+                                        style={[
+                                            styles.timeSlot,
+                                            item.userBooked ? { backgroundColor: 'orange' } : null,
+                                            selectedTime === item.time ? styles.selectedTimeSlot : null,
+                                        ]}
+                                    >
+                                        <Text style={styles.timeText}>{item.time}</Text>
+                                    </TouchableOpacity>
+
+                                )
                             )}
                         />
                     ) : (

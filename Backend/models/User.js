@@ -207,12 +207,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: "agentListings",
     });
-    User.belongsToMany(models.Schedule, {
-      through: "ScheduleUser", // Specify the intermediary model
-      foreignKey: "userId", // Foreign key in ScheduleUser
-      otherKey: "scheduleId", // Foreign key in Schedule
-      as: "schedules",
-    });
+
     User.hasMany(models.Folder, {
       onDelete: "CASCADE",
       foreignKey: {

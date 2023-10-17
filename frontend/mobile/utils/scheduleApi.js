@@ -175,3 +175,68 @@ export const getViewingAvailabilityByDateAndPropertyId = async (date, propertyId
       return { success: false, message: error.message };
     }
   };
+
+  export const getScheduleByDateAndPropertyId = async (meetupDate, propertyId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${SCHEDULE_ENDPOINT}/date-property?meetupDate=${meetupDate}&propertyId=${propertyId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const updateSchedule = async (scheduleData, userId, date) => {
+    console.log("updateSchedule date: ", date)
+    try {
+      const response = await fetch(`${BASE_URL}/${SCHEDULE_ENDPOINT}/${userId}/${date}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(scheduleData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const removeSchedule = async (scheduleId) => {
+    try {
+        const response = await fetch(`${BASE_URL}/${SCHEDULE_ENDPOINT}/${scheduleId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };

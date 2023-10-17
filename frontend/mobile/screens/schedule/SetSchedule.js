@@ -154,21 +154,6 @@ const SetSchedule = ({ route }) => {
         }
     };
 
-    // Generate time slots in 1-hour intervals
-    const generateTimeSlots = () => {
-        const timeSlots = [];
-        for (let i = 0; i < 24; i++) {
-            const hour = i % 12 || 12; // Convert to 12-hour format
-            const ampm = i < 12 ? 'AM' : 'PM';
-            const time = `${hour}:00 ${ampm}`;
-            timeSlots.push({
-                id: i.toString(),
-                time,
-            });
-        }
-        return timeSlots;
-    };
-
     // Function to handle day press in the calendar
     const handleDayPress = (day) => {
         setSelectedDate(day.dateString);
@@ -412,7 +397,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     timePickerText: {
-        fontSize: 14,
+        fontSize: 13,
     },
     dateOnContainer: {
         fontSize: 20,
