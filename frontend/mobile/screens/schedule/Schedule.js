@@ -40,16 +40,46 @@ const SetSchedule = ({ route }) => {
     const [isToBeUpdated, setIsToBeUpdated] = useState(false);
     const [viewingAvailabilityId, setViewingAvailabilityId] = useState(null);
     const [scheduleId, setScheduleId] = useState(null);
-    const [bookedSlot, setBookedSlot] = useState(null);
+    const [firstLoad, setFirstLoad] = useState(true);
     const [timeSlots, setTimeSlots] = useState([]);
     const [takenTimeSlots, setTakenTimeSlots] = useState([]);
+    const [currentDate, setCurrentDate] = useState(new Date());
+
     const numColumns = 3;
 
     useEffect(() => {
         fetchViewingAvailabilityByDateAndPropertyId();
         fetchViewingAvailabilityByPropertyId();
-        fetchScheduleData()
+        fetchScheduleData();
+        fetchFirstDayScheduleData();
     }, [selectedDate]);
+    
+
+    useEffect(() => {
+        if (firstLoad) {
+            setTimeSlots(generateTimeSlots());
+            console.log("timeslots: ", generateTimeSlots())
+        }
+    }, []);
+
+    const fetchFirstDayScheduleData = async () => {
+        if (firstLoad) {
+            const { success, data, message } = await getScheduleByDateAndPropertyId(
+                currentDate.toISOString().substring(0, 10),
+                propertyListingId
+            );
+
+            if (success) {
+                setTakenTimeSlots(data);
+                setIsToBeUpdated(data.some(item => item.userId === userId));
+            } else {
+                console.error('Error fetching schedule data:', message);
+                setTakenTimeSlots([]);
+            }
+            generateTimeSlots();
+        }
+    };
+
 
     const fetchScheduleData = async () => {
         const { success, data, message } = await getScheduleByDateAndPropertyId(
@@ -67,7 +97,6 @@ const SetSchedule = ({ route }) => {
     };
 
     const fetchViewingAvailabilityByDateAndPropertyId = async () => {
-        console.log("Selected Date: ", selectedDate)
         const { success, data, message } = await getViewingAvailabilityByDateAndPropertyId(
             selectedDate,
             propertyListingId
@@ -80,6 +109,8 @@ const SetSchedule = ({ route }) => {
             setViewingAvailabilityId(data[0].viewingAvailabilityId);
         } else {
             console.error('Error:', message);
+            setStartTime(null);
+            setEndTime(null);
             setIsToBeUpdated(false);
         }
     };
@@ -154,6 +185,9 @@ const SetSchedule = ({ route }) => {
 
     // Generate hourly time slots between start and end times
     const generateTimeSlots = () => {
+        console.log('generateTimeSlots() selectedDate:', selectedDate)
+        console.log('generateTimeSlots() startTime: ', startTime)
+        console.log('generateTimeSlots() endTime: ', endTime)   
         const timeSlots = [];
         let userBookedFlag = false;
         if (startTime && endTime) {
@@ -167,11 +201,11 @@ const SetSchedule = ({ route }) => {
                     (takenSlot) => convertTimeTo12HourFormat(takenSlot.meetupTime) === time
                 );
                 const userBookedSlot = takenTimeSlots.find(
-                    (takenSlot) => 
-                        takenSlot.userId === userId && 
+                    (takenSlot) =>
+                        takenSlot.userId === userId &&
                         convertTimeTo12HourFormat(takenSlot.meetupTime) === time
                 );
-    
+
                 const scheduleId = userBookedSlot ? userBookedSlot.scheduleId : null;
 
                 const isSlotDisabled = !userBookedSlot && isTimeSlotTaken;
@@ -184,24 +218,37 @@ const SetSchedule = ({ route }) => {
                     scheduleId, // Store the scheduleId if the slot is taken by a user
                 });
 
-                if(!!userBookedSlot)
-                {
+                if (!!userBookedSlot) {
                     userBookedFlag = true;
                 }
             }
             // setUpdateSchedule(userBookedFlag);
         }
-
+        console.log('timeSlots: ', timeSlots, "for: ", selectedDate)
+        if (firstLoad) {
+            // Display a message for the initial load
+            return [
+                {
+                    id: 'initial-load',
+                    time: 'Select a time slot',
+                    isSlotDisabled: true,
+                    userBooked: false,
+                },
+            ];
+        }
+    
         return timeSlots;
     };
 
 
     // Function to handle day press in the calendar
     const handleDayPress = (day) => {
+        setFirstLoad(false);
         setSelectedDate(day.dateString);
         setSelectedTime(null); // Clear selected time when a new date is chosen
         setStartTime(null);
         setEndTime(null);
+        setCurrentDate(new Date(day.dateString)); // Update the current date
     };
 
     const formatDate = (dateString) => {
@@ -212,7 +259,7 @@ const SetSchedule = ({ route }) => {
     const handleSubmit = async () => {
 
         console.log('scheduleId Here: ', scheduleId)
-        
+
         if (!selectedDate || !selectedTime) {
             // Check if all fields are filled
             Alert.alert('Incomplete Information', 'Please select a date, start time, and end time.');
@@ -253,12 +300,12 @@ const SetSchedule = ({ route }) => {
 
     const findFirstNonNullScheduleId = () => {
         for (const slot of timeSlots) {
-          if (slot.scheduleId !== null) {
-            return slot.scheduleId; // Return the first non-null scheduleId
-          }
+            if (slot.scheduleId !== null) {
+                return slot.scheduleId; // Return the first non-null scheduleId
+            }
         }
         return null; // Return null if no non-null scheduleId is found
-      };      
+    };
 
     const handleRemove = async () => {
         console.log('scheduleId: ', scheduleId)
@@ -270,7 +317,7 @@ const SetSchedule = ({ route }) => {
 
                 // Clear selected time and time range
                 setSelectedTime(null);
-                setScheduleId(null);                
+                setScheduleId(null);
 
                 // Refresh the screen to reflect the new date
                 // setSelectedDate(new Date());
