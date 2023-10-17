@@ -1,5 +1,4 @@
-const moment = require("moment");
-const { ForumTopic, ForumPost, Admin, User, Notification, Image } = require("../../models");
+const { ForumTopic, ForumPost, User, Notification, Image } = require("../../models");
 
 const getFlaggedForumPosts = async (req, res) => {
     try {

@@ -20,6 +20,10 @@ const Notification = () => {
         "forum post": {
             "PENDING": [],
             "HISTORY": []
+        },
+        "forum comment": {
+            "PENDING": [],
+            "HISTORY": [],
         }
     });
 
@@ -45,7 +49,11 @@ const Notification = () => {
                     "forum post": {
                         "PENDING": [],
                         "HISTORY": []
-                    }
+                    },
+                    "forum comment": {
+                        "PENDING": [],
+                        "HISTORY": []
+                    },
                 };
 
                 for (const notification of filteredNotifications) {
@@ -57,6 +65,8 @@ const Notification = () => {
                         categoryMap["forum topic"][notification.category].push(notification);
                     } else if (notification.content.toLowerCase().includes("forum post")) {
                         categoryMap["forum post"][notification.category].push(notification);
+                    } else if (notification.content.toLowerCase().includes("forum comment")) {
+                        categoryMap["forum comment"][notification.category].push(notification);
                     }
                 }
 
@@ -110,6 +120,22 @@ const Notification = () => {
         });
 
         socket.on('newAdminResetAppropriateForumPost', () => {
+            fetchData();
+        });
+
+        socket.on("newFlaggedForumCommentNotification", () => {
+            fetchData();
+        });
+
+        socket.on("newRemoveFlaggedForumCommentNotification", () => {
+            fetchData();
+        });
+
+        socket.on('newAdminFlaggedForumComment', () => {
+            fetchData();
+        });
+
+        socket.on('newAdminResetAppropriateForumComment', () => {
             fetchData();
         });
 
@@ -259,7 +285,30 @@ const Notification = () => {
                                                 ))}
                                             </div>
                                         ) : (
-                                            <p>No notifications for Forum Topic</p>
+                                            <p>No notifications for Forum Post</p>
+                                        )}
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                                <Accordion.Item eventKey="3">
+                                    <Accordion.Header>Forum Comment</Accordion.Header>
+                                    <Accordion.Body>
+                                        {categoryMap['forum comment'][selectedCategory].length > 0 ? (
+                                            <div>
+                                                {sortTime(categoryMap['forum comment'][selectedCategory]).map((notification, index) => (
+                                                    <div key={index}>
+                                                        <div>
+                                                            <div>
+                                                                <span style={{ float: 'left' }}>{notification.content}</span>
+                                                                <span style={{ float: 'right' }}>{formatRelativeTime(notification.createdAt)}</span>
+                                                                <div style={{ clear: 'both' }}></div>
+                                                            </div>
+                                                            <hr style={{ clear: 'both' }} />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p>No notifications for Forum Comment</p>
                                         )}
                                     </Accordion.Body>
                                 </Accordion.Item>

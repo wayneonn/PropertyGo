@@ -156,6 +156,24 @@ const TopBar = () => {
       fetchData();
     });
 
+    socket.on("newFlaggedForumCommentNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on("newRemoveFlaggedForumCommentNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on('newAdminFlaggedForumComment', () => {
+      fetchData();
+    });
+
+    socket.on('newAdminResetAppropriateForumComment', () => {
+      fetchData();
+    });
+
     fetchData();
 
     return () => {

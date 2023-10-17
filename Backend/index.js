@@ -52,6 +52,7 @@ const folderAdminRouter = require("./routes/admin/folderRoutes");
 const documentAdminRouter = require("./routes/admin/documentRoutes");
 const transactionAdminRouter = require("./routes/admin/transactionRoutes");
 const forumPostAdminRouter = require("./routes/admin/forumPostRoutes");
+const forumCommentAdminRouter = require("./routes/admin/forumCommentRoutes");
 
 //property routes
 const propertyRoute = require("./routes/user/propertyRoute");
@@ -96,6 +97,7 @@ app.use("/admin/documents", documentAdminRouter);
 app.use("/admin/folders", folderAdminRouter);
 app.use("/admin/transactions", transactionAdminRouter);
 app.use("/admin/forumPosts", injectIo(io), forumPostAdminRouter);
+app.use("/admin/forumComments", injectIo(io), forumCommentAdminRouter);
 
 app.use(
   "/user",

@@ -16,7 +16,7 @@ const ForumPost = () => {
     const [showEditStatusModal, setShowEditStatusModal] = useState(false);
     const [editForumPost, setEditForumPost] = useState(0);
     const [showResetInapprorpiateForumPostModal, setShowResetInapprorpiateForumPostModal] = useState(false);
-    const [appropriateForumPost, setAppropriateForumPost] = useState({});
+    const [appropriateForumPost, setAppropriateForumPost] = useState(0);
 
     const ITEMS_PER_PAGE = 4;
 
@@ -87,7 +87,7 @@ const ForumPost = () => {
     };
 
     const handleResetForumPostToAppropriate = async () => {
-        const forumPostId = appropriateForumPost.forumPostId;
+        const forumPostId = appropriateForumPost.forumPost.forumPostId;
         await API.patch(`/admin/forumPosts/resetAppropriateForumPost/${forumPostId}`, {
             adminId: localStorage.getItem("loggedInAdmin")
         });
@@ -115,6 +115,7 @@ const ForumPost = () => {
             );
 
             const inappropriateForumposts = response.data.filter((forumPost) => forumPost.forumPost.isInappropriate);
+            console.log(inappropriateForumposts);
             setInappropriateForumPosts(inappropriateForumposts);
             setTotalPageInappropriateForumPosts(
                 Math.ceil(inappropriateForumposts.length / ITEMS_PER_PAGE)
@@ -309,7 +310,7 @@ const ForumPost = () => {
                                                                 marginRight: "10px",
                                                             }}
                                                             onClick={() =>
-                                                                toggleAppropriateForumPostStatusModal(inappropriateForumPost.forumPost)
+                                                                toggleAppropriateForumPostStatusModal(inappropriateForumPost)
                                                             }
                                                         >
                                                             <LuFlagOff
@@ -370,7 +371,7 @@ const ForumPost = () => {
                                 <p><strong>Topic:</strong> {editForumPost.forumTopic.topicName}</p>
                                 <p><strong>Title:</strong> {editForumPost.forumPost.title}</p>
                                 <p><strong>Message:</strong> {editForumPost.forumPost.message}</p>
-                                <p><strong>Photos:</strong> {editForumPost.images.length === 0 && "No images shown"}</p>
+                                <p><strong>Photo(s):</strong> {editForumPost.images.length === 0 && "No photos shown"}</p>
                                 {Array.isArray(editForumPost.images) && editForumPost.images.length > 0 && (
                                     <div style={{
                                         display: "flex",
@@ -393,7 +394,7 @@ const ForumPost = () => {
                                                                     opacity: 0.9
                                                                 }}
                                                                 src={`http://localhost:3000/image/${image.toString()}`}
-                                                                alt="property image"
+                                                                alt="forum post"
                                                             />
                                                         </Carousel.Item>
                                                     );
@@ -450,7 +451,46 @@ const ForumPost = () => {
                         <Modal.Title>Appropriate Forum Post</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <p>Reset the current forum post to Appropriate?</p>
+                        {appropriateForumPost && (
+                            <div>
+                                <p>Reset the current forum post to Appropriate?</p>
+                                <p><strong>Topic:</strong> {appropriateForumPost.forumTopic.topicName}</p>
+                                <p><strong>Title:</strong> {appropriateForumPost.forumPost.title}</p>
+                                <p><strong>Message:</strong> {appropriateForumPost.forumPost.message}</p>
+                                <p><strong>Photo(s):</strong> {appropriateForumPost.images.length === 0 && "No photos shown"}</p>
+                                {Array.isArray(appropriateForumPost.images) && appropriateForumPost.images.length > 0 && (
+                                    <div style={{
+                                        display: "flex",
+                                    }}>
+                                        <Carousel
+                                            style={{
+                                                width: "600px",
+                                                height: "350px",
+                                            }}
+                                        >
+                                            {Array.isArray(appropriateForumPost.images) && appropriateForumPost.images.length > 0 && (
+                                                appropriateForumPost.images.map((image) => {
+                                                    return (
+                                                        <Carousel.Item key={image}>
+                                                            <img
+                                                                style={{
+                                                                    width: "100%",
+                                                                    height: "100%",
+                                                                    objectFit: "cover",
+                                                                    opacity: 0.9
+                                                                }}
+                                                                src={`http://localhost:3000/image/${image.toString()}`}
+                                                                alt="forum post"
+                                                            />
+                                                        </Carousel.Item>
+                                                    );
+                                                })
+                                            )}
+                                        </Carousel>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button

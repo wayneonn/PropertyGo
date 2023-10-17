@@ -1,4 +1,4 @@
-const { sequelize, ForumComment, User, Image } = require("../../models");
+const { sequelize, ForumComment, User, Image, Notification } = require("../../models");
 const Sequelize = require('sequelize');
 const sharp = require('sharp');
 
@@ -342,13 +342,37 @@ const updateForumCommentFlaggedStatus = async (req, res) => {
         console.log("User ID: " + userId + " Forum Comment ID: " + forumCommentId)
         // console.log("is Flagged? " + isFlagged)
 
+        const user = await User.findByPk(userId);
+
+        req.body = {
+            "isRecent": false,
+            "isPending": false,
+            "isCompleted": true,
+            "hasRead": false,
+            "userId": userId
+        };
+
         if (isFlagged) {
             // If the user is flagged, remove the flag
             await forumComment.removeUsersFlagged(userId);
+
+            req.body.content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has removed the flag on the forum comment message of "${forumComment.message}"`;
+
+            await Notification.create(req.body);
+
+            req.io.emit("newRemoveFlaggedForumCommentNotification", `Remove flagged forum comment`);
+
             res.status(200).json({ message: 'Flag removed successfully' });
         } else {
             // If the user is not flagged, add the flag
             await forumComment.addUsersFlagged(userId);
+
+            req.body.content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has flagged the forum comment message of "${forumComment.message}"`;
+
+            await Notification.create(req.body);
+
+            req.io.emit("newFlaggedForumCommentNotification", `Flagged forum comment`);
+
             res.status(200).json({ message: 'Flag added successfully' });
         }
 
