@@ -44,6 +44,8 @@ const SetSchedule = ({ route }) => {
     const [timeSlots, setTimeSlots] = useState([]);
     const [takenTimeSlots, setTakenTimeSlots] = useState([]);
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [refreshFlatList, setRefreshFlatList] = useState(false);
+    const [updatedTimeSlot, setUpdatedTimeSlot] = useState(null);
 
     const numColumns = 3;
 
@@ -51,7 +53,6 @@ const SetSchedule = ({ route }) => {
         fetchViewingAvailabilityByDateAndPropertyId();
         fetchViewingAvailabilityByPropertyId();
         fetchScheduleData();
-        fetchFirstDayScheduleData();
     }, [selectedDate]);
     
 
@@ -61,25 +62,6 @@ const SetSchedule = ({ route }) => {
             console.log("timeslots: ", generateTimeSlots())
         }
     }, []);
-
-    const fetchFirstDayScheduleData = async () => {
-        if (firstLoad) {
-            const { success, data, message } = await getScheduleByDateAndPropertyId(
-                currentDate.toISOString().substring(0, 10),
-                propertyListingId
-            );
-
-            if (success) {
-                setTakenTimeSlots(data);
-                setIsToBeUpdated(data.some(item => item.userId === userId));
-            } else {
-                console.error('Error fetching schedule data:', message);
-                setTakenTimeSlots([]);
-            }
-            generateTimeSlots();
-        }
-    };
-
 
     const fetchScheduleData = async () => {
         const { success, data, message } = await getScheduleByDateAndPropertyId(
@@ -282,7 +264,7 @@ const SetSchedule = ({ route }) => {
             if (response.success) {
                 Alert.alert('Success', 'Schedule booked successfully.');
                 setSelectedTime(null);
-                // setSelectedDate(new Date());
+                setSelectedDate(selectedDate);
             } else {
                 Alert.alert('Error', 'Failed to book. Please try again later.');
             }
@@ -291,20 +273,15 @@ const SetSchedule = ({ route }) => {
             if (response.success) {
                 Alert.alert('Success', 'Schedule updated successfully.');
                 setSelectedTime(null);
-                // setSelectedDate(new Date());
+                setSelectedDate(selectedDate);
             } else {
                 Alert.alert('Error', 'Failed to update. Please try again later.');
             }
         }
-    };
 
-    const findFirstNonNullScheduleId = () => {
-        for (const slot of timeSlots) {
-            if (slot.scheduleId !== null) {
-                return slot.scheduleId; // Return the first non-null scheduleId
-            }
-        }
-        return null; // Return null if no non-null scheduleId is found
+        setTimeSlots(generateTimeSlots());
+        setRefreshFlatList((prev) => !prev);
+        fetchScheduleData();
     };
 
     const handleRemove = async () => {
@@ -318,6 +295,7 @@ const SetSchedule = ({ route }) => {
                 // Clear selected time and time range
                 setSelectedTime(null);
                 setScheduleId(null);
+                setIsToBeUpdated(false);
 
                 // Refresh the screen to reflect the new date
                 // setSelectedDate(new Date());
@@ -328,6 +306,8 @@ const SetSchedule = ({ route }) => {
         } else {
             Alert.alert('No Availability to Remove', 'There is no availability to remove for the selected date.');
         }
+
+        fetchScheduleData();
     };
 
     const getMarkedDates = () => {
@@ -393,6 +373,7 @@ const SetSchedule = ({ route }) => {
                     {generateTimeSlots().length > 0 ? (
                         <FlatList
                             data={generateTimeSlots()}
+                            extraData={refreshFlatList}
                             keyExtractor={(item) => item.id}
                             numColumns={numColumns}
                             renderItem={({ item }) => (
