@@ -105,10 +105,33 @@ async function getScheduleByDateAndPropertyId(req, res) {
     }
 }
 
+async function getScheduleByUserId(req, res) {
+    const userId = req.params.userId;
+
+    try {
+        // Query the database to find schedules for the specified user
+        const schedule = await Schedule.findAll({
+            where: {
+                userId,
+            },
+        });
+
+        if (!schedule || schedule.length === 0) {
+            return res.status(404).json({ error: 'Schedules not found for the specified user' });
+        }
+
+        res.json(schedule);
+    } catch (error) {
+        console.error('Error fetching schedules by user ID:', error);
+        res.status(500).json({ error: 'Error fetching schedules by user ID' });
+    }
+}
+
 module.exports = {
     createSchedule,
     getScheduleById,
     updateScheduleByUserIdAndDate,
     deleteSchedule,
     getScheduleByDateAndPropertyId,
+    getScheduleByUserId,
 };

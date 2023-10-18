@@ -22,6 +22,7 @@ import {
     getScheduleByDateAndPropertyId,
     updateSchedule,
     removeSchedule,
+    getScheduleByUserId,
 } from '../../utils/scheduleApi';
 import { set } from 'date-fns';
 
@@ -45,7 +46,7 @@ const SetSchedule = ({ route }) => {
     const [takenTimeSlots, setTakenTimeSlots] = useState([]);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [refreshFlatList, setRefreshFlatList] = useState(false);
-    const [updatedTimeSlot, setUpdatedTimeSlot] = useState(null);
+    const [userSlots, setUserSlots] = useState(null);
 
     const numColumns = 3;
 
@@ -53,8 +54,9 @@ const SetSchedule = ({ route }) => {
         fetchViewingAvailabilityByDateAndPropertyId();
         fetchViewingAvailabilityByPropertyId();
         fetchScheduleData();
+        fetchScheduleByUser();
     }, [selectedDate]);
-    
+
 
     useEffect(() => {
         if (firstLoad) {
@@ -62,6 +64,19 @@ const SetSchedule = ({ route }) => {
             console.log("timeslots: ", generateTimeSlots())
         }
     }, []);
+
+    const fetchScheduleByUser = async () => {
+        const { success, data, message } = await getScheduleByUserId(
+            userId
+        );
+
+        if (success) {
+            setUserSlots(data);
+            console.log("fetchScheduleByUser", data)
+        } else {
+            console.error('Error fetching schedule data for user:', message);
+        }
+    };
 
     const fetchScheduleData = async () => {
         const { success, data, message } = await getScheduleByDateAndPropertyId(
@@ -169,7 +184,7 @@ const SetSchedule = ({ route }) => {
     const generateTimeSlots = () => {
         console.log('generateTimeSlots() selectedDate:', selectedDate)
         console.log('generateTimeSlots() startTime: ', startTime)
-        console.log('generateTimeSlots() endTime: ', endTime)   
+        console.log('generateTimeSlots() endTime: ', endTime)
         const timeSlots = [];
         let userBookedFlag = false;
         if (startTime && endTime) {
@@ -218,7 +233,7 @@ const SetSchedule = ({ route }) => {
                 },
             ];
         }
-    
+
         return timeSlots;
     };
 
@@ -327,6 +342,11 @@ const SetSchedule = ({ route }) => {
             markedDates[selectedDate] = { selected: true, selectedColor: 'blue' };
         });
 
+        userSlots.forEach((userSlot) => {
+            const date = userSlot.meetupDate;
+            markedDates[date] = { selected: true, selectedColor: 'red' };
+        });
+
         return markedDates;
     };
 
@@ -402,6 +422,29 @@ const SetSchedule = ({ route }) => {
                         />
                     ) : (
                         <Text style={styles.noAvailabilityText}>Booking is not available on this date.</Text>
+                    )}
+                </View>
+                <View style={styles.bookingContainer}>
+                    <Text style={styles.dateOnContainer}>Upcoming Viewing</Text>
+
+                    {/* List of user's bookings */}
+                    {userSlots && userSlots.length > 0 ? (
+                        <FlatList
+                            data={userSlots}
+                            keyExtractor={(item) => item.scheduleId.toString()}
+                            renderItem={({ item }) => (
+                                <View style={styles.bookingItem}>
+                                    <View style={{ flexDirection: 'row'}}>
+                                    <Text style={styles.bookingItemTextLabel}>Date: </Text><Text style={styles.bookingItemText}>{item.meetupDate}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row'}}>
+                                    <Text style={styles.bookingItemTextLabel}>Time: </Text><Text style={styles.bookingItemText}>{item.meetupTime}</Text>
+                                    </View>
+                                </View>
+                            )}
+                        />
+                    ) : (
+                        <Text>No bookings made by the user.</Text>
                     )}
                 </View>
             </ScrollView>
@@ -523,6 +566,35 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 10,
     },
+    bookingContainer: {
+        flex: 1,
+        marginTop: 10,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 16,
+        borderWidth: 0.2,
+        borderColor: 'gray',
+        marginBottom: 10,
+    },
+    bookingItem: {
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: 'lightgray',
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 10,
+        backgroundColor: 'white',
+    },
+    bookingItemText: {
+        fontSize: 16,
+        marginBottom: 8,
+    },
+    bookingItemTextLabel: {
+        fontSize: 16,
+        marginBottom: 8,
+        fontWeight: 'bold',
+    },
+
 });
 
 export default SetSchedule;
