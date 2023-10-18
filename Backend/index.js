@@ -51,7 +51,6 @@ const reviewAdminRouter = require("./routes/admin/reviewRoutes");
 const folderAdminRouter = require("./routes/admin/folderRoutes");
 const documentAdminRouter = require("./routes/admin/documentRoutes");
 const transactionAdminRouter = require("./routes/admin/transactionRoutes");
-const paymentAdminRouter = require("./routes/admin/paymentRoutes");
 
 //property routes
 const propertyRoute = require("./routes/user/propertyRoute");
@@ -95,7 +94,6 @@ app.use("/admin/reviews", reviewAdminRouter);
 app.use("/admin/documents", documentAdminRouter);
 app.use("/admin/folders", folderAdminRouter);
 app.use("/admin/transactions", transactionAdminRouter);
-app.use("/admin/payments", paymentAdminRouter);
 
 app.use(
   "/user",
