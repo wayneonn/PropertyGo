@@ -127,6 +127,28 @@ async function getScheduleByUserId(req, res) {
     }
 }
 
+async function getScheduleByPropertyId(req, res) {
+    const propertyId = req.params.propertyId;
+
+    try {
+        // Query the database to find schedules for the specified user
+        const schedule = await Schedule.findAll({
+            where: {
+                propertyId,
+            },
+        });
+
+        if (!schedule || schedule.length === 0) {
+            return res.status(404).json({ error: 'Schedules not found for the specified property' });
+        }
+
+        res.json(schedule);
+    } catch (error) {
+        console.error('Error fetching schedules by Property ID:', error);
+        res.status(500).json({ error: 'Error fetching schedules by Property ID' });
+    }
+}
+
 module.exports = {
     createSchedule,
     getScheduleById,
@@ -134,4 +156,5 @@ module.exports = {
     deleteSchedule,
     getScheduleByDateAndPropertyId,
     getScheduleByUserId,
+    getScheduleByPropertyId,
 };

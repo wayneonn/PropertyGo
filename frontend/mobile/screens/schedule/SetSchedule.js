@@ -6,14 +6,17 @@ import {
     ScrollView,
     TouchableOpacity,
     Alert,
+    FlatList,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import ScheduleCard from './ScheduleCard'; 
 import {
     createViewingAvailability, getViewingAvailabilityByDateAndPropertyId,
-    getViewingAvailabilityByPropertyId, removeViewingAvailability, updateViewingAvailability
+    getViewingAvailabilityByPropertyId, removeViewingAvailability, 
+    updateViewingAvailability, getScheduleByPropertyId
 } from '../../utils/scheduleApi';
 
 const SetSchedule = ({ route }) => {
@@ -32,12 +35,26 @@ const SetSchedule = ({ route }) => {
     const [availability, setAvailability] = useState([]);
     const [isToBeUpdated, setIsToBeUpdated] = useState(false);
     const [viewingAvailabilityId, setViewingAvailabilityId] = useState(null);
+    const [bookedSlots, setBookedSlots] = useState(null);
 
     useEffect(() => {
         fetchViewingAvailabilityByDateAndPropertyId();
         fetchViewingAvailabilityByPropertyId();
+        fetchScheduleByProperty();
 
     }, [selectedDate, isToBeUpdated]);
+
+    const fetchScheduleByProperty = async () => {
+        const { success, data, message } = await getScheduleByPropertyId(
+            propertyListingId
+        );
+
+        if (success) {
+            setBookedSlots(data);
+        } else {
+            console.error('Error fetching schedule data for user:', message);
+        }
+    };
 
     const fetchViewingAvailabilityByDateAndPropertyId = async () => {
         console.log('selectedDate: ', selectedDate)
@@ -351,6 +368,24 @@ const SetSchedule = ({ route }) => {
                         display="spinner"
                     />
                 </View>
+                <View style={styles.bookingContainer}>
+                    <Text style={styles.dateOnContainer}>Upcoming Booked Viewings</Text>
+
+                    {/* List of user's bookings */}
+                    {bookedSlots && bookedSlots.length > 0 ? (
+                        <FlatList
+                        data={bookedSlots}
+                        keyExtractor={(item) => item.scheduleId.toString()}
+                        renderItem={({ item }) => (
+                            <ScheduleCard schedule={item}  onPress={() => {
+                                navigation.navigate('View Profile', { userId: item.userId });
+                              }} />
+                        )}
+                    />                    
+                    ) : (
+                        <Text>No bookings made by the user.</Text>
+                    )}
+                </View>
             </ScrollView>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.removeButton} onPress={handleRemove}>
@@ -460,6 +495,34 @@ const styles = StyleSheet.create({
     removeButtonText: {
         color: 'white',
         marginLeft: 10,
+    },
+    bookingContainer: {
+        flex: 1,
+        marginTop: 10,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 16,
+        borderWidth: 0.2,
+        borderColor: 'gray',
+        marginBottom: 10,
+    },
+    bookingItem: {
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: 'lightgray',
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 10,
+        backgroundColor: 'white',
+    },
+    bookingItemText: {
+        fontSize: 16,
+        marginBottom: 8,
+    },
+    bookingItemTextLabel: {
+        fontSize: 16,
+        marginBottom: 8,
+        fontWeight: 'bold',
     },
 });
 
