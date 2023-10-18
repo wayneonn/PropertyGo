@@ -11,7 +11,7 @@ import {
 import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../../AuthContext';
+import { AuthContext } from '../../../AuthContext';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {
     createSchedule,
@@ -23,12 +23,12 @@ import {
     updateSchedule,
     removeSchedule,
     getScheduleByUserId,
-} from '../../utils/scheduleApi';
+    getScheduleBySellerId,
+} from '../../../utils/scheduleApi';
 import { set } from 'date-fns';
-import ScheduleCard from './ScheduleCard'; 
+import ScheduleCard from '../../schedule/ScheduleCard';
 
-const SetSchedule = ({ route }) => {
-    const { propertyListingId, userDetails  } = route.params;
+const Appointments = ({ route }) => {
     const navigation = useNavigation();
     const { user } = useContext(AuthContext);
     const [selectedTime, setSelectedTime] = useState(null);
@@ -36,7 +36,7 @@ const SetSchedule = ({ route }) => {
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
     const userId = user.user.userId;
-    const sellerUserId = userDetails.userId;
+    // const sellerUserId = userDetails.userId;
     // Define selected date state
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [availability, setAvailability] = useState([]);
@@ -49,14 +49,18 @@ const SetSchedule = ({ route }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [refreshFlatList, setRefreshFlatList] = useState(false);
     const [userSlots, setUserSlots] = useState([]);
+    const [sellerSlots, setSellerSlots] = useState([]);
+    const [userBuySchedules, setUserBuySchedules] = useState([]); // Schedules for "To Buy"
+    const [sellerSellSchedules, setSellerSellSchedules] = useState([]); // Schedules for "To Sell"
 
     const numColumns = 3;
 
     useEffect(() => {
-        fetchViewingAvailabilityByDateAndPropertyId();
-        fetchViewingAvailabilityByPropertyId();
-        fetchScheduleData();
+        // fetchViewingAvailabilityByDateAndPropertyId();
+        // fetchViewingAvailabilityByPropertyId();
+        // fetchScheduleData();
         fetchScheduleByUser();
+        fetchScheduleBySeller();
     }, [selectedDate]);
 
 
@@ -81,6 +85,20 @@ const SetSchedule = ({ route }) => {
         }
     };
 
+    const fetchScheduleBySeller = async () => {
+        const { success, data, message } = await getScheduleBySellerId(
+            userId
+        );
+
+        if (success) {
+            setSellerSlots(data);
+            console.log("fetchScheduleByUser", data)
+        } else {
+            setSellerSlots([]);
+            console.error('Error fetching schedule data for user:', message);
+        }
+    };
+
     const fetchScheduleData = async () => {
         const { success, data, message } = await getScheduleByDateAndPropertyId(
             selectedDate,
@@ -96,25 +114,6 @@ const SetSchedule = ({ route }) => {
         }
     };
 
-    const fetchViewingAvailabilityByDateAndPropertyId = async () => {
-        const { success, data, message } = await getViewingAvailabilityByDateAndPropertyId(
-            selectedDate,
-            propertyListingId
-        );
-
-        if (success) {
-            setIsToBeUpdated(false);
-            setStartTime(convertToDateTime(data[0].startTimeSlot));
-            setEndTime(convertToDateTime(data[0].endTimeSlot));
-            setViewingAvailabilityId(data[0].viewingAvailabilityId);
-        } else {
-            console.error('Error:', message);
-            setStartTime(null);
-            setEndTime(null);
-            setIsToBeUpdated(false);
-        }
-    };
-
     const convertToDateTime = (timeString) => {
         const [hours, minutes, seconds] = timeString.split(':');
         const formattedDate = new Date();
@@ -122,20 +121,6 @@ const SetSchedule = ({ route }) => {
         formattedDate.setMinutes(parseInt(minutes, 10));
         formattedDate.setSeconds(parseInt(seconds, 10));
         return formattedDate;
-    };
-
-    const fetchViewingAvailabilityByPropertyId = async () => {
-        const { success, data, message } = await getViewingAvailabilityByPropertyId(
-            propertyListingId
-        );
-
-        if (success) {
-            console.log('data: ', data);
-            setAvailability(data);
-        } else {
-            console.error('Error fetchViewingAvailabilityByPropertyId:', message);
-            setAvailability([]);
-        }
     };
 
     // Function to handle time slot selection
@@ -249,6 +234,20 @@ const SetSchedule = ({ route }) => {
         setStartTime(null);
         setEndTime(null);
         setCurrentDate(new Date(day.dateString)); // Update the current date
+
+        // Fetch and filter schedules for "To Buy"
+        const userBuySchedules = userSlots.filter((schedule) => {
+            // Filter schedules for "To Buy" based on date
+            return schedule.meetupDate === day.dateString;
+        });
+        setUserBuySchedules(userBuySchedules);
+
+        // Fetch and filter schedules for "To Sell"
+        const sellerSellSchedules = sellerSlots.filter((schedule) => {
+            // Filter schedules for "To Sell" based on date
+            return schedule.meetupDate === day.dateString;
+        });
+        setSellerSellSchedules(sellerSellSchedules);
     };
 
     const formatDate = (dateString) => {
@@ -271,7 +270,6 @@ const SetSchedule = ({ route }) => {
             meetupDate: selectedDate,
             meetupTime: selectedSchedule.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
             userId: userId,
-            sellerId: sellerUserId,
             propertyId: propertyListingId,
         };
 
@@ -333,28 +331,45 @@ const SetSchedule = ({ route }) => {
 
     const getMarkedDates = () => {
         const markedDates = {};
-
-        if (availability.length === 0) {
-            markedDates[selectedDate] = { selected: true, selectedColor: 'blue' };
+        const seller = { key: 'seller', color: 'red' };
+        const buyer = { key: 'buyer', color: 'green' };
+    
+        if (userSlots.length === 0 || sellerSlots.length === 0) {
+            markedDates[selectedDate] = { selected: true, selectedDotColor: 'blue' };
         }
-
+    
         // Loop through the data and mark the dates
-        availability.forEach((availability) => {
-            const date = availability.date; // Get the date from the fetched data
-
-            // Specify how you want to mark the date
-
-            markedDates[date] = { selected: true, selectedColor: 'green' };
-            markedDates[selectedDate] = { selected: true, selectedColor: 'blue' };
-        });
-
         userSlots.forEach((userSlot) => {
-            const date = userSlot.meetupDate;
-            markedDates[date] = { selected: true, selectedColor: 'red' };
+            const date = userSlot.meetupDate; // Get the date from the fetched data
+    
+            if (!markedDates[date]) {
+                markedDates[date] = { dots: [] };
+            }
+            markedDates[date].dots.push(buyer);
+    
+            if (date === selectedDate) {
+                markedDates[date].selected = true;
+                markedDates[date].selectedDotColor = 'blue';
+            }
         });
-
+    
+        sellerSlots.forEach((availability) => {
+            const date = availability.meetupDate; // Get the date from the fetched data
+    
+            if (!markedDates[date]) {
+                markedDates[date] = { dots: [] };
+            }
+            markedDates[date].dots.push(seller);
+    
+            if (date === selectedDate) {
+                markedDates[date].selected = true;
+                markedDates[date].selectedDotColor = 'blue';
+            }
+        });
+    
         return markedDates;
     };
+    
 
     return (
         <View style={styles.container}>
@@ -368,11 +383,13 @@ const SetSchedule = ({ route }) => {
                     <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                         <Ionicons name="arrow-back" size={24} color="black" />
                     </TouchableOpacity>
-                    <Text style={styles.header}>Book Property Viewing</Text>
+                    <Text style={styles.header}>Appointments</Text>
                 </View>
                 <View style={styles.calendarContainer}>
                     <Calendar
                         onDayPress={handleDayPress}
+                        minDate={new Date()}
+                        markingType={'multi-dot'}
                         style={{
                             borderWidth: 0.5,
                             borderColor: 'gray',
@@ -431,21 +448,39 @@ const SetSchedule = ({ route }) => {
                     )}
                 </View>
                 <View style={styles.bookingContainer}>
-                    <Text style={styles.dateOnContainer}>Upcoming Viewing</Text>
+                    <Text style={styles.dateOnContainer}>To Buy - Upcoming To View</Text>
 
                     {/* List of user's bookings */}
-                    {userSlots && userSlots.length > 0 ? (
+                    {userBuySchedules && userBuySchedules.length > 0 ? (
                         <FlatList
-                            data={userSlots}
+                            data={userBuySchedules}
                             keyExtractor={(item) => item.scheduleId.toString()}
                             renderItem={({ item }) => (
-                                <ScheduleCard schedule={item}  onPress={() => {
-                                    navigation.navigate('View Profile', { userId: sellerUserId });
-                                  }} />
+                                <ScheduleCard schedule={item} onPress={() => {
+                                    navigation.navigate('View Profile', { userId: item.sellerId });
+                                }} />
                             )}
                         />
                     ) : (
-                        <Text style={styles.noAvailabilityText}>No bookings made by the user.</Text>
+                        <Text style={styles.noAvailabilityText}>No bookings found.</Text>
+                    )}
+                </View>
+                <View style={styles.bookingContainer}>
+                    <Text style={styles.dateOnContainer}>To Sell - Buyers To View Unit</Text>
+
+                    {/* List of user's bookings */}
+                    {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
+                        <FlatList
+                            data={sellerSellSchedules}
+                            keyExtractor={(item) => item.scheduleId.toString()}
+                            renderItem={({ item }) => (
+                                <ScheduleCard schedule={item} onPress={() => {
+                                    navigation.navigate('View Profile', { userId: sellerUserId });
+                                }} />
+                            )}
+                        />
+                    ) : (
+                        <Text style={styles.noAvailabilityText}>No bookings for units listed.</Text>
                     )}
                 </View>
             </ScrollView>
@@ -598,4 +633,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default SetSchedule;
+export default Appointments;

@@ -3,7 +3,7 @@ import {Image, Text, View} from 'react-native';
 import {createDrawerNavigator, DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer';
 // import { Ionicons } from '@expo/vector-icons';
 import LogoutButton from '../components/LogoutButton';
-import Appointments from '../screens/sideNavigatorBar/Appointments'
+import Appointments from '../screens/sideNavigatorBar/Appointment/Appointments'
 import Documents from '../screens/sideNavigatorBar/Documents'
 import ExploreServicesStackGroup from './ExploreServicesStackGroup';
 import FAQ from '../screens/sideNavigatorBar/FAQs'

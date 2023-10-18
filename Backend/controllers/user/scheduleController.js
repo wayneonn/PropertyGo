@@ -149,6 +149,28 @@ async function getScheduleByPropertyId(req, res) {
     }
 }
 
+async function getScheduleBySellerId(req, res) {
+    const sellerId = req.params.sellerId;
+
+    try {
+        // Query the database to find schedules for the specified user
+        const schedule = await Schedule.findAll({
+            where: {
+                sellerId,
+            },
+        });
+
+        if (!schedule || schedule.length === 0) {
+            return res.status(404).json({ error: 'Schedules not found for the specified seller.' });
+        }
+
+        res.json(schedule);
+    } catch (error) {
+        console.error('Error fetching schedules by Seller ID:', error);
+        res.status(500).json({ error: 'Error fetching schedules by Seller ID' });
+    }
+}
+
 module.exports = {
     createSchedule,
     getScheduleById,
@@ -157,4 +179,5 @@ module.exports = {
     getScheduleByDateAndPropertyId,
     getScheduleByUserId,
     getScheduleByPropertyId,
+    getScheduleBySellerId,
 };
