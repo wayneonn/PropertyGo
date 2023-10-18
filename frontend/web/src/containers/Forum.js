@@ -7,7 +7,7 @@ import { IoMdFlag } from "react-icons/io";
 import { LuFlagOff } from "react-icons/lu";
 import ForumTopicCreate from "./ForumTopicCreate";
 import "react-quill/dist/quill.snow.css";
-import socketIOClient from 'socket.io-client';
+import socketIOClient from "socket.io-client";
 
 import API from "../services/API";
 
@@ -24,7 +24,10 @@ const Forum = () => {
   const [showEditStatusModal, setShowEditStatusModal] = useState(false);
   const [deleteForumTopicId, setDeleteForumTopicId] = useState(0);
   const [editForumTopicId, setEditForumTopicId] = useState(0);
-  const [showResetInapprorpiateForumTopicModal, setShowResetInapprorpiateForumTopicModal] = useState(false);
+  const [
+    showResetInapprorpiateForumTopicModal,
+    setShowResetInapprorpiateForumTopicModal,
+  ] = useState(false);
   const [appropriateForumTopicId, setAppropriateForumTopicId] = useState(0);
 
   const ITEMS_PER_PAGE = 4;
@@ -45,10 +48,14 @@ const Forum = () => {
   const indexOfFirstItemFlaggedForumTopic =
     indexOfLastItemFlaggedForumTopic - ITEMS_PER_PAGE;
 
-  const [currentPageInappropriateForumTopic, setCurrentPageInappropriateForumTopic] =
-    useState(1);
-  const [totalPageInappropriateForumTopics, setTotalPageInappropriateForumTopics] =
-    useState(0);
+  const [
+    currentPageInappropriateForumTopic,
+    setCurrentPageInappropriateForumTopic,
+  ] = useState(1);
+  const [
+    totalPageInappropriateForumTopics,
+    setTotalPageInappropriateForumTopics,
+  ] = useState(0);
 
   const indexOfLastItemInappropriateForumTopic =
     currentPageInappropriateForumTopic * ITEMS_PER_PAGE;
@@ -94,9 +101,11 @@ const Forum = () => {
   };
 
   const toggleAppropriateForumTopicStatusModal = (forumTopicId) => {
-    setShowResetInapprorpiateForumTopicModal(!showResetInapprorpiateForumTopicModal);
+    setShowResetInapprorpiateForumTopicModal(
+      !showResetInapprorpiateForumTopicModal
+    );
     setAppropriateForumTopicId(forumTopicId);
-  }
+  };
 
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
@@ -108,7 +117,7 @@ const Forum = () => {
 
   const handleResetInappropriateForumTopicModal = () => {
     setShowResetInapprorpiateForumTopicModal(false);
-  }
+  };
 
   const handleClose = () => {
     setShowEditModal(false);
@@ -179,9 +188,12 @@ const Forum = () => {
   };
 
   const handleResetForumTopicToAppropriate = async () => {
-    await API.patch(`/admin/forumTopics/resetAppropriateForumTopic/${appropriateForumTopicId}`, {
-      adminId: localStorage.getItem("loggedInAdmin")
-    });
+    await API.patch(
+      `/admin/forumTopics/resetAppropriateForumTopic/${appropriateForumTopicId}`,
+      {
+        adminId: localStorage.getItem("loggedInAdmin"),
+      }
+    );
     setShowResetInapprorpiateForumTopicModal(false);
     showToast("reset back to Appropriate of");
     fetchData();
@@ -214,7 +226,9 @@ const Forum = () => {
         Math.ceil(flaggedForumTopics.length / ITEMS_PER_PAGE)
       );
 
-      const inappropriateForumtopics = response.data.filter((forumTopic) => forumTopic.forumTopic.isInappropriate);
+      const inappropriateForumtopics = response.data.filter(
+        (forumTopic) => forumTopic.forumTopic.isInappropriate
+      );
       setInappropriateForumTopics(inappropriateForumtopics);
       setTotalPageInappropriateForumTopics(
         Math.ceil(inappropriateForumtopics.length / ITEMS_PER_PAGE)
@@ -241,11 +255,11 @@ const Forum = () => {
       fetchData();
     });
 
-    socket.on('newUserUpdatedForumTopic', () => {
+    socket.on("newUserUpdatedForumTopic", () => {
       fetchData();
     });
 
-    socket.on('newUserDeletedForumTopic', () => {
+    socket.on("newUserDeletedForumTopic", () => {
       fetchData();
     });
   }, []);
@@ -499,7 +513,7 @@ const Forum = () => {
                 ) : (
                   <tbody>
                     <tr>
-                      <td colSpan="5" style={{ textAlign: "center" }}>
+                      <td colSpan="3" style={{ textAlign: "center" }}>
                         No Flagged Forum Topics available
                       </td>
                     </tr>
@@ -547,7 +561,7 @@ const Forum = () => {
                   </tr>
                 </thead>
                 {Array.isArray(inappropriateForumTopics) &&
-                  inappropriateForumTopics.length > 0 ? (
+                inappropriateForumTopics.length > 0 ? (
                   <tbody>
                     {inappropriateForumTopics
                       .slice(
@@ -561,7 +575,7 @@ const Forum = () => {
                             textAlign: "center",
                           }}
                         >
-                          <td className="truncate-text">
+                          <td className="truncate-text-forum">
                             {inappropriateForumTopic.forumTopic.topicName}
                           </td>
                           <td>
@@ -574,7 +588,10 @@ const Forum = () => {
                                 marginRight: "10px",
                               }}
                               onClick={() =>
-                                toggleAppropriateForumTopicStatusModal(inappropriateForumTopic.forumTopic.forumTopicId)
+                                toggleAppropriateForumTopicStatusModal(
+                                  inappropriateForumTopic.forumTopic
+                                    .forumTopicId
+                                )
                               }
                             >
                               <LuFlagOff
@@ -592,7 +609,7 @@ const Forum = () => {
                 ) : (
                   <tbody>
                     <tr>
-                      <td colSpan="5" style={{ textAlign: "center" }}>
+                      <td colSpan="2" style={{ textAlign: "center" }}>
                         No Inappropriate Forum Topics available
                       </td>
                     </tr>
@@ -601,19 +618,19 @@ const Forum = () => {
               </Table>
               <div>
                 <Pagination className="faq-paginate">
-                  {Array.from({ length: totalPageInappropriateForumTopics }).map(
-                    (_, index) => (
-                      <Pagination.Item
-                        key={index}
-                        active={index + 1 === currentPageInappropriateForumTopic}
-                        onClick={() =>
-                          handlePageChangeInappropriateForumTopic(index + 1)
-                        }
-                      >
-                        {index + 1}
-                      </Pagination.Item>
-                    )
-                  )}
+                  {Array.from({
+                    length: totalPageInappropriateForumTopics,
+                  }).map((_, index) => (
+                    <Pagination.Item
+                      key={index}
+                      active={index + 1 === currentPageInappropriateForumTopic}
+                      onClick={() =>
+                        handlePageChangeInappropriateForumTopic(index + 1)
+                      }
+                    >
+                      {index + 1}
+                    </Pagination.Item>
+                  ))}
                 </Pagination>
               </div>
             </div>
@@ -630,7 +647,9 @@ const Forum = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Edit Forum Topic</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>
+              Edit Forum Topic
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div style={{ marginBottom: "10px" }}>
@@ -699,7 +718,9 @@ const Forum = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Delete Forum Topic</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>
+              Delete Forum Topic
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>Are you sure you want to delete this Forum Topic?</p>
@@ -746,7 +767,9 @@ const Forum = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Appropriate/Inappropriate Forum Topic</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>
+              Appropriate/Inappropriate Forum Topic
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>Are you sure this Forum Topic is inappropriate?</p>
@@ -793,7 +816,9 @@ const Forum = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Appropriate Forum Topic</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>
+              Appropriate Forum Topic
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>Reset the current forum topic to Appropriate?</p>

@@ -476,7 +476,7 @@ const Faq = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Edit FAQ</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>Edit FAQ</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div style={{ marginBottom: "10px" }}>
@@ -604,7 +604,7 @@ const Faq = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Delete FAQ</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>Delete FAQ</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>Are you sure you want to delete this FAQ?</p>

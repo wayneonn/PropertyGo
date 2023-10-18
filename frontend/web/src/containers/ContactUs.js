@@ -824,7 +824,7 @@ const ContactUs = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Respond</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>Respond</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div style={{ marginBottom: "10px" }}>
@@ -947,7 +947,7 @@ const ContactUs = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Preview</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>Preview</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div style={{ marginBottom: "10px" }}>
@@ -1028,7 +1028,7 @@ const ContactUs = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Responses</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>Responses</Modal.Title>
           </Modal.Header>
           <Modal.Body
             style={{
@@ -1198,7 +1198,7 @@ const ContactUs = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Responses</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>Responses</Modal.Title>
           </Modal.Header>
           <Modal.Body
             style={{
@@ -1287,7 +1287,9 @@ const ContactUs = () => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>Edit Response</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>
+              Edit Response
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div style={{ marginBottom: "10px" }}>
@@ -1363,7 +1365,9 @@ const ContactUs = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Confirmation of Contact Us</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>
+              Confirmation of Contact Us
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>Are you sure you want to close the following contact us?</p>
