@@ -14,9 +14,9 @@ const ForumComment = () => {
     const [flaggedForumComments, setFlaggedForumComments] = useState([]);
     const [inappropriateForumComments, setInappropriateForumComments] = useState([]);
     const [showEditStatusModal, setShowEditStatusModal] = useState(false);
-    const [editForumComment, setEditForumComment] = useState(0);
+    const [editForumComment, setEditForumComment] = useState({});
     const [showResetInapprorpiateForumCommentModal, setShowResetInapprorpiateForumCommentModal] = useState(false);
-    const [appropriateForumComment, setAppropriateForumComment] = useState(0);
+    const [appropriateForumComment, setAppropriateForumComment] = useState({});
 
     const ITEMS_PER_PAGE = 4;
 
@@ -364,7 +364,7 @@ const ForumComment = () => {
                         <Modal.Title>Appropriate/Inappropriate Forum Comment</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {editForumComment && (
+                        {editForumComment.forumTopic !== undefined && (
                             <div>
                                 <p>Are you sure this Forum Comment is inappropriate?</p>
                                 <p><strong>Topic:</strong> {editForumComment.forumTopic.topicName}</p>
@@ -450,7 +450,7 @@ const ForumComment = () => {
                         <Modal.Title>Appropriate Forum Comment</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {appropriateForumComment && (
+                        {appropriateForumComment.forumTopic !== undefined && (
                             <div>
                                 <p>Reset the current forum comment to Appropriate?</p>
                                 <p><strong>Topic:</strong> {appropriateForumComment.forumTopic.topicName}</p>
