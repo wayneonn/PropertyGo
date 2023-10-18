@@ -5,6 +5,7 @@ const cors = require("cors");
 const app = express();
 const globalEmitter = require("./globalEmitter");
 const WebSocket = require("ws");
+const { loggedInUsers } = require('./shared');
 
 const server = http.createServer(app);
 // socket io
@@ -14,6 +15,13 @@ const io = socketIo(server, {
     methods: ["GET", "POST"],
   },
 });
+
+// const io = socketIo(server, {
+//   cors: {
+//     origin: "*", // Allow connections from any origin
+//     methods: ["GET", "POST"],
+//   },
+// });
 
 // model
 const db = require("./models");
@@ -112,6 +120,25 @@ app.use(
 );
 
 io.on("connection", (socket) => {
+
+  console.log(`Client connected: ${socket.id}`);
+
+  socket.on('login', (userId) => {
+
+    loggedInUsers.set(userId, socket.id);
+    console.log("socketID: ",socket.id)
+    // socket.emit('login', userId)
+    console.log(`User with userId ${userId} has logged in.`);
+    // console.log("Login: ", socket.userId);
+  });
+
+  socket.on('logout', (userId) => {
+    // Access the userId from the socket object
+    console.log("Logout: ", loggedInUsers.get(userId))
+    // socket.to(loggedInUsers.get(userId)).emit('logout', userId)
+    loggedInUsers.delete(userId);
+    console.log(`User with userId ${userId} has logged out.`);
+  });
   // Handle disconnects
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);

@@ -285,6 +285,24 @@ async function isPropertyInFavorites(req, res) {
   }
 }
 
+async function savePushToken(req, res) {
+  try {
+    const { userId, pushToken } = req.body;
+
+    // Find the user by their user ID and update their pushToken
+    user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.pushToken = pushToken
+    await user.save();
+
+    res.status(200).json({ message: 'Push token saved successfully' });
+  } catch (error) {
+    console.error('Error saving push token:', error);
+    res.status(500).json({ error: 'Could not save push token' });
+  }
+}
 
 
 module.exports = {
@@ -297,4 +315,5 @@ module.exports = {
   removeFavoriteProperty,
   getUserFavorites,
   isPropertyInFavorites,
+  savePushToken
 };

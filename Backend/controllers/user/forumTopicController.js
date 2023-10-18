@@ -1,6 +1,6 @@
 const { ForumTopic, User, ForumPost, Notification } = require("../../models");
 const sequelize = require('sequelize');
-
+const { loggedInUsers } = require('../../shared');
 
 const createForumTopic = async (req, res) => {
     const userId = parseInt(req.params.userId);
@@ -288,6 +288,13 @@ const updateForumTopicFlaggedStatus = async (req, res) => {
         // console.log("is Flagged? " + isFlagged)
 
         const user = await User.findByPk(userId);
+        
+        let forumTopicUser; 
+
+        if (forumTopic.userId){
+            forumTopicUser = await User.findByPk(forumTopic.userId)
+        }
+        
 
         req.body = {
             "isRecent": false,
@@ -305,6 +312,10 @@ const updateForumTopicFlaggedStatus = async (req, res) => {
 
             await Notification.create(req.body);
 
+            if (forumTopicUser && loggedInUsers.has(forumTopicUser.userId)){
+                req.io.emit("userNewRemoveFlaggedForumTopicNotification", {"pushToken": forumTopicUser.pushToken, "title": forumTopic.topicName, "body": `Remove flagged forum topic`});
+            }
+
             req.io.emit("newRemoveFlaggedForumTopicNotification", `Remove flagged forum topic`);
             res.status(200).json({ message: 'Flag removed successfully' });
         } else {
@@ -314,6 +325,10 @@ const updateForumTopicFlaggedStatus = async (req, res) => {
             req.body.content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has flagged the forum topic name of "${forumTopic.topicName}"`;
 
             await Notification.create(req.body);
+
+            if (forumTopicUser && loggedInUsers.has(forumTopicUser.userId)){
+                req.io.emit("userNewFlaggedForumTopicNotification", {"pushToken": forumTopicUser.pushToken, "title": forumTopic.topicName, "body": `Added flagged forum topic`});
+            }
 
             req.io.emit("newFlaggedForumTopicNotification", `Flagged forum topic`);
             res.status(200).json({ message: 'Flag added successfully' });

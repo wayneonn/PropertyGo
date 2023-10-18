@@ -88,6 +88,10 @@ module.exports = (sequelize, DataTypes) => {
         ),
         allowNull: false,
       },
+      pushToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       googleId: {
         type: DataTypes.STRING,
         allowNull: true,
