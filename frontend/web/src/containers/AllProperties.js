@@ -11,55 +11,103 @@ const AllProperties = () => {
   const [propertyStatus, setPropertyStatus] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [propertyApproval, setPropertyApproval] = useState("");
+  const [sellerInfo, setSellerInfo] = useState({});
 
   const imageBasePath =
     window.location.protocol + "//" + window.location.host + "/images/";
 
   const navigate = useNavigate();
 
-  const fetchData = async () => {
+  const fetchSellerInfo = async (property) => {
+    const sellerId = property.userId;
+
     try {
-      const responseProperty = await API.get(
-        `http://localhost:3000/admin/properties`
+      const sellerResponse = await API.get(
+        `http://localhost:3000/admin/users/getUser/${sellerId}`
       );
-
-      const properties = responseProperty.data;
-
-      console.log("properties:" + responseProperty.data.length);
-
-      if (
-        propertyStatus === "" &&
-        propertyType === "" &&
-        propertyApproval === ""
-      ) {
-        setProperties(properties);
-      } else if (propertyStatus === "" && propertyApproval === "") {
-        const filteredType = properties.filter(
-          (property) => property.propertyType === propertyType
-        );
-        setProperties(filteredType);
-      } else if (propertyType === "" && propertyApproval === "") {
-        const filteredStatus = properties.filter(
-          (property) => property.propertyStatus === propertyStatus
-        );
-        setProperties(filteredStatus);
-      } else if (propertyType === "" && propertyStatus === "") {
-        const filteredApproval = properties.filter(
-          (property) => property.approvalStatus === propertyApproval
-        );
-        setProperties(filteredApproval);
-      } else {
-        const filtered = properties.filter(
-          (property) =>
-            property.propertyType === propertyType &&
-            property.propertyStatus === propertyStatus &&
-            property.approvalStatus === propertyApproval
-        );
-        setProperties(filtered);
-      }
+      return {
+        ...sellerInfo,
+        [property.propertyListingId]: sellerResponse.data,
+      };
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching seller information:", error);
+      return sellerInfo;
     }
+  };
+
+  const fetchData = async () => {
+    const responseProperty = await API.get(
+      `http://localhost:3000/admin/properties`
+    );
+
+    const properties = responseProperty.data;
+
+    console.log("properties:" + responseProperty.data.length);
+
+    if (
+      propertyStatus === "" &&
+      propertyType === "" &&
+      propertyApproval === ""
+    ) {
+      setProperties(properties);
+    } else if (propertyStatus === "" && propertyApproval === "") {
+      const filteredType = properties.filter(
+        (property) => property.propertyType === propertyType
+      );
+      setProperties(filteredType);
+    } else if (propertyType === "" && propertyApproval === "") {
+      const filteredStatus = properties.filter(
+        (property) => property.propertyStatus === propertyStatus
+      );
+      setProperties(filteredStatus);
+    } else if (propertyType === "" && propertyStatus === "") {
+      const filteredApproval = properties.filter(
+        (property) => property.approvalStatus === propertyApproval
+      );
+      setProperties(filteredApproval);
+    } else if (propertyStatus === "") {
+      const filteredApprovalType = properties.filter(
+        (property) =>
+          property.propertyType === propertyType &&
+          property.approvalStatus === propertyStatus
+      );
+      setProperties(filteredApprovalType);
+    } else if (propertyType === "") {
+      const filteredApprovalStatus = properties.filter(
+        (property) =>
+          property.propertyStatus === propertyStatus &&
+          property.approvalStatus === propertyApproval
+      );
+      setProperties(filteredApprovalStatus);
+    } else if (propertyApproval === "") {
+      const filteredTypeStatus = properties.filter(
+        (property) =>
+          property.propertyType === propertyType &&
+          property.propertyStatus === propertyStatus
+      );
+      setProperties(filteredTypeStatus);
+    } else {
+      const filtered = properties.filter(
+        (property) =>
+          property.propertyType === propertyType &&
+          property.propertyStatus === propertyStatus &&
+          property.approvalStatus === propertyApproval
+      );
+      setProperties(filtered);
+    }
+
+    const sellerInfoPromises = properties.map((property) =>
+      fetchSellerInfo(property)
+    );
+
+    Promise.all(sellerInfoPromises)
+      .then((updatedSellerInfoArray) => {
+        const updatedSellerInfo = Object.assign({}, ...updatedSellerInfoArray);
+        setSellerInfo(updatedSellerInfo);
+      })
+      .catch((error) => {
+        console.error("Error fetching seller information:", error);
+      });
   };
 
   useEffect(() => {
@@ -182,7 +230,7 @@ const AllProperties = () => {
               key={property.propertyListingid}
             >
               <a
-                href={`/users/property/${property.propertyListingId}`}
+                href={`/property/${property.propertyListingId}`}
                 className="property-card-link-all"
               >
                 {Array.isArray(property.images) &&
@@ -194,6 +242,23 @@ const AllProperties = () => {
                       alt={`Property Image for ${property.title}`}
                       className="image-listing-all"
                     />
+                    {property.approvalStatus === "PENDING" && (
+                      <Card.Img
+                        variant="top"
+                        src="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/svg/2757.svg"
+                        alt="Second Image"
+                        className="image-listing-all overlay-image"
+                        style={{
+                          position: "absolute",
+                          top: "1.5em",
+                          left: "5.5em",
+                          zIndex: 1,
+                          width: "8em",
+                          height: "8em",
+                          opacity: 0.8,
+                        }}
+                      />
+                    )}
                   </div>
                 ) : (
                   <div className="image-container-listing-all">
@@ -203,6 +268,23 @@ const AllProperties = () => {
                       alt={`Property Image for ${property.title}`}
                       className="image-listing-all"
                     />
+                    {property.approvalStatus === "PENDING" && (
+                      <Card.Img
+                        variant="top"
+                        src="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/svg/2757.svg"
+                        alt="Second Image"
+                        className="image-listing-all overlay-image"
+                        style={{
+                          position: "absolute",
+                          top: "1.5em",
+                          left: "5.5em",
+                          zIndex: 1,
+                          width: "8em",
+                          height: "8em",
+                          opacity: 0.8,
+                        }}
+                      />
+                    )}
                   </div>
                 )}
                 <Card.Body>
@@ -244,6 +326,51 @@ const AllProperties = () => {
                   </Card.Text>
                   <Card.Text style={{ fontSize: "12px", opacity: "0.8" }}>
                     Date posted: {formatTime(property.createdAt)}
+                  </Card.Text>
+                  <Card.Text
+                    style={{
+                      fontSize: "12px",
+                      opacity: "0.8",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    Seller:{" "}
+                    {sellerInfo[property.propertyListingId] &&
+                      (sellerInfo[property.propertyListingId].profileImage ? (
+                        <>
+                          <img
+                            src={`data:image/jpeg;base64,${sellerInfo[
+                              property.propertyListingId
+                            ].profileImage.toString("base64")}`}
+                            style={{
+                              height: "15px",
+                              width: "15px",
+                              marginLeft: "10px",
+                              marginRight: "5px",
+                            }}
+                            alt="user"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <>
+                            <img
+                              src={imageBasePath + "user.png"}
+                              style={{
+                                height: "15px",
+                                width: "15px",
+                                marginLeft: "10px",
+                                marginRight: "5px",
+                              }}
+                              alt="default user"
+                            />
+                          </>
+                        </>
+                      ))}
+                    {sellerInfo[property.propertyListingId]
+                      ? sellerInfo[property.propertyListingId].userName
+                      : "N/A"}
                   </Card.Text>
                 </Card.Body>
               </a>

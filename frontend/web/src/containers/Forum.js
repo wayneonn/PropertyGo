@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { ButtonGroup, ToggleButton } from "react-bootstrap";
 import "./styles/Forum.css";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
-import ForumTopic from "./ForumTopic"; 
-import ForumPost from "./ForumPost"; 
-import ForumComment from "./ForumComment"; 
+import ForumTopic from "./ForumTopic";
+import ForumPost from "./ForumPost";
+import ForumComment from "./ForumComment";
 
 const Forum = () => {
   const [selectedCategory, setSelectedCategory] = useState("TOPIC");
@@ -21,15 +21,17 @@ const Forum = () => {
   };
 
   return (
-    <div style={{
-      backgroundColor: "#0000000D",
-      width: "calc(100% - 180px)",
-      top: "60px",
-      right: 0,
-      bottom: 0,
-      position: "fixed",
-      overflowY: "auto"
-    }}>
+    <div
+      style={{
+        backgroundColor: "#0000000D",
+        width: "calc(100% - 180px)",
+        top: "60px",
+        right: 0,
+        bottom: 0,
+        position: "fixed",
+        overflowY: "auto",
+      }}
+    >
       <div
         style={{
           marginTop: "10px",
@@ -38,11 +40,19 @@ const Forum = () => {
           justifyContent: "space-between",
         }}
       >
-        <BreadCrumb names={["Home"]} lastname="Forum" links={["/"]}></BreadCrumb>
+        <BreadCrumb
+          names={["Home"]}
+          lastname="Forum"
+          links={["/"]}
+        ></BreadCrumb>
       </div>
-      <ButtonGroup key="category-group" toggle="true" style={{
-        marginLeft: "2em"
-      }}>
+      <ButtonGroup
+        key="category-group"
+        toggle="true"
+        style={{
+          marginLeft: "2em",
+        }}
+      >
         {Object.keys(components).map((category) => (
           <ToggleButton
             key={category + "-button"}

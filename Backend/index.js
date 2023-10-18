@@ -51,8 +51,6 @@ const reviewAdminRouter = require("./routes/admin/reviewRoutes");
 const folderAdminRouter = require("./routes/admin/folderRoutes");
 const documentAdminRouter = require("./routes/admin/documentRoutes");
 const transactionAdminRouter = require("./routes/admin/transactionRoutes");
-const forumPostAdminRouter = require("./routes/admin/forumPostRoutes");
-const forumCommentAdminRouter = require("./routes/admin/forumCommentRoutes");
 
 //property routes
 const propertyRoute = require("./routes/user/propertyRoute");
@@ -70,7 +68,7 @@ const forumPostUserRouter = require("./routes/user/forumPostRoute");
 const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
 const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
 const reviewRoute = require("./routes/user/reviewRoute");
-const faqRoute = require("./routes/user/faqRoute")
+const faqRoute = require("./routes/user/faqRoute");
 const e = require("express");
 
 app.use(cors());
@@ -96,8 +94,6 @@ app.use("/admin/reviews", reviewAdminRouter);
 app.use("/admin/documents", documentAdminRouter);
 app.use("/admin/folders", folderAdminRouter);
 app.use("/admin/transactions", transactionAdminRouter);
-app.use("/admin/forumPosts", injectIo(io), forumPostAdminRouter);
-app.use("/admin/forumComments", injectIo(io), forumCommentAdminRouter);
 
 app.use(
   "/user",
@@ -122,21 +118,11 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(
-  "/property",
-  propertyRoute,
-);
+app.use("/property", propertyRoute);
 
-app.use(
-  "/image",
-  imageRoute,
-);
+app.use("/image", imageRoute);
 
-app.use(
-  "/review",
-  reviewRoute,
-);
-
+app.use("/review", reviewRoute);
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})
@@ -149,9 +135,9 @@ globalEmitter.on("newUserCreated", async (user) => {
   });
 });
 
-globalEmitter.on('partnerApprovalUpdate', async() => {
-    console.log("Received partner approval update notice.")
-})
+globalEmitter.on("partnerApprovalUpdate", async () => {
+  console.log("Received partner approval update notice.");
+});
 //
 // globalEmitter.on('partnerCreated', async() => {
 //     console.log("========================== Partner created =============================");
@@ -382,20 +368,20 @@ db.sequelize
             for (const contactUsData of contactUsTestData) {
               await db.ContactUs.create(contactUsData);
             }
-            console.log('Contact Us test data inserted successfully.');
+            console.log("Contact Us test data inserted successfully.");
           } catch (error) {
-            console.error('Error inserting Contact Us test data:', error);
+            console.error("Error inserting Contact Us test data:", error);
           }
         } else {
-          console.log('Contact Us test data already exists in the database.');
+          console.log("Contact Us test data already exists in the database.");
         }
 
-        console.log('Faq test data inserted successfully.');
+        console.log("Faq test data inserted successfully.");
       } catch (error) {
-        console.error('Error inserting Faq test data:', error);
+        console.error("Error inserting Faq test data:", error);
       }
     } else {
-      console.log('Admin test data already exists in the database.');
+      console.log("Admin test data already exists in the database.");
     }
 
     // Images

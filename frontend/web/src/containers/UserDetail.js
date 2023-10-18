@@ -457,6 +457,7 @@ const UserDetail = () => {
                       style={{
                         display: "flex",
                         alignItems: "center",
+                        justifyContent: "space-between",
                       }}
                     >
                       <div className="review-username">
@@ -574,7 +575,7 @@ const UserDetail = () => {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Documents</Modal.Title>
+          <Modal.Title style={{ fontSize: "20px" }}>Documents</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {fetching ? (
@@ -608,7 +609,7 @@ const UserDetail = () => {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Deactivate</Modal.Title>
+          <Modal.Title style={{ fontSize: "20px" }}>Deactivate</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>Are you sure you want to deactivate this lawyer?</p>
@@ -655,7 +656,7 @@ const UserDetail = () => {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Activate</Modal.Title>
+          <Modal.Title style={{ fontSize: "20px" }}>Activate</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>Are you sure you want to activate this lawyer?</p>
