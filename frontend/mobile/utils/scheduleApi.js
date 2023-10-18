@@ -264,7 +264,7 @@ export const getViewingAvailabilityByDateAndPropertyId = async (date, propertyId
 
   export const getScheduleByPropertyId = async (propertyId) => {
     try {
-      const response = await fetch(`${BASE_URL}/${SCHEDULE_ENDPOINT}/byUserId/${propertyId}`, {
+      const response = await fetch(`${BASE_URL}/${SCHEDULE_ENDPOINT}/byPropertyId/${propertyId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

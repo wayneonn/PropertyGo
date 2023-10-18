@@ -25,9 +25,10 @@ import {
     getScheduleByUserId,
 } from '../../utils/scheduleApi';
 import { set } from 'date-fns';
+import ScheduleCard from './ScheduleCard'; 
 
 const SetSchedule = ({ route }) => {
-    const { propertyListingId } = route.params;
+    const { propertyListingId, userDetails  } = route.params;
     const navigation = useNavigation();
     const { user } = useContext(AuthContext);
     const [selectedTime, setSelectedTime] = useState(null);
@@ -35,6 +36,7 @@ const SetSchedule = ({ route }) => {
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
     const userId = user.user.userId;
+    const sellerUserId = userDetails.userId;
     // Define selected date state
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [availability, setAvailability] = useState([]);
@@ -46,7 +48,7 @@ const SetSchedule = ({ route }) => {
     const [takenTimeSlots, setTakenTimeSlots] = useState([]);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [refreshFlatList, setRefreshFlatList] = useState(false);
-    const [userSlots, setUserSlots] = useState(null);
+    const [userSlots, setUserSlots] = useState([]);
 
     const numColumns = 3;
 
@@ -74,6 +76,7 @@ const SetSchedule = ({ route }) => {
             setUserSlots(data);
             console.log("fetchScheduleByUser", data)
         } else {
+            setUserSlots([]);
             console.error('Error fetching schedule data for user:', message);
         }
     };
@@ -297,6 +300,7 @@ const SetSchedule = ({ route }) => {
         setTimeSlots(generateTimeSlots());
         setRefreshFlatList((prev) => !prev);
         fetchScheduleData();
+        fetchScheduleByUser();
     };
 
     const handleRemove = async () => {
@@ -323,6 +327,7 @@ const SetSchedule = ({ route }) => {
         }
 
         fetchScheduleData();
+        fetchScheduleByUser();
     };
 
     const getMarkedDates = () => {
@@ -433,18 +438,13 @@ const SetSchedule = ({ route }) => {
                             data={userSlots}
                             keyExtractor={(item) => item.scheduleId.toString()}
                             renderItem={({ item }) => (
-                                <View style={styles.bookingItem}>
-                                    <View style={{ flexDirection: 'row'}}>
-                                    <Text style={styles.bookingItemTextLabel}>Date: </Text><Text style={styles.bookingItemText}>{item.meetupDate}</Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'row'}}>
-                                    <Text style={styles.bookingItemTextLabel}>Time: </Text><Text style={styles.bookingItemText}>{item.meetupTime}</Text>
-                                    </View>
-                                </View>
+                                <ScheduleCard schedule={item}  onPress={() => {
+                                    navigation.navigate('View Profile', { userId: sellerUserId });
+                                  }} />
                             )}
                         />
                     ) : (
-                        <Text>No bookings made by the user.</Text>
+                        <Text style={styles.noAvailabilityText}>No bookings made by the user.</Text>
                     )}
                 </View>
             </ScrollView>

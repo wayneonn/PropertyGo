@@ -35,7 +35,7 @@ const SetSchedule = ({ route }) => {
     const [availability, setAvailability] = useState([]);
     const [isToBeUpdated, setIsToBeUpdated] = useState(false);
     const [viewingAvailabilityId, setViewingAvailabilityId] = useState(null);
-    const [bookedSlots, setBookedSlots] = useState(null);
+    const [bookedSlots, setBookedSlots] = useState([]);
 
     useEffect(() => {
         fetchViewingAvailabilityByDateAndPropertyId();
@@ -52,6 +52,7 @@ const SetSchedule = ({ route }) => {
         if (success) {
             setBookedSlots(data);
         } else {
+            setBookedSlots([]);
             console.error('Error fetching schedule data for user:', message);
         }
     };
@@ -248,6 +249,9 @@ const SetSchedule = ({ route }) => {
             }
             console.log("Not to be updated");
         }
+
+        fetchViewingAvailabilityByPropertyId();
+        fetchScheduleByProperty();
     };
 
     const handleRemove = async () => {
@@ -269,7 +273,9 @@ const SetSchedule = ({ route }) => {
                 Alert.alert('Error', 'Failed to remove availability. Please try again later.');
                 console.log("Error: ", response.message)
             }
-        
+
+            fetchViewingAvailabilityByPropertyId();
+            fetchScheduleByProperty();
     };
 
     const getMarkedDates = () => {
@@ -383,7 +389,7 @@ const SetSchedule = ({ route }) => {
                         )}
                     />                    
                     ) : (
-                        <Text>No bookings made by the user.</Text>
+                        <Text style={styles.noAvailabilityText}>There are no bookings for any viewings. </Text>
                     )}
                 </View>
             </ScrollView>
@@ -523,6 +529,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 8,
         fontWeight: 'bold',
+    },
+    noAvailabilityText: {
+        fontSize: 16,
+        textAlign: 'center',
+        marginTop: 10,
     },
 });
 

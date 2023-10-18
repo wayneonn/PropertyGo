@@ -472,7 +472,7 @@ const PropertyListingScreen = ({ route }) => {
         ) : (
           <>
             <TouchableOpacity style={styles.calendarButton} onPress={() => {
-              navigation.navigate('Schedule', { propertyListingId });
+              navigation.navigate('Schedule', { propertyListingId, userDetails });
             }}
             >
               <Ionicons name="calendar-outline" size={24} color="black" />
