@@ -14,9 +14,9 @@ const ForumPost = () => {
     const [flaggedForumPosts, setFlaggedForumPosts] = useState([]);
     const [inappropriateForumPosts, setInappropriateForumPosts] = useState([]);
     const [showEditStatusModal, setShowEditStatusModal] = useState(false);
-    const [editForumPost, setEditForumPost] = useState(0);
+    const [editForumPost, setEditForumPost] = useState({});
     const [showResetInapprorpiateForumPostModal, setShowResetInapprorpiateForumPostModal] = useState(false);
-    const [appropriateForumPost, setAppropriateForumPost] = useState(0);
+    const [appropriateForumPost, setAppropriateForumPost] = useState({});
 
     const ITEMS_PER_PAGE = 4;
 
@@ -365,7 +365,7 @@ const ForumPost = () => {
                         <Modal.Title>Appropriate/Inappropriate Forum Post</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {editForumPost && (
+                        {editForumPost.forumTopic !== undefined && (
                             <div>
                                 <p>Are you sure this Forum Post is inappropriate?</p>
                                 <p><strong>Topic:</strong> {editForumPost.forumTopic.topicName}</p>
@@ -451,7 +451,7 @@ const ForumPost = () => {
                         <Modal.Title>Appropriate Forum Post</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {appropriateForumPost && (
+                        {appropriateForumPost.forumTopic !== undefined && (
                             <div>
                                 <p>Reset the current forum post to Appropriate?</p>
                                 <p><strong>Topic:</strong> {appropriateForumPost.forumTopic.topicName}</p>
