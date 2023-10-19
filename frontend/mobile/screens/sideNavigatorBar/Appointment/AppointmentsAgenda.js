@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../../AuthContext';
 import { getScheduleByUserId, getScheduleBySellerId } from '../../../utils/scheduleApi';
-import ScheduleCard from '../../schedule/ScheduleCard';
+import AppointmentCard from '../../schedule/AppointmentCard';
 import { useFocusEffect } from '@react-navigation/native';
 
 const Appointments = ({ route }) => {
@@ -42,7 +42,8 @@ const Appointments = ({ route }) => {
         if (success) {
             // Filter schedules for "To Buy" with meetupDate today or in the future
             const today = new Date();
-            const userSchedulesTodayAndBeyond = data.filter(schedule => new Date(schedule.meetupDate) >= today);
+            today.setHours(0, 0, 0, 0);
+            const userSchedulesTodayAndBeyond = data.filter(schedule => today <= new Date(schedule.meetupDate));
             setUserBuySchedules(userSchedulesTodayAndBeyond);
         } else {
             setUserBuySchedules([]);
@@ -58,7 +59,8 @@ const Appointments = ({ route }) => {
         if (success) {
             // Filter schedules for "To Sell" with meetupDate today or in the future
             const today = new Date();
-            const sellerSchedulesTodayAndBeyond = data.filter(schedule => new Date(schedule.meetupDate) >= today);
+            today.setHours(0, 0, 0, 0);
+            const sellerSchedulesTodayAndBeyond = data.filter(schedule => today <= new Date(schedule.meetupDate));
             setSellerSellSchedules(sellerSchedulesTodayAndBeyond);
         } else {
             setSellerSellSchedules([]);
@@ -89,13 +91,14 @@ const Appointments = ({ route }) => {
                     {userBuySchedules.length > 0 || sellerSellSchedules.length > 0 ? (
                         <>
                             {userBuySchedules.map((item) => (
-                                <ScheduleCard key={item.scheduleId} schedule={item} onPress={() => {
-                                    navigation.navigate('View Profile', { userId: item.sellerId });
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
                                 }} />
                             ))}
                             {sellerSellSchedules.map((item) => (
-                                <ScheduleCard key={item.scheduleId} schedule={item} onPress={() => {
-                                    navigation.navigate('View Profile', { userId: item.sellerId });
+
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule: item });
                                 }} />
                             ))}
                         </>
@@ -114,8 +117,8 @@ const Appointments = ({ route }) => {
                             data={userBuySchedules}
                             keyExtractor={(item) => item.scheduleId.toString()}
                             renderItem={({ item }) => (
-                                <ScheduleCard schedule={item} onPress={() => {
-                                    navigation.navigate('View Profile', { userId: item.sellerId });
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule : item });
                                 }} />
                             )}
                         />
@@ -134,8 +137,8 @@ const Appointments = ({ route }) => {
                             data={sellerSellSchedules}
                             keyExtractor={(item) => item.scheduleId.toString()}
                             renderItem={({ item }) => (
-                                <ScheduleCard schedule={item} onPress={() => {
-                                    navigation.navigate('View Profile', { userId: item.sellerId });
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule : item });
                                 }} />
                             )}
                         />

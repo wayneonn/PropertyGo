@@ -26,7 +26,7 @@ import {
     getScheduleBySellerId,
 } from '../../../utils/scheduleApi';
 import { set } from 'date-fns';
-import ScheduleCard from '../../schedule/ScheduleCard';
+import AppointmentCard from '../../schedule/AppointmentCard';
 
 const Appointments = ({ route }) => {
     const navigation = useNavigation();
@@ -380,10 +380,6 @@ const Appointments = ({ route }) => {
                 keyboardShouldPersistTaps="handled" // Add this prop
             >
                 <View style={styles.headerContainer}>
-                    {/* Back button */}
-                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                        <Ionicons name="arrow-back" size={24} color="black" />
-                    </TouchableOpacity>
                     <Text style={styles.header}>Appointment History</Text>
                 </View>
                 <View style={styles.calendarContainer}>
@@ -414,42 +410,10 @@ const Appointments = ({ route }) => {
 
                 <View style={styles.timeSlotsContainer}>
                     <Text style={styles.dateOnContainer}>{formatDate(selectedDate)}</Text>
-                    {generateTimeSlots().length > 0 ? (
-                        <FlatList
-                            data={generateTimeSlots()}
-                            extraData={refreshFlatList}
-                            keyExtractor={(item) => item.id}
-                            numColumns={numColumns}
-                            renderItem={({ item }) => (
-                                // Conditionally render TouchableOpacity based on isSlotDisabled
-                                item.isSlotDisabled ? (
-                                    <View style={[
-                                        styles.timeSlot,
-                                        item.isTimeSlotTaken ? { backgroundColor: 'red' } : null, // Set the background color to red for taken time slots
-                                    ]}>
-                                        <Text style={styles.timeText}>{item.time}</Text>
-                                    </View>
-                                ) : (
-                                    <TouchableOpacity
-                                        onPress={() => handleTimeSlotSelect(item.time, item.scheduleId)}
-                                        style={[
-                                            styles.timeSlot,
-                                            item.userBooked ? { backgroundColor: 'orange' } : null,
-                                            selectedTime === item.time ? styles.selectedTimeSlot : null,
-                                        ]}
-                                    >
-                                        <Text style={styles.timeText}>{item.time}</Text>
-                                    </TouchableOpacity>
-
-                                )
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noAvailabilityText}>Booking is not available on this date.</Text>
-                    )}
+                    
                 </View>
                 <View style={styles.bookingContainer}>
-                    <Text style={styles.dateOnContainer}>To Buy - Past Viewings</Text>
+                    <Text style={styles.dateOnContainer}>To Buy - Upcoming To View</Text>
 
                     {/* List of user's bookings */}
                     {userBuySchedules && userBuySchedules.length > 0 ? (
@@ -457,8 +421,8 @@ const Appointments = ({ route }) => {
                             data={userBuySchedules}
                             keyExtractor={(item) => item.scheduleId.toString()}
                             renderItem={({ item }) => (
-                                <ScheduleCard schedule={item} onPress={() => {
-                                    navigation.navigate('View Profile', { userId: item.sellerId });
+                                <AppointmentCard schedule={item} propertyId={item.propertyId}  onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule : item });
                                 }} />
                             )}
                         />
@@ -467,7 +431,7 @@ const Appointments = ({ route }) => {
                     )}
                 </View>
                 <View style={styles.bookingContainer}>
-                    <Text style={styles.dateOnContainer}>To Sell - Past Viewings</Text>
+                    <Text style={styles.dateOnContainer}>To Sell - Buyers To View Unit</Text>
 
                     {/* List of user's bookings */}
                     {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
@@ -475,8 +439,8 @@ const Appointments = ({ route }) => {
                             data={sellerSellSchedules}
                             keyExtractor={(item) => item.scheduleId.toString()}
                             renderItem={({ item }) => (
-                                <ScheduleCard schedule={item} onPress={() => {
-                                    navigation.navigate('View Profile', { userId: sellerUserId });
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: sellerUserId, propertyId: item.propertyId, schedule : item });
                                 }} />
                             )}
                         />
@@ -485,15 +449,6 @@ const Appointments = ({ route }) => {
                     )}
                 </View>
             </ScrollView>
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.removeButton} onPress={handleRemove}>
-                    <Ionicons name="trash-outline" size={18} color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.saveChangesButton} onPress={handleSubmit}>
-                    <Ionicons name="save-outline" size={18} color="white" />
-                    <Text style={styles.saveChangesButtonText}>Save</Text>
-                </TouchableOpacity>
-            </View>
         </View>
     );
 };
@@ -539,19 +494,16 @@ const styles = StyleSheet.create({
     dateOnContainer: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10,
         marginLeft: 5,
     },
     headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
         marginBottom: 20,
     },
     header: {
-        fontSize: 22,
+        fontSize: 25,
         fontWeight: 'bold',
-        marginLeft: 10,
         marginTop: 5,
+        textAlign: 'center',
     },
     saveChangesButton: {
         backgroundColor: 'green',

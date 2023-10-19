@@ -442,16 +442,12 @@ const PropertyUserListingScreen = ({ route }) => {
           </>
         ) : (
           <>
-            <TouchableOpacity style={styles.calendarButton} onPress={() => {
-              navigation.navigate('Schedule', { propertyListingId });
-            }}
-            >
-              <Ionicons name="calendar-outline" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.chatWithSellerButton}>
+            <TouchableOpacity style={styles.chatWithSellerButton} >
               <Text style={styles.buttonTextUser}>Chat With Seller</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.viewScheduleButton}>
+            <TouchableOpacity style={styles.viewScheduleButton} onPress={() => {
+              navigation.navigate('Schedule', { propertyListingId, userDetails });
+            }}>
               <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buyButton}>

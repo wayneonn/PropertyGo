@@ -1,10 +1,11 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AppointmentMain from "../../screens/sideNavigatorBar/Appointment/Appointments";
+import ViewAppointmentDetail from "../../screens/sideNavigatorBar/Appointment/ViewAppointmentDetail";
 import AppointmentMainTabNavigator from './AppointmentMainTabNavigator';
-import PropertyListing from "../../screens/propertyListings/PropertyListing";
+import PropertyUserListing from "../../screens/propertyListings/PropertyUserListing";
 import EditPropertyListing from "../../screens/propertyListings/EditPropertyListing";
+import SetSchedule from "../../screens/schedule/SetSchedule";
 import ViewUserProfile from "../../screens/userProfile/ViewUserProfile";
-import BoostPropertyListing from "../../screens/propertyListings/BoostPropertyListing";
+import Schedule from "../../screens/schedule/SetSchedule";
 import Map from "../../screens/propertyListings/map";
 
 import TransactionList from "../../screens/dashboard/transactionList"
@@ -18,6 +19,10 @@ const AppointmentStackGroup = () => {
             {/* <AppointmentStack.Screen name={"Appointment Main"} component={AppointmentMain}/> */}
             <AppointmentStack.Screen name={"Appointment Main"} component={AppointmentMainTabNavigator}/>
             <AppointmentStack.Screen name="View Profile" component={ViewUserProfile}/>
+            <AppointmentStack.Screen name="View Appointment Detail" component={ViewAppointmentDetail}/>
+            <AppointmentStack.Screen name="Property Listing" component={PropertyUserListing}/>
+            <AppointmentStack.Screen name="Set Schedule" component={SetSchedule}/>
+            <AppointmentStack.Screen name="Schedule" component={Schedule}/>
         </AppointmentStack.Navigator>
     );
 };
