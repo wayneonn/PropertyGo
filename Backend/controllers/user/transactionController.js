@@ -2,10 +2,11 @@ const {Transaction, User, Document} = require("../../models")
 const {Op, Sequelize} = require('sequelize');
 const puppeteer = require('puppeteer');
 
+// Maybe should change it to using sellerId instead.
 exports.getTransactions = async (req, res) => {
     try {
         const transactions = await Transaction.findAll({
-            where: {userId: req.params.id},
+            where: {sellerId: req.params.id},
         });
         res.json({transactions});
     } catch (error) {

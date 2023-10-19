@@ -285,7 +285,20 @@ async function isPropertyInFavorites(req, res) {
   }
 }
 
-
+async function getPartnerByRangeAndType(req, res){
+  try {
+    const partners = await User.findAll({
+      where: {
+        userType: req.params.type
+      },
+      offset: Number(req.params.start),
+      limit: Number(req.params.end)
+    })
+    res.status(201).json({partnerInfo:partners})
+  } catch (error) {
+    console.error("Fail to fetch particular customer type: ", error)
+  }
+}
 
 module.exports = {
   getAllUsers,
@@ -297,4 +310,5 @@ module.exports = {
   removeFavoriteProperty,
   getUserFavorites,
   isPropertyInFavorites,
+  getPartnerByRangeAndType
 };
