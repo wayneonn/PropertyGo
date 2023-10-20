@@ -21,6 +21,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("PENDING", "REFUNDED", "PAID"),
         allowNull: false,
       },
+      stripePaymentResponse: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      transactionType: {
+        type: DataTypes.ENUM("REQUEST", "OTP", "TOKENS"),
+        allowNull: false,
+      },
     },
     {
       freezeTableName: true,
@@ -50,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
     Transaction.belongsTo(models.User, {
       as: "seller",
       foreignKey: "sellerId",
-      allowNull: false,
+      allowNull: true,
     });
     Transaction.belongsTo(models.Invoice, {
       foreignKey: "invoiceId", // This should match the foreign key in the Invoice model

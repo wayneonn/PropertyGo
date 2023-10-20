@@ -56,7 +56,7 @@ const AllProperty = () => {
 
       const transactions = transactionResponse.data.transactions
         .filter((transaction) => transaction.propertyId == propertyId)
-        .filter((transaction) => transaction.requestId === null) // transaction is for OTP payment
+        .filter((transaction) => transaction.transactionType == "OTP") // transaction is for OTP payment
         .filter((transaction) => transaction.status == "PAID"); // transaction is paid, means property is sold
 
       // console.log(transactions);
@@ -351,6 +351,31 @@ const AllProperty = () => {
               <span style={{ fontSize: "15px", marginBottom: "30px" }}>
                 {property.description}
               </span>
+              {property.boostListingStartDate && (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      opacity: "0.8",
+                      marginTop: "10px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Boost Listing Start Date - End Date:
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      opacity: "0.8",
+                      marginBottom: "10px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {formatTime(property.boostListingStartDate)} ~{" "}
+                    {formatTime(property.boostListingEndDate)}
+                  </span>
+                </div>
+              )}
               <div
                 style={{
                   display: "flex",
