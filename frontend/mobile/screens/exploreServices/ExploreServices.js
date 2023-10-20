@@ -8,24 +8,31 @@ import {
     StyleSheet,
     Text, TextInput,
     TouchableOpacity,
-    View
+    View,
+    ActivityIndicator, Button
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {AuthContext} from "../../AuthContext";
 import {fetchPartnerByRangeAndType} from "../../utils/partnerApi";
 import {useFocusEffect} from "@react-navigation/native";
-import base64 from "react-native-base64";
 import {SceneMap, TabBar, TabView} from "react-native-tab-view";
-import StarRating from "react-native-star-rating"
+import {dateFormatter, convertImage} from "../../services/commonFunctions";
+import {RatingComponent} from "../../components/RatingStars";
+import {LoadingIndicator} from "../../components/LoadingIndicator";
+import {ImageSwiper} from "../../components/ImageSwiper";
+import { CheckBox } from 'react-native-elements';
+
+
+const cardSize = Dimensions.get('window').width;
 
 // Editing the explore services to show the different partner.
-const ExploreServices = () => {
+const ExploreServices = ({navigation, route}) => {
     const {user} = useContext(AuthContext);
     const USER_ID = user.user.userId
     const [lawyers, setLawyers] = useState([])
     const [contractor, setContractor] = useState([])
     const [start, setStart] = useState(1)
     const [end, setEnd] = useState(5)
-    const [modalVisible, setModalVisible] = useState(false)
     const [selectedLawyer, setSelectedLawyer] = useState(null)
     const [selectedContractor, setSelectedContractor] = useState(null)
     const [index, setIndex] = useState(0);
@@ -34,7 +41,8 @@ const ExploreServices = () => {
         { key: 'contractor', title: 'Contractor' },
     ]);
     const USER_TYPE = ["LAWYER", "CONTRACTOR"]
-    const cardSize = Dimensions.get('window').width;
+    const [modalVisible, setModalVisible] = useState(false)
+
 
     useFocusEffect(
         React.useCallback(() => {
@@ -49,20 +57,6 @@ const ExploreServices = () => {
         fetchContractors().then(r => console.log("Fetch contractor."));
         console.log("Data fetched.")
     }, []);
-
-    const RatingComponent = ({ rating }) => {
-        return (
-            <View>
-                <StarRating
-                    disabled={false}
-                    maxStars={5}
-                    rating={rating}
-                    starSize={15}
-                    fullStarColor={'gold'}
-                />
-            </View>
-        );
-    };
 
     const fetchLawyers = async() => {
         try {
@@ -84,36 +78,58 @@ const ExploreServices = () => {
         }
     }
 
-    function convertImage(profileImage) {
-        console.log("This is the data array sent in for photos: ", profileImage)
-        return base64.encodeFromByteArray(profileImage);
-    }
-
-    function dateFormatter(dateString) {
-        const dateObj = new Date(dateString);
-        return dateObj.toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZoneName: 'short'
-        });
-    }
-
-
 
     const LawyerRoute = () => {
         const [searchQuery, setSearchQuery] = useState('');
-        const filteredLawyers = lawyers.filter(
-            lawyer => lawyer.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        const [filterBy, setFilterBy] = useState('name');
+
+        const filteredLawyers = lawyers.filter(lawyer => {
+            switch(filterBy) {
+                case 'name':
+                    return lawyer.name.toLowerCase().includes(searchQuery.toLowerCase());
+                case 'companyName':
+                    return lawyer.companyName.toLowerCase().includes(searchQuery.toLowerCase());
+                case 'date':
+                    return new Date(lawyer.createdAt).toISOString().split('T')[0] === searchQuery;
+                default:
+                    return true;
+            }
+        });
+
         return (
             <ScrollView>
-                <View style={{padding: 10, marginLeft: 10}}>
+                <View>
+                    <View style={{ flexDirection: "row", alignSelf:"center", alignContent:"flex-start", marginTop: 5}}>
+                        <CheckBox
+                            title='Name'
+                            checkedIcon='dot-circle-o'
+                            uncheckedIcon='circle-o'
+                            checked={filterBy === 'name'}
+                            onPress={() => setFilterBy('name')}
+                            containerStyle={styles.checkBox}
+                        />
+                        <CheckBox
+                            title='Company'
+                            checkedIcon='dot-circle-o'
+                            uncheckedIcon='circle-o'
+                            checked={filterBy === 'companyName'}
+                            onPress={() => setFilterBy('companyName')}
+                            containerStyle={styles.checkBox}
+                        />
+                        <CheckBox
+                            title='Date'
+                            checkedIcon='dot-circle-o'
+                            uncheckedIcon='circle-o'
+                            checked={filterBy === 'date'}
+                            onPress={() => setFilterBy('date')}
+                            containerStyle={styles.checkBox}
+                        />
+                    </View>
+                </View>
+                <View style={{padding: 10, marginLeft: 10, flexDirection: "row", alignItems: "center"}}>
+                    <Icon name="search" size={20} color="#000" style={styles.searchIcon} />
                     <TextInput
-                        style={{height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 8, width: cardSize*0.9}}
+                        style={{height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 8, width: cardSize*0.8}}
                         placeholder="Search for a lawyer..."
                         value={searchQuery}
                         onChangeText={text => setSearchQuery(text)}
@@ -125,7 +141,8 @@ const ExploreServices = () => {
                             style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.28}]}
                             onPress={() => {
                                 setSelectedLawyer(item);
-                                setModalVisible(true);
+                                setModalVisible(!modalVisible);
+                                setSearchQuery(searchQuery)
                             }}
                         >
                             <View style={styles.profileHeader}>
@@ -150,20 +167,21 @@ const ExploreServices = () => {
                                 <Text style={styles.propertyDetails}>{dateFormatter(item.createdAt)}</Text>
                             </View>
                         </TouchableOpacity>
-                    )) : <Text> No data </Text>}
+                    )) : <LoadingIndicator/>}
                 </View>
                 <Modal
                     animationType="slide"
                     transparent={true}
                     visible={modalVisible}
                     onRequestClose={() => {
-                        setModalVisible(false);
+                        setModalVisible(!modalVisible);
                     }}
                 >
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
                             {/* Render more details about the selectedTransaction */}
                             <Text style={styles.propertyTitle}>{selectedLawyer?.name}</Text>
+                            <Text style={styles.propertyTitle}>{selectedLawyer?.companyName}</Text>
                             <Text style={styles.propertyPrice}><RatingComponent rating={selectedLawyer?.rating}/></Text>
                             <Image
                                 source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
@@ -175,14 +193,14 @@ const ExploreServices = () => {
                             <Text style={styles.propertyDetails}>{dateFormatter(selectedLawyer?.createdAt)}</Text>
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonClose]}
-                                onPress={() => setModalVisible(false)}
+                                onPress={() => navigation.navigate("Chats")}
                             >
                                 <Text style={styles.textStyle}>Chat With Lawyer</Text>
                             </TouchableOpacity>
                             <Text>&nbsp;</Text>
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonClose]}
-                                onPress={() => setModalVisible(false)}
+                                onPress={() => setModalVisible(!modalVisible)}
                             >
                                 <Text style={styles.textStyle}>Hide</Text>
                             </TouchableOpacity>
@@ -195,15 +213,55 @@ const ExploreServices = () => {
 
     const ContractorRoute = () => {
         const [searchQuery, setSearchQuery] = useState('');
-        const filteredContractors = contractor.filter(
-            contractor => contractor.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        const [filterBy, setFilterBy] = useState('name');
+
+        const filteredContractors = contractor.filter(lawyer => {
+            switch(filterBy) {
+                case 'name':
+                    return lawyer.name.toLowerCase().includes(searchQuery.toLowerCase());
+                case 'companyName':
+                    return lawyer.companyName.toLowerCase().includes(searchQuery.toLowerCase());
+                case 'date':
+                    return new Date(lawyer.createdAt).toISOString().split('T')[0] === searchQuery;
+                default:
+                    return true;
+            }
+        });
         return (
             <ScrollView>
                 <View style={[styles.scene, {backgroundColor: '#f3f3f3'}]}>
-                    <View style={{padding: 10}}>
+                    <View>
+                        <View style={{ flexDirection: "row", alignSelf:"center", alignContent:"flex-start", marginTop: 5}}>
+                            <CheckBox
+                                title='Name'
+                                checkedIcon='dot-circle-o'
+                                uncheckedIcon='circle-o'
+                                checked={filterBy === 'name'}
+                                onPress={() => setFilterBy('name')}
+                                containerStyle={styles.checkBox}
+                            />
+                            <CheckBox
+                                title='Company'
+                                checkedIcon='dot-circle-o'
+                                uncheckedIcon='circle-o'
+                                checked={filterBy === 'companyName'}
+                                onPress={() => setFilterBy('companyName')}
+                                containerStyle={styles.checkBox}
+                            />
+                            <CheckBox
+                                title='Date'
+                                checkedIcon='dot-circle-o'
+                                uncheckedIcon='circle-o'
+                                checked={filterBy === 'date'}
+                                onPress={() => setFilterBy('date')}
+                                containerStyle={styles.checkBox}
+                            />
+                        </View>
+                    </View>
+                    <View style={{padding: 10, flexDirection: "row", alignItems: "center"}}>
+                        <Icon name="search" size={20} color="#000" style={styles.searchIcon} />
                         <TextInput
-                            style={{height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 8, width: cardSize*0.9}}
+                            style={{height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 8, width: cardSize*0.8}}
                             placeholder="Search for a contractor..."
                             value={searchQuery}
                             onChangeText={text => setSearchQuery(text)}
@@ -214,7 +272,7 @@ const ExploreServices = () => {
                             style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.28}]}
                             onPress={() => {
                                 setSelectedContractor(item);
-                                setModalVisible(true);
+                                setModalVisible(!modalVisible);
                             }}
                         >
                             <View style={styles.profileHeader}>
@@ -239,20 +297,21 @@ const ExploreServices = () => {
                                 <Text style={styles.propertyDetails}>{dateFormatter(item.createdAt)}</Text>
                             </View>
                         </TouchableOpacity>
-                    )) : <Text> No data </Text>}
+                    )) : <LoadingIndicator/>}
                 </View>
                 <Modal
                     animationType="slide"
                     transparent={true}
                     visible={modalVisible}
                     onRequestClose={() => {
-                        setModalVisible(false);
+                        setModalVisible(!modalVisible);
                     }}
                 >
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
                             {/* Render more details about the selectedTransaction */}
                             <Text style={styles.propertyTitle}>{selectedContractor?.name}</Text>
+                            <Text style={styles.propertyTitle}>{selectedContractor?.companyName}</Text>
                             <Text style={styles.propertyPrice}><RatingComponent
                                 rating={selectedContractor?.rating}/></Text>
                             <Image
@@ -272,7 +331,7 @@ const ExploreServices = () => {
                             <Text>&nbsp;</Text>
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonClose]}
-                                onPress={() => setModalVisible(false)}
+                                onPress={() => setModalVisible(!modalVisible)}
                             >
                                 <Text style={styles.textStyle}>Hide</Text>
                             </TouchableOpacity>
@@ -285,6 +344,8 @@ const ExploreServices = () => {
 
 
     return (
+        <View style={{flex: 1}}>
+            <ImageSwiper></ImageSwiper>
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={SceneMap({
@@ -292,7 +353,7 @@ const ExploreServices = () => {
                     contractor: ContractorRoute,
                 })}
                 onIndexChange={setIndex}
-                initialLayout={{ width: '100%' }}
+                initialLayout={{ height: 30 }}
                 renderTabBar={props => (
                     <TabBar
                         {...props}
@@ -301,6 +362,7 @@ const ExploreServices = () => {
                     />
                 )}
             />
+        </View>
     );
 };
 
@@ -354,7 +416,6 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     propertyDetails: {
-        flex: 1,
         fontStyle: "italic",
     },
     propertyDescription: {
@@ -364,6 +425,10 @@ const styles = StyleSheet.create({
     propertyPrice: {
         fontSize: 14,
         color: '#888',
+    },
+    searchIcon: {
+        marginRight: 10, // Adjust the margin as needed
+        color: "#ccc",
     },
     propertyArea: {
         fontSize: 14,
@@ -403,6 +468,13 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 2}, // Add shadow (iOS)
         shadowOpacity: 0.8, // Add shadow (iOS)
         shadowRadius: 2, // Add shadow (iOS)
+    },
+    checkBox: {
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        padding: 0,
+        margin: 0,
+        width: cardSize * 0.25 // adjust this value as needed
     },
     suggestionBorder: {
         borderBottomLeftRadius: 10,
@@ -498,6 +570,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center"
     }
+
 });
 
 export default ExploreServices;

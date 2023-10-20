@@ -291,7 +291,7 @@ async function getPartnerByRangeAndType(req, res){
       where: {
         userType: req.params.type
       },
-      offset: Number(req.params.start),
+      offset: Number(req.params.start - 1),
       limit: Number(req.params.end)
     })
     res.status(201).json({partnerInfo:partners})

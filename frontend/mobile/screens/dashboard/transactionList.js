@@ -14,6 +14,7 @@ import { AuthContext } from '../../AuthContext';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import base64 from "react-native-base64";
 import {createPDF, downloadAndOpenPDF} from "../../services/pdfReport";
+import {dateFormatter, convertImage} from "../../services/commonFunctions";
 
 const TransactionList = () => {
     const {user} = useContext(AuthContext);
@@ -66,23 +67,13 @@ const TransactionList = () => {
         console.log("Data fetched.")
     }, []);
 
-    const dateFormatter = (dateString) => {
-        const dateObj = new Date(dateString);
-        const formattedDate = dateObj.toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZoneName: 'short'
-        });
-        return formattedDate;
-    }
 
-    function convertImage(profileImage) {
-        console.log("This is the data array sent in for photos: ", profileImage)
-        return base64.encodeFromByteArray(profileImage);
+    const LoadingIndicator = () => {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        )
     }
     const PaidRoute = () => (
         // Render your PAID array values here.
@@ -120,7 +111,7 @@ const TransactionList = () => {
                             <Text style={styles.propertyDetails}>{dateFormatter(item.transaction.createdAt)}</Text>
                         </View>
                     </TouchableOpacity>
-                )) : <Text> No data </Text> }
+                )) : <LoadingIndicator/> }
             </View>
             <Modal
                 animationType="slide"
@@ -190,7 +181,7 @@ const TransactionList = () => {
                             <Text style={styles.propertyDetails}>{dateFormatter(item.transaction.createdAt)}</Text>
                         </View>
                     </TouchableOpacity>
-                )) : <Text> No data </Text> }
+                )) : <LoadingIndicator/> }
             </View>
             <Modal
                 animationType="slide"
