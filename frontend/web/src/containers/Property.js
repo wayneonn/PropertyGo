@@ -56,7 +56,7 @@ const Property = () => {
 
       const transactions = transactionResponse.data.transactions
         .filter((transaction) => transaction.propertyId == propertyId)
-        .filter((transaction) => transaction.requestId === null) // transaction is for OTP payment
+        .filter((transaction) => transaction.transactionType == "OTP") // transaction is for OTP payment
         .filter((transaction) => transaction.status == "PAID"); // transaction is paid, means property is sold
 
       // console.log(transactions);
@@ -149,28 +149,6 @@ const Property = () => {
     const formattedDate = `${day} ${months[monthIndex]} ${year}`;
     return formattedDate;
   }
-
-  // const toggleDocumentModal = async (documentId) => {
-  //   const documents = await API.get(`http://localhost:3000/admin/documents`);
-  //   // console.log(document);
-  //   // const binaryString = atob(document.data.formattedDocuments[0].document);
-
-  //   const document = documents.filter(
-  //     (document) => document.documentId == documentId
-  //   );
-
-  //   const binaryString = atob(document.data.formattedDocuments[0].document); //need howard help fetch documents
-  //   const test = new Blob(
-  //     [
-  //       new Uint8Array(binaryString.length).map((_, i) =>
-  //         binaryString.charCodeAt(i)
-  //       ),
-  //     ],
-  //     { type: "application/pdf" }
-  //   );
-  //   setPdfBlob(test);
-  //   setShowDocumentModal(!showDocumentModal);
-  // };
 
   const handleDownload = async (documentId) => {
     try {
@@ -340,6 +318,31 @@ const Property = () => {
               <span style={{ fontSize: "15px", marginBottom: "30px" }}>
                 {property.description}
               </span>
+              {property.boostListingStartDate && (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      opacity: "0.8",
+                      marginTop: "10px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Boost Listing Start Date - End Date:
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      opacity: "0.8",
+                      marginBottom: "10px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {formatTime(property.boostListingStartDate)} ~{" "}
+                    {formatTime(property.boostListingEndDate)}
+                  </span>
+                </div>
+              )}
               <div
                 style={{
                   display: "flex",
