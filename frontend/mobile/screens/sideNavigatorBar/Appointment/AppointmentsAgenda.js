@@ -77,9 +77,6 @@ const Appointments = ({ route }) => {
             >
                 <View style={styles.headerContainer}>
                     {/* Back button */}
-                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                        <Ionicons name="arrow-back" size={24} color="black" />
-                    </TouchableOpacity>
                     <Text style={styles.header}>Appointment Agenda</Text>
                 </View>
 
@@ -158,8 +155,6 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
         marginBottom: 20,
     },
     header: {
@@ -167,6 +162,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginLeft: 10,
         marginTop: 5,
+        textAlign: 'center',
     },
     backButton: {
         padding: 10,
