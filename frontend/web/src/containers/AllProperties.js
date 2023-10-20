@@ -19,7 +19,7 @@ const AllProperties = () => {
   const navigate = useNavigate();
 
   const fetchSellerInfo = async (property) => {
-    const sellerId = property.userId;
+    const sellerId = property.sellerId;
 
     try {
       const sellerResponse = await API.get(

@@ -30,9 +30,13 @@ const PropertyListing = () => {
         `http://localhost:3000/admin/properties`
       );
 
+      console.log(responseProperty.data);
+
       const properties = responseProperty.data.filter(
-        (property) => property.userId == userId
+        (property) => property.sellerId == userId
       );
+
+      // console.log(properties);
 
       // if (propertyStatus === "" && propertyType === "") {
       //   setProperties(properties);

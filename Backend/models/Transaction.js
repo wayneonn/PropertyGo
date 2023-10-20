@@ -55,11 +55,6 @@ module.exports = (sequelize, DataTypes) => {
       as: "propertyListing",
       allowNull: false,
     });
-    Transaction.belongsTo(models.User, {
-      as: "seller",
-      foreignKey: "sellerId",
-      allowNull: true,
-    });
     Transaction.belongsTo(models.Invoice, {
       foreignKey: "invoiceId", // This should match the foreign key in the Invoice model
       onDelete: "CASCADE", // If a transaction is deleted, delete the associated invoice
