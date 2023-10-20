@@ -20,7 +20,9 @@ import {dateFormatter, convertImage} from "../../services/commonFunctions";
 import {RatingComponent} from "../../components/RatingStars";
 import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {ImageSwiper} from "../../components/ImageSwiper";
+import {BoostingAnimation} from "../../components/BoostingAnimation"
 import { CheckBox } from 'react-native-elements';
+
 
 
 const cardSize = Dimensions.get('window').width;
@@ -54,8 +56,6 @@ const ExploreServices = ({navigation, route}) => {
     const [modalVisible, setModalVisible] = useState(false)
     const [searchQueryLaw, setSearchQueryLaw] = useState('');
     const [searchQueryCon, setSearchQueryCon] = useState('');
-
-
 
     useFocusEffect(
         React.useCallback(() => {
@@ -103,7 +103,22 @@ const ExploreServices = ({navigation, route}) => {
             default:
                 return true;
         }
-    });
+    }).sort((a, b) => {
+        const currentDate = new Date();
+        const aBoostEndDate = new Date(a.boostListingEndDate);
+        const bBoostEndDate = new Date(b.boostListingEndDate);
+
+        // Check if boostEndDate is valid and hasn't expired for both
+        const aHasBoost = aBoostEndDate && aBoostEndDate > currentDate;
+        const bHasBoost = bBoostEndDate && bBoostEndDate > currentDate;
+
+        // Prioritize entries with a valid and non-expired boostEndDate
+        if (aHasBoost && !bHasBoost) return -1;
+        if (!aHasBoost && bHasBoost) return 1;
+
+        // If both have the same boostEndDate status or both don't have a valid boostEndDate, maintain their relative order
+        return 0;
+    });;
 
     const LawyerRoute = () => {
 
@@ -179,6 +194,9 @@ const ExploreServices = ({navigation, route}) => {
                                 <Text style={styles.propertyPrice}>E-Mail: {item.email}</Text>
                                 <Text style={styles.propertyDetails}>{dateFormatter(item.createdAt)}</Text>
                             </View>
+                            {new Date(item.boostListingEndDate) >= new Date() && (
+                                <BoostingAnimation/>
+                            )}
                         </TouchableOpacity>
                     )) : <LoadingIndicator/>}
                 </View>
@@ -239,6 +257,21 @@ const ExploreServices = ({navigation, route}) => {
                 default:
                     return true;
             }
+        }).sort((a, b) => {
+            const currentDate = new Date();
+            const aBoostEndDate = new Date(a.boostListingEndDate);
+            const bBoostEndDate = new Date(b.boostListingEndDate);
+
+            // Check if boostEndDate is valid and hasn't expired for both
+            const aHasBoost = aBoostEndDate && aBoostEndDate > currentDate;
+            const bHasBoost = bBoostEndDate && bBoostEndDate > currentDate;
+
+            // Prioritize entries with a valid and non-expired boostEndDate
+            if (aHasBoost && !bHasBoost) return -1;
+            if (!aHasBoost && bHasBoost) return 1;
+
+            // If both have the same boostEndDate status or both don't have a valid boostEndDate, maintain their relative order
+            return 0;
         });
         return (
             <ScrollView>
@@ -309,6 +342,9 @@ const ExploreServices = ({navigation, route}) => {
                                 <Text style={styles.propertyPrice}>E-Mail: {item.email}</Text>
                                 <Text style={styles.propertyDetails}>{dateFormatter(item.createdAt)}</Text>
                             </View>
+                            {new Date(item.boostListingEndDate) >= new Date() && (
+                                <BoostingAnimation/>
+                            )}
                         </TouchableOpacity>
                     )) : <LoadingIndicator/>}
                 </View>
