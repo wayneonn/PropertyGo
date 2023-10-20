@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {memo, useContext, useEffect, useState} from 'react';
 import {
     Dimensions,
     Image,
@@ -24,6 +24,16 @@ import { CheckBox } from 'react-native-elements';
 
 
 const cardSize = Dimensions.get('window').width;
+const MyInput = memo(({ value, onChangeText }) => {
+    return (
+        <TextInput
+            style={{height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 8}}
+            placeholder="Search for a contractor..."
+            value={value}
+            onChangeText={onChangeText}
+        />
+    );
+});
 
 // Editing the explore services to show the different partner.
 const ExploreServices = ({navigation, route}) => {
@@ -42,6 +52,9 @@ const ExploreServices = ({navigation, route}) => {
     ]);
     const USER_TYPE = ["LAWYER", "CONTRACTOR"]
     const [modalVisible, setModalVisible] = useState(false)
+    const [searchQueryLaw, setSearchQueryLaw] = useState('');
+    const [searchQueryCon, setSearchQueryCon] = useState('');
+
 
 
     useFocusEffect(
@@ -78,23 +91,21 @@ const ExploreServices = ({navigation, route}) => {
         }
     }
 
+    const [filterByLaw, setFilterByLaw] = useState('name');
+    const filteredLawyers = lawyers.filter(lawyer => {
+        switch(filterByLaw) {
+            case 'name':
+                return lawyer.name.toLowerCase().includes(searchQueryLaw.toLowerCase());
+            case 'companyName':
+                return lawyer.companyName.toLowerCase().includes(searchQueryLaw.toLowerCase());
+            case 'date':
+                return new Date(lawyer.createdAt).toISOString().split('T')[0] === searchQueryLaw;
+            default:
+                return true;
+        }
+    });
 
     const LawyerRoute = () => {
-        const [searchQuery, setSearchQuery] = useState('');
-        const [filterBy, setFilterBy] = useState('name');
-
-        const filteredLawyers = lawyers.filter(lawyer => {
-            switch(filterBy) {
-                case 'name':
-                    return lawyer.name.toLowerCase().includes(searchQuery.toLowerCase());
-                case 'companyName':
-                    return lawyer.companyName.toLowerCase().includes(searchQuery.toLowerCase());
-                case 'date':
-                    return new Date(lawyer.createdAt).toISOString().split('T')[0] === searchQuery;
-                default:
-                    return true;
-            }
-        });
 
         return (
             <ScrollView>
@@ -104,24 +115,24 @@ const ExploreServices = ({navigation, route}) => {
                             title='Name'
                             checkedIcon='dot-circle-o'
                             uncheckedIcon='circle-o'
-                            checked={filterBy === 'name'}
-                            onPress={() => setFilterBy('name')}
+                            checked={filterByLaw === 'name'}
+                            onPress={() => setFilterByLaw('name')}
                             containerStyle={styles.checkBox}
                         />
                         <CheckBox
                             title='Company'
                             checkedIcon='dot-circle-o'
                             uncheckedIcon='circle-o'
-                            checked={filterBy === 'companyName'}
-                            onPress={() => setFilterBy('companyName')}
+                            checked={filterByLaw === 'companyName'}
+                            onPress={() => setFilterByLaw('companyName')}
                             containerStyle={styles.checkBox}
                         />
                         <CheckBox
                             title='Date'
                             checkedIcon='dot-circle-o'
                             uncheckedIcon='circle-o'
-                            checked={filterBy === 'date'}
-                            onPress={() => setFilterBy('date')}
+                            checked={filterByLaw === 'date'}
+                            onPress={() => setFilterByLaw('date')}
                             containerStyle={styles.checkBox}
                         />
                     </View>
@@ -131,8 +142,11 @@ const ExploreServices = ({navigation, route}) => {
                     <TextInput
                         style={{height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 8, width: cardSize*0.8}}
                         placeholder="Search for a lawyer..."
-                        value={searchQuery}
-                        onChangeText={text => setSearchQuery(text)}
+                        value={searchQueryLaw}
+                        onChangeText={text => {
+                            setSearchQueryLaw(text)
+                        }
+                    }
                     />
                 </View>
                 <View style={[styles.scene, {backgroundColor: '#f3f3f3'}]}>
@@ -142,7 +156,6 @@ const ExploreServices = ({navigation, route}) => {
                             onPress={() => {
                                 setSelectedLawyer(item);
                                 setModalVisible(!modalVisible);
-                                setSearchQuery(searchQuery)
                             }}
                         >
                             <View style={styles.profileHeader}>
@@ -191,6 +204,7 @@ const ExploreServices = ({navigation, route}) => {
                             <Text style={styles.propertyDetails}>Project
                                 Completed: {selectedLawyer?.projectsCompleted}</Text>
                             <Text style={styles.propertyDetails}>{dateFormatter(selectedLawyer?.createdAt)}</Text>
+                            <Text>&nbsp;</Text>
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonClose]}
                                 onPress={() => navigation.navigate("Chats")}
@@ -212,17 +226,16 @@ const ExploreServices = ({navigation, route}) => {
     }
 
     const ContractorRoute = () => {
-        const [searchQuery, setSearchQuery] = useState('');
         const [filterBy, setFilterBy] = useState('name');
 
         const filteredContractors = contractor.filter(lawyer => {
             switch(filterBy) {
                 case 'name':
-                    return lawyer.name.toLowerCase().includes(searchQuery.toLowerCase());
+                    return lawyer.name.toLowerCase().includes(searchQueryCon.toLowerCase());
                 case 'companyName':
-                    return lawyer.companyName.toLowerCase().includes(searchQuery.toLowerCase());
+                    return lawyer.companyName.toLowerCase().includes(searchQueryCon.toLowerCase());
                 case 'date':
-                    return new Date(lawyer.createdAt).toISOString().split('T')[0] === searchQuery;
+                    return new Date(lawyer.createdAt).toISOString().split('T')[0] === searchQueryCon;
                 default:
                     return true;
             }
@@ -263,8 +276,8 @@ const ExploreServices = ({navigation, route}) => {
                         <TextInput
                             style={{height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 8, width: cardSize*0.8}}
                             placeholder="Search for a contractor..."
-                            value={searchQuery}
-                            onChangeText={text => setSearchQuery(text)}
+                            value={searchQueryCon}
+                            onChangeText={text => setSearchQueryCon(text)}
                         />
                     </View>
                     {filteredContractors.length !== 0 ? filteredContractors.map((item) => (
@@ -322,6 +335,7 @@ const ExploreServices = ({navigation, route}) => {
                             <Text style={styles.propertyDetails}>Project
                                 Completed: {selectedContractor?.projectsCompleted}</Text>
                             <Text style={styles.propertyDetails}>{dateFormatter(selectedContractor?.createdAt)}</Text>
+                            <Text>&nbsp;</Text>
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonClose]}
                                 onPress={() => setModalVisible(false)}

@@ -1,12 +1,27 @@
-import {ActivityIndicator, StyleSheet, View} from "react-native";
-import React from "react";
+import React, { useState, useEffect } from 'react';
+import { ActivityIndicator, StyleSheet, View, Text } from 'react-native';
 
 export const LoadingIndicator = () => {
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1000);  // Timer set for 1 second
+
+        // Cleanup timer if the component is unmounted before the timer finishes
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#0000ff" />
+            {isLoading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+                <Text style={styles.noDataText}>No Data</Text>
+            )}
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
