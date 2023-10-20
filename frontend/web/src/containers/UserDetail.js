@@ -46,7 +46,7 @@ const UserDetail = () => {
       );
 
       const properties = responseProperty.data.filter(
-        (property) => property.userId == userId
+        (property) => property.sellerId == userId
       );
 
       setProperties(properties);

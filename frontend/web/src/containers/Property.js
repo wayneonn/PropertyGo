@@ -41,7 +41,7 @@ const Property = () => {
       setApprovalStatus(response.data.approvalStatus);
 
       const sellerResponse = await API.get(
-        `http://localhost:3000/admin/users/getUser/${response.data.userId}`
+        `http://localhost:3000/admin/users/getUser/${response.data.sellerId}`
       );
 
       setSeller(sellerResponse.data);
@@ -54,17 +54,19 @@ const Property = () => {
 
       // console.log(transactionResponse.data);
 
-      const transactions = transactionResponse.data.transactions
-        .filter((transaction) => transaction.propertyId == propertyId)
-        .filter((transaction) => transaction.transactionType == "OTP") // transaction is for OTP payment
-        .filter((transaction) => transaction.status == "PAID"); // transaction is paid, means property is sold
+      // const transactions = transactionResponse.data.transactions
+      //   .filter((transaction) => transaction.propertyId == propertyId)
+      //   .filter((transaction) => transaction.transactionType == "OTP") // transaction is for OTP payment
+      //   .filter((transaction) => transaction.status == "PAID"); // transaction is paid, means property is sold
 
       // console.log(transactions);
 
-      const buyerId = transactions[0].buyerId;
+      // const buyerId = transactions[0].buyerId;
+
+      console.log("buyer: " + response.data.buyerId);
 
       const buyerResponse = await API.get(
-        `http://localhost:3000/admin/users/getUser/${buyerId}`
+        `http://localhost:3000/admin/users/getUser/${response.data.buyerId}`
       );
 
       setBuyer(buyerResponse.data);
@@ -73,7 +75,7 @@ const Property = () => {
         `http://localhost:3000/admin/documents`
       );
 
-      console.log("buyer " + buyerId);
+      console.log("buyer " + response.data.buyerId);
       console.log("seller " + sellerResponse.data.userId);
 
       // console.log("document:" + documentResponse);
@@ -82,7 +84,7 @@ const Property = () => {
         .filter((document) => document.propertyId == propertyId)
         .filter(
           (document) =>
-            document.userId == buyerId ||
+            document.userId == response.data.buyerId ||
             document.userId == sellerResponse.data.userId
         );
       //need howard help fetch documents
