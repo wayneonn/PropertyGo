@@ -4,6 +4,7 @@ import TokenCard from './TokenCard'; // Import your TokenCard component
 import { AuthContext } from '../../AuthContext';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { getUserById, updateUserProfile } from '../../utils/api';
+import {useFocusEffect} from "@react-navigation/native";
 
 const TokenScreen = ({ navigation }) => {
     const { user, login } = useContext(AuthContext);
@@ -34,6 +35,15 @@ const TokenScreen = ({ navigation }) => {
             fetchUserData(user.user.userId);
         }
     }, [user]);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            console.log('Home page gained focus');
+            if (user && user.user) {
+                fetchUserData(user.user.userId);
+            }
+        }, [])
+    );
 
     const tokenData = [
         { tokenName: '5 Tokens', tokenPrice: 1.0, tokenAmount: 5.0, tokens: 5 },
