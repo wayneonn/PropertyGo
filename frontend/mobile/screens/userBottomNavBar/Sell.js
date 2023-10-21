@@ -23,7 +23,7 @@ import PropertyListingScreen from '../propertyListings/PropertyListing';
 import { getAreaAndRegion } from '../../services/GetAreaAndRegion';
 import { DocumentSelector } from '../../components/PropertyDocumentSelector';
 import * as DocumentPicker from 'expo-document-picker';
-import { BASE_URL, fetchFolders, fetchTransactions } from "../../utils/documentApi";
+import { BASE_URL, fetchFolders, createFolder, fetchTransactions } from "../../utils/documentApi";
 import { Linking } from 'react-native';
 import * as FileSystem from 'expo-file-system'; // Import FileSystem from expo-file-system
 import * as Permissions from 'expo-permissions';
@@ -48,6 +48,7 @@ export default function PropertyListing() {
   const [documents, setDocuments] = useState([]);
   const [fullScreenImage, setFullScreenImage] = useState(null);
   const [images, setImages] = useState([]);
+  const userId = user.user.userId;
   const emptyProperty = {
     title: '',
     description: '',
@@ -68,42 +69,44 @@ export default function PropertyListing() {
     latitude: '',
   }
   const [property, setProperty] = useState({
-    // title: 'Sample Title',
-    // description:
-    //   'Sample Description (You can add a longer description here.)',
-    // price: '100000', // Add a dollar symbol to the price
-    // offeredPrice: '90000', // Add a dollar symbol to the offered price
-    // bed: '2',
-    // bathroom: '2',
-    // size: '1200',
-    // tenure: 1,
-    // propertyType: '',
-    // propertyStatus: 'ACTIVE',
-    // userId: user.user.userId,
-    // postalCode: '822126',
-    // address: '',
-    // unitNumber: '17-360',
-    // area: '',
-    // region: '',
-    // longitude: '',
-    // latitude: '',
-    title: '',
-    description: '',
-    price: '',
-    bed: '',
-    bathroom: '',
-    tenure: '',
-    size: '',
-    propertyType: '',
+    title: 'Sample Title',
+    description:
+      'Sample Description (You can add a longer description here.)',
+    price: '100000', // Add a dollar symbol to the price
+    offeredPrice: '90000', // Add a dollar symbol to the offered price
+    bed: '2',
+    bathroom: '2',
+    size: '1200',
+    tenure: '99',
+    propertyType: 'Resale',
     propertyStatus: 'ACTIVE',
     userId: user.user.userId,
-    postalCode: '',
-    address: '',
-    unitNumber: '',
+    postalCode: '822126',
+    address: 'Home',
+    unitNumber: '17-360',
     area: '',
     region: '',
     longitude: '',
     latitude: '',
+
+    //Original
+    // title: '',
+    // description: '',
+    // price: '',
+    // bed: '',
+    // bathroom: '',
+    // tenure: '',
+    // size: '',
+    // propertyType: '',
+    // propertyStatus: 'ACTIVE',
+    // userId: user.user.userId,
+    // postalCode: '',
+    // address: '',
+    // unitNumber: '',
+    // area: '',
+    // region: '',
+    // longitude: '',
+    // latitude: '',
   });
 
   const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
@@ -114,8 +117,10 @@ export default function PropertyListing() {
   const [prevDocuments, setPrevDocuments] = useState([]);
   const [filteredDocs, setFilteredDocs] = useState(prevDocuments);
   const [folders, setFolders] = useState([]);
+  const [propertyFolderId, setFolderId] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState("");
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
   const [isDocumentUploaded, setIsDocumentUploaded] = useState(false);
 
 
@@ -131,46 +136,48 @@ export default function PropertyListing() {
     setRawPrice(raw);
   };
 
-  const fetchData = async () => {
+  const fetchFolderData = async () => {
     try {
-      const documents = await fetchDocuments(USER_ID);
-      const folders = await fetchFolders(USER_ID);
-      setFolders(folders);
-      setPrevDocuments(documents);
-      setFilteredDocs(documents);
-      setSelectedFolder(defaultFolderId.toString());
+      // const documents = await fetchDocuments(USER_ID);
+      const { success, data, message } = await createFolder(userId, { folderTitle: 'Property' });
+      if (success) {
+        setFolderId(data.folderId);
+      } else {
+        setFolderId(data.folderId);
+      }
+
       // console.log(user);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching Folder data:', error);
     }
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      // console.log('Home page gained focus');
-      setProperty({
-        title: '',
-        description: '',
-        price: '',
-        bed: '',
-        bathroom: '',
-        tenure: '',
-        size: '',
-        propertyType: '',
-        propertyStatus: 'ACTIVE',
-        userId: user.user.userId,
-        postalCode: '',
-        address: '',
-        unitNumber: '',
-        area: '',
-        region: '',
-        longitude: '',
-        latitude: '',
-      });
-      setImages([]);
-      setFormattedPrice('');
-    }, [])
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     // console.log('Home page gained focus');
+  //     setProperty({
+  //       title: '',
+  //       description: '',
+  //       price: '',
+  //       bed: '',
+  //       bathroom: '',
+  //       tenure: '',
+  //       size: '',
+  //       propertyType: '',
+  //       propertyStatus: 'ACTIVE',
+  //       userId: user.user.userId,
+  //       postalCode: '',
+  //       address: '',
+  //       unitNumber: '',
+  //       area: '',
+  //       region: '',
+  //       longitude: '',
+  //       latitude: '',
+  //     });
+  //     setImages([]);
+  //     setFormattedPrice('');
+  //   }, [])
+  // );
 
   const handleChoosePhoto = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -230,26 +237,42 @@ export default function PropertyListing() {
     try {
       const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
       console.log('Media library permission status:', status);
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf', // Set the desired document type
-      });
 
-      console.log('Result from DocumentPicker:', result);
+      if (status === 'granted') {
+        const results = await DocumentPicker.getDocumentAsync({
+          multiple: true,
+          type: 'application/pdf', // Set the desired document type
+        });
 
-      if (!result.cancelled) {
-        // The user selected a document, you can now proceed with the upload logic
-        console.log('Selected document:', result.assets[0].uri);
+        console.log('Result from DocumentPicker:', results);
 
-        // Update the selected document and clear the uploaded status
-        setSelectedDocument(result);
-        setIsDocumentUploaded(false);
+        if (!results.cancelled) {
+          // The user selected a document, you can now proceed with the upload logic
+          const newSelectedDocuments = results.assets;
+          setSelectedDocuments([...newSelectedDocuments]);
+          console.log('Selected document:', results.assets[0].uri);
+
+          // Check if the file exists
+          const fileInfo = await FileSystem.getInfoAsync(results.assets[0].uri);
+
+          if (fileInfo.exists) {
+            // Update the selected document and clear the uploaded status
+            setSelectedDocuments(results);
+            setIsDocumentUploaded(false);
+          } else {
+            console.warn('Selected document file does not exist.');
+          }
+        } else {
+          console.log('Document selection canceled or failed.');
+        }
       } else {
-        console.log('Document selection canceled or failed.');
+        console.warn('Media library permission denied.');
       }
     } catch (error) {
       console.error('Error selecting document:', error);
     }
   };
+
 
   const replaceImage = async (index) => {
     const permissionResult =
@@ -407,46 +430,10 @@ export default function PropertyListing() {
           'The property listing has been created successfully.'
         );
 
-        if (selectedDocument) {
-          try {
-            // Create a FormData object to send the document as a Blob
-            const documentData = new FormData();
-            const fileUri = selectedDocument.assets[0].uri;
+        fetchFolderData();
 
-            // Use FileSystem to read the file and get a Blob representation
-            const blob = await FileSystem.readAsStringAsync(fileUri, {
-              encoding: FileSystem.EncodingType.Blob,
-            });
-
-            // Append the Blob to the FormData object
-            documentData.append("documents",
-              {
-                uri: fileUri,
-                name: selectedDocument.assets[0].name,
-                type: "application/pdf"
-              });
-
-            // Add other necessary data to the FormData object
-            documentData.append('propertyId', propertyListingId);
-            documentData.append('folderId', 1);
-            documentData.append('userId', user.user.userId);
-
-            // Send the FormData object with the document to the server
-            const response = await fetch(`${BASE_URL}/user/documents/upload`, {
-              method: 'post',
-              body: documentData,
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-              console.log('Document upload response:', data);
-            } else {
-              console.log('Document upload failed');
-            }
-          } catch (error) {
-            console.log('Error uploading document:', error);
-          }
-        }
+        createDocument(propertyListingId);
+        
 
         navigation.navigate('Property Listing', { propertyListingId });
       } else {
@@ -460,6 +447,90 @@ export default function PropertyListing() {
       );
     }
   };
+
+  const createDocument = async (propertyListingId) => {
+    console.log("createDocument", selectedDocuments);
+    try {
+      const fileData = new FormData();
+  
+      selectedDocuments.assets.forEach((document) => {
+        const fileUri = document.uri;
+        const fileType = document.mimeType;
+        const fileName = document.name;
+        const folderId = propertyFolderId;
+  
+        fileData.append("documents", {
+          uri: fileUri,
+          name: fileName,
+          type: fileType,
+        });
+  
+        console.log("File URI: ", fileUri);
+  
+        // Append other required data to the FormData object
+        fileData.append("propertyId", propertyListingId);
+        fileData.append("description", "OTP");
+        fileData.append("folderId", folderId);
+        fileData.append("userId", user.user.userId);
+      });
+  
+      const response = await fetch(`${BASE_URL}/user/documents/upload`, {
+        method: "post",
+        body: fileData,
+      });
+  
+      // Check the response status and log the result
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Upload response:", data);
+        // await documentFetch();
+      } else {
+        console.log("File upload failed ", response);
+      }
+    } catch (error) {
+      console.log("Error upload:", error);
+    }
+  
+
+    // try {
+    //   // Create a FormData object to send the document as a Blob
+    //   const documentData = new FormData();
+    //   const fileUri = selectedDocument.assets[0].uri;
+
+    //   // Use FileSystem to read the file and get a Blob representation
+    //   const blob = await FileSystem.readAsStringAsync(fileUri, {
+    //     encoding: FileSystem.EncodingType.Blob,
+    //   });
+
+    //   // Append the Blob to the FormData object
+    //   documentData.append("documents",
+    //     {
+    //       uri: fileUri,
+    //       name: selectedDocument.assets[0].name,
+    //       type: "application/pdf"
+    //     });
+
+    //   // Add other necessary data to the FormData object
+    //   documentData.append('propertyId', propertyListingId);
+    //   documentData.append('folderId', propertyFolderId);
+    //   documentData.append('userId', user.user.userId);
+
+    //   // Send the FormData object with the document to the server
+    //   const response = await fetch(`${BASE_URL}/user/documents/upload`, {
+    //     method: 'post',
+    //     body: documentData,
+    //   });
+
+    //   if (response.ok) {
+    //     const data = await response.json();
+    //     console.log('Document upload response:', data);
+    //   } else {
+    //     console.log('Document upload failed');
+    //   }
+    // } catch (error) {
+    //   console.log('Error uploading document:', error);
+    // }
+  }
 
   const openPdf = async (filePath) => {
     try {
@@ -702,7 +773,7 @@ export default function PropertyListing() {
 
 
         {/* Upload Document Section */}
-        {/* <View style={styles.inputContainer}>
+        <View style={styles.inputContainer}>
           <Text style={styles.label}>Select Document</Text>
           {selectedDocument ? (
             <View>
@@ -732,7 +803,7 @@ export default function PropertyListing() {
               >
                 <Text style={styles.selectedDocumentText}>Selected Document</Text>
                 <Text style={styles.selectedDocumentName}>
-                  {selectedDocument.assets[0].name}
+                  {selectedDocuments.assets[0].name}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -747,7 +818,7 @@ export default function PropertyListing() {
                 style={styles.removeDocumentButton}
                 onPress={() => {
                   // Handle removing the selected document
-                  setSelectedDocument(null);
+                  setSelectedDocuments(null);
                   setIsDocumentUploaded(false);
                 }}
               >
@@ -762,7 +833,7 @@ export default function PropertyListing() {
               <Text style={styles.selectDocumentButtonText}>Select Document</Text>
             </TouchableOpacity>
           )}
-        </View> */}
+        </View>
 
 
       </ScrollView>
