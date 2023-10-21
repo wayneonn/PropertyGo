@@ -122,6 +122,7 @@ export default function PropertyListing() {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
   const [isDocumentUploaded, setIsDocumentUploaded] = useState(false);
+  
 
 
   // Function to format the price with dollar sign and commas
@@ -257,7 +258,7 @@ export default function PropertyListing() {
 
           if (fileInfo.exists) {
             // Update the selected document and clear the uploaded status
-            setSelectedDocuments(results);
+            // setSelectedDocuments(results);
             setIsDocumentUploaded(false);
           } else {
             console.warn('Selected document file does not exist.');
@@ -453,7 +454,7 @@ export default function PropertyListing() {
     try {
       const fileData = new FormData();
   
-      selectedDocuments.assets.forEach((document) => {
+      selectedDocuments.forEach((document) => {
         const fileUri = document.uri;
         const fileType = document.mimeType;
         const fileName = document.name;
@@ -597,6 +598,112 @@ export default function PropertyListing() {
           imageUrl={fullScreenImage}
           onClose={() => setFullScreenImage(null)} // Close the full-screen image view
         />
+
+<View style={styles.inputContainer}>
+  <Text style={styles.label}>Select Document</Text>
+  {selectedDocuments.length > 0 ? (
+    <View>
+      <TouchableOpacity
+        style={styles.selectedDocumentContainer}
+        onPress={async () => {
+          if (selectedDocuments && selectedDocuments[0].uri) {
+
+            const filePath = selectedDocuments[0].uri;
+            console.log('Opening document:', filePath);
+
+            // Check if the file exists
+            const fileInfo = await FileSystem.getInfoAsync(filePath);
+            // console.log('File exists:', fileInfo)
+            if (fileInfo.exists) {
+              // Request permission to access the file
+              console.log('File exists:', filePath)
+              const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+              openPdf(filePath);
+            } else {
+              console.warn('Selected document file does not exist.');
+            }
+          } else {
+            console.warn('Selected document URI is not valid.');
+          }
+        }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Ionicons name="document-text-outline" size={24} color="blue" />
+          <Text style={styles.selectedDocumentText}> Selected Document: </Text>
+          <Text style={styles.selectedDocumentName}>
+          {selectedDocuments[0].name}
+        </Text>
+        </View>
+
+      </TouchableOpacity>
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity
+          style={styles.uploadDocumentButton}
+          onPress={handleSelectDocument}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="repeat-outline" size={24} color="white" />
+            <Text style={styles.removeDocumentButtonText}> Replace</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.removeDocumentButton}
+          onPress={() => {
+            // Handle removing the selected document
+            setSelectedDocuments([]);
+            setIsDocumentUploaded(false);
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="trash-bin-outline" size={24} color="white" />
+            <Text style={styles.removeDocumentButtonText}> Remove</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+        style={styles.viewDocumentButton}
+        onPress={async () => {
+          if (selectedDocuments && selectedDocuments[0].uri) {
+
+            const filePath = selectedDocuments[0].uri;
+            console.log('Opening document:', filePath);
+
+            // Check if the file exists
+            const fileInfo = await FileSystem.getInfoAsync(filePath);
+            // console.log('File exists:', fileInfo)
+            if (fileInfo.exists) {
+              // Request permission to access the file
+              console.log('File exists:', filePath)
+              const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+              openPdf(filePath);
+            } else {
+              console.warn('Selected document file does not exist.');
+            }
+          } else {
+            console.warn('Selected document URI is not valid.');
+          }
+        }}
+      >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="eye-outline" size={24} color="white" />
+            <Text style={styles.removeDocumentButtonText}>   View    </Text>
+          </View>
+        </TouchableOpacity>
+        
+      </View>
+    </View>
+  ) : (
+    <TouchableOpacity
+      style={styles.selectDocumentButton}
+      onPress={handleSelectDocument}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Ionicons name="add-outline" size={24} color="white" />
+        <Text style={styles.selectDocumentButtonText}>Upload OTP Document</Text>
+      </View>
+    </TouchableOpacity>
+  )}
+</View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Title</Text>
@@ -772,70 +879,6 @@ export default function PropertyListing() {
         </Modal>
 
 
-        {/* Upload Document Section */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Select Document</Text>
-          {selectedDocument ? (
-            <View>
-              <TouchableOpacity
-                style={styles.selectedDocumentContainer}
-                onPress={async () => {
-                  if (selectedDocument && selectedDocument.assets[0].uri) {
-
-                    const filePath = selectedDocument.assets[0].uri;
-                    console.log('Opening document:', filePath);
-
-                    // Check if the file exists
-                    const fileInfo = await FileSystem.getInfoAsync(filePath);
-                    // console.log('File exists:', fileInfo)
-                    if (fileInfo.exists) {
-                      // Request permission to access the file
-                      console.log('File exists:', filePath)
-                      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-                      openPdf(filePath);
-                    } else {
-                      console.warn('Selected document file does not exist.');
-                    }
-                  } else {
-                    console.warn('Selected document URI is not valid.');
-                  }
-                }}
-              >
-                <Text style={styles.selectedDocumentText}>Selected Document</Text>
-                <Text style={styles.selectedDocumentName}>
-                  {selectedDocuments.assets[0].name}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.uploadDocumentButton}
-                onPress={handleSelectDocument}
-              >
-                <Text style={styles.uploadDocumentButtonText}>
-                  {isDocumentUploaded ? 'Replace Document' : 'Upload Document'}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.removeDocumentButton}
-                onPress={() => {
-                  // Handle removing the selected document
-                  setSelectedDocuments(null);
-                  setIsDocumentUploaded(false);
-                }}
-              >
-                <Text style={styles.removeDocumentButtonText}>Remove Document</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <TouchableOpacity
-              style={styles.selectDocumentButton}
-              onPress={handleSelectDocument}
-            >
-              <Text style={styles.selectDocumentButtonText}>Select Document</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-
-
       </ScrollView>
       <TouchableOpacity style={styles.saveChangesButton} onPress={handleSubmit}>
         <Ionicons name="save-outline" size={18} color="white" />
@@ -964,5 +1007,58 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     paddingBottom: 100, // Adjust this value as needed to ensure the input field is visible
+  },
+  uploadDocumentButton: {
+    backgroundColor: '#3498db', // Change the background color as per your design
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'center',
+    marginTop: 10,
+    marginRight: 10, 
+  },
+  uploadDocumentButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+
+  // Style for Remove Document button
+  removeDocumentButton: {
+    backgroundColor: 'red', // Change the background color as per your design
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'center',
+    marginTop: 10, // Add some top margin for spacing
+    marginRight: 10, 
+  },
+  viewDocumentButton: {
+    backgroundColor: 'green', // Change the background color as per your design
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'center',
+    marginTop: 10, // Add some top margin for spacing
+    marginRight: 10, 
+  },
+  removeDocumentButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+
+  // Style for Selected Document container
+  selectedDocumentContainer: {
+    borderWidth: 1,
+    borderColor: 'lightgray',
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 10, // Add some top margin for spacing
+  },
+  selectedDocumentText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  selectedDocumentName: {
+    fontSize: 16,
+    marginTop: 0, // Add some top margin for spacing
   },
 });
