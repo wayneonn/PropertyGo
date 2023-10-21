@@ -55,6 +55,14 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: "forumTopicId", // Foreign key 
             as: "usersDownvoted",
         });
+        ForumTopic.hasMany(models.Notification, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: true,
+                name: 'forumTopicId'
+            },
+            as: 'notifications',
+        });
     };
 
     return ForumTopic;

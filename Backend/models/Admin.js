@@ -67,6 +67,15 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "adminId",
       as: "responses",
     });
+
+    Admin.hasOne(models.Notification, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'adminNotificationId',
+        allowNull: true,
+      },
+      as: 'notification',
+    });
   };
 
   return Admin;

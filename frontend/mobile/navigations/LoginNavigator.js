@@ -34,7 +34,7 @@ const BASE_URL = configData.BASE_URL;
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
-        shouldPlaySound: false,
+        shouldPlaySound: true,
         shouldSetBadge: false,
     }),
 });
@@ -99,6 +99,8 @@ async function registerForPushNotificationsAsync() {
 
 const Stack = createNativeStackNavigator();
 
+const socket = io(BASE_URL);
+
 const LoginNavigator = () => {
     const { user } = useContext(AuthContext);
     const navigation = useNavigation();
@@ -134,9 +136,7 @@ const LoginNavigator = () => {
 
     useEffect(() => {
 
-        const socket = io(BASE_URL, {
-            transports: ["websocket"],
-        });
+        console.log("socket")
 
         socket.on('connect', () => {
             console.log('Connected to server');
@@ -144,22 +144,34 @@ const LoginNavigator = () => {
         });
 
         // Event listener for user login
-        socket.on("userNewFlaggedForumTopicNotification", (data) => {
-            // Handle user login event
-            const pushToken = data.pushToken;
-            const title = data.title;
-            const body = data.body;
+        // socket.on("userNewFlaggedForumTopicNotification", (data) => {
+        //     // Handle user login event
+        //     const pushToken = data.pushToken;
+        //     const title = data.title;
+        //     const body = data.body;
 
-            // console.log({pushToken,title,body})
-            sendPushNotification({pushToken,title,body});
-        });
+        //     // console.log({pushToken,title,body})
+        //     sendPushNotification({pushToken,title,body});
+        // });
 
-        // Event listener for user logout
-        socket.on("userNewRemoveFlaggedForumTopicNotification", (data) => {
+        // // Event listener for user logout
+        // socket.on("userNewRemoveFlaggedForumTopicNotification", (data) => {
+        //     // Handle user logout event
+        //     const pushToken = data.pushToken;
+        //     const title = data.title;
+        //     const body = data.body;
+
+        //     // console.log({pushToken,title,body})
+        //     sendPushNotification({pushToken,title,body});
+        // });
+
+        socket.on("userNewForumCommentNotification", (data) => {
+            console.log("Received userNewForumCommentNotification");
             // Handle user logout event
             const pushToken = data.pushToken;
             const title = data.title;
             const body = data.body;
+            // console.log("userNewForumCommentNotification")
 
             // console.log({pushToken,title,body})
             sendPushNotification({pushToken,title,body});

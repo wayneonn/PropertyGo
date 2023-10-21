@@ -290,6 +290,14 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId", // Foreign key
       as: "downvotedComments",
     });
+    User.hasOne(models.Notification, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'userNotificationId',
+        allowNull: true,
+      },
+      as: 'notification',
+    });
   };
 
   return User;
