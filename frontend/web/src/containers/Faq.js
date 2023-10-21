@@ -389,8 +389,8 @@ const Faq = () => {
                               onClick={() =>
                                 toggleEditModal(
                                   faq.faqId,
-                                  htmlToPlainText(faq.question),
-                                  htmlToPlainText(faq.answer),
+                                  faq.question,
+                                  faq.answer,
                                   faq.faqType
                                 )
                               }

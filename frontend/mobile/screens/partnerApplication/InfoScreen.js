@@ -134,38 +134,6 @@ const IntroScreen = () => {
 
     return (
         <View style={styles.container}>
-            {partner.length !== 0 ? (
-                partner[0].approved ? (
-                    <View style={styles.box}>
-                        <Text style={styles.titleApproved}>Your Application is successful, welcome to the team!</Text>
-                        <Text style={styles.subtitle}>View your profile to see what else you can do as a partner.</Text>
-                        <Text>&nbsp;</Text>
-                        <Button onPress={() => navigation.navigate('User Profile')}>
-                            <Text style={styles.buttonText}> View Profile </Text>
-                            <AntDesign name="arrowright" size={20} color="black"/>
-                        </Button>
-                    </View>
-                ) : (
-                    <View style={styles.box}>
-                        <Text style={styles.titlePending}>Wait for your application to be approved.</Text>
-                        <Text style={styles.subtitle}>We love to have you join our platform, but we need time. Hope to
-                            see you with us soon.</Text>
-                        <Text>&nbsp;</Text>
-                        <Divider/>
-                        <Text>&nbsp;</Text>
-                        <Text> This is the status of your current application. </Text>
-                        <FlatList data={partner} renderItem={renderPartnerApp}
-                                  keyExtractor={item => item.partnerApplicationId}/>
-                        {!documentsValid &&
-                            (<View style={{paddingVertical: 10}}>
-                                <Button onPress={() => navigation.navigate('Document Selection')}
-                                        title={"Document Selection"}> </Button>
-                                <Text style={styles.warningText}>You have not submitted your documents. Please proceed
-                                    to the document submission page to submit your documents.</Text>
-                            </View>)}
-                    </View>
-                )
-            ) : (
                 <View>
                     <Animated.View style={styles.box}>
                         <Text style={styles.titleIntro}>Join us as a Partner today.</Text>
@@ -200,7 +168,6 @@ const IntroScreen = () => {
                         onPress={() => navigation.navigate("Company Info")}
                     />
                 </View>
-            )}
         </View>
     );
 }

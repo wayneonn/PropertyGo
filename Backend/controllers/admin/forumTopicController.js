@@ -213,6 +213,47 @@ const markForumTopicInappropriate = async (req, res) => {
 
     await Notification.create(req.body);
 
+    req.io.emit("newAdminFlaggedForumTopic", "Admin has flagged forum topic");
+    res.status(200).json({ forumTopic });
+};
+
+const resetForumTopicAppropriate = async (req, res) => {
+    const { id: forumTopicId } = req.params;
+
+    const { adminId } = req.body;
+
+    const forumTopic = await ForumTopic.findByPk(forumTopicId);
+
+    forumTopic.isInappropriate = false;
+
+    const forumTopics = await ForumTopic.findByPk(forumTopicId, {
+        include: {
+          model: User,
+          as: 'usersFlagged', 
+        }
+      });
+
+    for (const usersFlaggedForumTopic of forumTopics.usersFlagged) {
+        const userIdFlagged = usersFlaggedForumTopic.dataValues.userId;
+
+        await forumTopic.removeUsersFlagged(userIdFlagged);
+    }
+
+    await forumTopic.save();
+
+    req.body = {
+        "content": `You have successfully reset the forum topic of "${forumTopic.topicName}" to appropriate`,
+        "isRecent": false,
+        "isPending": false,
+        "isCompleted": true,
+        "hasRead": false,
+        "adminId": adminId
+    };
+
+    await Notification.create(req.body);
+
+    req.io.emit("newAdminResetAppropriateForumTopic", "Admin has reset forum topic to appropriate");
+
     res.status(200).json({ forumTopic });
 };
 
@@ -223,5 +264,6 @@ module.exports = {
     createForumTopic,
     updateForumTopic,
     deleteForumTopic,
-    markForumTopicInappropriate
+    markForumTopicInappropriate,
+    resetForumTopicAppropriate
 };

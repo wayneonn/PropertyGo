@@ -16,6 +16,7 @@ import TopBar from '../components/Common/TopNavBar';
 import UserProfileStackGroup from './UserProfileStackGroup';
 import UserBottomNavigator from './UserBottomNavigator';
 import {createDrawerScreen} from '../components/DrawerScreen';
+import Chat from '../screens/sideNavigatorBar/ChatWithPartner'
 import {AuthContext} from '../AuthContext'; // Import your AuthContext
 import base64 from 'react-native-base64';
 
@@ -93,6 +94,7 @@ const drawerScreens = [
     createDrawerScreen('FAQ', FAQ, 'help-circle', 'FAQ'),
     createDrawerScreen('Contact Us Group', ContactUsStackGroup, 'mail', 'Contact Us'),
     // createDrawerScreen('Work With Us', WorkWithUs, 'briefcase', 'Work With Us'),
+    createDrawerScreen('Chats', Chat, 'person', 'Chats' )
 ];
 
 const SideBar = ({route}) => {

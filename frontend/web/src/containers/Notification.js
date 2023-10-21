@@ -29,6 +29,10 @@ const Notification = () => {
                 const response = await API.get(`/admin/notifications`);
                 const notifications = response.data.notifications;
 
+                const filteredNotifications = notifications.filter((notification) => {
+                    return (notification.adminId == localStorage.getItem("loggedInAdmin") || (notification.userId !== null && notification.adminId === null));
+                });
+
                 const categoryMap = {
                     "partner application": {
                         "PENDING": [],
@@ -44,7 +48,7 @@ const Notification = () => {
                     }
                 };
 
-                for (const notification of notifications) {
+                for (const notification of filteredNotifications) {
                     notification.category = notification.isPending ? "PENDING" : "HISTORY";
 
                     if (notification.content.toLowerCase().includes("partner application")) {
@@ -86,6 +90,14 @@ const Notification = () => {
         });
 
         socket.on('newRejectPartnerApplicationNotification', () => {
+            fetchData();
+        });
+
+        socket.on('newAdminFlaggedForumTopic', () => {
+            fetchData();
+        });
+
+        socket.on('newAdminResetAppropriateForumTopic', () => {
             fetchData();
         });
 

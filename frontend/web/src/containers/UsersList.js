@@ -157,7 +157,7 @@ const UsersList = () => {
                 fontSize: "14px",
                 color: "black",
                 marginLeft: "0.2em",
-                height: "30px",
+                height: "40px",
                 width: "169px",
               }}
             />
@@ -299,7 +299,7 @@ const UsersList = () => {
                 fontSize: "14px",
                 color: "black",
                 marginLeft: "0.2em",
-                height: "30px",
+                height: "40px",
                 width: "169px",
               }}
             />

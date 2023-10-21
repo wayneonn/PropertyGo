@@ -119,7 +119,7 @@ const FaqCreate = ({ showToast }) => {
                   theme="snow"
                   className={
                     validationMessages.emptyFaqQuestion ||
-                      validationMessages.faqQuestionUnique
+                    validationMessages.faqQuestionUnique
                       ? "is-invalid"
                       : ""
                   }

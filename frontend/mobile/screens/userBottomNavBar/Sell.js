@@ -30,6 +30,7 @@ import * as Permissions from 'expo-permissions';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as Sharing from 'expo-sharing';
 import FullScreenImage from '../propertyListings/FullScreenImage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const propertyTypes = [
   { label: 'Select Property Type', value: '' },
@@ -46,7 +47,26 @@ export default function PropertyListing() {
   };
   const [documents, setDocuments] = useState([]);
   const [fullScreenImage, setFullScreenImage] = useState(null);
-
+  const [images, setImages] = useState([]);
+  const emptyProperty = {
+    title: '',
+    description: '',
+    price: '',
+    bed: '',
+    bathroom: '',
+    tenure: '',
+    size: '',
+    propertyType: '',
+    propertyStatus: 'ACTIVE',
+    userId: user.user.userId,
+    postalCode: '',
+    address: '',
+    unitNumber: '',
+    area: '',
+    region: '',
+    longitude: '',
+    latitude: '',
+  }
   const [property, setProperty] = useState({
     // title: 'Sample Title',
     // description:
@@ -68,8 +88,8 @@ export default function PropertyListing() {
     // longitude: '',
     // latitude: '',
     title: '',
-    description:'',
-    price: '', // Add a dollar symbol to the price
+    description: '',
+    price: '',
     bed: '',
     bathroom: '',
     tenure: '',
@@ -86,7 +106,6 @@ export default function PropertyListing() {
     latitude: '',
   });
 
-  const [images, setImages] = useState([]);
   const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
   const [formattedPrice, setFormattedPrice] = useState('');
   const [rawPrice, setRawPrice] = useState('');
@@ -126,33 +145,60 @@ export default function PropertyListing() {
     }
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      // console.log('Home page gained focus');
+      setProperty({
+        title: '',
+        description: '',
+        price: '',
+        bed: '',
+        bathroom: '',
+        tenure: '',
+        size: '',
+        propertyType: '',
+        propertyStatus: 'ACTIVE',
+        userId: user.user.userId,
+        postalCode: '',
+        address: '',
+        unitNumber: '',
+        area: '',
+        region: '',
+        longitude: '',
+        latitude: '',
+      });
+      setImages([]);
+      setFormattedPrice('');
+    }, [])
+  );
+
   const handleChoosePhoto = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  
+
     if (permissionResult.granted === false) {
       console.warn('Permission to access photos was denied');
       return;
     }
-  
+
     // Check if the number of selected photos is already 10 or more
     if (images.length >= 10) {
       Alert.alert('Limit Exceeded', 'You can only select up to 10 photos.');
       return;
     }
-  
+
     const options = {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       // allowsEditing: true,
       quality: 1,
     };
-  
+
     let response = await ImagePicker.launchImageLibraryAsync(options);
-  
+
     if (!response.cancelled) {
       setImages([...images, response]);
     }
   };
-  
+
 
   const handleImagePress = (index) => {
     Alert.alert(
@@ -477,9 +523,9 @@ export default function PropertyListing() {
         </View>
 
         <FullScreenImage
-            imageUrl={fullScreenImage}
-            onClose={() => setFullScreenImage(null)} // Close the full-screen image view
-          />
+          imageUrl={fullScreenImage}
+          onClose={() => setFullScreenImage(null)} // Close the full-screen image view
+        />
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Title</Text>
@@ -592,7 +638,6 @@ export default function PropertyListing() {
           />
         </View>
 
-
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Description</Text>
           <TextInput
@@ -607,8 +652,6 @@ export default function PropertyListing() {
             numberOfLines={4}
           />
         </View>
-
-
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Property Type</Text>
