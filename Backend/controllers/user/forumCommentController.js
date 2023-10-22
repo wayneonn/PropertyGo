@@ -62,12 +62,12 @@ const createForumComment = async (req, res) => {
         const forumPostUser = await forumPost.getUser();
         // console.log("forumPostUser ", forumPostUser)
 
-        const content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has commented forum post: "${forumPost.title}"`;
+        const content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has commented: "${req.body.message}" on forum post: "${forumPost.title}"`;
 
         const notificationBody = {
-            "isRecent": false,
+            "isRecent": true,
             "isPending": false,
-            "isCompleted": true,
+            "isCompleted": false,
             "hasRead": false,
             "userNotificationId": userId,
             "userId" : forumPostUser.userId,

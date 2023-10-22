@@ -17,18 +17,27 @@ module.exports = (sequelize, DataTypes) => {
         isRecent: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
+            defaultValue: true,
         },
         isPending: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
+            defaultValue: false,
         },
         isCompleted: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
+            defaultValue: false,
         },
         hasRead: {
             type: DataTypes.BOOLEAN,
-            allowNull: false
+            allowNull: false,
+            defaultValue: false,
+        },
+        hasUserRead: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
         }
     }, {
         freezeTableName: true
@@ -39,10 +48,10 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: {
                 name: 'userId',
                 allowNull: true,
-              },
+            },
             as: 'user',
         });
-        
+
         Notification.belongsTo(models.Admin, {
             foreignKey: {
                 name: 'adminId',
@@ -91,5 +100,5 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
-  return Notification;
+    return Notification;
 };

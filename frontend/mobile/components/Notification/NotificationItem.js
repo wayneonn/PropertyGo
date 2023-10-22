@@ -1,22 +1,61 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { getTimeAgo } from '../../services/CalculateTimeAgo';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useFocusEffect } from '@react-navigation/native';
+import base64 from 'react-native-base64';
 
-const NotificationItem = () => {
+const NotificationItem = ({ onPress, profileImage, content, updatedAt, completed, pending }) => {
+
+    const [convertedProfileImage, setConvertedProfileImage] = useState(null);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const fetchData = async () => {
+                try {
+
+                    // console.log("profileImage :", profileImage)
+                    let profileImageBase64;
+                    if (profileImage && profileImage?.data) {
+                        profileImageBase64 = base64.encodeFromByteArray(profileImage.data);
+                        setConvertedProfileImage(`data:image/jpeg;base64,${profileImageBase64}`);
+                        // console.log(profileImageBase64)
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                }
+            };
+            fetchData();
+        }, []));
+
+    // console.log(content)
     return (
-        <TouchableOpacity>
-            <View style={styles.topicItemContainer}>
+        <TouchableOpacity onPress={onPress}>
+            <View
+                style={{
+                    ...styles.topicItemContainer,
+                    borderColor: completed ? "green" : pending ? "red" : "black"
+                }}
+            >
                 <View style={styles.notificationContent}>
 
-                    <View style={styles.userProfile}>
-                        {/* <Text>Notification Content Goes Here</Text> */}
-                    </View>
+                    {convertedProfileImage ? (
+                        <Image source={{ uri: convertedProfileImage }} style={styles.profileImage} />
+                    ) : (
+                        <View style={styles.userProfile}>
+                            <Icon name="user" size={30} color="white" />
+                        </View>
+                    )}
 
                     <View style={styles.middleContent}>
-                        <Text>Notification Content Goes Here</Text>
+                        <Text>{content}</Text>
                     </View>
 
-                    <View style={styles.timestamp}>
-                        <Text>10:30 AM</Text>
+                    <View style={styles.rightContent}>
+                        {completed ? <Text style={styles.completed}>Completed!</Text> : null}
+                        {pending ? <Text style={styles.pending}>Pending Action!</Text> : null}
+                        <Text style={styles.timestamp}>{getTimeAgo(updatedAt)}</Text>
                     </View>
                 </View>
             </View>
@@ -32,6 +71,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginHorizontal: 10,
         marginVertical: 5,
+        borderRadius: 5,
+        borderWidth: 1,
     },
     notificationContent: {
         flexDirection: 'row',
@@ -45,13 +86,35 @@ const styles = StyleSheet.create({
         height: 50, // Adjust the height for the user profile picture
         borderRadius: 25, // Make it round (adjust as needed)
         backgroundColor: 'lightgray', // Background color for the user profile picture
+        alignItems: "center",
+        justifyContent: 'center',
         // Add styles for the user profile picture
     },
     middleContent: {
         flex: 1, // Expand to fill available space
-        marginLeft: 10, // Add margin for spacing
+        marginHorizontal: 10, // Add margin for spacing'
+        fontSize: 14,
+    },
+    rightContent: {
+        alignItems: 'center',
+    },
+    pending: {
+        // Add styles for the timestamp
+        fontSize: 12,
+        color: "red",
+    },
+    completed: {
+        // Add styles for the timestamp
+        fontSize: 12,
+        color: "green",
     },
     timestamp: {
         // Add styles for the timestamp
+        fontSize: 12
+    },
+    profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
     },
 });

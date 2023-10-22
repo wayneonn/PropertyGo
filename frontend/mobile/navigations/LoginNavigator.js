@@ -31,6 +31,8 @@ import { savePushToken } from '../utils/tokenApi';
 
 const BASE_URL = configData.BASE_URL;
 
+const socket = io(BASE_URL);
+
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
@@ -99,7 +101,7 @@ async function registerForPushNotificationsAsync() {
 
 const Stack = createNativeStackNavigator();
 
-const socket = io(BASE_URL);
+
 
 const LoginNavigator = () => {
     const { user } = useContext(AuthContext);
@@ -108,6 +110,7 @@ const LoginNavigator = () => {
     const [notification, setNotification] = useState(false);
     const notificationListener = useRef();
     const responseListener = useRef();
+    // console.log("rendered", user.user.userId);
 
 
     useEffect(() => {
@@ -135,7 +138,6 @@ const LoginNavigator = () => {
 
 
     useEffect(() => {
-
         console.log("socket")
 
         socket.on('connect', () => {
@@ -179,6 +181,7 @@ const LoginNavigator = () => {
 
         return () => {
             socket.disconnect();
+            console.log("socket deleted")
         };
     }, []);
 
@@ -250,3 +253,5 @@ const LoginNavigator = () => {
 };
 
 export default LoginNavigator;
+
+export { socket }; 
