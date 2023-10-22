@@ -26,7 +26,7 @@ const PropertyListingsStackGroup = () => {
             <PropertyListingsStack.Screen name="Boost Listing" component={BoostPropertyListing}/>
             <PropertyListingsStack.Screen name="Set Schedule" component={SetSchedule}/>
             <PropertyListingsStack.Screen name="Schedule" component={Schedule}/>
-            {/* <PropertyListingsStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/> */}
+            <PropertyListingsStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/>
         </PropertyListingsStack.Navigator>
     );
 };

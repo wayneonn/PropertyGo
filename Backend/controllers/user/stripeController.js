@@ -1,6 +1,7 @@
 const stripe = require('stripe')('sk_test_51O28syIn7f8SMRLwmGxTTVYCyJQ9ABufghnmPqD09MClZWsvNaG8hvleFoVSkxCg52N1UUhg4R9UvKqlv52mDVWC00kQX7cXVk');
 
 async function paymentSheet(req, res) {
+console.log("paymentSheet req.body: ", req.body);
   const { userId, amount, currency } = req.body;
 
   try {

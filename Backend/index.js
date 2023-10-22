@@ -5,6 +5,7 @@ const cors = require("cors");
 const app = express();
 const globalEmitter = require("./globalEmitter");
 const WebSocket = require("ws");
+require('dotenv').config();
 
 const server = http.createServer(app);
 // socket io
