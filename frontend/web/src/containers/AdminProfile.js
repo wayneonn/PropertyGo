@@ -237,8 +237,8 @@ const AdminProfile = () => {
               <Form.Label
                 style={{
                   color: "black",
-                  font: "Montserrat",
-                  fontWeight: "700",
+                  // font: "Montserrat",
+                  fontWeight: "500",
                   fontSize: "16px",
                 }}
               >
@@ -257,8 +257,8 @@ const AdminProfile = () => {
                     backgroundColor: "#FFD700",
                     border: "0",
                     color: "black",
-                    font: "Montserrat",
-                    fontWeight: "700",
+                    // font: "Montserrat",
+                    fontWeight: "500",
                     fontSize: "16px",
                   }}
                   onClick={toggleEditUsernameModal}
@@ -276,8 +276,8 @@ const AdminProfile = () => {
                 backgroundColor: "#FFD700",
                 border: "0",
                 color: "black",
-                font: "Montserrat",
-                fontWeight: "700",
+                // font: "Montserrat",
+                fontWeight: "500",
                 fontSize: "16px",
               }}
               onClick={toggleChangePasswordModal}
@@ -298,9 +298,9 @@ const AdminProfile = () => {
             <Modal.Title
               style={{
                 color: "black",
-                font: "Montserrat",
-                fontWeight: "700",
-                fontSize: "16px",
+                // font: "Montserrat",
+                fontWeight: "500",
+                fontSize: "20px",
               }}
             >
               Edit Username
@@ -312,8 +312,8 @@ const AdminProfile = () => {
                 <Form.Label
                   style={{
                     color: "black",
-                    font: "Montserrat",
-                    fontWeight: "700",
+                    // font: "Montserrat",
+                    fontWeight: "500",
                     fontSize: "16px",
                   }}
                 >
@@ -347,8 +347,8 @@ const AdminProfile = () => {
                 backgroundColor: "#0000000D",
                 border: "0",
                 color: "black",
-                font: "Montserrat",
-                fontWeight: "700",
+                // font: "Montserrat",
+                fontWeight: "500",
                 fontSize: "16px",
               }}
               onClick={handleCloseEditModal}
@@ -360,8 +360,8 @@ const AdminProfile = () => {
                 backgroundColor: "#FFD700",
                 border: "0",
                 color: "black",
-                font: "Montserrat",
-                fontWeight: "700",
+                // font: "Montserrat",
+                fontWeight: "500",
                 fontSize: "16px",
               }}
               onClick={handleUsernameSave}
@@ -382,9 +382,9 @@ const AdminProfile = () => {
             <Modal.Title
               style={{
                 color: "black",
-                font: "Montserrat",
-                fontWeight: "700",
-                fontSize: "16px",
+                // font: "Montserrat",
+                fontWeight: "500",
+                fontSize: "20px",
               }}
             >
               Change password
@@ -396,8 +396,8 @@ const AdminProfile = () => {
                 <Form.Label
                   style={{
                     color: "black",
-                    font: "Montserrat",
-                    fontWeight: "700",
+                    // font: "Montserrat",
+                    fontWeight: "500",
                     fontSize: "16px",
                   }}
                 >
@@ -457,8 +457,8 @@ const AdminProfile = () => {
                 <Form.Label
                   style={{
                     color: "black",
-                    font: "Montserrat",
-                    fontWeight: "700",
+                    // font: "Montserrat",
+                    fontWeight: "500",
                     fontSize: "16px",
                   }}
                 >
@@ -509,8 +509,8 @@ const AdminProfile = () => {
                 <Form.Label
                   style={{
                     color: "black",
-                    font: "Montserrat",
-                    fontWeight: "700",
+                    // font: "Montserrat",
+                    fontWeight: "500",
                     fontSize: "16px",
                   }}
                 >
@@ -577,8 +577,8 @@ const AdminProfile = () => {
                 backgroundColor: "#0000000D",
                 border: "0",
                 color: "black",
-                font: "Montserrat",
-                fontWeight: "700",
+                // font: "Montserrat",
+                fontWeight: "500",
                 fontSize: "16px",
               }}
               onClick={handleClosePasswordModal}
@@ -590,8 +590,8 @@ const AdminProfile = () => {
                 backgroundColor: "#FFD700",
                 border: "0",
                 color: "black",
-                font: "Montserrat",
-                fontWeight: "700",
+                // font: "Montserrat",
+                fontWeight: "500",
                 fontSize: "16px",
               }}
               onClick={handlePasswordSave}

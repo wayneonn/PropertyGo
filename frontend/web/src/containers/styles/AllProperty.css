@@ -1,4 +1,4 @@
-.property {
+.property-all {
   background-color: #0000000D;
   width: calc(100% - 180px);
   top: 60px;
@@ -8,7 +8,7 @@
   overflow-y: auto;
 }
 
-.description {
+.description-all {
   /* width: calc(100% - 180px); */
   /* background-color: pink; */
   /* margin-right: 30px;
@@ -18,67 +18,67 @@
   padding: 10px 5px 5px 5px;
 }
 
-.property-main {
+.property-main-all {
   padding: 5px;
   width: 100%;
   height: 100%;
   /* background-color: pink; */
 }
 
-.images {
+.images-all {
   display: flex;
   margin-left: 25px;
 }
 
-.image-container {
+.image-container-all {
   width: 600px;
   height: 420px;
   overflow: hidden;
 }
 
-.image {
+.image-all {
   width: 100%;
   height: 100%;
   object-fit: cover;
   opacity: 0.9;
 }
 
-.property-desc {
+.property-desc-all {
   display: flex;
   flex-direction: column;
   padding: 10px 30px 10px 30px;
 }
 
-.property-price {
+.property-price-all {
   padding: 10px 30px 10px 30px;
   display: flex;
   flex-direction: column;
 }
 
-.property-attri {
+.property-attri-all {
   padding: 20px 0px 20px 0px;
   display: flex;
 }
 
-.bed-bath-sqm {
+.bed-bath-sqm-all {
   margin-right: 10px;
   margin-left: 10px;
 }
 
-.attri {
+.attri-all {
   display: flex;
   max-width: 600px;
   justify-content: space-between;
   align-items: center;
 }
 
-.icon {
+.icon-all {
   opacity: 0.5;
   font-size: 30px;
   margin-right: 5px;
 }
 
-.status-active {
+.status-active-all {
   padding: 10px;
   font-size: 10px;
   border: solid;
@@ -94,7 +94,7 @@
   color: green;
 }
 
-.status-on-hold {
+.status-on-hold-all {
   padding: 10px;
   font-size: 10px;
   border: solid;
@@ -110,7 +110,7 @@
   color: blue;
 }
 
-.status-completed {
+.status-completed-all {
   padding: 10px;
   font-size: 10px;
   border: solid;
@@ -126,7 +126,7 @@
   color: red;
 }
 
-.type-new {
+.type-new-all {
   padding: 10px;
   font-size: 10px;
   border: solid;
@@ -145,7 +145,7 @@
 }
 
 
-.type-resale {
+.type-resale-all {
   padding: 10px;
   font-size: 10px;
   border: solid;
@@ -163,7 +163,7 @@
   margin-right: 6px;
 }
 
-.sold {
+.sold-all {
   max-width: 600px;
   padding: 10px 30px 10px 30px;
   display: flex;
@@ -171,29 +171,29 @@
   align-items: center;
 }
 
-.sold-price {
+.sold-price-all {
   display: flex;
   flex-direction: column;
 }
 
-.sold-buyer {
+.sold-buyer-all {
   display: flex;
   flex-direction: column;
 }
 
-.buyer-name {
+.buyer-name-all {
   font-size: 20px;
   font-weight: 450;
   text-decoration: none;
   color: inherit;
 }
 
-.buyer-name:hover {
+.buyer-name-all:hover {
   cursor: pointer;
   color: orangered;
 }
 
-.folder {
+.folder-all {
   width: 100px;
   height: 100px;
   cursor: pointer;
@@ -208,16 +208,16 @@
   margin: 20px;
 }
 
-.folder:hover {
+.folder-all:hover {
   transform: scale(1.1);
 }
 
-.documents-boxes {
+.documents-boxes-all {
   display: flex;
   align-items: center;
 }
 
-.document-area {
+.document-area-all {
   /* background-color: pink; */
   height: 250px;
   width: 1205px;

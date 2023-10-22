@@ -2,15 +2,18 @@ import React, { useState, useEffect } from "react";
 import "./styles/Topbar.css";
 import { IoMdNotificationsOutline, IoIosLogOut } from "react-icons/io";
 import { MdNotificationImportant } from "react-icons/md";
-import socketIOClient from 'socket.io-client';
+import socketIOClient from "socket.io-client";
 import { Toast, Row, Col } from "react-bootstrap";
 import API from "../../services/API";
 
 const TopBar = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [notificationIcon, setNotificationIcon] = useState("IoMdNotificationsOutline");
+  const [notificationIcon, setNotificationIcon] = useState(
+    "IoMdNotificationsOutline"
+  );
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+
+  const unreadNotificationCount = notifications.filter((notification) => !notification.isRead).length;
 
   // toast message
   const [show, setShow] = useState(false);
@@ -27,13 +30,17 @@ const TopBar = () => {
   };
 
   const handleAvailableNotification = () => {
-    const anyUnread = notifications.some((notification) => !notification.isRead);
-    setNotificationIcon(anyUnread ? "MdNotificationImportant" : "IoMdNotificationsOutline");
+    const anyUnread = notifications.some(
+      (notification) => !notification.isRead
+    );
+    setNotificationIcon(
+      anyUnread ? "MdNotificationImportant" : "IoMdNotificationsOutline"
+    );
     setShowNotifications(!showNotifications);
   };
 
   const markNotificationAsRead = async (notificationId) => {
-    const updatedNotifications = notifications.filter(notification => {
+    const updatedNotifications = notifications.filter((notification) => {
       return notification.notificationId !== notificationId;
     });
 
@@ -42,17 +49,17 @@ const TopBar = () => {
     setNotifications(updatedNotifications);
 
     if (updatedNotifications.length === 0) {
-      setNotificationIcon('IoMdNotificationsOutline');
+      setNotificationIcon("IoMdNotificationsOutline");
     }
   };
 
   const handleEmptyNotification = () => {
     displayNotification();
-  }
+  };
 
   const handleMarkAllAsRead = async () => {
     await API.patch(`/admin/notifications/markAllAsRead`, {
-      notifications: notifications
+      notifications: notifications,
     });
 
     setNotifications([]);
@@ -71,25 +78,35 @@ const TopBar = () => {
       const today = new Date().toDateString();
 
       const adminNotifications = notifications.filter((notification) => {
-        return (notification.adminId == localStorage.getItem("loggedInAdmin") || (notification.userId !== null && notification.adminId === null));
+        return (
+          notification.adminId == localStorage.getItem("loggedInAdmin") ||
+          (notification.userId !== null && notification.adminId === null)
+        );
       });
 
-      const filteredNotifications = adminNotifications.filter((notification) => {
-        const createdAtDate = new Date(notification.createdAt).toDateString();
-        return createdAtDate === today;
-      }).filter((notification) => {
-        return notification.hasRead !== true;
-      }).sort((a, b) => {
-        const timestampA = new Date(a.createdAt).getTime();
-        const timestampB = new Date(b.createdAt).getTime();
-        return timestampB - timestampA;
-      });
+      const filteredNotifications = adminNotifications
+        .filter((notification) => {
+          const createdAtDate = new Date(notification.createdAt).toDateString();
+          return createdAtDate === today;
+        })
+        .filter((notification) => {
+          return notification.hasRead !== true;
+        })
+        .sort((a, b) => {
+          const timestampA = new Date(a.createdAt).getTime();
+          const timestampB = new Date(b.createdAt).getTime();
+          return timestampB - timestampA;
+        });
 
       setNotifications(filteredNotifications);
 
-      const allRead = filteredNotifications.every((notification) => notification.hasRead === true);
+      const allRead = filteredNotifications.every(
+        (notification) => notification.hasRead === true
+      );
 
-      setNotificationIcon(allRead ? "IoMdNotificationsOutline" : "MdNotificationImportant");
+      setNotificationIcon(
+        allRead ? "IoMdNotificationsOutline" : "MdNotificationImportant"
+      );
     } catch (error) {
       console.error(error);
     }
@@ -97,44 +114,80 @@ const TopBar = () => {
 
   const showToast = () => {
     setShow(true);
-  }
+  };
 
   useEffect(() => {
-    const socket = socketIOClient('http://localhost:3000');
+    const socket = socketIOClient("http://localhost:3000");
 
-    socket.on('newContactUsNotification', () => {
+    socket.on("newContactUsNotification", () => {
       showToast();
       fetchData();
     });
 
-    socket.on('newPartnerApplicationNotification', () => {
+    socket.on("newPartnerApplicationNotification", () => {
       showToast();
       fetchData();
     });
 
-    socket.on('newFlaggedForumTopicNotification', () => {
+    socket.on("newFlaggedForumTopicNotification", () => {
       showToast();
       fetchData();
     });
 
-    socket.on('newRemoveFlaggedForumTopicNotification', () => {
+    socket.on("newRemoveFlaggedForumTopicNotification", () => {
       showToast();
       fetchData();
     });
 
-    socket.on('newAcceptPartnerApplicationNotification', () => {
+    socket.on("newAcceptPartnerApplicationNotification", () => {
       fetchData();
     });
 
-    socket.on('newRejectPartnerApplicationNotification', () => {
+    socket.on("newRejectPartnerApplicationNotification", () => {
       fetchData();
     });
 
-    socket.on('newAdminFlaggedForumTopic', () => {
+    socket.on("newAdminFlaggedForumTopic", () => {
       fetchData();
     });
 
-    socket.on('newAdminResetAppropriateForumTopic', () => {
+    socket.on("newAdminResetAppropriateForumTopic", () => {
+      fetchData();
+    });
+
+    socket.on("newFlaggedForumPostNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on("newRemoveFlaggedForumPostNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on('newAdminFlaggedForumPost', () => {
+      fetchData();
+    });
+
+    socket.on('newAdminResetAppropriateForumPost', () => {
+      fetchData();
+    });
+
+    socket.on("newFlaggedForumCommentNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on("newRemoveFlaggedForumCommentNotification", () => {
+      showToast();
+      fetchData();
+    });
+
+    socket.on('newAdminFlaggedForumComment', () => {
+      fetchData();
+    });
+
+    socket.on('newAdminResetAppropriateForumComment', () => {
       fetchData();
     });
 
@@ -142,7 +195,7 @@ const TopBar = () => {
 
     return () => {
       socket.disconnect();
-    }
+    };
   }, []);
 
   const formatRelativeTime = (createdAt) => {
@@ -154,11 +207,11 @@ const TopBar = () => {
     const hours = Math.floor(minutes / 60);
 
     if (hours > 0) {
-      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
     } else if (minutes > 0) {
-      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
     } else {
-      return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
+      return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
     }
   };
 
@@ -170,10 +223,18 @@ const TopBar = () => {
           <div key={index} className="notification-item">
             <div className="notification-content">
               <p>{notification.content}</p>
-              <span className="notification-time">{formatRelativeTime(notification.createdAt)}</span>
+              <span className="notification-time">
+                {formatRelativeTime(notification.createdAt)}
+              </span>
             </div>
             <div className="mark-as-read-button">
-              <button onClick={() => markNotificationAsRead(notification.notificationId)}>Mark as Read</button>
+              <button
+                onClick={() =>
+                  markNotificationAsRead(notification.notificationId)
+                }
+              >
+                Mark as Read
+              </button>
             </div>
           </div>
         ))
@@ -185,41 +246,10 @@ const TopBar = () => {
 
   return (
     <div className="topbar">
-      <div className="searchbar">
-        <img
-          src={imageBasePath + "search.webp"}
-          alt="search"
-          style={{
-            width: "18px",
-            height: "18px",
-            cursor: "pointer",
-            marginLeft: "5px",
-            marginRight: "5px",
-          }}
-        />
-        <input
-          placeholder="Search"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            border: "0",
-            backgroundColor: "#F2F3F480",
-            fontSize: "14px",
-            color: "#959FA3",
-            marginLeft: "0.2em",
-            height: "30px",
-            width: "169px",
-          }}
-        />
-      </div>
       <div style={{ marginTop: "8em" }}>
         <Row>
           <Col xs={6}>
-            <Toast
-              bg="warning"
-              onClose={() => setShow(false)}
-              show={show}
-            >
+            <Toast bg="warning" onClose={() => setShow(false)} show={show}>
               <Toast.Header>
                 <strong className="me-auto">Alert</strong>
               </Toast.Header>
@@ -230,16 +260,31 @@ const TopBar = () => {
       </div>
       <div className="icons-container">
         {notificationIcon === "MdNotificationImportant" ? (
-          <MdNotificationImportant className="notif" onClick={handleAvailableNotification} />
+          <div className="notification-icon-container" onClick={handleAvailableNotification}>
+            <MdNotificationImportant className="notif" />
+            {unreadNotificationCount > 0 && (
+              <div className="notification-badge">{unreadNotificationCount}</div>
+            )}
+          </div>
         ) : (
-          <IoMdNotificationsOutline className="notif" onClick={handleEmptyNotification} />
+          <div className="notification-icon-container" onClick={handleEmptyNotification}>
+            <IoMdNotificationsOutline className="notif" />
+          </div>
         )}
 
         {showNotifications && (
           <div className="notifications-panel">
             <div className="notification-buttons">
-              <a href="/notifications" className="view-all-link">View All Notifications</a>
-              <a href="#" className="mark-read-link" onClick={handleMarkAllAsRead}>Mark All as Read</a>
+              <a href="/notifications" className="view-all-link">
+                View All Notifications
+              </a>
+              <a
+                href="#"
+                className="mark-read-link"
+                onClick={handleMarkAllAsRead}
+              >
+                Mark All as Read
+              </a>
             </div>
             {notificationsContent}
           </div>

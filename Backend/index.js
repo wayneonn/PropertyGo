@@ -52,6 +52,7 @@ const reviewAdminRouter = require("./routes/admin/reviewRoutes");
 const folderAdminRouter = require("./routes/admin/folderRoutes");
 const documentAdminRouter = require("./routes/admin/documentRoutes");
 const transactionAdminRouter = require("./routes/admin/transactionRoutes");
+const paymentAdminRouter = require("./routes/admin/paymentRoutes");
 
 //property routes
 const propertyRoute = require("./routes/user/propertyRoute");
@@ -97,6 +98,7 @@ app.use("/admin/reviews", reviewAdminRouter);
 app.use("/admin/documents", documentAdminRouter);
 app.use("/admin/folders", folderAdminRouter);
 app.use("/admin/transactions", transactionAdminRouter);
+app.use("/admin/payments", paymentAdminRouter);
 
 app.use(
   "/user",
@@ -121,10 +123,7 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(
-  "/property",
-  propertyRoute,
-);
+app.use("/property", propertyRoute);
 
 app.use(
   "/schedule",
@@ -146,6 +145,7 @@ app.use(
   reviewRoute,
 );
 
+app.use("/review", reviewRoute);
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})
@@ -158,9 +158,9 @@ globalEmitter.on("newUserCreated", async (user) => {
   });
 });
 
-globalEmitter.on('partnerApprovalUpdate', async() => {
-    console.log("Received partner approval update notice.")
-})
+globalEmitter.on("partnerApprovalUpdate", async () => {
+  console.log("Received partner approval update notice.");
+});
 //
 // globalEmitter.on('partnerCreated', async() => {
 //     console.log("========================== Partner created =============================");
@@ -393,20 +393,20 @@ db.sequelize
             for (const contactUsData of contactUsTestData) {
               await db.ContactUs.create(contactUsData);
             }
-            console.log('Contact Us test data inserted successfully.');
+            console.log("Contact Us test data inserted successfully.");
           } catch (error) {
-            console.error('Error inserting Contact Us test data:', error);
+            console.error("Error inserting Contact Us test data:", error);
           }
         } else {
-          console.log('Contact Us test data already exists in the database.');
+          console.log("Contact Us test data already exists in the database.");
         }
 
-        console.log('Faq test data inserted successfully.');
+        console.log("Faq test data inserted successfully.");
       } catch (error) {
-        console.error('Error inserting Faq test data:', error);
+        console.error("Error inserting Faq test data:", error);
       }
     } else {
-      console.log('Admin test data already exists in the database.');
+      console.log("Admin test data already exists in the database.");
     }
 
     // Images

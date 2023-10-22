@@ -45,6 +45,9 @@ const ContactUs = () => {
   const [previewMessage, setPreviewMessage] = useState("");
   const [previewReason, setPreviewReason] = useState("");
   const [closeContactUsId, setCloseContactUsId] = useState(0);
+  const [userId, setUserId] = useState(0);
+  const [createdAt, setCreatedAt] = useState();
+  const [updatedAt, setUpdatedAt] = useState();
 
   const itemsPerPage = 4;
 
@@ -95,8 +98,18 @@ const ContactUs = () => {
     setShowRespondModal(!showRespondModal);
   };
 
-  const toggleShowViewResponseModal = (id) => {
+  const toggleShowViewResponseModal = (
+    id,
+    message,
+    userId,
+    createdAt,
+    updatedAt
+  ) => {
     setViewResponseId(id);
+    setRespondMessage(message);
+    setUserId(userId);
+    setCreatedAt(createdAt);
+    setUpdatedAt(updatedAt);
     getResponses(id);
     setShowViewResponseModal(!showViewResponseModal);
   };
@@ -602,7 +615,11 @@ const ContactUs = () => {
                               }}
                               onClick={() =>
                                 toggleShowViewResponseModal(
-                                  contactus.contactUsId
+                                  contactus.contactUsId,
+                                  contactus.message,
+                                  contactus.userId,
+                                  contactus.createdAt,
+                                  contactus.updatedAt
                                 )
                               }
                             >
@@ -824,7 +841,7 @@ const ContactUs = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Respond</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>Respond</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div style={{ marginBottom: "10px" }}>
@@ -893,12 +910,14 @@ const ContactUs = () => {
                 value={addedRespond}
                 onChange={setAddedRespond}
                 theme="snow"
-                className={validationMessages.emptyResponse ? "is-invalid" : ""}
+                className={
+                  validationMessages.emptyAddResponse ? "is-invalid" : ""
+                }
                 style={{ width: "29em" }}
                 modules={modules}
                 formats={formats}
               />
-              {validationMessages.emptyResponse && (
+              {validationMessages.emptyAddResponse && (
                 <Form.Control.Feedback type="invalid">
                   Response is required.
                 </Form.Control.Feedback>
@@ -947,7 +966,7 @@ const ContactUs = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Preview</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>Preview</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div style={{ marginBottom: "10px" }}>
@@ -1028,7 +1047,7 @@ const ContactUs = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Responses</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>Responses</Modal.Title>
           </Modal.Header>
           <Modal.Body
             style={{
@@ -1038,6 +1057,45 @@ const ContactUs = () => {
               flexDirection: "column",
             }}
           >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                float: "left",
+                maxWidth: "50%",
+                marginBottom: "20px",
+              }}
+            >
+              <span className="muted-text" style={{ alignSelf: "flex-start" }}>
+                {userNames[userId]}
+              </span>
+              <TextareaAutosize
+                readOnly
+                style={{
+                  borderRadius: "10px",
+                  border: "0",
+                  backgroundColor: "#FFCB85",
+                  resize: "none",
+                  overflowY: "auto",
+                  padding: "5px",
+                  fontSize: "15px",
+                  minWidth: "250px",
+                }}
+                value={respondMessage}
+              />
+              <span className="muted-text" style={{ alignSelf: "flex-start" }}>
+                created at: {createdAt}
+              </span>
+              {new Date(updatedAt).getTime() !==
+                new Date(createdAt).getTime() && (
+                <span
+                  className="muted-text"
+                  style={{ alignSelf: "flex-start" }}
+                >
+                  updated at: {updatedAt}
+                </span>
+              )}
+            </div>
             {Array.isArray(responses) && responses.length > 0 ? (
               responses.map((response) => (
                 <div style={{ marginBottom: "10px" }}>
@@ -1048,11 +1106,12 @@ const ContactUs = () => {
                         flexDirection: "column",
                         float: "right",
                         maxWidth: "60%",
+                        marginBottom: "20px",
                       }}
                     >
                       <span
                         className="muted-text"
-                        style={{ alignSelf: "flex-end", marginRight: "4em" }}
+                        style={{ alignSelf: "flex-end", marginRight: "3.5em" }}
                       >
                         {adminNames[response.adminId]}
                       </span>
@@ -1060,12 +1119,13 @@ const ContactUs = () => {
                         <div
                           style={{
                             borderRadius: "10px",
-                            borderColor: "#F5F6F7",
-                            backgroundColor: "#FFD88D",
+                            border: "0",
+                            backgroundColor: "#EECEA3",
                             resize: "none",
                             overflowY: "auto",
                             padding: "5px",
-                            margin: "0.5em",
+                            fontSize: "15px",
+                            minWidth: "220px",
                           }}
                           dangerouslySetInnerHTML={{ __html: response.message }}
                         ></div>
@@ -1073,9 +1133,9 @@ const ContactUs = () => {
                           size="sm"
                           title="Edit Response"
                           style={{
-                            backgroundColor: "#FFD700",
+                            background: "transparent",
                             border: "0",
-                            marginLeft: "1px",
+                            marginLeft: "0.2em",
                           }}
                           onClick={() =>
                             toggleShowEditModal(
@@ -1086,18 +1146,27 @@ const ContactUs = () => {
                         >
                           <MdEditSquare
                             style={{
-                              width: "15px",
-                              height: "15px",
+                              width: "16px",
+                              height: "16px",
                               color: "black",
                             }}
                           ></MdEditSquare>
                         </Button>
                       </div>
+                      <span
+                        className="muted-text"
+                        style={{ alignSelf: "flex-end", marginRight: "3.5em" }}
+                      >
+                        created at: {response.createdAt}
+                      </span>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
                         <span
                           className="muted-text"
-                          style={{ alignSelf: "flex-end", marginRight: "4em" }}
+                          style={{
+                            alignSelf: "flex-end",
+                            marginRight: "3.5em",
+                          }}
                         >
                           updated at: {response.updatedAt}
                         </span>
@@ -1110,11 +1179,12 @@ const ContactUs = () => {
                         flexDirection: "column",
                         float: "left",
                         maxWidth: "50%",
+                        marginBottom: "20px",
                       }}
                     >
                       <span
                         className="muted-text"
-                        style={{ alignSelf: "flex-end", marginRight: "4em" }}
+                        style={{ alignSelf: "flex-start" }}
                       >
                         {userNames[response.userId]}
                       </span>
@@ -1123,18 +1193,26 @@ const ContactUs = () => {
                         style={{
                           borderRadius: "10px",
                           border: "0",
-                          backgroundColor: "#F5F6F7",
+                          backgroundColor: "#FFCB85",
                           resize: "none",
                           overflowY: "auto",
                           padding: "5px",
+                          fontSize: "15px",
+                          minWidth: "250px",
                         }}
                         value={response.message}
                       />
+                      <span
+                        className="muted-text"
+                        style={{ alignSelf: "flex-start" }}
+                      >
+                        created at: {response.createdAt}
+                      </span>
                       {new Date(response.updatedAt).getTime() !==
                         new Date(response.createdAt).getTime() && (
                         <span
                           className="muted-text"
-                          style={{ alignSelf: "flex-end", marginRight: "4em" }}
+                          style={{ alignSelf: "flex-start" }}
                         >
                           updated at: {response.updatedAt}
                         </span>
@@ -1182,8 +1260,8 @@ const ContactUs = () => {
                 borderRadius: "160px",
                 color: "black",
                 font: "Public Sans",
-                fontWeight: "600",
-                fontSize: "13px",
+                fontWeight: "500",
+                fontSize: "14px",
               }}
               onClick={() => handleAddRespond(viewResponseId)}
             >
@@ -1198,7 +1276,7 @@ const ContactUs = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Responses</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>Responses</Modal.Title>
           </Modal.Header>
           <Modal.Body
             style={{
@@ -1287,7 +1365,9 @@ const ContactUs = () => {
           centered
         >
           <Modal.Header closeButton>
-            <Modal.Title>Edit Response</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>
+              Edit Response
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div style={{ marginBottom: "10px" }}>
@@ -1363,7 +1443,9 @@ const ContactUs = () => {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Confirmation of Contact Us</Modal.Title>
+            <Modal.Title style={{ fontSize: "20px" }}>
+              Confirmation of Contact Us
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>Are you sure you want to close the following contact us?</p>

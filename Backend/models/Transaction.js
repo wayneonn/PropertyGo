@@ -21,6 +21,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("PENDING", "REFUNDED", "PAID"),
         allowNull: false,
       },
+      stripePaymentResponse: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      transactionType: {
+        type: DataTypes.ENUM("REQUEST", "OTP", "TOKENS"),
+        allowNull: false,
+      },
     },
     {
       freezeTableName: true,
@@ -45,11 +53,6 @@ module.exports = (sequelize, DataTypes) => {
     Transaction.belongsTo(models.Property, {
       foreignKey: "propertyId",
       as: "propertyListing",
-      allowNull: false,
-    });
-    Transaction.belongsTo(models.User, {
-      as: "seller",
-      foreignKey: "sellerId",
       allowNull: false,
     });
     Transaction.belongsTo(models.Invoice, {

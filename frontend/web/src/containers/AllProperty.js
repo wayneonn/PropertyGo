@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { Carousel, Modal, Button, Form } from "react-bootstrap";
-import "./styles/Property.css";
+import "./styles/AllProperty.css";
 import { useParams } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import { LiaBedSolid, LiaBathSolid } from "react-icons/lia";
@@ -9,7 +9,7 @@ import { FcDocument } from "react-icons/fc";
 
 import API from "../services/API";
 
-const Property = () => {
+const AllProperty = () => {
   const [property, setProperty] = useState({});
   const { propertyId } = useParams();
   const [seller, setSeller] = useState({});
@@ -22,12 +22,12 @@ const Property = () => {
   const [approvalStatus, setApprovalStatus] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
 
+  const imageBasePath =
+    window.location.protocol + "//" + window.location.host + "/images/";
+
   const [validationMessages, setValidationMessages] = useState({
     emptyRejectionReason: false,
   });
-
-  const imageBasePath =
-    window.location.protocol + "//" + window.location.host + "/images/";
 
   const fetchData = async () => {
     try {
@@ -63,8 +63,6 @@ const Property = () => {
 
       // const buyerId = transactions[0].buyerId;
 
-      console.log("buyer: " + response.data.buyerId);
-
       const buyerResponse = await API.get(
         `http://localhost:3000/admin/users/getUser/${response.data.buyerId}`
       );
@@ -99,7 +97,7 @@ const Property = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [approvalStatus]);
 
   function getPropertyClassName(status) {
     if (status === "ACTIVE") {
@@ -257,7 +255,7 @@ const Property = () => {
   };
 
   return (
-    <div className="property">
+    <div className="property-all">
       <div
         style={{
           marginTop: "10px",
@@ -267,20 +265,14 @@ const Property = () => {
         }}
       >
         <BreadCrumb
-          names={["Home", "Users", "User Detail", "Properties"]}
+          names={["Home", "Properties"]}
           lastname="Property"
-          links={[
-            "/",
-            "/users",
-            `/users/details/${seller.userId}`,
-            `/users/details/${seller.userId}/property-listing`,
-          ]}
+          links={["/", "/properties"]}
         ></BreadCrumb>
       </div>
-      <div className="property-main">
+      <div className="property-main-all">
         <div style={{ display: "flex" }}>
-          {/* <div> */}
-          <div className="images">
+          <div className="images-all">
             <Carousel
               style={{
                 width: "600px",
@@ -290,9 +282,9 @@ const Property = () => {
               {Array.isArray(property.images) && property.images.length > 0 ? (
                 property.images.map((image) => (
                   <Carousel.Item>
-                    <div className="image-container">
+                    <div className="image-container-all">
                       <img
-                        className="image"
+                        className="image-all"
                         src={`http://localhost:3000/image/${image.toString()}`}
                         alt="property image"
                       />
@@ -301,9 +293,9 @@ const Property = () => {
                 ))
               ) : (
                 <Carousel.Item>
-                  <div className="image-container">
+                  <div className="image-container-all">
                     <img
-                      className="image"
+                      className="image-all"
                       src={imageBasePath + "login.jpeg"}
                       alt="default image"
                     />
@@ -312,8 +304,47 @@ const Property = () => {
               )}
             </Carousel>
           </div>
-          <div className="description">
-            <div className="property-desc">
+          <div className="description-all">
+            <div className="property-desc-all">
+              <span
+                style={{
+                  fontSize: "16px",
+                  fontWeight: "500",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {seller.profileImage ? (
+                  <>
+                    <img
+                      src={`data:image/jpeg;base64,${seller.profileImage.toString(
+                        "base64"
+                      )}`}
+                      style={{
+                        height: "20px",
+                        width: "20px",
+                        marginRight: "10px",
+                      }}
+                      alt="user"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <>
+                      <img
+                        src={imageBasePath + "user.png"}
+                        style={{
+                          height: "20px",
+                          width: "20px",
+                          marginRight: "10px",
+                        }}
+                        alt="default user"
+                      />
+                    </>
+                  </>
+                )}
+                {seller.userName}
+              </span>
               <span style={{ fontSize: "25px", fontWeight: "600" }}>
                 {property.title}
               </span>
@@ -422,45 +453,44 @@ const Property = () => {
               )}
             </div>
             <hr style={{ width: "565px", marginLeft: "30px", padding: "0" }} />
-            <div className="attri">
-              <div className="property-price">
+            <div className="attri-all">
+              <div className="property-price-all">
                 <span style={{ opacity: "0.8" }}>Selling price</span>
                 <span style={{ fontSize: "25px", fontWeight: "500" }}>
                   S$ {property.price}
                 </span>
               </div>
-              <div className="property-attri">
-                <div className="bed-bath-sqm">
+              <div className="property-attri-all">
+                <div className="bed-bath-sqm-all">
                   <span>
-                    <LiaBedSolid className="icon" /> {property.bed}
+                    <LiaBedSolid className="icon-all" /> {property.bed}
                   </span>
                 </div>
-                <div className="bed-bath-sqm">
+                <div className="bed-bath-sqm-all">
                   <span>
-                    <LiaBathSolid className="icon" /> {property.bathroom}
+                    <LiaBathSolid className="icon-all" /> {property.bathroom}
                   </span>
                 </div>
-                <div className="bed-bath-sqm">
+                <div className="bed-bath-sqm-all">
                   <span>
-                    <RxDimensions className="icon" /> {property.size} sqft
+                    <RxDimensions className="icon-all" /> {property.size} sqft
                   </span>
                 </div>
               </div>
             </div>
             {property.propertyStatus == "COMPLETED" && (
-              <div className="sold">
-                <div className="sold-price">
+              <div className="sold-all">
+                <div className="sold-price-all">
                   <span style={{ opacity: "0.8" }}>Offered Price</span>
                   <span style={{ fontSize: "25px", fontWeight: "500" }}>
                     S$ {property.offeredPrice}
                   </span>
                 </div>
-                <div className="sold-buyer">
+                <div className="sold-buyer-all">
                   <span style={{ opacity: "0.8" }}>Transacted with</span>
-                  {/* <span className="buyer-name">{buyer.userName}</span> */}
                   <a
                     href={`/users/details/${buyer.userId}`}
-                    className="buyer-name"
+                    className="buyer-name-all"
                   >
                     {buyer.userName}
                   </a>
@@ -469,14 +499,14 @@ const Property = () => {
             )}
           </div>
         </div>
-        <div className="document-area">
+        <div className="document-area-all">
           <span>Property Listing Documents</span>
           <hr />
-          <div className="documents-boxes">
+          <div className="documents-boxes-all">
             {Array.isArray(documents) && documents.length > 0 ? (
               documents.map((document) => (
                 <div
-                  className="folder"
+                  className="folder-all"
                   key={document.documentId}
                   onClick={() => handleDownload(document.documentId)}
                 >
@@ -634,4 +664,4 @@ const Property = () => {
   );
 };
 
-export default Property;
+export default AllProperty;
