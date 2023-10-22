@@ -73,6 +73,7 @@ const reviewRoute = require("./routes/user/reviewRoute");
 const faqRoute = require("./routes/user/faqRoute");
 const scheduleRoute = require("./routes/user/scheduleRoute");
 const viewingAvailabilityRoute = require("./routes/user/viewingAvailabilityRoute");
+const stripeRoute = require("./routes/user/stripeRoute");
 const e = require("express");
 
 app.use(cors());
@@ -113,7 +114,8 @@ app.use(
   forumPostUserRouter,
   forumCommentUserRouter,
   partnerApplicationUserRouter,
-  faqRoute
+  faqRoute,
+  stripeRoute
 );
 
 io.on("connection", (socket) => {
