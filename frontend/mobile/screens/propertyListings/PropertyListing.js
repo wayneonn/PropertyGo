@@ -483,7 +483,9 @@ const PropertyListingScreen = ({ route }) => {
             <TouchableOpacity style={styles.viewScheduleButton}>
               <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buyButton}>
+            <TouchableOpacity style={styles.buyButton} onPress={() => {
+              navigation.navigate('Edit Property Listing', { propertyListingId });
+            }}>
               <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>
           </>

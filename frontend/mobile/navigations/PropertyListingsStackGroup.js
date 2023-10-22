@@ -7,6 +7,7 @@ import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListing";
 import SetSchedule from "../screens/schedule/SetSchedule";
 import Schedule from "../screens/schedule/Schedule";
+import PurchaseOptionFee from "../screens/purchaseProperty/PurchaseOptionFee";
 import Map from "../screens/propertyListings/map";
 
 const PropertyListingsStack = createNativeStackNavigator();
@@ -25,6 +26,7 @@ const PropertyListingsStackGroup = () => {
             <PropertyListingsStack.Screen name="Boost Listing" component={BoostPropertyListing}/>
             <PropertyListingsStack.Screen name="Set Schedule" component={SetSchedule}/>
             <PropertyListingsStack.Screen name="Schedule" component={Schedule}/>
+            <PropertyListingsStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/>
         </PropertyListingsStack.Navigator>
     );
 };
