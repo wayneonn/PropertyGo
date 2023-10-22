@@ -26,6 +26,8 @@ module.exports = [
     area: "Telok Blangah, Harbourfront",
     latitude: "1.28742122514492",
     longitude: "103.828415534676",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 2,
@@ -54,6 +56,8 @@ module.exports = [
     area: "Telok Blangah, Harbourfront",
     latitude: "1.28289054156981",
     longitude: "103.831236127687",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 3,
@@ -82,6 +86,8 @@ module.exports = [
     area: "Telok Blangah, Harbourfront",
     latitude: "1.27873808127932",
     longitude: "103.828304288385",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 4,
@@ -109,6 +115,8 @@ module.exports = [
     area: "Kranji, Woodgrove",
     latitude: "1.43828189832914",
     longitude: "103.778025758394",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 5,
@@ -136,6 +144,8 @@ module.exports = [
     area: "Sembawang",
     latitude: "1.44446374370467",
     longitude: "103.831776277139",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 6,
@@ -163,6 +173,8 @@ module.exports = [
     area: "Yishun, Sembawang",
     latitude: "1.45588056867505",
     longitude: "103.813146773816",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 7,
@@ -190,6 +202,8 @@ module.exports = [
     area: "Kranji, Woodgrove",
     latitude: "1.42720067006618",
     longitude: "103.775679991114",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 8,
@@ -217,6 +231,8 @@ module.exports = [
     area: "Kranji, Woodgrove",
     latitude: "1.42990473625755",
     longitude: "103.782357461164",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
 
   // East Region
@@ -246,6 +262,8 @@ module.exports = [
     area: "Bedok, Upper East Coast, Eastwood, Kew Drive",
     latitude: "1.3217708591015",
     longitude: "103.936326570445",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 10,
@@ -273,6 +291,8 @@ module.exports = [
     area: "Tampines, Pasir Ris",
     latitude: "	1.36926449241468",
     longitude: "103.96169261157",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 11,
@@ -300,6 +320,8 @@ module.exports = [
     area: "Tampines, Pasir Ris",
     latitude: "1.35098787549144	",
     longitude: "103.955482035159",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 12,
@@ -327,6 +349,8 @@ module.exports = [
     area: "Loyang, Changi",
     latitude: "1.34630712931251",
     longitude: "103.953375789945",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 13,
@@ -354,6 +378,8 @@ module.exports = [
     area: "Geylang, Eunos",
     latitude: "1.31744387800501",
     longitude: "103.886373732265",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   // West Region
   {
@@ -382,6 +408,8 @@ module.exports = [
     area: "Jurong",
     latitude: "1.34404144956674",
     longitude: "103.735500080389",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 15,
@@ -409,6 +437,8 @@ module.exports = [
     area: "Jurong",
     latitude: "1.3411274954664",
     longitude: "103.738101187795",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 16,
@@ -436,6 +466,8 @@ module.exports = [
     area: "Pasir Panjang, Hong Leong Garden, Clementi New Town",
     latitude: "1.32446058239498",
     longitude: "103.771184563895",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 17,
@@ -463,6 +495,8 @@ module.exports = [
     area: "Bukit Batok",
     latitude: "1.33332312550425",
     longitude: "103.740187071348",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 18,
@@ -490,6 +524,8 @@ module.exports = [
     area: "Jurong",
     latitude: "1.35021860759344",
     longitude: "103.710255713025",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   // South Region
   {
@@ -518,6 +554,8 @@ module.exports = [
     area: "Telok Blangah, Harbourfront",
     latitude: "1.27147195091921",
     longitude: "103.822992108909",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 20,
@@ -545,6 +583,8 @@ module.exports = [
     area: "Telok Blangah, Harbourfront",
     latitude: "1.27873808127932",
     longitude: "103.828304288385",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 21,
@@ -572,6 +612,8 @@ module.exports = [
     area: "Anson, Tanjong Pagar",
     latitude: "1.27590520131404",
     longitude: "103.842741240941",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 22,
@@ -599,6 +641,8 @@ module.exports = [
     area: "Anson, Tanjong Pagar",
     latitude: "1.27712012183459",
     longitude: "103.843117743777",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 23,
@@ -626,6 +670,8 @@ module.exports = [
     area: "Hougang",
     latitude: "1.35970834900516",
     longitude: "103.888988951252",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 24,
@@ -653,6 +699,8 @@ module.exports = [
     area: "Serangoon Garden, Hougang, Punggol",
     latitude: "1.35444891059602",
     longitude: "103.874262060745",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 25,
@@ -680,6 +728,8 @@ module.exports = [
     area: "Serangoon Garden, Hougang, Punggol",
     latitude: "1.38526180662915",
     longitude: "103.893959317126",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 26,
@@ -707,6 +757,8 @@ module.exports = [
     area: "Serangoon Garden, Hougang, Punggol",
     latitude: "1.39572273025553",
     longitude: "103.915305978671",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 27,
@@ -734,6 +786,8 @@ module.exports = [
     area: "Hougang Central",
     latitude: "1.37212724286355",
     longitude: "103.881301012952",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   // Central Region
   {
@@ -762,6 +816,8 @@ module.exports = [
     area: "Queenstown, Tiong Bahru",
     latitude: "1.28696437748579",
     longitude: "103.806346349205",
+    optionFee: 1000,
+    optionExerciseFee: 2000,
   },
   {
     propertyListingId: 29,
@@ -769,6 +825,8 @@ module.exports = [
     description: "Luxury apartment in Kallang Bahru",
     updatedAt: "2023-02-24T16:45:50.987Z",
     price: 1200000,
+    optionFee: 1000,
+    optionExerciseFee: 2000,
     offeredPrice: 1180000,
     title: "4BHK Luxury Apartment in Kallang Bahru",
     bed: 4,

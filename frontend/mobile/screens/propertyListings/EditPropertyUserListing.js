@@ -127,7 +127,6 @@ const EditPropertyListing = ({ route }) => {
     let price = rawPrice ? parseInt(rawPrice, 10) : 0;
     let optionPrice = rawOptionPrice ? parseInt(rawOptionPrice, 10) : 0;
     let optionExercisePrice = rawOptionExercisePrice ? parseInt(rawOptionExercisePrice, 10) : 0;
-    console.log('Parsed price:', price);
 
     if (!rawPrice) {
       price = propertyData.price;
