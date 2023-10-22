@@ -128,6 +128,14 @@ const SideBar = () => {
             Contact Us
           </Nav.Link>
         </Nav.Item>
+        <Nav.Item>
+          <Nav.Link className="a" href="/otp">
+            <AiOutlineCreditCard
+              style={{ marginRight: "1em" }}
+            ></AiOutlineCreditCard>
+            OTP
+          </Nav.Link>
+        </Nav.Item>
       </Nav>
     </div>
   );

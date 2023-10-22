@@ -1,5 +1,6 @@
 const { Property, Image } = require("../../models");
 const sharp = require("sharp");
+const moment = require("moment");
 
 // Get all properties
 async function getAllProperties(req, res) {
@@ -65,7 +66,50 @@ async function getProperty(req, res) {
   }
 }
 
+const approveProperty = async (req, res) => {
+  const { id: propertyId } = req.params;
+
+  try {
+    const property = await Property.findByPk(propertyId);
+
+    req.body.approvalStatus = "APPROVED";
+    req.body.updatedAt = moment().format("YYYY-MM-DD HH:mm:ss");
+
+    await property.update(req.body);
+
+    const updatedProperty = await Property.findByPk(propertyId);
+
+    res.status(200).json({ property: updatedProperty });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+const rejectProperty = async (req, res) => {
+  const { id: propertyId } = req.params;
+
+  const { adminNotes } = req.body;
+
+  try {
+    const property = await Property.findByPk(propertyId);
+
+    req.body.approvalStatus = "REJECTED";
+    req.body.adminNotes = adminNotes;
+    req.body.updatedAt = moment().format("YYYY-MM-DD HH:mm:ss");
+
+    await property.update(req.body);
+
+    const updatedProperty = await Property.findByPk(propertyId);
+
+    res.status(200).json({ property: updatedProperty });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 module.exports = {
   getAllProperties,
   getProperty,
+  approveProperty,
+  rejectProperty,
 };

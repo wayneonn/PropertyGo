@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Carousel, Modal } from "react-bootstrap";
+import { Carousel, Modal, Button, Form } from "react-bootstrap";
 import "./styles/Property.css";
 import { useParams } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
@@ -17,6 +17,14 @@ const Property = () => {
   const [documents, setDocuments] = useState([]);
   const [pdfBlob, setPdfBlob] = useState(null);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [approvalStatus, setApprovalStatus] = useState("");
+  const [rejectionReason, setRejectionReason] = useState("");
+
+  const [validationMessages, setValidationMessages] = useState({
+    emptyRejectionReason: false,
+  });
 
   const imageBasePath =
     window.location.protocol + "//" + window.location.host + "/images/";
@@ -30,8 +38,10 @@ const Property = () => {
 
       console.log(propertyId);
 
+      setApprovalStatus(response.data.approvalStatus);
+
       const sellerResponse = await API.get(
-        `http://localhost:3000/admin/users/getUser/${response.data.userId}`
+        `http://localhost:3000/admin/users/getUser/${response.data.sellerId}`
       );
 
       setSeller(sellerResponse.data);
@@ -44,17 +54,19 @@ const Property = () => {
 
       // console.log(transactionResponse.data);
 
-      const transactions = transactionResponse.data.transactions
-        .filter((transaction) => transaction.propertyId == propertyId)
-        .filter((transaction) => transaction.requestId === null) // transaction is for OTP payment
-        .filter((transaction) => transaction.status == "PAID"); // transaction is paid, means property is sold
+      // const transactions = transactionResponse.data.transactions
+      //   .filter((transaction) => transaction.propertyId == propertyId)
+      //   .filter((transaction) => transaction.transactionType == "OTP") // transaction is for OTP payment
+      //   .filter((transaction) => transaction.status == "PAID"); // transaction is paid, means property is sold
 
       // console.log(transactions);
 
-      const buyerId = transactions[0].buyerId;
+      // const buyerId = transactions[0].buyerId;
+
+      console.log("buyer: " + response.data.buyerId);
 
       const buyerResponse = await API.get(
-        `http://localhost:3000/admin/users/getUser/${buyerId}`
+        `http://localhost:3000/admin/users/getUser/${response.data.buyerId}`
       );
 
       setBuyer(buyerResponse.data);
@@ -63,7 +75,7 @@ const Property = () => {
         `http://localhost:3000/admin/documents`
       );
 
-      console.log("buyer " + buyerId);
+      console.log("buyer " + response.data.buyerId);
       console.log("seller " + sellerResponse.data.userId);
 
       // console.log("document:" + documentResponse);
@@ -72,7 +84,7 @@ const Property = () => {
         .filter((document) => document.propertyId == propertyId)
         .filter(
           (document) =>
-            document.userId == buyerId ||
+            document.userId == response.data.buyerId ||
             document.userId == sellerResponse.data.userId
         );
       //need howard help fetch documents
@@ -107,6 +119,16 @@ const Property = () => {
     }
   }
 
+  function getApprovalStatusClassName(status) {
+    if (status === "PENDING") {
+      return "status-pending-all";
+    } else if (status === "APPROVED") {
+      return "status-approved-all";
+    } else if (status === "REJECTED") {
+      return "status-rejected-all";
+    }
+  }
+
   function formatTime(postedAt) {
     const dateObject = new Date(postedAt);
     const months = [
@@ -129,28 +151,6 @@ const Property = () => {
     const formattedDate = `${day} ${months[monthIndex]} ${year}`;
     return formattedDate;
   }
-
-  // const toggleDocumentModal = async (documentId) => {
-  //   const documents = await API.get(`http://localhost:3000/admin/documents`);
-  //   // console.log(document);
-  //   // const binaryString = atob(document.data.formattedDocuments[0].document);
-
-  //   const document = documents.filter(
-  //     (document) => document.documentId == documentId
-  //   );
-
-  //   const binaryString = atob(document.data.formattedDocuments[0].document); //need howard help fetch documents
-  //   const test = new Blob(
-  //     [
-  //       new Uint8Array(binaryString.length).map((_, i) =>
-  //         binaryString.charCodeAt(i)
-  //       ),
-  //     ],
-  //     { type: "application/pdf" }
-  //   );
-  //   setPdfBlob(test);
-  //   setShowDocumentModal(!showDocumentModal);
-  // };
 
   const handleDownload = async (documentId) => {
     try {
@@ -180,6 +180,80 @@ const Property = () => {
 
   const handleCloseDocumentModal = () => {
     setShowDocumentModal(false);
+  };
+
+  const toggleApproveModal = () => {
+    setShowApproveModal(!showApproveModal);
+  };
+
+  const handleCloseApproveModal = () => {
+    setShowApproveModal(false);
+  };
+
+  const toggleRejectModal = () => {
+    setShowRejectModal(!showRejectModal);
+  };
+
+  const handleCloseRejectModal = () => {
+    setShowRejectModal(false);
+    setValidationMessages({});
+  };
+
+  const handleApprove = async () => {
+    try {
+      const response = await API.patch(
+        `/admin/properties/approve/${propertyId}`
+      );
+
+      console.log(response.data);
+
+      setProperty(response.data);
+      setApprovalStatus("APPROVED");
+
+      if (response.status === 200) {
+        handleCloseApproveModal();
+        console.log("Successully activated user");
+      }
+    } catch (error) {
+      console.error("error");
+    }
+  };
+
+  const handleReject = async () => {
+    const newMessage = {
+      emptyRejectionReason: false,
+    };
+
+    if (rejectionReason.trim() === "") {
+      newMessage.emptyRejectionReason = true;
+    }
+
+    if (newMessage.emptyRejectionReason) {
+      setValidationMessages(newMessage);
+      return;
+    }
+
+    try {
+      const response = await API.patch(
+        `/admin/properties/reject/${propertyId}`,
+        {
+          adminNotes: rejectionReason,
+        }
+      );
+
+      setProperty(response.data);
+      setApprovalStatus("REJECTED");
+
+      if (response.status === 200) {
+        setValidationMessages(newMessage);
+        handleCloseRejectModal();
+        setRejectionReason("");
+        console.log("Successully rejected user");
+      }
+    } catch (error) {
+      console.error("error");
+      setValidationMessages(newMessage);
+    }
   };
 
   return (
@@ -246,26 +320,106 @@ const Property = () => {
               <span style={{ fontSize: "15px", marginBottom: "30px" }}>
                 {property.description}
               </span>
+              {property.boostListingStartDate && (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      opacity: "0.8",
+                      marginTop: "10px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Boost Listing Start Date - End Date:
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      opacity: "0.8",
+                      marginBottom: "10px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {formatTime(property.boostListingStartDate)} ~{" "}
+                    {formatTime(property.boostListingEndDate)}
+                  </span>
+                </div>
+              )}
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <div className={getPropertyClassName(property.propertyStatus)}>
-                  {property.propertyStatus}
-                </div>
                 <div
-                  className={getPropertyTypeClassName(property.propertyType)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                 >
-                  {property.propertyType}
+                  <div
+                    className={getPropertyClassName(property.propertyStatus)}
+                  >
+                    {property.propertyStatus}
+                  </div>
+                  <div
+                    className={getPropertyTypeClassName(property.propertyType)}
+                  >
+                    {property.propertyType}
+                  </div>
+                  <div
+                    className={getApprovalStatusClassName(
+                      property.approvalStatus
+                    )}
+                  >
+                    {property.approvalStatus}
+                  </div>
                 </div>
+                {property.approvalStatus === "PENDING" && (
+                  <div className="approval-actions">
+                    <Button
+                      style={{
+                        backgroundColor: "#FFD700",
+                        border: "0",
+                        borderRadius: "160px",
+                        color: "black",
+                        marginRight: "10px",
+                      }}
+                      onClick={toggleApproveModal}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      style={{
+                        backgroundColor: "#FF6666",
+                        border: "0",
+                        borderRadius: "160px",
+                        color: "black",
+                      }}
+                      onClick={toggleRejectModal}
+                    >
+                      Reject
+                    </Button>
+                  </div>
+                )}
               </div>
               <span
                 style={{ fontSize: "12px", opacity: "0.8", marginTop: "20px" }}
               >
                 Date posted: {formatTime(property.createdAt)}
               </span>
+              {property.approvalStatus === "REJECTED" && (
+                <span
+                  style={{
+                    fontSize: "12px",
+                    opacity: "0.8",
+                    marginTop: "10px",
+                  }}
+                >
+                  Reason for rejection: {property.adminNotes}
+                </span>
+              )}
             </div>
             <hr style={{ width: "565px", marginLeft: "30px", padding: "0" }} />
             <div className="attri">
@@ -352,6 +506,128 @@ const Property = () => {
               )}
             </div>
           </Modal.Body>
+        </Modal>
+        <Modal
+          show={showApproveModal}
+          onHide={handleCloseApproveModal}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title style={{ fontSize: "20px" }}>
+              Approve Property Listing
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Are you sure you want to approve this property listing?</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#F5F6F7",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleCloseApproveModal}
+            >
+              No
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleApprove}
+            >
+              Yes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal
+          show={showRejectModal}
+          onHide={handleCloseRejectModal}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title style={{ fontSize: "20px" }}>
+              Reject Property Listing
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Label
+              style={{
+                color: "black",
+                // font: "Public Sans",
+                fontWeight: "400",
+                fontSize: "16px",
+              }}
+            >
+              Reason for rejecting
+            </Form.Label>
+            <Form.Group>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                name="message"
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                isInvalid={validationMessages.emptyRejectionReason}
+              />
+              {validationMessages.emptyRejectionReason && (
+                <Form.Control.Feedback type="invalid">
+                  Reason is required.
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              style={{
+                backgroundColor: "#F5F6F7",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleCloseRejectModal}
+            >
+              Cancel
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#FFD700",
+                border: "0",
+                width: "92px",
+                height: "40px",
+                borderRadius: "160px",
+                color: "black",
+                font: "Public Sans",
+                fontWeight: "600",
+                fontSize: "14px",
+              }}
+              onClick={handleReject}
+            >
+              Reject
+            </Button>
+          </Modal.Footer>
         </Modal>
       </div>
     </div>
