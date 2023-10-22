@@ -32,6 +32,8 @@ const PurchaseOptionFee = ({ route }) => {
                 currency,
                 email: user.user.email,
                 name: user.user.name,
+                description: "Purchase Option Fee",
+                isAService: true,
             });
 
             console.log("Data:", data, " success: ", success);
