@@ -3,9 +3,12 @@ import { View, Button, Alert, Linking, Text } from 'react-native';
 import { useStripe, StripeProvider } from '@stripe/stripe-react-native';
 import { paymentSheet } from "../../utils/stripeApi"; // Import your new paymentSheet function
 import { updateUserProfile, loginUser } from "../../utils/api";
+import { createTransaction } from "../../utils/transactionApi";
 import { AuthContext } from '../../AuthContext';
+import { useNavigation } from '@react-navigation/native';
 const PurchaseOptionFee = ({ route }) => {
     const { propertyListing } = route.params;
+    const navigation = useNavigation();
     const { user, login } = useContext(AuthContext);
     const { initPaymentSheet, presentPaymentSheet, handleURLCallback } = useStripe();
     const [loading, setLoading] = useState(false);
@@ -88,7 +91,9 @@ const PurchaseOptionFee = ({ route }) => {
                 if (custIdExists == false) {
                     updateUserStripeCustomerId(newStripeCustomerId);
                 }
+                createTransactionRecord();
                 Alert.alert('Success', 'Your order is confirmed!');
+                navigation.navigate('Home Page');
             }
         } catch (error) {
             console.error('Error opening payment sheet:', error);
@@ -106,6 +111,19 @@ const PurchaseOptionFee = ({ route }) => {
         const { success, data, message } = await updateUserProfile(user.user.userId, formData);
         console.log("success: ", success, " data: ", data, " message: ", message);
         fetchUpdatedUserDetails();
+    }
+
+    const createTransactionRecord = async () => {
+        const { data, success, message } = await createTransaction({
+            onHoldBalance: propertyListing.optionFee,
+            buyerId: user.user.userId,
+            propertyId: propertyListing.propertyListingId,
+            stripePaymentResponse: paymentIntent,
+            invoiceId: 3,
+            status: "PENDING",
+            transactionType: "OPTION_FEE",
+        });
+        // console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
     }
 
     const fetchUpdatedUserDetails = async () => {
