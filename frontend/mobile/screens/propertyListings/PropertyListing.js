@@ -206,7 +206,7 @@ const PropertyListingScreen = ({ route }) => {
       // Make an API call to fetch property listing details by id
       const response = await fetch(getPropertyListing(id));
       const data = await response.json();
-      const userDetailsData = await fetchUser(data.userId);
+      const userDetailsData = await fetchUser(data.sellerId);
       setUser(userDetailsData); // Update user details state
       setPropertyListing(data); // Update state with the fetched data
       // Fetch latitude and longitude based on postal code
@@ -484,7 +484,7 @@ const PropertyListingScreen = ({ route }) => {
               <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buyButton} onPress={() => {
-              navigation.navigate('Edit Property Listing', { propertyListingId });
+              navigation.navigate('Purchase Option Fee', { propertyListing });
             }}>
               <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>

@@ -182,7 +182,7 @@ const PropertyUserListingScreen = ({ route }) => {
       // Make an API call to fetch property listing details by id
       const response = await fetch(getPropertyListing(id));
       const data = await response.json();
-      const userDetailsData = await fetchUser(data.userId);
+      const userDetailsData = await fetchUser(data.sellerId);
       setUser(userDetailsData); // Update user details state
       setPropertyListing(data); // Update state with the fetched data
       // Fetch latitude and longitude based on postal code
