@@ -271,7 +271,7 @@ db.sequelize
         for (const propertyData of propertyTestData) {
           await db.Property.create(propertyData);
         }
-        const fake_prop = await generateFakeProperties(1000)
+        //const fake_prop = await generateFakeProperties(1000)
         console.log("Property test data inserted successfully.");
       } catch (error) {
         console.log("Error inserting Property test data:", error);

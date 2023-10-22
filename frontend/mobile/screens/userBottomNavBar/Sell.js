@@ -111,7 +111,11 @@ export default function PropertyListing() {
 
   const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
   const [formattedPrice, setFormattedPrice] = useState('');
+  const [formattedOptionPrice, setFormattedOptionPrice] = useState('');
+  const [formattedOptionExercisePrice, setFormattedOptionExercisePrice] = useState('');
   const [rawPrice, setRawPrice] = useState('');
+  const [rawOptionPrice, setOptionRawPrice] = useState('');
+  const [rawOptionExercisePrice, setOptionExerciseRawPrice] = useState('');
 
   //For Document
   const [prevDocuments, setPrevDocuments] = useState([]);
@@ -135,6 +139,18 @@ export default function PropertyListing() {
     const raw = text.replace(/[^0-9]/g, '');
     setFormattedPrice(formatPrice(raw));
     setRawPrice(raw);
+  };
+
+  const handleOptionPriceChange = (text) => {
+    const raw = text.replace(/[^0-9]/g, '');
+    setFormattedOptionPrice(formatPrice(raw));
+    setOptionRawPrice(raw);
+  };
+
+  const handleOptionExercisePriceChange = (text) => {
+    const raw = text.replace(/[^0-9]/g, '');
+    setFormattedOptionExercisePrice(formatPrice(raw));
+    setOptionExerciseRawPrice(raw);
   };
 
   const fetchFolderData = async () => {
@@ -369,6 +385,8 @@ export default function PropertyListing() {
 
     // Parse the formatted price to remove dollar sign and commas
     const price = rawPrice ? parseInt(rawPrice, 10) : 0;
+    const optionPrice = rawOptionPrice ? parseInt(rawOptionPrice, 10) : 0;
+    const optionExercisePrice = rawOptionExercisePrice ? parseInt(rawOptionExercisePrice, 10) : 0;
 
     if (!price || price <= 0) {
       Alert.alert('Invalid Price', 'Price must be a numeric value.');
@@ -417,6 +435,8 @@ export default function PropertyListing() {
         {
           ...property,
           price: price, // Use the parsed price here
+          optionFee: optionPrice,
+          optionExerciseFee: optionExercisePrice,
           // offeredPrice: property.offeredPrice.replace(/\$/g, ''),
           propertyType: propertyTypeUpperCase,
         },
@@ -724,6 +744,30 @@ export default function PropertyListing() {
             value={formattedPrice}
             keyboardType="numeric"
             onChangeText={handlePriceChange}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Option Fee</Text>
+          <TextInput
+            placeholder="$ Option Fee Price"
+            placeholderTextColor="gray"
+            value={formattedOptionPrice}
+            keyboardType="numeric"
+            onChangeText={handleOptionPriceChange}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Option Exercise Fee</Text>
+          <TextInput
+            placeholder="$ Option Exercise Fee Price"
+            placeholderTextColor="gray"
+            value={formattedOptionExercisePrice}
+            keyboardType="numeric"
+            onChangeText={handleOptionExercisePriceChange}
             style={styles.input}
           />
         </View>
