@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       transactionType: {
-        type: DataTypes.ENUM("REQUEST", "OTP", "TOKENS"),
+        type: DataTypes.ENUM("REQUEST", "OTP", "TOKENS", "OPTION_FEE", "OPTION_EXERCISE_FEE"),
         allowNull: false,
       },
     },

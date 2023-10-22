@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { View, Button, Alert, Linking } from 'react-native';
+import { View, Button, Alert, Linking, Text } from 'react-native';
 import { useStripe, StripeProvider } from '@stripe/stripe-react-native';
 import { paymentSheet } from "../../utils/stripeApi"; // Import your new paymentSheet function
-import { updateUserProfile, loginUser } from "../../utils/api"; 
+import { updateUserProfile, loginUser } from "../../utils/api";
 import { AuthContext } from '../../AuthContext';
 const PurchaseOptionFee = ({ route }) => {
     const { propertyListing } = route.params;
@@ -14,6 +14,7 @@ const PurchaseOptionFee = ({ route }) => {
     const [paymentIntent, setPaymentIntent] = useState('');
     const [publishableKey, setPublishableKey] = useState('');
     const [custIdExists, setCustIdExists] = useState(false);
+    const [completedPaymentIntent, setCompletedPaymentIntent] = useState(null);
     const stripeCustomerId = user.user.stripeCustomerId;
     const amount = 1099; // Replace with the desired amount
     const currency = 'sgd'; // Replace with the desired currency code
@@ -22,7 +23,7 @@ const PurchaseOptionFee = ({ route }) => {
         try {
             // Use the paymentSheet function to fetch payment parameters
             console.log("stripeCustomerId: ", stripeCustomerId);
-            if(stripeCustomerId !== null) {
+            if (stripeCustomerId !== null) {
                 setCustIdExists(true);
             }
 
@@ -44,7 +45,7 @@ const PurchaseOptionFee = ({ route }) => {
                 return;
             }
 
-            if(custIdExists === false) {
+            if (custIdExists === false) {
                 setStripeCustomerId(data.customer);
             }
             setEphemeralKey(data.ephemeralKey);
@@ -102,14 +103,14 @@ const PurchaseOptionFee = ({ route }) => {
         formData.append('countryOfOrigin', user.user.countryOfOrigin);
         formData.append('dateOfBirth', user.user.dateOfBirth);
 
-        const {success, data, message} = await updateUserProfile(user.user.userId, formData);
+        const { success, data, message } = await updateUserProfile(user.user.userId, formData);
         console.log("success: ", success, " data: ", data, " message: ", message);
         fetchUpdatedUserDetails();
     }
 
     const fetchUpdatedUserDetails = async () => {
         try {
-            const {success, data, message} = await loginUser(user.user.userName, user.user.password);
+            const { success, data, message } = await loginUser(user.user.userName, user.user.password);
 
             if (success) {
                 login(data);
@@ -155,7 +156,7 @@ const PurchaseOptionFee = ({ route }) => {
         <View>
             <StripeProvider
                 publishableKey={publishableKey}
-                //merchantIdentifier="merchant.identifier" // required for Apple Pay
+            //merchantIdentifier="merchant.identifier" // required for Apple Pay
             >
                 <Button
                     variant="primary"
