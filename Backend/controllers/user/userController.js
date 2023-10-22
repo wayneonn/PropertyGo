@@ -1,4 +1,4 @@
-const { User, Property, Image } = require('../../models');
+const { User, Property, Image, sequelize} = require('../../models');
 const sharp = require('sharp');
 
 async function getAllUsers(req, res) {
@@ -285,7 +285,44 @@ async function isPropertyInFavorites(req, res) {
   }
 }
 
+async function getPartnerByRangeAndType(req, res){
+  try {
+    const partners = await User.findAll({
+      where: {
+        userType: req.params.type
+      },
+      offset: Number(req.params.start - 1),
+      limit: Number(req.params.end)
+    })
+    res.status(201).json({partnerInfo:partners})
+  } catch (error) {
+    console.error("Fail to fetch particular customer type: ", error)
+  }
+}
 
+async function editUserBoost(req, res) {
+  const userId = req.params.id;
+  const userData = req.body;
+  console.log('Received user data:', userData);
+  const transaction = await sequelize.transaction();
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      await transaction.rollback();
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update the property details
+    await user.update(userData, { transaction });
+
+    await transaction.commit();
+    res.json({ message: 'User updated successfully' });
+  } catch (error) {
+    await transaction.rollback();
+    console.error('Error editing user:', error);
+    res.status(500).json({ error: 'Error editing user' });
+  }
+}
 
 module.exports = {
   getAllUsers,
@@ -297,4 +334,6 @@ module.exports = {
   removeFavoriteProperty,
   getUserFavorites,
   isPropertyInFavorites,
+  getPartnerByRangeAndType,
+  editUserBoost
 };

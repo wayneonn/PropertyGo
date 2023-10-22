@@ -8,10 +8,13 @@ import Activity from '../screens/userBottomNavBar/Activity';
 import {Ionicons, MaterialCommunityIcons, MaterialIcons} from '@expo/vector-icons';
 import PropertyListingsStackGroup from './PropertyListingsStackGroup';
 import DashboardStackGroup from "./DashboardStackGroup"
+import BoostListingScreen from "../screens/propertyListings/BoostPropertyListing";
 import FavouriteStackGroup from './FavouriteStackGroup';
 import HomeStackGroup from './HomeStackGroup';
 import {AuthContext} from "../AuthContext";
 import HomeStackGroupPartner from "./HomeStackGroupPartner";
+import BoostStackGroup from "./BoostStackGroup";
+import BoostProfileListing from "../screens/dashboard/BoostProfileListing";
 
 const Tab = createBottomTabNavigator();
 
@@ -37,6 +40,8 @@ const UserBottomNavigator = () => {
                         iconName = focused ? "md-notifications-sharp" : "md-notifications-outline";
                     } else if (route.name === "Dashboard") {
                         iconName = "dashboard";
+                    } else if (route.name === "Boost") {
+                        iconName = focused ? "rocket" : "rocket-outline";
                     }
 
                     const iconComponent =
@@ -60,7 +65,11 @@ const UserBottomNavigator = () => {
             <Tab.Screen name="Home" component={HomeStackGroupPartner} /> :
             <Tab.Screen name={"Home"} component={HomeStackGroup}/>
         }
-            <Tab.Screen name="Favourite" component={FavouriteStackGroup} />
+            {["LAWYER", "CONTRACTOR", "PROPERTY AGENT"].includes(user.user.userType) ?
+                <Tab.Screen name={"Boost"} component={BoostProfileListing}/> :
+                <Tab.Screen name="Favourite" component={FavouriteStackGroup} />
+
+            }
             {["LAWYER", "CONTRACTOR", "PROPERTY AGENT"].includes(user.user.userType) ?
                 <Tab.Screen name={"Dashboard"} component={DashboardStackGroup}/> :
                 <Tab.Screen name="Sell" component={PropertyListingsStackGroup} />
