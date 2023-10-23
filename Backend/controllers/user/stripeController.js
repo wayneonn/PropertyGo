@@ -9,7 +9,7 @@ async function paymentSheet(req, res) {
         email,
         name,
         description,
-        isAService,
+        taxable,
     } = req.body;
 
     try {
@@ -37,7 +37,7 @@ async function paymentSheet(req, res) {
         // Create the tax rate
         const taxRate = await stripe.taxRates.create({
             display_name: 'GST',
-            inclusive: false,
+            inclusive: true,
             percentage: 8,
             country: 'SG',
             description: 'Goods and Services Tax',
@@ -52,14 +52,15 @@ async function paymentSheet(req, res) {
             description: description,
         };
 
-        if (isAService) {
+        if (taxable) {
             invoiceItemCreateParams.tax_rates = [taxRate.id];
+            invoiceItemCreateParams.amount = amount + amount * 0.08;
         }
 
         const invoiceItem = await stripe.invoiceItems.create(invoiceItemCreateParams);
 
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: amount,
+            amount: invoiceItemCreateParams.amount,
             currency: currency,
             customer: customer.id,
             automatic_payment_methods: {

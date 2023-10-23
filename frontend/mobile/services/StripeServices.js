@@ -18,7 +18,7 @@ export const initializePaymentSheet = async (
     setCustIdExists,
     initPaymentSheet, // Pass initPaymentSheet as a parameter
     setLoading,
-    isAService,
+    taxable,
 ) => {
     try {
         // Use the paymentSheet function to fetch payment parameters
@@ -36,7 +36,7 @@ export const initializePaymentSheet = async (
             email: user.email,
             name: user.name,
             description,
-            isAService,
+            taxable,
         });
 
         console.log("Data:", data, " success: ", success);
