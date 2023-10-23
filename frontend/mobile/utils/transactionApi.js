@@ -71,6 +71,7 @@ export const fetchTransactionCountryCount = async(USER_ID) => {
 }
 
 export const createTransaction = async (transactionData) => {
+    // console.log("transactionData: ", transactionData)
     try {
       const response = await fetch(`${BASE_URL}/user/transactions/createTransaction`, {
         method: "POST",

@@ -7,71 +7,73 @@ import { createTransaction } from "../utils/transactionApi";
 export const initializePaymentSheet = async (
     stripeCustomerId,
     user,
+    description,
+    amount,
     setStripeCustomerId,
     setEphemeralKey,
     setPaymentIntent,
     setPublishableKey,
     setCustIdExists,
     initPaymentSheet, // Pass initPaymentSheet as a parameter
-    setLoading
-  ) => {
+    setLoading,
+    isAService,
+) => {
     try {
-      // Use the paymentSheet function to fetch payment parameters
-      console.log("stripeCustomerId: ", stripeCustomerId);
-      if (stripeCustomerId !== null) {
-        setCustIdExists(true);
-      }
-  
-      const amount = 1099; // Replace with the desired amount
-      const currency = 'sgd'; // Replace with the desired currency code
-  
-      const { data, success, message } = await paymentSheet({
-        stripeCustomerId,
-        amount,
-        currency,
-        email: user.email,
-        name: user.name,
-        description: "Purchase Option Fee",
-        isAService: true,
-      });
-  
-      console.log("Data:", data, " success: ", success);
-  
-      if (!success) {
-        console.error('Error fetching payment sheet data:', message);
-        // Handle the error as needed (e.g., show an error message to the user)
-        return;
-      }
-  
-      if (stripeCustomerId === null) {
-        setStripeCustomerId(data.customer);
-      }
-      setEphemeralKey(data.ephemeralKey);
-      setPaymentIntent(data.paymentIntent);
-      setPublishableKey(data.publishableKey);
-  
-      console.log("Data at StripeServices:", data, " success: ", success);
-      const { error } = await initPaymentSheet({
-        merchantDisplayName: 'PropertyGo, Pte. Ltd.',
-        customerId: data.customer,
-        customerEphemeralKeySecret: data.ephemeralKey,
-        paymentIntentClientSecret: data.paymentIntent,
-        allowsDelayedPaymentMethods: true,
-        defaultBillingDetails: {
-          name: 'Jane Doe',
-        },
-      });
-  
-      if (!error) {
-        setLoading(true);
-      } else {
-        console.error('Error initializing payment sheet:', error);
-        throw error;
-      }
+        // Use the paymentSheet function to fetch payment parameters
+        console.log("stripeCustomerId: ", stripeCustomerId);
+        if (stripeCustomerId !== null) {
+            setCustIdExists(true);
+        }
+
+        const currency = 'sgd'; // Replace with the desired currency code
+
+        const { data, success, message } = await paymentSheet({
+            stripeCustomerId,
+            amount,
+            currency,
+            email: user.email,
+            name: user.name,
+            description,
+            isAService,
+        });
+
+        console.log("Data:", data, " success: ", success);
+
+        if (!success) {
+            console.error('Error fetching payment sheet data:', message);
+            // Handle the error as needed (e.g., show an error message to the user)
+            return;
+        }
+
+        if (stripeCustomerId === null) {
+            setStripeCustomerId(data.customer);
+        }
+        setEphemeralKey(data.ephemeralKey);
+        setPaymentIntent(data.paymentIntent);
+        setPublishableKey(data.publishableKey);
+
+        console.log("Data at StripeServices:", data, " success: ", success);
+        const { error } = await initPaymentSheet({
+            merchantDisplayName: 'PropertyGo, Pte. Ltd.',
+            customerId: data.customer,
+            customerEphemeralKeySecret: data.ephemeralKey,
+            paymentIntentClientSecret: data.paymentIntent,
+            allowsDelayedPaymentMethods: true,
+            defaultBillingDetails: {
+                name: user.name,
+            },
+        });
+
+        if (!error) {
+            setLoading(true);
+        } else {
+            console.error('Error initializing payment sheet:', error);
+            throw error;
+        }
     } catch (error) {
-      console.error('Error setting up payment sheet:', error);
+        console.error('Error setting up payment sheet:', error);
     }
-  };
+};
 
 
 export const updateUserStripeCustomerId = async (stripeCustomerId, user, fetchUpdatedUserDetails) => {
@@ -87,17 +89,17 @@ export const updateUserStripeCustomerId = async (stripeCustomerId, user, fetchUp
     fetchUpdatedUserDetails();
 };
 
-export const createTransactionRecord = async (propertyListing, user, paymentIntent) => {
+export const createTransactionRecord = async (propertyListing, user, paymentIntent, status, transactionType) => {
     const { data, success, message } = await createTransaction({
         onHoldBalance: propertyListing.optionFee,
         buyerId: user.userId,
         propertyId: propertyListing.propertyListingId,
         stripePaymentResponse: paymentIntent,
         invoiceId: 3,
-        status: "PENDING",
-        transactionType: "OPTION_FEE",
+        status,
+        transactionType,
     });
-    // console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
+    //  console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
 };
 
 export const fetchUpdatedUserDetails = async (user, login) => {

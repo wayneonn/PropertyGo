@@ -18,9 +18,12 @@ const PurchaseOptionFee = ({ route }) => {
     const [custIdExists, setCustIdExists] = useState(false);
     const stripeCustomerId = user.user.stripeCustomerId;
     const description = "Purchase Option Fee";
+    const amount = propertyListing.optionFee * 100;
+    const isAService = true;
 
     const initializePayment = async () => {
-        await initializePaymentSheet(stripeCustomerId, user.user, setStripeCustomerId, setEphemeralKey, setPaymentIntent, setPublishableKey, setCustIdExists, initPaymentSheet, setLoading);
+        // console.log("amount at purchaseOptionFee: ", amount);
+        await initializePaymentSheet(stripeCustomerId, user.user, description, amount, setStripeCustomerId, setEphemeralKey, setPaymentIntent, setPublishableKey, setCustIdExists, initPaymentSheet, setLoading, isAService);
     };
 
     const openPaymentSheet = async () => {
@@ -33,7 +36,9 @@ const PurchaseOptionFee = ({ route }) => {
                 if (custIdExists == false) {
                     updateUserStripeCustomerId(newStripeCustomerId, user.user, fetchUpdatedUserDetails);
                 }
-                createTransactionRecord(propertyListing, user.user, paymentIntent);
+                const status = "PENDING"
+                const transactionType = "OPTION_FEE"
+                createTransactionRecord(propertyListing, user.user, paymentIntent, status, transactionType);
                 Alert.alert('Success', 'Your order is confirmed!');
                 navigation.navigate('Home Page');
             }
