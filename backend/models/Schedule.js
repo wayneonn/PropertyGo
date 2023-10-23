@@ -7,10 +7,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         title: {
             type: DataTypes.STRING,
+            allowNull: true,
+        },
+        meetupDate: {
+            type: DataTypes.DATEONLY,
             allowNull: false,
         },
-        meetup: {
-            type: DataTypes.DATE,
+        meetupTime: {
+            type: DataTypes.TIME,
             allowNull: false,
         },
     }, {
@@ -18,12 +22,26 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Schedule.associate = (models) => {
-        Schedule.belongsToMany(models.User, {
-            through: "ScheduleUser", // Specify the intermediary model
-            foreignKey: "scheduleId", // Foreign key in ScheduleUser
-            otherKey: "userId", // Foreign key in User
-            allowNull: false,
-            as: "users",
+        Schedule.belongsTo(models.User, {
+            foreignKey: {
+                name: 'userId',
+                allowNull: false,
+            },
+            as: 'user',
+        });
+        Schedule.belongsTo(models.User, {
+            foreignKey: {
+                name: 'sellerId',
+                allowNull: false,
+            },
+            as: 'seller',
+        });
+        Schedule.belongsTo(models.Property, {
+            foreignKey: {
+                name: 'propertyId',
+                allowNull: false,
+            },
+            as: 'property',
         });
     };
 

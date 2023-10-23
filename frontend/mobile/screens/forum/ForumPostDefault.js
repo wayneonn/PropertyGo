@@ -48,7 +48,7 @@ const ForumPostDefault = ({ navigation }) => {
 
   const handlePostPress = (post) => {
     setSearchQuery('');
-    navigation.navigate("Forum Comment", { post});
+    navigation.navigate("Forum Comment", {post});
   };
 
   const handleFilterPress = () => {

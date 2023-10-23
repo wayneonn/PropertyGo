@@ -6,11 +6,12 @@ import BoxItem from '../../components/BoxItem';
 import { ScrollView } from 'react-native-gesture-handler';
 import { AuthContext } from '../../AuthContext';
 
-const ContactUsStatus = ({ route }) => {
+const ContactUsStatus = ({ navigation }) => {
   const { user } = useContext(AuthContext);
   const [contactUses, setContactUses] = useState([]);
   const [pendingData, setPendingData] = useState([]);
   const [repliedData, setRepliedData] = useState([]);
+  const [closedData, setClosedData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
   useFocusEffect(
@@ -29,11 +30,11 @@ const ContactUsStatus = ({ route }) => {
               .filter((item) => item.status === 'REPLIED')
               .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           );
-          // setClosedData(
-          //   contactUsData
-          //     .filter((item) => item.status === 'CLOSED')
-          //     .sort((a, b) => new Date(b.createdAt) - new Date(a.timeStamp))
-          // );
+          setClosedData(
+            contactUsData
+              .filter((item) => item.status === 'CLOSED')
+              .sort((a, b) => new Date(b.createdAt) - new Date(a.timeStamp))
+          );
         } catch (error) {
           console.error(error);
         }
@@ -42,6 +43,13 @@ const ContactUsStatus = ({ route }) => {
       fetchData();
     }, [user.user.userId])
   );
+
+  const handleTopicPress = (contactUs) => {
+
+    navigation.navigate("Response", { contactUs });
+    // console.log(contactUs)
+    
+  };
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -87,7 +95,7 @@ const ContactUsStatus = ({ route }) => {
           renderEmptyListComponent()
         ) : (
           pendingData.map((item) => (
-            <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Pending" />
+            <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Pending" onPress={() => handleTopicPress(item)}/>
           ))
         )}
 
@@ -97,18 +105,18 @@ const ContactUsStatus = ({ route }) => {
           renderEmptyListComponent()
         ) : (
           repliedData.map((item) => (
-            <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Replied" />
+            <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Replied" onPress={() => handleTopicPress(item)}/>
           ))
         )}
 
-        {/* <Text style={{ ...styles.statusHeader, color: 'green' }}>Closed</Text>
+        <Text style={{ ...styles.statusHeader, color: 'green' }}>Closed</Text>
         {closedData.length === 0 ? (
           renderEmptyListComponent()
         ) : (
           closedData.map((item) => (
-            <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Closed" />
+            <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Closed" onPress={() => handleTopicPress(item)}/>
           ))
-        )} */}
+        )}
 
       </ScrollView>
     </SafeAreaView>

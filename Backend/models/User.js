@@ -88,12 +88,28 @@ module.exports = (sequelize, DataTypes) => {
         ),
         allowNull: false,
       },
+      pushToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       googleId: {
         type: DataTypes.STRING,
         allowNull: true,
       },
       profileImage: {
         type: DataTypes.BLOB("long"),
+        allowNull: true,
+      },
+      boostListingStartDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      boostListingEndDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      stripeCustomerId: {
+        type: DataTypes.STRING,
         allowNull: true,
       },
     },
@@ -207,12 +223,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: "agentListings",
     });
-    User.belongsToMany(models.Schedule, {
-      through: "ScheduleUser", // Specify the intermediary model
-      foreignKey: "userId", // Foreign key in ScheduleUser
-      otherKey: "scheduleId", // Foreign key in Schedule
-      as: "schedules",
-    });
+
     User.hasMany(models.Folder, {
       onDelete: "CASCADE",
       foreignKey: {
@@ -285,6 +296,14 @@ module.exports = (sequelize, DataTypes) => {
       through: "UserCommentDownvoted", // Specify the intermediary model
       foreignKey: "userId", // Foreign key
       as: "downvotedComments",
+    });
+    User.hasOne(models.Notification, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'userNotificationId',
+        allowNull: true,
+      },
+      as: 'notification',
     });
   };
 

@@ -5,6 +5,8 @@ const cors = require("cors");
 const app = express();
 const globalEmitter = require("./globalEmitter");
 const WebSocket = require("ws");
+const { loggedInUsers } = require('./shared');
+require('dotenv').config();
 
 const server = http.createServer(app);
 // socket io
@@ -14,6 +16,13 @@ const io = socketIo(server, {
     methods: ["GET", "POST"],
   },
 });
+
+// const io = socketIo(server, {
+//   cors: {
+//     origin: "*", // Allow connections from any origin
+//     methods: ["GET", "POST"],
+//   },
+// });
 
 // model
 const db = require("./models");
@@ -36,6 +45,7 @@ const forumTopicTestData = require("./test_data/forumTopicTestData");
 const forumPostTestData = require("./test_data/forumPostTestData");
 const forumCommentTestData = require("./test_data/forumCommentTestData");
 const notificationTestData = require("./test_data/notificationTestData");
+const {createFakeTransactions, generateFakeProperties} = require("./test_data/fakerDataGenerator")
 
 // admin routes
 const authRouter = require("./routes/admin/authRoutes");
@@ -70,6 +80,11 @@ const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
 const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
 const reviewRoute = require("./routes/user/reviewRoute");
 const faqRoute = require("./routes/user/faqRoute");
+const notificationRoute = require("./routes/user/notificationRoute");
+const responseRoute = require("./routes/user/responseRoute");
+const scheduleRoute = require("./routes/user/scheduleRoute");
+const viewingAvailabilityRoute = require("./routes/user/viewingAvailabilityRoute");
+const stripeRoute = require("./routes/user/stripeRoute");
 const e = require("express");
 
 app.use(cors());
@@ -110,10 +125,32 @@ app.use(
   forumPostUserRouter,
   forumCommentUserRouter,
   partnerApplicationUserRouter,
-  faqRoute
+  faqRoute,
+  notificationRoute,
+  responseRoute,
+  stripeRoute
 );
 
 io.on("connection", (socket) => {
+
+  console.log(`Client connected: ${socket.id}`);
+
+  socket.on('login', (userId) => {
+
+    loggedInUsers.set(userId, socket.id);
+    console.log("socketID: ",socket.id)
+    // socket.emit('login', userId)
+    console.log(`User with userId ${userId} has logged in.`);
+    // console.log("Login: ", socket.userId);
+  });
+
+  socket.on('logout', (userId) => {
+    // Access the userId from the socket object
+    console.log("Logout: ", loggedInUsers.get(userId))
+    // socket.to(loggedInUsers.get(userId)).emit('logout', userId)
+    loggedInUsers.delete(userId);
+    console.log(`User with userId ${userId} has logged out.`);
+  });
   // Handle disconnects
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);
@@ -122,7 +159,25 @@ io.on("connection", (socket) => {
 
 app.use("/property", propertyRoute);
 
-app.use("/image", imageRoute);
+app.use(
+  "/schedule",
+  scheduleRoute,
+);
+
+app.use(
+  "/viewingAvailability",
+  viewingAvailabilityRoute,
+);
+
+app.use(
+  "/image",
+  imageRoute,
+);
+
+app.use(
+  "/review",
+  reviewRoute,
+);
 
 app.use("/review", reviewRoute);
 
@@ -250,6 +305,7 @@ db.sequelize
         for (const propertyData of propertyTestData) {
           await db.Property.create(propertyData);
         }
+        //const fake_prop = await generateFakeProperties(1000)
         console.log("Property test data inserted successfully.");
       } catch (error) {
         console.log("Error inserting Property test data:", error);
@@ -335,6 +391,7 @@ db.sequelize
           await db.Transaction.create(transactionData);
         }
         console.log("Transaction data inserted successfully.");
+        const genData = await createFakeTransactions(1000);
       } catch (error) {
         console.log("Error inserting transaction data: ", error);
       }

@@ -1,4 +1,4 @@
-const { ContactUs, User, Notification } = require("../../models");
+const { ContactUs, User, Notification, Response } = require("../../models");
 
 
 const createContactUs = async (req, res) => {
@@ -33,7 +33,15 @@ const createContactUs = async (req, res) => {
 const getUserContactUs = async (req, res) => {
     try {
         const user = await User.findByPk(req.params.userId, {
-            include: [{ model: ContactUs, as: 'contactUs-es' }],
+            include: [{
+                model: ContactUs,
+                as: 'contactUs-es',
+                include: [{
+                    model: Response,
+                    as: 'responses',
+                    order: [['updatedAt', 'DESC']]
+                }]
+            }]
         });
 
         if (!user) {
@@ -41,7 +49,7 @@ const getUserContactUs = async (req, res) => {
         }
 
         const contactUses = user['contactUs-es'];
-        console.log(contactUses);
+        // console.log(contactUses);
         res.status(200).json(contactUses);
     } catch (error) {
         console.error(error);
@@ -49,7 +57,21 @@ const getUserContactUs = async (req, res) => {
     }
 };
 
+const getUserContactUsId = async (req, res) => {
+
+    try {
+        const contactUs = await ContactUs.findByPk(req.params.contactUsId, {
+            include: [{ model: Response, as: 'responses' }],
+        });
+        res.status(200).json(contactUs);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+
+};
 module.exports = {
     createContactUs,
-    getUserContactUs
+    getUserContactUs,
+    getUserContactUsId
 };

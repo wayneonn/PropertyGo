@@ -406,7 +406,7 @@ async function getPropertiesByUser(req, res) {
         // Find properties associated with the specified user
         const properties = await Property.findAll({
             where: {
-                userId: userId, // Assuming userId is a foreign key in the Property model
+                sellerId: userId, // Assuming userId is a foreign key in the Property model
             },
         });
 

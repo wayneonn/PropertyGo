@@ -2,10 +2,24 @@ const {Transaction, User, Document} = require("../../models")
 const {Op, Sequelize} = require('sequelize');
 const puppeteer = require('puppeteer');
 
+// Maybe should change it to using sellerId instead.
 exports.getTransactions = async (req, res) => {
     try {
         const transactions = await Transaction.findAll({
             where: {sellerId: req.params.id},
+        });
+        res.json({transactions});
+    } catch (error) {
+        res
+            .status(500)
+            .json({message: "Error fetching transaction: ", error: error.message});
+    }
+}
+
+exports.getTransactionByTransactionId = async (req, res) => {
+    try {
+        const transactions = await Transaction.findAll({
+            where: {transactionId: req.params.id},
         });
         res.json({transactions});
     } catch (error) {
@@ -421,6 +435,29 @@ exports.getTransactionPDFReport = async (req, res) => {
         res.status(200).send(pdfBuffer);
     } catch (error) {
         res.status(500).json({message: "Error fetching top ten transactions: ", error: error.message});
+    }
+}
+
+exports.createTransaction = async(req, res) => {
+    const transactionData = req.body;
+    try {
+        const createdTransaction = await Transaction.create(transactionData);
+        res.json(createdTransaction);
+    } catch (error) {
+        console.error("Error creating transaction:", error);
+        res.status(500).json({ error: "Error creating transaction" });
+    }
+}
+
+exports.getUserTransactions = async (req, res) => {
+    try {
+        const transactions = await Transaction.findAll({
+            where: { buyerId: req.params.id },
+            order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
+        });
+        res.json(transactions);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching transaction: ", error: error.message });
     }
 }
 

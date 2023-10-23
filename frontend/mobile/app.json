@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "PropertyGo",
-    "slug": "PropertyGo",
+    "slug": "propertygo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -32,6 +32,12 @@
           "expoClientId": "975614309732-7efv821237vv7prh9oq73vek4bv2h4il.apps.googleusercontent.com"
         }
       }
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3ad5edfe-bba6-467f-9306-73b21a34ec8b"
+      }
+    },
+    "owner": "jarrentoh"
   }
 }
