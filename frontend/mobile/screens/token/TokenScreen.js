@@ -11,11 +11,12 @@ const TokenScreen = ({ navigation }) => {
 
     // State to hold user data and token amount
     const [userData, setUserData] = useState(null);
-    const [tokenAmount, setTokenAmount] = useState(0);
+    const [currentTokenAmount, setTokenAmount] = useState(0);
     const [isHelpVisible, setHelpVisible] = useState(false);
 
     // Fetch user data by userId
     const fetchUserData = async (userId) => {
+        console.log("fetchUserData userId", userId)
         try {
             const { success, data, message } = await getUserById(userId);
 
@@ -38,9 +39,11 @@ const TokenScreen = ({ navigation }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            console.log('Home page gained focus');
+            console.log('Token page gained focus');
             if (user && user.user) {
+                console.log('Fetches user data');
                 fetchUserData(user.user.userId);
+                setTokenAmount(0);
             }
         }, [])
     );
@@ -91,8 +94,8 @@ const TokenScreen = ({ navigation }) => {
                     //         Alert.alert('Error', 'Purchase failed.');
                     //     }
                     // },
-                    onPress: () => {
-                        navigation.navigate('Token Checkout Screen', { tokens, tokenAmount, tokenName });
+                    onPress: () => {    
+                        navigation.navigate('Token Checkout Screen', { tokens, tokenAmount, tokenName, currentTokenAmount });
                     }
                 },
             ]
@@ -118,7 +121,7 @@ const TokenScreen = ({ navigation }) => {
             </View>
 
             <Text style={styles.tokenAmountText}>{"Your Token Amount: "}
-                <Text style = {styles.bold}>{`${tokenAmount}`}{" "}</Text><FontAwesome5 name="coins" size={20} color="black"/>
+                <Text style = {styles.bold}>{`${currentTokenAmount}`}{" "}</Text><FontAwesome5 name="coins" size={20} color="black"/>
             </Text>
             {tokenData.map((token, index) => (
                 <TokenCard

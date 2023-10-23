@@ -34,11 +34,13 @@ const PurchaseOptionFee = ({ route }) => {
                 Alert.alert(`Error code: ${error.code}`, error.message);
             } else {
                 if (custIdExists == false) {
-                    updateUserStripeCustomerId(newStripeCustomerId, user.user, fetchUpdatedUserDetails);
+                    updateUserStripeCustomerId(newStripeCustomerId, user.user, login);
                 }
                 const status = "PENDING"
                 const transactionType = "OPTION_FEE"
-                createTransactionRecord(propertyListing, user.user, paymentIntent, status, transactionType);
+                const gst = false;
+                const paymentAmount = 0; //As payment is still processing
+                createTransactionRecord(propertyListing, user.user, paymentIntent, status, transactionType, description, 1, paymentAmount, gst);
                 Alert.alert('Success', 'Your order is confirmed!');
                 navigation.navigate('Home Page');
             }

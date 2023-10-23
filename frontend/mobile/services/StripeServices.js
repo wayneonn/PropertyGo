@@ -87,13 +87,17 @@ export const updateUserStripeCustomerId = async (stripeCustomerId, user, login) 
     formData.append('dateOfBirth', user.dateOfBirth);
 
     const { success, data, message } = await updateUserProfile(user.userId, formData);
-    console.log("updateUserStripeCustomerId success: ", success, " data: ", data, " message: ", message);
+    // console.log("updateUserStripeCustomerId success: ", success, " data: ", data, " message: ", message);
     fetchUpdatedUserDetails(user, login);
 };
 
-export const createTransactionRecord = async (propertyListing, user, paymentIntent, status, transactionType) => {
+export const createTransactionRecord = async (propertyListing, user, paymentIntent, status, transactionType, transactionItem, quantity, paymentAmount, gst) => {
     const { data, success, message } = await createTransaction({
         onHoldBalance: propertyListing.optionFee,
+        transactionItem: transactionItem,
+        paymentAmount,
+        quantity,
+        gst,
         buyerId: user.userId,
         propertyId: propertyListing.propertyListingId,
         stripePaymentResponse: paymentIntent,
@@ -101,7 +105,7 @@ export const createTransactionRecord = async (propertyListing, user, paymentInte
         status,
         transactionType,
     });
-    //  console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
+  console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
 };
 
 export const createTokenTransactionRecord = async (user, paymentIntent, status, transactionType, tokenName, tokens, tokenAmount, gst) => {
