@@ -34,7 +34,7 @@ const faqTestData = require("./test_data/faqTestData");
 const contactUsTestData = require("./test_data/contactUsTestData");
 const responsesTestData = require("./test_data/responseTestData");
 const transactionTestData = require("./test_data/transactionTestData");
-const invoiceTestData = require("./test_data/invoiceTestData");
+// const invoiceTestData = require("./test_data/invoiceTestData");
 const propertyTestData = require("./test_data/propertyTestData");
 const imageTestData = require("./test_data/imageTestData");
 const reviewTestData = require("./test_data/reviewTestData");
@@ -211,7 +211,7 @@ db.sequelize
     const existingAdminRecordsCount = await db.Admin.count();
     const existingFaqRecordsCount = await db.FAQ.count();
     const existingTransactionRecordsCount = await db.Transaction.count();
-    const existingInvoiceRecordsCount = await db.Invoice.count();
+    // const existingInvoiceRecordsCount = await db.Invoice.count();
     const existingPropertyRecordsCount = await db.Property.count();
     const existingImageRecordsCount = await db.Image.count();
     const existingReviewRecordsCount = await db.Review.count();
@@ -370,19 +370,19 @@ db.sequelize
       console.log("Review test data already exists in the database.");
     }
 
-    // Invoice
-    if (existingInvoiceRecordsCount === 0) {
-      try {
-        for (const invoiceData of invoiceTestData) {
-          await db.Invoice.create(invoiceData);
-        }
-        console.log("Invoice test data inserted successfully.");
-      } catch (error) {
-        console.log("Error inserting Invoice test data:", error);
-      }
-    } else {
-      console.log("Invoice test data already exists in the database.");
-    }
+    // // Invoice
+    // if (existingInvoiceRecordsCount === 0) {
+    //   try {
+    //     for (const invoiceData of invoiceTestData) {
+    //       await db.Invoice.create(invoiceData);
+    //     }
+    //     console.log("Invoice test data inserted successfully.");
+    //   } catch (error) {
+    //     console.log("Error inserting Invoice test data:", error);
+    //   }
+    // } else {
+    //   console.log("Invoice test data already exists in the database.");
+    // }
 
     // Transaction
     if (existingTransactionRecordsCount === 0) {
@@ -391,7 +391,7 @@ db.sequelize
           await db.Transaction.create(transactionData);
         }
         console.log("Transaction data inserted successfully.");
-        const genData = await createFakeTransactions(1000);
+        // const genData = await createFakeTransactions(1000);
       } catch (error) {
         console.log("Error inserting transaction data: ", error);
       }
