@@ -8,18 +8,21 @@ import {
     Alert,
     FlatList,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../../AuthContext';
 import { getScheduleByUserId, getScheduleBySellerId } from '../../../utils/scheduleApi';
 import AppointmentCard from '../../schedule/AppointmentCard';
 import { useFocusEffect } from '@react-navigation/native';
+import { set } from 'date-fns';
 
 const Appointments = ({ route }) => {
     const navigation = useNavigation();
     const { user } = useContext(AuthContext);
     const [userBuySchedules, setUserBuySchedules] = useState([]); // Schedules for "To Buy"
     const [sellerSellSchedules, setSellerSellSchedules] = useState([]); // Schedules for "To Sell"
+    const [todayUserBuySchedules, setTodayUserBuySchedules] = useState([]); // Schedules for "To Buy"
+    const [todaySellerSellSchedules, setTodaySellerSellSchedules] = useState([]); // Schedules for "To Sell"
 
     useEffect(() => {
         fetchScheduleByUser();
@@ -42,9 +45,12 @@ const Appointments = ({ route }) => {
         if (success) {
             // Filter schedules for "To Buy" with meetupDate today or in the future
             const today = new Date();
+            const todayDate = getTodayDate();
             today.setHours(0, 0, 0, 0);
             const userSchedulesTodayAndBeyond = data.filter(schedule => today <= new Date(schedule.meetupDate));
+            const userSchedulesToday = data.filter(schedule => todayDate === schedule.meetupDate.slice(0, 10));
             setUserBuySchedules(userSchedulesTodayAndBeyond);
+            setTodayUserBuySchedules(userSchedulesToday);
         } else {
             setUserBuySchedules([]);
             console.error('Error fetching schedule data for user:', message);
@@ -57,16 +63,41 @@ const Appointments = ({ route }) => {
         );
 
         if (success) {
-            // Filter schedules for "To Sell" with meetupDate today or in the future
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            const todayDate = getTodayDate();
+            const todayCharacters = todayDate.substring(0, 10); // Extract the first 10 characters in yyyy-dd-mm format
+            console.log("today:", todayCharacters);
+            console.log("schedule.meetupDate:", data[0].meetupDate);
             const sellerSchedulesTodayAndBeyond = data.filter(schedule => today <= new Date(schedule.meetupDate));
+            const sellerSchedulesToday = data.filter(schedule => todayDate === schedule.meetupDate.slice(0, 10));
             setSellerSellSchedules(sellerSchedulesTodayAndBeyond);
+            setTodaySellerSellSchedules(sellerSchedulesToday);
         } else {
             setSellerSellSchedules([]);
             console.error('Error fetching schedule data for user:', message);
         }
     };
+
+    const getTodayDate = () => {
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            timeZone: 'Asia/Singapore', // Specify the time zone for Singapore
+        };
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayString = today.toLocaleString('en-SG', options);
+        const parts = todayString.split('/');
+        let todayDate;
+        if (parts.length === 3) {
+            const dd = parts[0].padStart(2, '0');
+            const mm = parts[1].padStart(2, '0');
+            const yyyy = parts[2];
+            todayDate = `${yyyy}-${mm}-${dd}`;
+        }
+        return todayDate;
+    }
 
     return (
         <View style={styles.container}>
@@ -82,17 +113,23 @@ const Appointments = ({ route }) => {
 
                 {/* Container for today's agenda */}
                 <View style={styles.todayAgendaContainer}>
-                    <Text style={styles.dateOnContainer}>Today's Agenda</Text>
+                    <Text style={styles.dateOnContainer}>
+                        <Ionicons
+                            name="calendar"
+                            size={28}
+                            color="#00adf5"
+                        />{'  '}
+                        Today's Agenda</Text>
 
                     {/* List of user's and seller's bookings for today */}
-                    {userBuySchedules.length > 0 || sellerSellSchedules.length > 0 ? (
+                    {todayUserBuySchedules.length > 0 || todaySellerSellSchedules.length > 0 ? (
                         <>
-                            {userBuySchedules.map((item) => (
+                            {todayUserBuySchedules.map((item) => (
                                 <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
                                     navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
                                 }} />
                             ))}
-                            {sellerSellSchedules.map((item) => (
+                            {todaySellerSellSchedules.map((item) => (
 
                                 <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
                                     navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule: item });
@@ -106,7 +143,13 @@ const Appointments = ({ route }) => {
 
                 {/* Container for "To Buy" */}
                 <View style={styles.buyContainer}>
-                    <Text style={styles.dateOnContainer}>To Buy - Upcoming To View</Text>
+                    <Text style={styles.dateOnContainer}>
+                        <MaterialCommunityIcons
+                            name="telescope"
+                            size={28}
+                            color="#00adf5"
+                        />{'  '}
+                        To Buy - Upcoming To View</Text>
 
                     {/* List of user's bookings */}
                     {userBuySchedules && userBuySchedules.length > 0 ? (
@@ -115,7 +158,7 @@ const Appointments = ({ route }) => {
                             keyExtractor={(item) => item.scheduleId.toString()}
                             renderItem={({ item }) => (
                                 <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule : item });
+                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule: item });
                                 }} />
                             )}
                         />
@@ -126,7 +169,13 @@ const Appointments = ({ route }) => {
 
                 {/* Container for "To Sell" */}
                 <View style={styles.sellContainer}>
-                    <Text style={styles.dateOnContainer}>To Sell - Buyers To View Unit</Text>
+                    <Text style={styles.dateOnContainer}>
+                        <MaterialCommunityIcons
+                            name="table-eye"
+                            size={28}
+                            color="#00adf5"
+                        />{'  '}
+                        To Sell - Buyers To View Unit</Text>
 
                     {/* List of user's bookings */}
                     {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
@@ -135,7 +184,7 @@ const Appointments = ({ route }) => {
                             keyExtractor={(item) => item.scheduleId.toString()}
                             renderItem={({ item }) => (
                                 <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule : item });
+                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
                                 }} />
                             )}
                         />
