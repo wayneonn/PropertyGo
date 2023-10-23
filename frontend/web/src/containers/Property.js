@@ -340,7 +340,7 @@ const Property = () => {
                       fontWeight: "500",
                     }}
                   >
-                    {formatTime(property.boostListingStartDate)} ~{" "}
+                    {formatTime(property.boostListingStartDate)} -{" "}
                     {formatTime(property.boostListingEndDate)}
                   </span>
                 </div>
@@ -376,7 +376,7 @@ const Property = () => {
                     {property.approvalStatus}
                   </div>
                 </div>
-                {property.approvalStatus === "PENDING" && (
+                {property.approvalStatus == "PENDING" && (
                   <div className="approval-actions">
                     <Button
                       style={{
@@ -409,7 +409,7 @@ const Property = () => {
               >
                 Date posted: {formatTime(property.createdAt)}
               </span>
-              {property.approvalStatus === "REJECTED" && (
+              {property.approvalStatus == "REJECTED" && (
                 <span
                   style={{
                     fontSize: "12px",
@@ -470,7 +470,9 @@ const Property = () => {
           </div>
         </div>
         <div className="document-area">
-          <span>Property Listing Documents</span>
+          <span style={{ fontSize: "15px", fontWeight: "500" }}>
+            Property Listing Documents
+          </span>
           <hr />
           <div className="documents-boxes">
             {Array.isArray(documents) && documents.length > 0 ? (
