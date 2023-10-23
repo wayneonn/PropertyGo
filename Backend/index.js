@@ -360,7 +360,7 @@ db.sequelize
           await db.Transaction.create(transactionData);
         }
         console.log("Transaction data inserted successfully.");
-        // const genData = await createFakeTransactions(1000);
+        const genData = await createFakeTransactions(1000);
       } catch (error) {
         console.log("Error inserting transaction data: ", error);
       }

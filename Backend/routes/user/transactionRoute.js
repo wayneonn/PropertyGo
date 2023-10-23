@@ -1,12 +1,13 @@
 const express = require("express");
 const { getTransactions, getTopTenTransactions, getTransactionValueByLastSixMonths, getTransactionValueByBuyerId,
     getTopTenTransactionsWithUsers, getTopTenTransactionsWithUsersPaid, getTopTenTransactionsWithUsersPending,
-    getTransactionPDFReport, getUserCountsByCountry, getTransactionByTransactionId, createTransaction
+    getTransactionPDFReport, getUserCountsByCountry, getTransactionByTransactionId, createTransaction, getUserTransactions
 } = require("../../controllers/user/transactionController")
 
 const router = express.Router();
 
 router.get("/transactions/:id", getTransactions);
+router.get("/transactions/byUserId/:id", getUserTransactions);
 router.get("/transactions/byTransactionId/:id", getTransactionByTransactionId);
 router.get("/transactions/top/:id", getTopTenTransactions);
 router.get("/transactions/sixmonths/:id", getTransactionValueByLastSixMonths)

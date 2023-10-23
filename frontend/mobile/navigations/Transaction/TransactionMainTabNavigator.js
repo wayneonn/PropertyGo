@@ -1,21 +1,21 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import AppointmentMain from '../../screens/sideNavigatorBar/Appointment/Appointments';
-import AppointmentAgenda from '../../screens/sideNavigatorBar/Appointment/AppointmentsAgenda';
-import AppointmentHistory from '../../screens/sideNavigatorBar/Appointment/AppointmentsHistory';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import Transactions from '../../screens/sideNavigatorBar/Transaction/Transactions';
+import PendingTransactions from '../../screens/sideNavigatorBar/Transaction/PendingTransactions';
+import TokenTransactions from '../../screens/sideNavigatorBar/Transaction/TokenTransactions';
+import { MaterialIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { View, Text } from 'react-native'; // Import Text and View from react-native
 
 const Tab = createMaterialTopTabNavigator();
 
 const CustomTabLabel = ({ label, color, icon }) => (
   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-    <Ionicons name={icon} size={20} color="black" />
+    <FontAwesome5 name={icon} size={20} color="black" />
     <Text style={{ color: "black", marginLeft: 5 }}>{label}</Text>
   </View>
 );
 
-const AppointmentTabNavigator = () => {
+const TransactionTabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -35,29 +35,29 @@ const AppointmentTabNavigator = () => {
       }}
     >
       <Tab.Screen
-        name="Appointment Upcoming"
-        component={AppointmentMain}
+        name="All Transactions"
+        component={Transactions}
         options={{
           tabBarLabel: ({ color, focused }) => (
-            <CustomTabLabel label="Upcoming" color={color} icon="today-outline" />
+            <CustomTabLabel label="All" color={color} icon="list-ol" />
           ),
         }}
       />
       <Tab.Screen
-        name="Appointment History"
-        component={AppointmentHistory}
+        name="Token Transactions"
+        component={TokenTransactions}
         options={{
           tabBarLabel: ({ color, focused }) => (
-            <CustomTabLabel label="History" color={color} icon="time-outline" />
+            <CustomTabLabel label="History" color={color} icon="coins" />
           ),
         }}
       />
       <Tab.Screen
-        name="Appointment Agenda"
-        component={AppointmentAgenda}
+        name="Pending Transactions"
+        component={PendingTransactions}
         options={{
           tabBarLabel: ({ color, focused }) => (
-            <CustomTabLabel label="Agenda" color={color} icon="list-outline" />
+            <CustomTabLabel label="Pending" color={color} icon="hourglass-start" />
           ),
         }}
       />
@@ -65,4 +65,4 @@ const AppointmentTabNavigator = () => {
   );
 };
 
-export default AppointmentTabNavigator;
+export default TransactionTabNavigator;

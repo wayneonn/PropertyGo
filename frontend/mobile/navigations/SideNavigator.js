@@ -8,7 +8,7 @@ import Documents from '../screens/sideNavigatorBar/Documents'
 import ExploreServicesStackGroup from './ExploreServicesStackGroup';
 import FAQ from '../screens/sideNavigatorBar/FAQs'
 import MortgageCalculator from '../screens/sideNavigatorBar/MortgageCalculator'
-import Transactions from '../screens/sideNavigatorBar/Transactions'
+import TransactionStackGroup from './Transaction/TransactionStackGroup'
 import UserListingStackGroup from './UserListingStackGroup'
 import WorkWithUs from '../screens/sideNavigatorBar/WorkWithUs'
 import ContactUsStackGroup from './ContactUsStackGroup';
@@ -89,7 +89,7 @@ const drawerScreens = [
     createDrawerScreen('User Listings', UserListingStackGroup, 'list', 'User Listings'),
     createDrawerScreen('Appointments', AppointmentStackGroup, 'calendar', 'Appointments'),
     createDrawerScreen('Documents', Documents, 'document', 'Documents'),
-    createDrawerScreen('Transactions', Transactions, 'swap-horizontal', 'Transactions'),
+    createDrawerScreen('Transactions', TransactionStackGroup, 'swap-horizontal', 'Transactions'),
     createDrawerScreen('Mortgage Calculator', MortgageCalculator, 'calculator', 'Mortgage Calculator'),
     createDrawerScreen('FAQ', FAQ, 'help-circle', 'FAQ'),
     createDrawerScreen('Contact Us Group', ContactUsStackGroup, 'mail', 'Contact Us'),

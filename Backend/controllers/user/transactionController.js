@@ -449,5 +449,17 @@ exports.createTransaction = async(req, res) => {
     }
 }
 
+exports.getUserTransactions = async (req, res) => {
+    try {
+        const transactions = await Transaction.findAll({
+            where: { buyerId: req.params.id },
+            order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
+        });
+        res.json(transactions);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching transaction: ", error: error.message });
+    }
+}
+
 
 

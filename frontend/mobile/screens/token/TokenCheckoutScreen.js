@@ -19,6 +19,7 @@ const TokenCheckoutScreen = ({ route }) => {
     const [publishableKey, setPublishableKey] = useState('');
     const [custIdExists, setCustIdExists] = useState(false);
     const gst = 0.08;
+    const taxable = true;
 
     // Use the route object to get the selected token package details
     const { tokens, tokenAmount, tokenName, currentTokenAmount } = route.params; // Make sure you pass the selected package from the previous screen
@@ -38,7 +39,7 @@ const TokenCheckoutScreen = ({ route }) => {
             setCustIdExists,
             initPaymentSheet,
             setLoading,
-            taxable = true,
+            taxable,
         );
     };
 
@@ -79,13 +80,12 @@ const TokenCheckoutScreen = ({ route }) => {
 
                 // Calculate tax amount
                 const taxAmount = tokenAmount * gst;
-
                 // Calculate total amount including tax
                 const totalAmount = tokenAmount + taxAmount;
 
                 // Create a record for the token purchase transaction
                 handleSuccess();
-                createTokenTransactionRecord(user.user, paymentIntent, status, transactionType, tokenName, tokens, tokenAmount, gst);
+                createTokenTransactionRecord(user.user, paymentIntent, status, transactionType, tokenName, tokens, tokenAmount, taxable);
 
                 // Display the item, quantity, price, tax amount, and total amount
                 Alert.alert('Purchase Successful', `You have purchased ${tokens} tokens.`);
