@@ -151,6 +151,7 @@ const ContactUs = () => {
   const handleCloseViewRespond = () => {
     setShowViewResponseModal(false);
     setValidationMessages({});
+    setAddedRespond("");
   };
 
   const handleCloseResponses = () => {
@@ -401,6 +402,24 @@ const ContactUs = () => {
   useEffect(() => {
     fetchData();
   }, [responses]);
+
+  const sanitizeEditResponse = (content) => {
+    const sanitizedContent = content
+      .replace(/<u>\s<\/u>/g, " ")
+      .replace(/<b>\s<\/b>/g, " ")
+      .replace(/<i>\s<\/i>/g, " ");
+
+    setEditResponse(sanitizedContent);
+  };
+
+  const sanitizeAddedResponse = (content) => {
+    const sanitizedContent = content
+      .replace(/<u>\s<\/u>/g, " ")
+      .replace(/<b>\s<\/b>/g, " ")
+      .replace(/<i>\s<\/i>/g, " ");
+
+    setAddedRespond(sanitizedContent);
+  };
 
   return (
     <div className="contactus">
@@ -908,7 +927,7 @@ const ContactUs = () => {
             <Form.Group>
               <ReactQuill
                 value={addedRespond}
-                onChange={setAddedRespond}
+                onChange={sanitizeAddedResponse}
                 theme="snow"
                 className={
                   validationMessages.emptyAddResponse ? "is-invalid" : ""
@@ -1236,7 +1255,7 @@ const ContactUs = () => {
             <Form.Group>
               <ReactQuill
                 value={addedRespond}
-                onChange={setAddedRespond}
+                onChange={sanitizeAddedResponse}
                 theme="snow"
                 className={
                   validationMessages.emptyAddResponse ? "is-invalid" : ""
@@ -1384,7 +1403,7 @@ const ContactUs = () => {
               <Form.Group>
                 <ReactQuill
                   value={editResponse}
-                  onChange={setEditResponse}
+                  onChange={sanitizeEditResponse}
                   theme="snow"
                   className={
                     validationMessages.emptyEditResponse ? "is-invalid" : ""

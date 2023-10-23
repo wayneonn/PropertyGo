@@ -371,7 +371,7 @@ const AllProperty = () => {
                       fontWeight: "500",
                     }}
                   >
-                    {formatTime(property.boostListingStartDate)} ~{" "}
+                    {formatTime(property.boostListingStartDate)} -{" "}
                     {formatTime(property.boostListingEndDate)}
                   </span>
                 </div>
@@ -500,7 +500,9 @@ const AllProperty = () => {
           </div>
         </div>
         <div className="document-area-all">
-          <span>Property Listing Documents</span>
+          <span style={{ fontSize: "15px", fontWeight: "500" }}>
+            Property Listing Documents
+          </span>
           <hr />
           <div className="documents-boxes-all">
             {Array.isArray(documents) && documents.length > 0 ? (

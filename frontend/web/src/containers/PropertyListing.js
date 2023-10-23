@@ -36,6 +36,12 @@ const PropertyListing = () => {
         (property) => property.sellerId == userId
       );
 
+      properties.sort((a, b) => {
+        const timestampA = new Date(a.updatedAt).getTime();
+        const timestampB = new Date(b.updatedAt).getTime();
+        return timestampB - timestampA;
+      });
+
       // console.log(properties);
 
       // if (propertyStatus === "" && propertyType === "") {
@@ -235,7 +241,7 @@ const PropertyListing = () => {
                       alt={`Property Image for ${property.title}`}
                       className="image-listing"
                     />
-                    {property.approvalStatus === "PENDING" && (
+                    {property.approvalStatus == "PENDING" && (
                       <Card.Img
                         variant="top"
                         src="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/svg/2757.svg"
@@ -261,7 +267,7 @@ const PropertyListing = () => {
                       alt={`Property Image for ${property.title}`}
                       className="image-listing"
                     />
-                    {property.approvalStatus === "PENDING" && (
+                    {property.approvalStatus == "PENDING" && (
                       <Card.Img
                         variant="top"
                         src="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/svg/2757.svg"
