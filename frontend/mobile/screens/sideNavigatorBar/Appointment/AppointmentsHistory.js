@@ -9,7 +9,7 @@ import {
     FlatList,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../../AuthContext';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -334,40 +334,44 @@ const Appointments = ({ route }) => {
         const markedDates = {};
         const seller = { key: 'seller', color: 'red' };
         const buyer = { key: 'buyer', color: 'green' };
-    
-        if (userSlots.length === 0 || sellerSlots.length === 0) {
-            markedDates[selectedDate] = { selected: true, selectedDotColor: 'blue' };
-        }
-    
+
+        console.log('selectedDate: ', selectedDate);
+        // if (userSlots.length === 0 || sellerSlots.length === 0) {
+        markedDates[selectedDate] = { selected: true, selectedDotColor: 'blue' };
+        // }
+
         // Loop through the data and mark the dates
         userSlots.forEach((userSlot) => {
             const date = userSlot.meetupDate; // Get the date from the fetched data
-    
-            if (!markedDates[date]) {
-                markedDates[date] = { dots: [] };
-            }
+
+            // if (!markedDates[date]) {
+            markedDates[date] = { dots: [] };
+            // }
             markedDates[date].dots.push(buyer);
-    
+
             if (date === selectedDate) {
                 markedDates[date].selected = true;
                 markedDates[date].selectedDotColor = 'blue';
             }
         });
-    
+
         sellerSlots.forEach((availability) => {
             const date = availability.meetupDate; // Get the date from the fetched data
-    
             if (!markedDates[date]) {
-                markedDates[date] = { dots: [] };
+                markedDates[date] = { dots: [] }; // Create a new entry with an empty dots array
+            } else if (!markedDates[date].dots) {
+                markedDates[date].dots = []; // If dots array doesn't exist, create it
             }
+            
             markedDates[date].dots.push(seller);
-    
+        
             if (date === selectedDate) {
                 markedDates[date].selected = true;
                 markedDates[date].selectedDotColor = 'blue';
             }
         });
-    
+        
+
         return markedDates;
     };
    
@@ -408,155 +412,137 @@ const Appointments = ({ route }) => {
 
                 {/* Time Slots Matrix (Bottom Half) */}
 
-                <View style={styles.timeSlotsContainer}>
-                    <Text style={styles.dateOnContainer}>{formatDate(selectedDate)}</Text>
-                    
-                </View>
-                <View style={styles.bookingContainer}>
-                    <Text style={styles.dateOnContainer}>To Buy - Upcoming To View</Text>
-
-                    {/* List of user's bookings */}
-                    {userBuySchedules && userBuySchedules.length > 0 ? (
-                        <FlatList
-                            data={userBuySchedules}
-                            keyExtractor={(item) => item.scheduleId.toString()}
-                            renderItem={({ item }) => (
-                                <AppointmentCard schedule={item} propertyId={item.propertyId}  onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule : item });
-                                }} />
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noAvailabilityText}>No bookings found.</Text>
-                    )}
-                </View>
-                <View style={styles.bookingContainer}>
-                    <Text style={styles.dateOnContainer}>To Sell - Buyers To View Unit</Text>
-
-                    {/* List of user's bookings */}
-                    {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
-                        <FlatList
-                            data={sellerSellSchedules}
-                            keyExtractor={(item) => item.scheduleId.toString()}
-                            renderItem={({ item }) => (
-                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: sellerUserId, propertyId: item.propertyId, schedule : item });
-                                }} />
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noAvailabilityText}>No bookings for units listed.</Text>
-                    )}
-                </View>
-            </ScrollView>
+                <View style={styles.dateCard}>
+              <Ionicons name="calendar" size={28} color="#00adf5" />
+              <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
+            </View>
+    
+            <View style={styles.bookingContainer}>
+              <Text style={styles.sectionHeader}>
+                <MaterialCommunityIcons
+                  name="telescope"
+                  size={28}
+                  color="#00adf5"
+                />{' '}
+                To Buy - Upcoming To View
+              </Text>
+              {userBuySchedules && userBuySchedules.length > 0 ? (
+                <FlatList
+                  data={userBuySchedules}
+                  keyExtractor={(item) => item.scheduleId.toString()}
+                  renderItem={({ item }) => (
+                    <AppointmentCard
+                      schedule={item}
+                      propertyId={item.propertyId}
+                      onPress={() => {
+                        navigation.navigate('View Appointment Detail', {
+                          userId: item.sellerId,
+                          propertyId: item.propertyId,
+                          schedule: item,
+                        });
+                      }}
+                    />
+                  )}
+                />
+              ) : (
+                <Text style={styles.noAvailabilityText}>No bookings found.</Text>
+              )}
+            </View>
+    
+            <View style={styles.bookingContainer}>
+              <Text style={styles.sectionHeader}>
+                <MaterialCommunityIcons
+                  name="table-eye"
+                  size={28}
+                  color="#00adf5"
+                />{' '}
+                To Sell - Buyers To View Unit
+              </Text>
+              {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
+                <FlatList
+                  data={sellerSellSchedules}
+                  keyExtractor={(item) => item.scheduleId.toString()}
+                  renderItem={({ item }) => (
+                    <AppointmentCard
+                      schedule={item}
+                      propertyId={item.propertyId}
+                      onPress={() => {
+                        navigation.navigate('View Appointment Detail', {
+                          userId: item.userId,
+                          propertyId: item.propertyId,
+                          schedule: item,
+                        });
+                      }}
+                    />
+                  )}
+                />
+              ) : (
+                <Text style={styles.noAvailabilityText}>
+                  No bookings for units listed.
+                </Text>
+              )}
+            </View>
+          </ScrollView>
         </View>
-    );
-};
-
-const styles = StyleSheet.create({
-    container: {
+      );
+    };
+    
+    const styles = StyleSheet.create({
+      container: {
         flex: 1,
         backgroundColor: 'white',
         padding: 16,
-    },
-    calendarContainer: {
+      },
+      scrollView: {
         flex: 1,
-        borderRadius: 8,
-        padding: 0,
-        marginBottom: 10,
-    },
-    timeSlotsContainer: {
-        flex: 1,
-        backgroundColor: 'white',
-        borderRadius: 8,
-        padding: 16,
-        borderWidth: 0.2,
-        borderColor: 'gray',
-    },
-    timeSlot: {
-        flex: 1,
-        padding: 8,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 4,
-        marginBottom: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: 4,
-        minHeight: 40,
-    },
-    selectedTimeSlot: {
-        backgroundColor: 'cyan',
-    },
-    timeText: {
-        fontSize: 16,
-    },
-    dateOnContainer: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginLeft: 5,
-    },
-    headerContainer: {
+      },
+      headerContainer: {
         marginBottom: 20,
-    },
-    header: {
+      },
+      header: {
         fontSize: 25,
         fontWeight: 'bold',
         marginTop: 5,
         textAlign: 'center',
-    },
-    saveChangesButton: {
-        backgroundColor: 'green',
-        padding: 10,
-        borderRadius: 5,
-        marginTop: 10,
+      },
+      calendarContainer: {
+        borderRadius: 8,
+        marginBottom: 10,
+      },
+      calendar: {
+        borderWidth: 0.5,
+        borderColor: 'gray',
+        borderRadius: 8,
+        marginBottom: 10,
+        backgroundColor: 'white',
+      },
+      dateCard: {
+        // backgroundColor: '#f5f5f5',
+        padding: 8,
+        borderRadius: 8,
+        marginVertical: 10,
+        flexDirection: 'row',
         alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: '60%',
-        marginRight: 40,
-        marginLeft: 0,
-    },
-    saveChangesButtonText: {
-        color: 'white',
+        borderWidth: 0.1,
+      },
+      dateText: {
+        fontSize: 25,
+        fontWeight: 'bold',
         marginLeft: 10,
-    },
-    timePickers: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    backButton: {
-        padding: 10,
-        marginRight: 20,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10,
-    },
-    removeButton: {
-        backgroundColor: 'red',
-        padding: 10,
-        borderRadius: 5,
-        marginTop: 10,
-        // alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: 50,
-        marginLeft: 50,
-        // flex: 1,
-    },
-    removeButtonText: {
-        color: 'white',
-        marginLeft: 10,
-    },
-    noAvailabilityText: {
+        textAlign: 'center',
+        alignItems: 'center',
+      },
+      sectionHeader: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+      },
+      noAvailabilityText: {
         fontSize: 16,
         textAlign: 'center',
         marginTop: 10,
-    },
-    bookingContainer: {
-        flex: 1,
+      },
+      bookingContainer: {
         marginTop: 10,
         backgroundColor: 'white',
         borderRadius: 8,
@@ -564,26 +550,18 @@ const styles = StyleSheet.create({
         borderWidth: 0.2,
         borderColor: 'gray',
         marginBottom: 10,
-    },
-    bookingItem: {
-        marginTop: 10,
-        borderWidth: 1,
-        borderColor: 'lightgray',
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 10,
-        backgroundColor: 'white',
-    },
-    bookingItemText: {
-        fontSize: 16,
-        marginBottom: 8,
-    },
-    bookingItemTextLabel: {
-        fontSize: 16,
-        marginBottom: 8,
-        fontWeight: 'bold',
-    },
-
-});
-
-export default Appointments;
+      },
+    });
+    
+    const calendarTheme = {
+      backgroundColor: '#ffffff',
+      calendarBackground: '#ffffff',
+      textSectionTitleColor: '#b6c1cd',
+      selectedDayBackgroundColor: '#00adf5',
+      selectedDayTextColor: '#ffffff',
+      todayTextColor: '#00adf5',
+      dayTextColor: '#2d4150',
+      textDisabledColor: '#d9e1e8',
+    };
+    
+    export default Appointments;
