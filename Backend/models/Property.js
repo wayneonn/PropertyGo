@@ -24,6 +24,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DOUBLE,
         allowNull: false,
       },
+      optionFee: {
+        type: DataTypes.DOUBLE,
+        allowNull: true,
+      },
+      optionExerciseFee: {
+        type: DataTypes.DOUBLE,
+        allowNull: true,
+      },
       offeredPrice: {
         type: DataTypes.DOUBLE,
         allowNull: true,
@@ -96,6 +104,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      approvalStatus: {
+        type: DataTypes.ENUM("PENDING", "APPROVED", "REJECTED"),
+        allowNull: false,
+        defaultValue: "PENDING",
+      },
+      adminNotes: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
     {
       freezeTableName: true,
@@ -125,21 +142,21 @@ module.exports = (sequelize, DataTypes) => {
   Property.associate = (models) => {
     Property.belongsTo(models.User, {
       foreignKey: {
-        name: "userId",
-        allowNull: false,
+        name: "buyerId",
+        allowNull: true,
       },
       as: "buyer",
     });
+    // Property.belongsTo(models.User, {
+    //   foreignKey: {
+    //     name: "userId",
+    //     allowNull: false,
+    //   },
+    //   as: "propertyAgent",
+    // });
     Property.belongsTo(models.User, {
       foreignKey: {
-        name: "userId",
-        allowNull: false,
-      },
-      as: "propertyAgent",
-    });
-    Property.belongsTo(models.User, {
-      foreignKey: {
-        name: "userId",
+        name: "sellerId",
         allowNull: false,
       },
       as: "seller",
@@ -152,12 +169,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "propertyId",
       as: "reviews",
     });
-    Property.hasOne(models.Transaction, {
-      foreignKey: {
-        name: "transactionId",
-        allowNull: false,
-      }, // This will be the foreign key in the Transaction model
-      onDelete: "CASCADE", // If an invoice is deleted, delete the associated transaction
+    Property.hasMany(models.Transaction, {
+      foreignKey: "propertyId",
+      as: "transactions",
     });
     // Property.hasMany(models.Image, {
     //     foreignKey: 'imageId',

@@ -22,7 +22,7 @@ exports.createFolders = async (req, res) => {
         if (existingFolder) {
             // If a folder with the same title and user ID exists, return its folderId
             console.log("existingFolder", existingFolder)
-            res.json({ folderId: existingFolder.folderId, message: "Folder already exists." });
+            res.json({ folderId: existingFolder.folderId, message: "Folder already exists.", existStatus: true });
         } else {
             // If no matching folder found, create a new folder
             const folder = await Folder.create({
@@ -30,7 +30,7 @@ exports.createFolders = async (req, res) => {
                 userId,
                 timestamp: Date.now(),
             });
-            res.json({ folderId: newFolder.folderId, message: "Folder created successfully.", folder });
+            res.json({ folderId: folder.folderId, message: "Folder created successfully.", folder, existStatus: false  });
         }
     } catch (error) {
         res.status(500).json({ message: "Error creating folder: " + error.message });

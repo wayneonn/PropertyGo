@@ -12,6 +12,7 @@ const PropertyListing = () => {
   const [properties, setProperties] = useState([]);
   const [propertyStatus, setPropertyStatus] = useState("");
   const [propertyType, setPropertyType] = useState("");
+  const [propertyApproval, setPropertyApproval] = useState("");
 
   const imageBasePath =
     window.location.protocol + "//" + window.location.host + "/images/";
@@ -29,9 +30,13 @@ const PropertyListing = () => {
         `http://localhost:3000/admin/properties`
       );
 
+      console.log(responseProperty.data);
+
       const properties = responseProperty.data.filter(
-        (property) => property.userId == userId
+        (property) => property.sellerId == userId
       );
+
+      // console.log(properties);
 
       // if (propertyStatus === "" && propertyType === "") {
       //   setProperties(properties);
@@ -46,23 +51,54 @@ const PropertyListing = () => {
       //   setProperties(filtered);
       // }
 
-      if (propertyStatus === "" && propertyType === "") {
+      if (
+        propertyStatus === "" &&
+        propertyType === "" &&
+        propertyApproval === ""
+      ) {
         setProperties(properties);
-      } else if (propertyStatus === "") {
+      } else if (propertyStatus === "" && propertyApproval === "") {
         const filteredType = properties.filter(
           (property) => property.propertyType === propertyType
         );
         setProperties(filteredType);
-      } else if (propertyType === "") {
+      } else if (propertyType === "" && propertyApproval === "") {
         const filteredStatus = properties.filter(
           (property) => property.propertyStatus === propertyStatus
         );
         setProperties(filteredStatus);
+      } else if (propertyType === "" && propertyStatus === "") {
+        const filteredApproval = properties.filter(
+          (property) => property.approvalStatus === propertyApproval
+        );
+        setProperties(filteredApproval);
+      } else if (propertyStatus === "") {
+        const filteredApprovalType = properties.filter(
+          (property) =>
+            property.propertyType === propertyType &&
+            property.approvalStatus === propertyStatus
+        );
+        setProperties(filteredApprovalType);
+      } else if (propertyType === "") {
+        const filteredApprovalStatus = properties.filter(
+          (property) =>
+            property.propertyStatus === propertyStatus &&
+            property.approvalStatus === propertyApproval
+        );
+        setProperties(filteredApprovalStatus);
+      } else if (propertyApproval === "") {
+        const filteredTypeStatus = properties.filter(
+          (property) =>
+            property.propertyType === propertyType &&
+            property.propertyStatus === propertyStatus
+        );
+        setProperties(filteredTypeStatus);
       } else {
         const filtered = properties.filter(
           (property) =>
             property.propertyType === propertyType &&
-            property.propertyStatus === propertyStatus
+            property.propertyStatus === propertyStatus &&
+            property.approvalStatus === propertyApproval
         );
         setProperties(filtered);
       }
@@ -73,7 +109,7 @@ const PropertyListing = () => {
 
   useEffect(() => {
     fetchData();
-  }, [propertyStatus, propertyType]);
+  }, [propertyStatus, propertyType, propertyApproval]);
 
   function getPropertyClassName(status) {
     if (status === "ACTIVE") {
@@ -90,6 +126,16 @@ const PropertyListing = () => {
       return "type-new";
     } else if (type === "RESALE") {
       return "type-resale";
+    }
+  }
+
+  function getApprovalStatusClassName(status) {
+    if (status === "PENDING") {
+      return "status-pending";
+    } else if (status === "APPROVED") {
+      return "status-approved";
+    } else if (status === "REJECTED") {
+      return "status-rejected";
     }
   }
 
@@ -120,19 +166,25 @@ const PropertyListing = () => {
     <div className="property-listing">
       <div
         style={{
-          marginTop: "10px",
-          marginLeft: "30px",
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "0",
+          flexDirection: "column",
+          // padding: "10px",
         }}
       >
-        <BreadCrumb
-          names={["Home", "Users", "User Detail"]}
-          lastname="Properties"
-          links={["/", "/users", `/users/details/${userId}`]}
-        ></BreadCrumb>
+        <div
+          style={{
+            marginTop: "10px",
+            marginLeft: "30px",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <BreadCrumb
+            names={["Home", "Users", "User Detail"]}
+            lastname="Properties"
+            links={["/", "/users", `/users/details/${userId}`]}
+          ></BreadCrumb>
+        </div>
         <div className="filter">
           <Form.Select
             aria-label="Default select example"
@@ -154,6 +206,16 @@ const PropertyListing = () => {
             <option value="RESALE">Resale</option>
             <option value="NEW_LAUNCH">New Launch</option>
           </Form.Select>
+          <Form.Select
+            aria-label="Default select example"
+            onChange={(e) => setPropertyApproval(e.target.value)}
+            value={propertyApproval}
+          >
+            <option value="">All Approval Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+          </Form.Select>
         </div>
       </div>
       <div className="property-container">
@@ -173,6 +235,23 @@ const PropertyListing = () => {
                       alt={`Property Image for ${property.title}`}
                       className="image-listing"
                     />
+                    {property.approvalStatus === "PENDING" && (
+                      <Card.Img
+                        variant="top"
+                        src="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/svg/2757.svg"
+                        alt="Second Image"
+                        className="image-listing-all overlay-image"
+                        style={{
+                          position: "absolute",
+                          top: "1.5em",
+                          left: "5.5em",
+                          zIndex: 1,
+                          width: "8em",
+                          height: "8em",
+                          opacity: 0.8,
+                        }}
+                      />
+                    )}
                   </div>
                 ) : (
                   <div className="image-container-listing">
@@ -182,6 +261,23 @@ const PropertyListing = () => {
                       alt={`Property Image for ${property.title}`}
                       className="image-listing"
                     />
+                    {property.approvalStatus === "PENDING" && (
+                      <Card.Img
+                        variant="top"
+                        src="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/svg/2757.svg"
+                        alt="Second Image"
+                        className="image-listing-all overlay-image"
+                        style={{
+                          position: "absolute",
+                          top: "1.5em",
+                          left: "5.5em",
+                          zIndex: 1,
+                          width: "8em",
+                          height: "8em",
+                          opacity: 0.8,
+                        }}
+                      />
+                    )}
                   </div>
                 )}
                 <Card.Body>
@@ -211,6 +307,13 @@ const PropertyListing = () => {
                         )}
                       >
                         {property.propertyType}
+                      </div>
+                      <div
+                        className={getApprovalStatusClassName(
+                          property.approvalStatus
+                        )}
+                      >
+                        {property.approvalStatus}
                       </div>
                     </div>
                   </Card.Text>

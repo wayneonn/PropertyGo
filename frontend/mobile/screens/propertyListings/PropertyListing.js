@@ -206,7 +206,7 @@ const PropertyListingScreen = ({ route }) => {
       // Make an API call to fetch property listing details by id
       const response = await fetch(getPropertyListing(id));
       const data = await response.json();
-      const userDetailsData = await fetchUser(data.userId);
+      const userDetailsData = await fetchUser(data.sellerId);
       setUser(userDetailsData); // Update user details state
       setPropertyListing(data); // Update state with the fetched data
       // Fetch latitude and longitude based on postal code
@@ -447,6 +447,12 @@ const PropertyListingScreen = ({ route }) => {
       <View style={styles.bottomButtonsContainer}>
         {isCurrentUserPropertyOwner ? (
           <>
+            <TouchableOpacity style={styles.calendarButton} onPress={() => {
+              navigation.navigate('Set Schedule', { propertyListingId });
+            }}
+            >
+              <Ionicons name="calendar-outline" size={24} color="black" />
+            </TouchableOpacity>
             <TouchableOpacity style={styles.bumpListingButton} onPress={() => {
               navigation.navigate('Boost Listing', { propertyListingId });
             }}
@@ -465,14 +471,22 @@ const PropertyListingScreen = ({ route }) => {
           </>
         ) : (
           <>
+            <TouchableOpacity style={styles.calendarButton} onPress={() => {
+              navigation.navigate('Schedule', { propertyListingId, userDetails });
+            }}
+            >
+              <Ionicons name="calendar-outline" size={24} color="black" />
+            </TouchableOpacity>
             <TouchableOpacity style={styles.chatWithSellerButton}>
-              <Text style={styles.buttonText}>Chat With Seller</Text>
+              <Text style={styles.buttonTextUser}>Chat With Seller</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.viewScheduleButton}>
-              <Text style={styles.buttonText}>View Schedule</Text>
+              <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buyButton}>
-              <Text style={styles.buttonText}>Buy</Text>
+            <TouchableOpacity style={styles.buyButton} onPress={() => {
+              navigation.navigate('Purchase Option Fee', { propertyListing });
+            }}>
+              <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>
           </>
         )}
@@ -598,7 +612,7 @@ const styles = StyleSheet.create({
 
   chatWithSellerButton: {
     flex: 1,
-    padding: 12,
+    padding: 6,
     backgroundColor: 'white', // Choose your color
     alignItems: 'center',
     borderWidth: 1,       // Add border
@@ -609,7 +623,7 @@ const styles = StyleSheet.create({
 
   viewScheduleButton: {
     flex: 1,
-    padding: 12,
+    padding: 6,
     backgroundColor: 'white', // Choose your color
     alignItems: 'center',
     borderWidth: 1,       // Add border
@@ -620,7 +634,7 @@ const styles = StyleSheet.create({
 
   buyButton: {
     flex: 1,
-    padding: 12,
+    padding: 6,
     backgroundColor: '#FFD700', // Yellow color
     alignItems: 'center',
     borderWidth: 1,        // Add border
@@ -664,6 +678,11 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 12,
     color: '#000',           // Black text color for all buttons
+  },
+  buttonTextUser: {
+    fontSize: 12,
+    color: '#000',           // Black text color for all buttons
+    marginTop: 4,         // Remove bottom margin for all buttons
   },
 
   mainContainer: {
@@ -753,6 +772,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginLeft: 8,
     color: '#333',
+  },
+  calendarButton: {
+    padding: 4,
+    backgroundColor: 'white', // Choose your color
+    alignItems: 'center',
+    borderWidth: 1,       // Add border
+    borderColor: '#000',  // Border color
+    borderRadius: 10,     // Make it rounded
+    margin: 2,  // Margin for spacing between buttons
   },
 });
 

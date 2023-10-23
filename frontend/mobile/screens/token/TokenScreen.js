@@ -11,11 +11,12 @@ const TokenScreen = ({ navigation }) => {
 
     // State to hold user data and token amount
     const [userData, setUserData] = useState(null);
-    const [tokenAmount, setTokenAmount] = useState(0);
+    const [currentTokenAmount, setTokenAmount] = useState(0);
     const [isHelpVisible, setHelpVisible] = useState(false);
 
     // Fetch user data by userId
     const fetchUserData = async (userId) => {
+        console.log("fetchUserData userId", userId)
         try {
             const { success, data, message } = await getUserById(userId);
 
@@ -38,9 +39,11 @@ const TokenScreen = ({ navigation }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            console.log('Home page gained focus');
+            console.log('Token page gained focus');
             if (user && user.user) {
+                console.log('Fetches user data');
                 fetchUserData(user.user.userId);
+                setTokenAmount(0);
             }
         }, [])
     );
@@ -55,7 +58,7 @@ const TokenScreen = ({ navigation }) => {
         // Add more token data as needed
     ];
 
-    const handleBuyToken = (tokens) => {
+    const handleBuyToken = (tokens, tokenName, tokenAmount) => {
         // Implement your buy token logic here
         // For example, you can show an alert to confirm the purchase
         Alert.alert(
@@ -68,29 +71,32 @@ const TokenScreen = ({ navigation }) => {
                 },
                 {
                     text: 'Purchase',
-                    onPress: async () => {
-                        // Update the user's token amount and save it to the API
-                        const updatedTokenAmount = tokenAmount + tokens;
+                    // onPress: async () => {
+                    //     // Update the user's token amount and save it to the API
+                    //     const updatedTokenAmount = tokenAmount + tokens;
 
-                        try {
-                            const formData = new FormData();
-                            formData.append('token', updatedTokenAmount);
-                            formData.append('email', user.user.email);
-                            console.log('user.user.userId', user.user.userId);
-                            console.log('formData', formData);
-                            const { success, data, message } = await updateUserProfile(user.user.userId, formData);
+                    //     try {
+                    //         const formData = new FormData();
+                    //         formData.append('token', updatedTokenAmount);
+                    //         formData.append('email', user.user.email);
+                    //         console.log('user.user.userId', user.user.userId);
+                    //         console.log('formData', formData);
+                    //         const { success, data, message } = await updateUserProfile(user.user.userId, formData);
 
-                            if (success) {
-                                setTokenAmount(updatedTokenAmount);
-                                Alert.alert('Purchase Successful', `You have purchased ${tokens} tokens.`);
-                            } else {
-                                Alert.alert('Error', message || 'Purchase failed.');
-                            }
-                        } catch (error) {
-                            console.error('Error updating user profile:', error);
-                            Alert.alert('Error', 'Purchase failed.');
-                        }
-                    },
+                    //         if (success) {
+                    //             setTokenAmount(updatedTokenAmount);
+                    //             Alert.alert('Purchase Successful', `You have purchased ${tokens} tokens.`);
+                    //         } else {
+                    //             Alert.alert('Error', message || 'Purchase failed.');
+                    //         }
+                    //     } catch (error) {
+                    //         console.error('Error updating user profile:', error);
+                    //         Alert.alert('Error', 'Purchase failed.');
+                    //     }
+                    // },
+                    onPress: () => {    
+                        navigation.navigate('Token Checkout Screen', { tokens, tokenAmount, tokenName, currentTokenAmount });
+                    }
                 },
             ]
         );
@@ -115,13 +121,13 @@ const TokenScreen = ({ navigation }) => {
             </View>
 
             <Text style={styles.tokenAmountText}>{"Your Token Amount: "}
-                <Text style = {styles.bold}>{`${tokenAmount}`}{" "}</Text><FontAwesome5 name="coins" size={20} color="black"/>
+                <Text style = {styles.bold}>{`${currentTokenAmount}`}{" "}</Text><FontAwesome5 name="coins" size={20} color="black"/>
             </Text>
             {tokenData.map((token, index) => (
                 <TokenCard
                     key={index}
                     tokenData={token}
-                    onPressBuy={() => handleBuyToken(token.tokens)}
+                    onPressBuy={() => handleBuyToken(token.tokens, token.tokenName, token.tokenAmount)}
                 />
             ))}
             {/* Help Overlay */}
