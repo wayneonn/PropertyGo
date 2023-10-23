@@ -20,6 +20,8 @@ import CompanyInfoScreen from "../screens/partnerApplication/CompanyInfo";
 import UserRoleScreen from "../screens/partnerApplication/UserRole";
 import creditCardInfoScreen from "../screens/partnerApplication/CreditCardInfoScreen";
 import documentSubmissionScreen from "../screens/partnerApplication/DocumentSubmission";
+import Response from '../screens/sideNavigatorBar/Response';
+import ResponseTopNavBar from '../components/ContactUs/ResponseTopNavBar';
 
 import { AuthContext } from '../AuthContext';
 import * as Device from 'expo-device';
@@ -115,26 +117,26 @@ const LoginNavigator = () => {
 
     useEffect(() => {
         registerForPushNotificationsAsync().then(token => setExpoPushToken(token.data));
-    
+
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
             setNotification(notification);
         });
-    
+
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
             const navigateTo = response.notification.request.content.data.navigateTo;
-    
+
             if (navigateTo) {
                 // Navigate to the specified screen
                 navigation.navigate(navigateTo);
             }
         });
-    
+
         return () => {
             Notifications.removeNotificationSubscription(notificationListener.current);
             Notifications.removeNotificationSubscription(responseListener.current);
         };
     }, []);
-    
+
 
 
     useEffect(() => {
@@ -176,7 +178,7 @@ const LoginNavigator = () => {
             // console.log("userNewForumCommentNotification")
 
             // console.log({pushToken,title,body})
-            sendPushNotification({pushToken,title,body});
+            sendPushNotification({ pushToken, title, body });
         });
 
         return () => {
@@ -244,6 +246,11 @@ const LoginNavigator = () => {
                     name={"Side Navigator (Partner)"}
                     component={SideNavigatorPartner}
                     options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name={"Response"}
+                    component={Response}
+                    options={{ header: () => <ResponseTopNavBar/> }}
                 />
 
 

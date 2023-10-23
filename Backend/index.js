@@ -78,6 +78,7 @@ const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRo
 const reviewRoute = require("./routes/user/reviewRoute");
 const faqRoute = require("./routes/user/faqRoute");
 const notificationRoute = require("./routes/user/notificationRoute");
+const responseRoute = require("./routes/user/responseRoute");
 const e = require("express");
 
 app.use(cors());
@@ -119,6 +120,7 @@ app.use(
   partnerApplicationUserRouter,
   faqRoute,
   notificationRoute,
+  responseRoute
 );
 
 io.on("connection", (socket) => {

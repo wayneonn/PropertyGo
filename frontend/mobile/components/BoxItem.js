@@ -1,27 +1,40 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {getTimeAgo} from '../services/CalculateTimeAgo';
+import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { getTimeAgo } from '../services/CalculateTimeAgo';
 
-const BoxItem = ({parentTitleStatus, title, reason, message, updatedAt, response}) => {
+const BoxItem = ({ onPress, parentTitleStatus, title, reason, message, updatedAt, responses }) => {
     const backgroundColor =
         parentTitleStatus === 'Replied'
             ? 'rgba(0, 255, 0, 0.1)'
             : 'rgba(255, 0, 0, 0.1)';
 
+    let latestResponse = null;
+
+    // console.log(responses)
+
+    // Iterate through the responses to find the latest one
+    responses.forEach((response) => {
+        if (!latestResponse || response?.updatedAt > latestResponse?.updatedAt) {
+            latestResponse = response;
+        }
+    });
+
     return (
-        <View style={{...styles.box, backgroundColor}}>
-            <View style={styles.leftBox}>
-                <Text style={styles.titleText}>{title}</Text>
-                <Text style={styles.reasonText}>{reason}</Text>
-                <Text style={styles.messageText}><Text style={{fontWeight: 'bold'}}>Description:</Text> {message}</Text>
-                {response && (
-                    <Text style={styles.messageText}><Text style={{fontWeight: 'bold'}}>Reply:</Text> {response}</Text>
-                )}
+        <TouchableOpacity onPress={onPress}>
+            <View style={{ ...styles.box, backgroundColor }}>
+                <View style={styles.leftBox}>
+                    <Text style={styles.titleText}>{title}</Text>
+                    <Text style={styles.reasonText}>{reason}</Text>
+                    <Text style={styles.messageText}><Text style={{ fontWeight: 'bold' }}>Description:</Text> {message}</Text>
+                    {latestResponse && (
+                        <Text style={styles.messageText}><Text style={{ fontWeight: 'bold' }}>Reply:</Text> {latestResponse.message}</Text>
+                    )}
+                </View>
+                <View style={styles.rightBox}>
+                    <Text style={styles.timestampText}>{getTimeAgo(updatedAt)}</Text>
+                </View>
             </View>
-            <View style={styles.rightBox}>
-                <Text style={styles.timestampText}>{getTimeAgo(updatedAt)}</Text>
-            </View>
-        </View>
+        </TouchableOpacity>
     );
 };
 
