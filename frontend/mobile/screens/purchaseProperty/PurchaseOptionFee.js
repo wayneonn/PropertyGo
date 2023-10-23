@@ -18,7 +18,7 @@ const PurchaseOptionFee = ({ route }) => {
     const [custIdExists, setCustIdExists] = useState(false);
     const stripeCustomerId = user.user.stripeCustomerId;
     const description = "Purchase Option Fee";
-    const amount = propertyListing.optionFee * 100;
+    const amount = propertyListing.optionFee;
     const isAService = true;
 
     const initializePayment = async () => {

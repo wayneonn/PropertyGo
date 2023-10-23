@@ -1,8 +1,10 @@
 // StripeServices.js
+import React, { useContext } from 'react';
 import { useStripe } from '@stripe/stripe-react-native';
 import { paymentSheet } from "../utils/stripeApi";
 import { updateUserProfile, loginUser } from "../utils/api";
 import { createTransaction } from "../utils/transactionApi";
+import { AuthContext } from '../AuthContext';
 
 export const initializePaymentSheet = async (
     stripeCustomerId,
@@ -29,7 +31,7 @@ export const initializePaymentSheet = async (
 
         const { data, success, message } = await paymentSheet({
             stripeCustomerId,
-            amount,
+            amount: amount * 100,
             currency,
             email: user.email,
             name: user.name,
@@ -76,7 +78,7 @@ export const initializePaymentSheet = async (
 };
 
 
-export const updateUserStripeCustomerId = async (stripeCustomerId, user, fetchUpdatedUserDetails) => {
+export const updateUserStripeCustomerId = async (stripeCustomerId, user, login) => {
     const formData = new FormData();
     console.log("stripeCustomerId: ", stripeCustomerId);
     formData.append('stripeCustomerId', stripeCustomerId);
@@ -85,8 +87,8 @@ export const updateUserStripeCustomerId = async (stripeCustomerId, user, fetchUp
     formData.append('dateOfBirth', user.dateOfBirth);
 
     const { success, data, message } = await updateUserProfile(user.userId, formData);
-    console.log("success: ", success, " data: ", data, " message: ", message);
-    fetchUpdatedUserDetails();
+    console.log("updateUserStripeCustomerId success: ", success, " data: ", data, " message: ", message);
+    fetchUpdatedUserDetails(user, login);
 };
 
 export const createTransactionRecord = async (propertyListing, user, paymentIntent, status, transactionType) => {
@@ -102,11 +104,28 @@ export const createTransactionRecord = async (propertyListing, user, paymentInte
     //  console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
 };
 
+export const createTokenTransactionRecord = async (user, paymentIntent, status, transactionType, tokenName, tokens, tokenAmount, gst) => {
+    const { data, success, message } = await createTransaction({
+        buyerId: user.userId,
+        transactionItem: tokenName,
+        paymentAmount: tokenAmount,
+        quantity: tokens,
+        gst,
+        stripePaymentResponse: paymentIntent,
+        invoiceId: 3,
+        status,
+        transactionType,
+    });
+    //  console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
+};
+
 export const fetchUpdatedUserDetails = async (user, login) => {
+    console.log("fetchUpdatedUserDetails user: ", user);
     try {
         const { success, data, message } = await loginUser(user.userName, user.password);
 
         if (success) {
+            console.log("success!: ");
             login(data);
         } else {
             Alert.alert('Error', message);

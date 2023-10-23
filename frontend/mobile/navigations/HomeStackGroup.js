@@ -6,6 +6,7 @@ import EditPropertyListing from "../screens/propertyListings/EditPropertyListing
 import PropertiesList from "../screens/propertyListings/PropertiesList";
 import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import TokenScreen from "../screens/token/TokenScreen"; // Import your Coins screen here
+import TokenCheckoutScreen from "../screens/token/TokenCheckoutScreen"; 
 import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListing";
 import SearchResults from '../screens/propertyListings/SearchResults';
 import SetSchedule from "../screens/schedule/SetSchedule";
@@ -28,6 +29,7 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="Properties List" component={PropertiesList}/>
             <HomeListingsStack.Screen name="View Profile" component={ViewUserProfile}/>
             <HomeListingsStack.Screen name="Token" component={TokenScreen}/>
+            <HomeListingsStack.Screen name="Token Checkout Screen" component={TokenCheckoutScreen}/>
             <HomeListingsStack.Screen name="Boost Listing" component={BoostPropertyListing}/>
             <HomeListingsStack.Screen name="Search Results" component={SearchResults}/>
             <HomeListingsStack.Screen name="Set Schedule" component={SetSchedule}/>

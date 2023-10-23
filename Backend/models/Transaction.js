@@ -12,10 +12,27 @@ module.exports = (sequelize, DataTypes) => {
       //   type: DataTypes.DATE,
       //   allowNull: false,
       // },
+      transactionItem: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      gst: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
       onHoldBalance: {
         type: DataTypes.DOUBLE,
         defaultValue: 0.0,
-        allowNull: false,
+        allowNull: true,
+      },
+      paymentAmount: {
+        type: DataTypes.DOUBLE,
+        defaultValue: 0.0,
+        allowNull: true,
       },
       status: {
         type: DataTypes.ENUM("PENDING", "REFUNDED", "PAID"),
@@ -26,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       transactionType: {
-        type: DataTypes.ENUM("REQUEST", "OTP", "TOKENS", "OPTION_FEE", "OPTION_EXERCISE_FEE"),
+        type: DataTypes.ENUM("REQUEST", "OTP", "TOKEN_PURCHASE", "OPTION_FEE", "OPTION_EXERCISE_FEE"),
         allowNull: false,
       },
     },
@@ -53,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
     Transaction.belongsTo(models.Property, {
       foreignKey: "propertyId",
       as: "propertyListing",
-      allowNull: false,
+      allowNull: true,
     });
     Transaction.belongsTo(models.Invoice, {
       foreignKey: "invoiceId", // This should match the foreign key in the Invoice model
