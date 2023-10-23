@@ -88,6 +88,10 @@ module.exports = (sequelize, DataTypes) => {
         ),
         allowNull: false,
       },
+      pushToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       googleId: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -293,6 +297,14 @@ module.exports = (sequelize, DataTypes) => {
       through: "UserCommentDownvoted", // Specify the intermediary model
       foreignKey: "userId", // Foreign key
       as: "downvotedComments",
+    });
+    User.hasOne(models.Notification, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'userNotificationId',
+        allowNull: true,
+      },
+      as: 'notification',
     });
   };
 

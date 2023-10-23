@@ -5,7 +5,7 @@ module.exports = [
     rating: 5,
     reviewerId: 1,
     revieweeId: 2,
-    text: "Great apartment!",
+    description: "Great apartment!"
   },
   {
     reviewId: 2,
@@ -13,7 +13,7 @@ module.exports = [
     rating: 4,
     reviewerId: 1,
     revieweeId: 3,
-    text: "Good value",
+    description: "Good value",
   },
 
   {
@@ -22,7 +22,7 @@ module.exports = [
     rating: 3,
     reviewerId: 1,
     revieweeId: 4,
-    text: "Small but nice",
+    description: "Small but nice",
   },
   {
     reviewId: 4,
@@ -30,7 +30,7 @@ module.exports = [
     rating: 4,
     reviewerId: 1,
     revieweeId: 5,
-    text: "Great location",
+    description: "Great location",
   },
 
   {
@@ -39,7 +39,7 @@ module.exports = [
     rating: 5,
     reviewerId: 2,
     revieweeId: 1,
-    text: "Would recommend!",
+    description: "Would recommend!",
   },
   {
     reviewId: 6,
@@ -47,6 +47,6 @@ module.exports = [
     rating: 4,
     reviewerId: 3,
     revieweeId: 1,
-    text: "Spacious",
+    description: "Spacious",
   },
 ];

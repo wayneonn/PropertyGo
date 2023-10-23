@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 import MapView, { Marker, Callout } from 'react-native-maps';
 
+
 const UserListings = ({ navigation }) => {
   const [favorites, setFavorites] = useState([]);
   const [searchText, setSearchText] = useState('');

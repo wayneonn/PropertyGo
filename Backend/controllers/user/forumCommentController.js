@@ -1,14 +1,20 @@
-const { sequelize, ForumComment, User, Image } = require("../../models");
+const { sequelize, ForumComment, User, Image, ForumPost, Notification} = require("../../models");
 const Sequelize = require('sequelize');
 const sharp = require('sharp');
+const { loggedInUsers } = require('../../shared');
 
 const createForumComment = async (req, res) => {
-    const { userId } = req.params; // Use destructuring to get userId
+    const userId = parseInt(req.params.userId);
 
     const transaction = await sequelize.transaction();
 
     try {
         const images = req.files;
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
         const forumComment = await ForumComment.create({
             userId: userId,
@@ -16,6 +22,8 @@ const createForumComment = async (req, res) => {
             message: req.body.message,
             isInappropriate: false,
         });
+
+
         const failedImages = [];
 
 
@@ -47,6 +55,35 @@ const createForumComment = async (req, res) => {
         await transaction.commit();
         console.log('Transaction committed successfully.');
 
+        //Create Notification
+        // console.log(req.body.forumPostId)
+        const forumPost = await ForumPost.findByPk(parseInt(req.body.forumPostId));
+        // console.log("forumPost ", forumPost)
+        const forumPostUser = await forumPost.getUser();
+        // console.log("forumPostUser ", forumPostUser)
+
+        const content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has commented: "${req.body.message}" on forum post: "${forumPost.title}"`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": userId,
+            "userId" : forumPostUser.userId,
+            "content" : content,
+            "forumPostId" : forumPost.forumPostId,
+            "forumCommentId" : forumComment.forumCommentId
+
+        };
+
+        await Notification.create(notificationBody);
+
+
+        if (forumPostUser && loggedInUsers.has(forumPostUser.userId) && forumPostUser.userId !== userId){
+            req.io.emit("userNewForumCommentNotification", {"pushToken": forumPostUser.pushToken, "title": forumPost.title, "body": content});
+            console.log("Emitted userNewForumCommentNotification");
+        }
         res.status(201).json({ forumComment });
     } catch (error) {
         console.error(error);

@@ -5,6 +5,7 @@ const cors = require("cors");
 const app = express();
 const globalEmitter = require("./globalEmitter");
 const WebSocket = require("ws");
+const { loggedInUsers } = require('./shared');
 
 const server = http.createServer(app);
 // socket io
@@ -14,6 +15,13 @@ const io = socketIo(server, {
     methods: ["GET", "POST"],
   },
 });
+
+// const io = socketIo(server, {
+//   cors: {
+//     origin: "*", // Allow connections from any origin
+//     methods: ["GET", "POST"],
+//   },
+// });
 
 // model
 const db = require("./models");
@@ -69,7 +77,9 @@ const forumPostUserRouter = require("./routes/user/forumPostRoute");
 const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
 const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
 const reviewRoute = require("./routes/user/reviewRoute");
-const faqRoute = require("./routes/user/faqRoute")
+const faqRoute = require("./routes/user/faqRoute");
+const notificationRoute = require("./routes/user/notificationRoute");
+const responseRoute = require("./routes/user/responseRoute");
 const e = require("express");
 
 app.use(cors());
@@ -109,10 +119,31 @@ app.use(
   forumPostUserRouter,
   forumCommentUserRouter,
   partnerApplicationUserRouter,
-  faqRoute
+  faqRoute,
+  notificationRoute,
+  responseRoute
 );
 
 io.on("connection", (socket) => {
+
+  console.log(`Client connected: ${socket.id}`);
+
+  socket.on('login', (userId) => {
+
+    loggedInUsers.set(userId, socket.id);
+    console.log("socketID: ",socket.id)
+    // socket.emit('login', userId)
+    console.log(`User with userId ${userId} has logged in.`);
+    // console.log("Login: ", socket.userId);
+  });
+
+  socket.on('logout', (userId) => {
+    // Access the userId from the socket object
+    console.log("Logout: ", loggedInUsers.get(userId))
+    // socket.to(loggedInUsers.get(userId)).emit('logout', userId)
+    loggedInUsers.delete(userId);
+    console.log(`User with userId ${userId} has logged out.`);
+  });
   // Handle disconnects
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);
@@ -473,19 +504,19 @@ db.sequelize
       console.log("ForumComment test data already exists in the database.");
     }
 
-    if (existingNotificationRecordsCount === 0) {
-      try {
-        for (const notificationData of notificationTestData) {
-          await db.Notification.create(notificationData);
-        }
+    // if (existingNotificationRecordsCount === 0) {
+    //   try {
+    //     for (const notificationData of notificationTestData) {
+    //       await db.Notification.create(notificationData);
+    //     }
 
-        console.log("Notification test data inserted successfully.");
-      } catch (error) {
-        console.error("Error inserting Notification test data:", error);
-      }
-    } else {
-      console.log("Notification test data already exists in the database.");
-    }
+    //     console.log("Notification test data inserted successfully.");
+    //   } catch (error) {
+    //     console.error("Error inserting Notification test data:", error);
+    //   }
+    // } else {
+    //   console.log("Notification test data already exists in the database.");
+    // }
 
     // app.listen(3000, () => {
     //   console.log("Server running on port 3000");
