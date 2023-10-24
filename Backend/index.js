@@ -247,32 +247,6 @@ db.sequelize
       console.log("User test data already exists in the database.");
     }
 
-    if (existingScheduleRecordsCount === 0) {
-      try {
-        for (const scheduleData of scheduleTestData) {
-          await db.Schedule.create(scheduleData);
-        }
-        console.log("Schedule test data inserted successfully.");
-      } catch (error) {
-        console.error("Error inserting Schedule test data:", error);
-      }
-    } else {
-      console.log("Schedule test data already exists in the database.");
-    }
-
-    if (existingViewingAvailabilityCount === 0) {
-      try {
-        for (const viewingAvailability of viewingAvailabilityTestData) {
-          await db.ViewingAvailability.create(viewingAvailability);
-        }
-        console.log("Viewing Availability test data inserted successfully.");
-      } catch (error) {
-        console.error("Error inserting Viewing Availability test data:", error);
-      }
-    } else {
-      console.log("Viewing Availability test data already exists in the database.");
-    }
-
     // Admin
     if (existingAdminRecordsCount === 0) {
       try {
@@ -342,6 +316,32 @@ db.sequelize
       }
     } else {
       console.log("Property test data already exists in the database.");
+    }
+
+    if (existingScheduleRecordsCount === 0) {
+      try {
+        for (const scheduleData of scheduleTestData) {
+          await db.Schedule.create(scheduleData);
+        }
+        console.log("Schedule test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Schedule test data:", error);
+      }
+    } else {
+      console.log("Schedule test data already exists in the database.");
+    }
+
+    if (existingViewingAvailabilityCount === 0) {
+      try {
+        for (const viewingAvailability of viewingAvailabilityTestData) {
+          await db.ViewingAvailability.create(viewingAvailability);
+        }
+        console.log("Viewing Availability test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Viewing Availability test data:", error);
+      }
+    } else {
+      console.log("Viewing Availability test data already exists in the database.");
     }
 
     // Images

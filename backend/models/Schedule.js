@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TIME,
             allowNull: false,
         },
+        ScheduleStatus: {
+            type: DataTypes.ENUM("AWAIT_SELLER_CONFIRMATION", "SELLER_CONFIRMED", "SELLER_REJECT", "BUYER_CANCELLED"),
+            allowNull: false,
+          },
     }, {
         freezeTableName: true
     });

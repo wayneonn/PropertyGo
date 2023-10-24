@@ -9,7 +9,7 @@ import {
     FlatList,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -25,10 +25,11 @@ import {
     getScheduleByUserId,
 } from '../../utils/scheduleApi';
 import { set } from 'date-fns';
-import ScheduleCard from './ScheduleCard'; 
+import ScheduleCard from './ScheduleCard';
+import AppointmentCard from './AppointmentCard';
 
 const SetSchedule = ({ route }) => {
-    const { propertyListingId, userDetails  } = route.params;
+    const { propertyListingId, userDetails } = route.params;
     const navigation = useNavigation();
     const { user } = useContext(AuthContext);
     const [selectedTime, setSelectedTime] = useState(null);
@@ -67,13 +68,43 @@ const SetSchedule = ({ route }) => {
         }
     }, []);
 
+    const sortedSchedules = [...userSlots];
+    sortedSchedules.sort((a, b) => {
+        // Sort by meetup date first
+        const dateA = new Date(a.meetupDate);
+        const dateB = new Date(b.meetupDate);
+        if (dateA < dateB) return -1;
+        if (dateA > dateB) return 1;
+
+        // If meetup dates are the same, sort by time
+        const timeA = a.meetupTime;
+        const timeB = b.meetupTime;
+        if (timeA < timeB) return -1;
+        if (timeA > timeB) return 1;
+
+        return 0;
+    });
+
     const fetchScheduleByUser = async () => {
         const { success, data, message } = await getScheduleByUserId(
             userId
         );
 
         if (success) {
-            setUserSlots(data);
+            // const selectedTimeRangeAsNumber = parseInt(selectedTimeRange);
+            const currentDate = new Date();
+
+            // Calculate the date 7 days from now
+            // const daysLater = new Date(currentDate);
+            // daysLater.setHours(0, 0, 0, 0);
+            // daysLater.setDate(currentDate.getDate() + selectedTimeRangeAsNumber);
+
+            const filteredSchedules = data.filter(schedule => {
+                const meetupDate = new Date(schedule.meetupDate);
+                meetupDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+                return meetupDate >= currentDate;
+            });
+            setUserSlots(filteredSchedules);
             console.log("fetchScheduleByUser", data)
         } else {
             setUserSlots([]);
@@ -273,6 +304,7 @@ const SetSchedule = ({ route }) => {
             userId: userId,
             sellerId: sellerUserId,
             propertyId: propertyListingId,
+            ScheduleStatus: "AWAIT_SELLER_CONFIRMATION"
         };
 
         // Call the API to create or update the viewing availability
@@ -373,6 +405,8 @@ const SetSchedule = ({ route }) => {
                 <View style={styles.calendarContainer}>
                     <Calendar
                         onDayPress={handleDayPress}
+                        onMonthChange={handleDayPress}
+                        minDate={new Date()}
                         style={{
                             borderWidth: 0.5,
                             borderColor: 'gray',
@@ -395,7 +429,10 @@ const SetSchedule = ({ route }) => {
                 {/* Time Slots Matrix (Bottom Half) */}
 
                 <View style={styles.timeSlotsContainer}>
-                    <Text style={styles.dateOnContainer}>{formatDate(selectedDate)}</Text>
+                    <Text style={styles.dateOnContainer}>
+                        <Ionicons name="calendar" size={28} color="#00adf5" />
+                        {" "}{formatDate(selectedDate)}
+                    </Text>
                     {generateTimeSlots().length > 0 ? (
                         <FlatList
                             data={generateTimeSlots()}
@@ -431,19 +468,23 @@ const SetSchedule = ({ route }) => {
                     )}
                 </View>
                 <View style={styles.bookingContainer}>
-                    <Text style={styles.dateOnContainer}>Upcoming Viewing</Text>
+                    <Text style={styles.dateOnContainer}>
+                        <MaterialCommunityIcons
+                            name="telescope"
+                            size={28}
+                            color="#00adf5"
+                        />{' '}
+                        Upcoming Viewing</Text>
 
                     {/* List of user's bookings */}
-                    {userSlots && userSlots.length > 0 ? (
-                        <FlatList
-                            data={userSlots}
-                            keyExtractor={(item) => item.scheduleId.toString()}
-                            renderItem={({ item }) => (
-                                <ScheduleCard schedule={item}  onPress={() => {
-                                    navigation.navigate('View Profile', { userId: sellerUserId });
-                                  }} />
-                            )}
-                        />
+                    {sortedSchedules && sortedSchedules.length > 0 ? (
+                        <>
+                            {sortedSchedules.map((item) => (
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
+                                }} />
+                            ))}
+                        </>
                     ) : (
                         <Text style={styles.noAvailabilityText}>No bookings made by the user.</Text>
                     )}
@@ -501,7 +542,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     dateOnContainer: {
-        fontSize: 20,
+        fontSize: 25,
         fontWeight: 'bold',
         marginBottom: 10,
         marginLeft: 5,

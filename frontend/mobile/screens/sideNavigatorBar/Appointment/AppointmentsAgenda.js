@@ -23,6 +23,7 @@ const Appointments = ({ route }) => {
     const [sellerSellSchedules, setSellerSellSchedules] = useState([]); // Schedules for "To Sell"
     const [todayUserBuySchedules, setTodayUserBuySchedules] = useState([]); // Schedules for "To Buy"
     const [todaySellerSellSchedules, setTodaySellerSellSchedules] = useState([]); // Schedules for "To Sell"
+    const [isScreenLoaded, setIsScreenLoaded] = useState(false);
 
     const combinedSchedulesForToday = [...todayUserBuySchedules, ...todaySellerSellSchedules];
     combinedSchedulesForToday.sort((a, b) => {
@@ -44,6 +45,7 @@ const Appointments = ({ route }) => {
     useEffect(() => {
         fetchScheduleByUser();
         fetchScheduleBySeller();
+        setIsScreenLoaded(true);
     }, []);
 
     useFocusEffect(
@@ -118,6 +120,7 @@ const Appointments = ({ route }) => {
 
     return (
         <View style={styles.container}>
+            {isScreenLoaded && (
             <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollViewContent}
@@ -125,7 +128,13 @@ const Appointments = ({ route }) => {
             >
                 <View style={styles.headerContainer}>
                     {/* Back button */}
-                    <Text style={styles.header}>Appointment Agenda</Text>
+                    <Text style={styles.header}>
+                    <Ionicons
+                            name="calendar"
+                            size={28}
+                            color="#000"
+                        />{'  '}
+                        Your Agenda</Text>
                 </View>
 
                 {/* Container for today's agenda */}
@@ -136,7 +145,7 @@ const Appointments = ({ route }) => {
                             size={28}
                             color="#00adf5"
                         />{'  '}
-                        Today's Agenda</Text>
+                        Today's Viewings</Text>
 
                     {/* List of user's and seller's bookings for today */}
                     {combinedSchedulesForToday.length > 0 ? (
@@ -164,6 +173,7 @@ const Appointments = ({ route }) => {
                 {/* Container for "To Sell" */}
                 
             </ScrollView>
+            )}
         </View>
     );
 };
@@ -173,12 +183,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
         padding: 16,
+        justifyContent: 'flex-start',
     },
     headerContainer: {
         marginBottom: 20,
     },
     header: {
-        fontSize: 22,
+        fontSize: 28,
         fontWeight: 'bold',
         marginLeft: 10,
         marginTop: 5,

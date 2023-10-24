@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     },
     scheduleDate: {
         fontSize: 15,
-        color: '#526c8b',
+        color: '#000',
         marginLeft: 8,
     },
     scheduleTime: {

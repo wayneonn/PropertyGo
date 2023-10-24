@@ -116,21 +116,21 @@ const Appointments = ({ route }) => {
             setUserSlots(data);
             const selectedTimeRangeAsNumber = parseInt(selectedTimeRange);
             const currentDate = new Date();
-        
+
             // Calculate the date 7 days from now
             const daysLater = new Date(currentDate);
             daysLater.setHours(0, 0, 0, 0);
             daysLater.setDate(currentDate.getDate() + selectedTimeRangeAsNumber);
-        
+
             const filteredSchedules = data.filter(schedule => {
                 const meetupDate = new Date(schedule.meetupDate);
                 meetupDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
                 return meetupDate >= currentDate && meetupDate <= daysLater;
             });
-        
+
             setFilteredBuyerSchedules(filteredSchedules);
         }
-         else {
+        else {
             setUserSlots([]);
             console.error('Error fetching schedule data for user:', message);
         }
@@ -145,7 +145,7 @@ const Appointments = ({ route }) => {
             setSellerSlots(data);
             const selectedTimeRangeAsNumber = parseInt(selectedTimeRange);
             const currentDate = new Date();
-        
+
             // Calculate the date 7 days from now
             const daysLater = new Date(currentDate);
             daysLater.setHours(0, 0, 0, 0);
@@ -155,7 +155,7 @@ const Appointments = ({ route }) => {
                 meetupDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
                 return meetupDate >= currentDate && meetupDate <= daysLater;
             });
-        
+
             setFilteredSellerSchedules(filteredSchedules);
         } else {
             setSellerSlots([]);
@@ -345,23 +345,13 @@ const Appointments = ({ route }) => {
                         To Buy - Upcoming To View
                     </Text>
                     {userBuySchedules && userBuySchedules.length > 0 ? (
-                        <FlatList
-                            data={userBuySchedules}
-                            keyExtractor={(item) => item.scheduleId.toString()}
-                            renderItem={({ item }) => (
-                                <AppointmentCard
-                                    schedule={item}
-                                    propertyId={item.propertyId}
-                                    onPress={() => {
-                                        navigation.navigate('View Appointment Detail', {
-                                            userId: item.sellerId,
-                                            propertyId: item.propertyId,
-                                            schedule: item,
-                                        });
-                                    }}
-                                />
-                            )}
-                        />
+                        <>
+                            {userBuySchedules.map((item) => (
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
+                                }} />
+                            ))}
+                        </>
                     ) : (
                         <Text style={styles.noAvailabilityText}>No bookings found.</Text>
                     )}
@@ -377,23 +367,13 @@ const Appointments = ({ route }) => {
                         To Sell - Buyers To View Unit
                     </Text>
                     {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
-                        <FlatList
-                            data={sellerSellSchedules}
-                            keyExtractor={(item) => item.scheduleId.toString()}
-                            renderItem={({ item }) => (
-                                <AppointmentCard
-                                    schedule={item}
-                                    propertyId={item.propertyId}
-                                    onPress={() => {
-                                        navigation.navigate('View Appointment Detail', {
-                                            userId: item.userId,
-                                            propertyId: item.propertyId,
-                                            schedule: item,
-                                        });
-                                    }}
-                                />
-                            )}
-                        />
+                        <>
+                            {sellerSellSchedules.map((item) => (
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
+                                }} />
+                            ))}
+                        </>
                     ) : (
                         <Text style={styles.noAvailabilityText}>
                             No bookings for units listed.
@@ -402,86 +382,80 @@ const Appointments = ({ route }) => {
                 </View>
 
                 <View style={styles.bookingContainer}>
-                <View style={styles.sectionHeaderContainer}>
-        <Text style={styles.sectionHeader}>
-            <MaterialCommunityIcons
-                name="calendar-search"
-                size={28}
-                color="#00adf5"
-            />{' '}
-            Upcoming Days
-        </Text>
-        {/* Picker */}
-        <TouchableOpacity
-            style={styles.propertyTypePickerButton}
-            onPress={() => setDayPickerVisible(true)}
-        >
-            <Text style={styles.propertyTypePickerText}>
-                {selectedTextDays}
-            </Text>
-            <Icon name="caret-down" size={20} color="black" />
-        </TouchableOpacity>
-        {/* Picker */}
-    </View>
-
-                <Modal
-                    transparent={true}
-                    animationType="slide"
-                    visible={dayPickerVisible}
-                    onRequestClose={() => setDayPickerVisible(false)}
-                >
-                    <View style={styles.modalContainer}>
-                        <Picker
-                            selectedValue={selectedTimeRange}
-                            onValueChange={(value) => {
-                                setSelectedTimeRange(value);
-                                // Find the corresponding label and set it as selectedTextDays
-                                const selectedLabel = dayChoices.find((item) => item.value === value);
-                                if (selectedLabel) {
-                                    setSelectedTextDays(selectedLabel.label);
-                                }
-                                console.log('selectedTimeRange: ', selectedTimeRange, "selectedTextDays: ", selectedTextDays);
-                            }}
-                            style={styles.picker}
+                    <View style={styles.sectionHeaderContainer}>
+                        <Text style={styles.sectionHeader}>
+                            <MaterialCommunityIcons
+                                name="calendar-search"
+                                size={28}
+                                color="#00adf5"
+                            />{' '}
+                            Upcoming Days
+                        </Text>
+                        {/* Picker */}
+                        <TouchableOpacity
+                            style={styles.propertyTypePickerButton}
+                            onPress={() => setDayPickerVisible(true)}
                         >
-                            {dayChoices.map((type, index) => (
-                                <Picker.Item
-                                    key={index}
-                                    label={type.label}
-                                    value={type.value}
-                                />
-                            ))}
-                        </Picker>
-
-                        <View style={styles.okButtonContainer}>
-                            <Button
-                                title="OK"
-                                onPress={() => setDayPickerVisible(false)}
-                            />
-                        </View>
+                            <Text style={styles.propertyTypePickerText}>
+                                {selectedTextDays}
+                            </Text>
+                            <Icon name="caret-down" size={20} color="black" />
+                        </TouchableOpacity>
+                        {/* Picker */}
                     </View>
-                </Modal>
-                {/* Picker */}
-                    {combinedSchedules.length > 0  ? (
+
+                    <Modal
+                        transparent={true}
+                        animationType="slide"
+                        visible={dayPickerVisible}
+                        onRequestClose={() => setDayPickerVisible(false)}
+                    >
+                        <View style={styles.modalContainer}>
+                            <Picker
+                                selectedValue={selectedTimeRange}
+                                onValueChange={(value) => {
+                                    setSelectedTimeRange(value);
+                                    // Find the corresponding label and set it as selectedTextDays
+                                    const selectedLabel = dayChoices.find((item) => item.value === value);
+                                    if (selectedLabel) {
+                                        setSelectedTextDays(selectedLabel.label);
+                                    }
+                                    console.log('selectedTimeRange: ', selectedTimeRange, "selectedTextDays: ", selectedTextDays);
+                                }}
+                                style={styles.picker}
+                            >
+                                {dayChoices.map((type, index) => (
+                                    <Picker.Item
+                                        key={index}
+                                        label={type.label}
+                                        value={type.value}
+                                    />
+                                ))}
+                            </Picker>
+
+                            <View style={styles.okButtonContainer}>
+                                <Button
+                                    title="OK"
+                                    onPress={() => setDayPickerVisible(false)}
+                                />
+                            </View>
+                        </View>
+                    </Modal>
+                    {/* Picker */}
+                    {combinedSchedules.length > 0 ? (
                         <>
                             {combinedSchedules.map((item) => (
                                 <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
                                     navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
                                 }} />
                             ))}
-                            {/* {filteredSellerSchedules.map((item) => (
-
-                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule: item });
-                                }} />
-                            ))} */}
                         </>
                     ) : (
                         <Text style={styles.noAvailabilityText}>
                             No bookings for units listed.
                         </Text>
                     )}
-                </View>                
+                </View>
             </ScrollView>
         </View>
     );
@@ -584,7 +558,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 10,
     },
-    
+
 });
 
 const calendarTheme = {
