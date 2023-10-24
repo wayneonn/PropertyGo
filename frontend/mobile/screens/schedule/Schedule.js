@@ -85,6 +85,27 @@ const SetSchedule = ({ route }) => {
         return 0;
     });
 
+    const getTodayDate = () => {
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            timeZone: 'Asia/Singapore', // Specify the time zone for Singapore
+        };
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayString = today.toLocaleString('en-SG', options);
+        const parts = todayString.split('/');
+        let todayDate;
+        if (parts.length === 3) {
+            const dd = parts[0].padStart(2, '0');
+            const mm = parts[1].padStart(2, '0');
+            const yyyy = parts[2];
+            todayDate = `${yyyy}-${mm}-${dd}`;
+        }
+        return todayDate;
+    }
+
     const fetchScheduleByUser = async () => {
         const { success, data, message } = await getScheduleByUserId(
             userId
@@ -93,17 +114,15 @@ const SetSchedule = ({ route }) => {
         if (success) {
             // const selectedTimeRangeAsNumber = parseInt(selectedTimeRange);
             const currentDate = new Date();
+            const todayDate = getTodayDate();
 
             // Calculate the date 7 days from now
             // const daysLater = new Date(currentDate);
             // daysLater.setHours(0, 0, 0, 0);
             // daysLater.setDate(currentDate.getDate() + selectedTimeRangeAsNumber);
 
-            const filteredSchedules = data.filter(schedule => {
-                const meetupDate = new Date(schedule.meetupDate);
-                meetupDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
-                return meetupDate >= currentDate;
-            });
+            console.log("todayDate! ", todayDate);
+            const filteredSchedules = data.filter(schedule => currentDate <= new Date(schedule.meetupDate) && schedule.propertyId === propertyListingId);
             setUserSlots(filteredSchedules);
             console.log("fetchScheduleByUser", data)
         } else {
@@ -365,6 +384,7 @@ const SetSchedule = ({ route }) => {
 
     const getMarkedDates = () => {
         const markedDates = {};
+        const buyer = { key: 'buyer', color: 'red' };
 
         if (availability.length === 0) {
             markedDates[selectedDate] = { selected: true, selectedColor: 'blue' };
@@ -373,7 +393,7 @@ const SetSchedule = ({ route }) => {
         // Loop through the data and mark the dates
         availability.forEach((availability) => {
             const date = availability.date; // Get the date from the fetched data
-
+            markedDates[date] = { dots: [] };
             // Specify how you want to mark the date
 
             markedDates[date] = { selected: true, selectedColor: 'green' };
@@ -382,7 +402,17 @@ const SetSchedule = ({ route }) => {
 
         userSlots.forEach((userSlot) => {
             const date = userSlot.meetupDate;
-            markedDates[date] = { selected: true, selectedColor: 'red' };
+            if (!markedDates[date]) {
+                markedDates[date] = { dots: [] }; // Create a new entry with an empty dots array
+            } else if (!markedDates[date].dots) {
+                markedDates[date].dots = []; // If dots array doesn't exist, create it
+            }
+            markedDates[date].dots.push(buyer);
+
+            if (date === selectedDate) {
+                markedDates[date].selected = true;
+                markedDates[date].selectedDotColor = 'blue';
+            }
         });
 
         return markedDates;
@@ -406,6 +436,7 @@ const SetSchedule = ({ route }) => {
                     <Calendar
                         onDayPress={handleDayPress}
                         onMonthChange={handleDayPress}
+                        markingType={'multi-dot'}
                         minDate={new Date()}
                         style={{
                             borderWidth: 0.5,
