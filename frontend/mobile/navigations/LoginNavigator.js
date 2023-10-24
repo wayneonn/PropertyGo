@@ -169,7 +169,7 @@ const LoginNavigator = () => {
         //     sendPushNotification({pushToken,title,body});
         // });
 
-        socket.on("userNewForumCommentNotification", (data) => {
+        socket.on("userNotification", (data) => {
             console.log("Received userNewForumCommentNotification");
             // Handle user logout event
             const pushToken = data.pushToken;

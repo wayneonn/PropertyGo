@@ -36,7 +36,7 @@ const UserBottomNavigator = () => {
     };
 
     useEffect(() => {
-        socket.on("userNewForumCommentNotification", (data) => {
+        socket.on("userNotification", (data) => {
             fetchData()
         });
     })
