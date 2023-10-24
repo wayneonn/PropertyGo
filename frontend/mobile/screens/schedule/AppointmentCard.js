@@ -25,8 +25,6 @@ const AppointmentCard = ({ schedule, onPress, propertyId }) => {
     const cardSize = Dimensions.get('window').width;
 
     const fetchPropertyListing = async (id) => {
-
-
         try {
             // Make an API call to fetch property listing details by id
             const response = await fetch(getPropertyListing(id));
@@ -37,14 +35,13 @@ const AppointmentCard = ({ schedule, onPress, propertyId }) => {
                 const imageUri = getImageUriById(smallestImageId);
                 setPropertyImageUri(imageUri);
             }
-            console.log('Property Listing Data:', data)
+            console.log('Property Listing Data:', data);
         } catch (error) {
             console.error('Error fetching property listing:', error);
         }
     };
 
     useEffect(() => {
-
         setCacheBuster(Date.now());
     }, [propertyListing]);
 
@@ -64,7 +61,38 @@ const AppointmentCard = ({ schedule, onPress, propertyId }) => {
         date.setMinutes(minutes);
         return format(date, 'h a'); // e.g., 2 PM
     };
-    
+
+    // Function to get the color based on status
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'AWAIT_SELLER_CONFIRMATION':
+                return 'yellow';
+            case 'SELLER_CONFIRMED':
+                return 'green';
+            case 'SELLER_REJECT':
+            case 'BUYER_CANCELLED':
+            case 'SELLER_CANCELLED':
+                return 'red';
+            default:
+                return 'blue'; // Default color
+        }
+    };
+
+    // Function to get the status text based on status
+    const getStatusText = (status) => {
+        switch (status) {
+            case 'AWAIT_SELLER_CONFIRMATION':
+                return 'Awaiting Seller Response';
+            case 'SELLER_CONFIRMED':
+                return 'Confirmed';
+            case 'SELLER_REJECT':
+            case 'BUYER_CANCELLED':
+            case 'SELLER_CANCELLED':
+                return 'Cancelled';
+            default:
+                return status; // Default status text
+        }
+    };
 
     return (
         <TouchableOpacity style={[styles.card, { width: cardSize * 0.85, height: cardSize * 0.8 }]} onPress={() => onPress(schedule.scheduleId)}>
@@ -90,6 +118,10 @@ const AppointmentCard = ({ schedule, onPress, propertyId }) => {
                     <Ionicons name="calendar-outline" size={20} color="#6b7c93" />
                     <Text style={styles.scheduleDate}>{formatDate(schedule.meetupDate)}</Text>
                 </View>
+                {/* Status Indicator */}
+                <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(schedule.ScheduleStatus) }]}>
+                    <Text style={styles.statusText}>{getStatusText(schedule.ScheduleStatus)}</Text>
+                </View>
             </View>
             <View style={styles.timeSection}>
                 <Text style={styles.scheduleTime}>{formatTime(schedule.meetupTime)}</Text>
@@ -114,10 +146,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 7,
         width: Dimensions.get('window').width * 0.85,
-        // padding: 12,
-        // flexDirection: 'row',
         justifyContent: 'space-between',
-        // alignItems: 'center',
     },
     infoSection: {
         flex: 3,
@@ -146,7 +175,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         color: '#424f68',
         fontWeight: '700',
-        marginTop:20,
+        marginTop: 20,
         marginRight: 10,
     },
     imageContainer: {
@@ -157,7 +186,7 @@ const styles = StyleSheet.create({
     propertyImage: {
         width: '100%',
         height: '100%',
-        borderRadius: 10
+        borderRadius: 10,
     },
     placeholderImage: {
         width: '100%',
@@ -165,17 +194,35 @@ const styles = StyleSheet.create({
         backgroundColor: '#ccc',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10
+        borderRadius: 10,
     },
     placeholderImageImage: {
-        width: '100%', // Adjust the width as needed to match the desired size
-        height: '100%', // Adjust the height as needed to match the desired size
+        width: '100%',
+        height: '100%',
         borderRadius: 10,
     },
     propertyDetails: {
         padding: 10,
         flex: 1,
         justifyContent: 'space-between',
+    },
+    statusIndicator: {
+        position: 'absolute',
+        bottom: -55,
+        left: 10,
+        
+        borderWidth: 0.18,
+        paddingVertical: 2,
+        paddingHorizontal: 8,
+        borderRadius: 5,
+        backgroundColor: 'yellow', // Default color
+    },
+    statusText: {
+        fontSize: 12,
+        letterSpacing: 1,
+        fontWeight: 'bold',
+        color: '#000',
+        padding: 2,
     },
 });
 

@@ -1,9 +1,41 @@
-const { Schedule } = require('../../models');
+const { Schedule, Notification, User, Property } = require('../../models');
+const { loggedInUsers } = require('../../shared');
 
 async function createSchedule(req, res) {
     const scheduleData = req.body;
     try {
         const createdSchedule = await Schedule.create(scheduleData);
+        const userId = parseInt(createdSchedule.userId);
+
+        const user = await User.findByPk(createdSchedule.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const property = await Property.findByPk(createdSchedule.propertyId);
+        // const propertyUser = await property.getUser();
+
+        const content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has made a viewing appointing on the ${createdSchedule.meetupDate} at ${createdSchedule.meetupTime} for your property ${property.title}`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": userId,
+            "userId" : property.sellerId,
+            "content" : content,
+            "scheduleId" : createdSchedule.scheduleId,
+        };
+
+        await Notification.create(notificationBody);
+
+
+        if (property && loggedInUsers.has(property.sellerId) && property.sellerId !== userId){
+            req.io.emit("userNewForumCommentNotification", {"pushToken": property.pushToken, "title": property.title, "body": content});
+            console.log("Emitted userNewForumCommentNotification");
+        }
+
         res.json(createdSchedule);
     } catch (error) {
         console.error("Error creating schedule:", error);

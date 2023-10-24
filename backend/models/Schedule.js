@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         ScheduleStatus: {
-            type: DataTypes.ENUM("AWAIT_SELLER_CONFIRMATION", "SELLER_CONFIRMED", "SELLER_REJECT", "BUYER_CANCELLED"),
+            type: DataTypes.ENUM("AWAIT_SELLER_CONFIRMATION", "SELLER_CONFIRMED", "SELLER_REJECT", "BUYER_CANCELLED", "SELLER_CANCELLED", "COMPLETED"),
             allowNull: false,
           },
     }, {
@@ -46,6 +46,14 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
             },
             as: 'property',
+        });
+        Schedule.hasMany(models.Notification, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: true,
+                name: 'scheduleId'
+            },
+            as: 'notifications',
         });
     };
 

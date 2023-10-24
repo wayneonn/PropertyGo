@@ -98,6 +98,14 @@ module.exports = (sequelize, DataTypes) => {
             },
             as: 'userNotification',
         });
+
+        Notification.belongsTo(models.Schedule, {
+            foreignKey: {
+                name: 'scheduleId',
+                allowNull: true,
+            },
+            as: 'schedule',
+        });
     };
 
     return Notification;
