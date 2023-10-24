@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("REPLIED", "PENDING", "CLOSED"),
         allowNull: false,
       },
+      messageUpdatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
       // response: {
       //   type: DataTypes.STRING,
       //   allowNull: true,

@@ -1,10 +1,15 @@
 import React, {createContext, useEffect, useMemo, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import configData from "./config.json"
+import io from 'socket.io-client';
+
+const BASE_URL = configData.BASE_URL;
+const socket = io(BASE_URL);
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
-    const [user, setUser] = useState({});
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -62,7 +67,9 @@ export const AuthProvider = ({children}) => {
             // Save the user session to AsyncStorage
             await AsyncStorage.setItem('userSession', JSON.stringify(userData));
             setUser(userData);
+            socket.emit('login', userData.user.userId);
             console.log('User session saved');
+            // console.log("userId:" , userData.user.userId);
         } catch (error) {
             console.error('Error saving user session:', error);
         }
@@ -72,6 +79,7 @@ export const AuthProvider = ({children}) => {
         try {
             // Remove the user session from AsyncStorage
             await AsyncStorage.removeItem('userSession');
+            socket.emit('logout', user.user.userId);
             setUser(null);
             console.log('User session removed');
         } catch (error) {

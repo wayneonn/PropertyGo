@@ -3,12 +3,12 @@ import {Image, Text, View} from 'react-native';
 import {createDrawerNavigator, DrawerContentScrollView, DrawerItemList} from '@react-navigation/drawer';
 // import { Ionicons } from '@expo/vector-icons';
 import LogoutButton from '../components/LogoutButton';
-import Appointments from '../screens/sideNavigatorBar/Appointments'
+import AppointmentStackGroup from './Appointment/AppointmentStackGroup'
 import Documents from '../screens/sideNavigatorBar/Documents'
 import ExploreServicesStackGroup from './ExploreServicesStackGroup';
 import FAQ from '../screens/sideNavigatorBar/FAQs'
 import MortgageCalculator from '../screens/sideNavigatorBar/MortgageCalculator'
-import Transactions from '../screens/sideNavigatorBar/Transactions'
+import TransactionStackGroup from './Transaction/TransactionStackGroup'
 import UserListingStackGroup from './UserListingStackGroup'
 import WorkWithUs from '../screens/sideNavigatorBar/WorkWithUs'
 import ContactUsStackGroup from './ContactUsStackGroup';
@@ -16,6 +16,7 @@ import TopBar from '../components/Common/TopNavBar';
 import UserProfileStackGroup from './UserProfileStackGroup';
 import UserBottomNavigator from './UserBottomNavigator';
 import {createDrawerScreen} from '../components/DrawerScreen';
+import Chat from '../screens/sideNavigatorBar/ChatWithPartner'
 import {AuthContext} from '../AuthContext'; // Import your AuthContext
 import base64 from 'react-native-base64';
 
@@ -86,13 +87,14 @@ const drawerScreens = [
     createDrawerScreen('Explore Services Stack Group', ExploreServicesStackGroup, 'search', 'Explore Services'),
     createDrawerScreen('User Profile', UserProfileStackGroup, 'person', 'User Profile'),
     createDrawerScreen('User Listings', UserListingStackGroup, 'list', 'User Listings'),
-    createDrawerScreen('Appointments', Appointments, 'calendar', 'Appointments'),
+    createDrawerScreen('Appointments', AppointmentStackGroup, 'calendar', 'Appointments'),
     createDrawerScreen('Documents', Documents, 'document', 'Documents'),
-    createDrawerScreen('Transactions', Transactions, 'swap-horizontal', 'Transactions'),
+    createDrawerScreen('Transactions', TransactionStackGroup, 'swap-horizontal', 'Transactions'),
     createDrawerScreen('Mortgage Calculator', MortgageCalculator, 'calculator', 'Mortgage Calculator'),
     createDrawerScreen('FAQ', FAQ, 'help-circle', 'FAQ'),
     createDrawerScreen('Contact Us Group', ContactUsStackGroup, 'mail', 'Contact Us'),
     // createDrawerScreen('Work With Us', WorkWithUs, 'briefcase', 'Work With Us'),
+    createDrawerScreen('Chats', Chat, 'person', 'Chats' )
 ];
 
 const SideBar = ({route}) => {

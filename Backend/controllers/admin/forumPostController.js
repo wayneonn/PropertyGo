@@ -1,4 +1,5 @@
 const { ForumTopic, ForumPost, User, Notification, Image } = require("../../models");
+const { loggedInUsers } = require('../../shared');
 
 const getFlaggedForumPosts = async (req, res) => {
     try {
@@ -83,7 +84,25 @@ const markForumPostInappropriate = async (req, res) => {
         "adminId": adminId
     };
 
+    
+    const userNotification = {
+        "content" : `The admin have flagged the forum post of "${forumPost.title}" as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"}`,
+        "adminNotificationId": adminId,
+        "userId" : forumPost.userId,
+        "forumPostId" : forumPost.forumPostId,
+    };
+
+    console.log("userId  " , forumPost.userId)
+
     await Notification.create(req.body);
+    await Notification.create(userNotification);
+    const forumPostUser = await forumPost.getUser();
+
+    if (forumPostUser && loggedInUsers.has(forumPostUser.userId) && forumPostUser.userId !== userId){
+        req.io.emit("userNotification", {"pushToken": forumPostUser.pushToken, "title": forumPost.title, "body": content});
+        // console.log("Emitted userNewForumCommentNotification");
+    }
+
 
     req.io.emit("newAdminFlaggedForumPost", "Admin has flagged forum post");
     res.status(200).json({ forumPost });
