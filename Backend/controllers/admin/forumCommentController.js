@@ -57,18 +57,18 @@ const markForumCommentInappropriate = async (req, res) => {
     const forumComment = await ForumComment.findByPk(forumCommentId);
 
     if (typeOfResponse === "no") {
-        const forumComments = await ForumComment.findByPk(forumCommentId, {
-            include: {
-              model: User,
-              as: 'usersFlagged', 
-            }
-          });
+        // const forumComments = await ForumComment.findByPk(forumCommentId, {
+        //     include: {
+        //       model: User,
+        //       as: 'usersFlagged', 
+        //     }
+        //   });
 
-        for (const usersFlaggedForumComment of forumComments.usersFlagged) {
-            const userIdFlagged = usersFlaggedForumComment.dataValues.userId;
+        // for (const usersFlaggedForumComment of forumComments.usersFlagged) {
+        //     const userIdFlagged = usersFlaggedForumComment.dataValues.userId;
 
-            await forumComment.removeUsersFlagged(userIdFlagged);
-        }
+        //     await forumComment.removeUsersFlagged(userIdFlagged);
+        // }
     } else {
         forumComment.isInappropriate = true;
     }
@@ -99,18 +99,18 @@ const resetForumCommentAppropriate = async (req, res) => {
 
     forumComment.isInappropriate = false;
 
-    const forumComments = await ForumComment.findByPk(forumCommentId, {
-        include: {
-          model: User,
-          as: 'usersFlagged', 
-        }
-      });
+    // const forumComments = await ForumComment.findByPk(forumCommentId, {
+    //     include: {
+    //       model: User,
+    //       as: 'usersFlagged', 
+    //     }
+    //   });
 
-    for (const usersFlaggedForumComment of forumComments.usersFlagged) {
-        const userIdFlagged = usersFlaggedForumComment.dataValues.userId;
+    // for (const usersFlaggedForumComment of forumComments.usersFlagged) {
+    //     const userIdFlagged = usersFlaggedForumComment.dataValues.userId;
 
-        await forumComment.removeUsersFlagged(userIdFlagged);
-    }
+    //     await forumComment.removeUsersFlagged(userIdFlagged);
+    // }
 
     await forumComment.save();
 

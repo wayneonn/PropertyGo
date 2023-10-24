@@ -246,7 +246,7 @@ const TopBar = () => {
 
   return (
     <div className="topbar">
-      <div style={{ marginTop: "8em" }}>
+      <div style={{ marginTop: "8em", marginLeft: "30em" }}>
         <Row>
           <Col xs={6}>
             <Toast bg="warning" onClose={() => setShow(false)} show={show}>
