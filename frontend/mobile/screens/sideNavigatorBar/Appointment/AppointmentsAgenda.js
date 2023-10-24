@@ -24,6 +24,23 @@ const Appointments = ({ route }) => {
     const [todayUserBuySchedules, setTodayUserBuySchedules] = useState([]); // Schedules for "To Buy"
     const [todaySellerSellSchedules, setTodaySellerSellSchedules] = useState([]); // Schedules for "To Sell"
 
+    const combinedSchedulesForToday = [...todayUserBuySchedules, ...todaySellerSellSchedules];
+    combinedSchedulesForToday.sort((a, b) => {
+      // Sort by meetup date first
+      const dateA = new Date(a.meetupDate);
+      const dateB = new Date(b.meetupDate);
+      if (dateA > dateB) return -1;
+      if (dateA < dateB) return 1;
+  
+      // If meetup dates are the same, sort by time
+      const timeA = a.meetupTime;
+      const timeB = b.meetupTime;
+      if (timeA > timeB) return -1;
+      if (timeA < timeB) return 1;
+  
+      return 0;
+    });
+
     useEffect(() => {
         fetchScheduleByUser();
         fetchScheduleBySeller();
@@ -122,19 +139,19 @@ const Appointments = ({ route }) => {
                         Today's Agenda</Text>
 
                     {/* List of user's and seller's bookings for today */}
-                    {todayUserBuySchedules.length > 0 || todaySellerSellSchedules.length > 0 ? (
+                    {combinedSchedulesForToday.length > 0 ? (
                         <>
-                            {todayUserBuySchedules.map((item) => (
+                            {combinedSchedulesForToday.map((item) => (
                                 <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
                                     navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
                                 }} />
                             ))}
-                            {todaySellerSellSchedules.map((item) => (
+                            {/* {todaySellerSellSchedules.map((item) => (
 
                                 <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
                                     navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule: item });
                                 }} />
-                            ))}
+                            ))} */}
                         </>
                     ) : (
                         <Text style={styles.noAvailabilityText}>No bookings found.</Text>
