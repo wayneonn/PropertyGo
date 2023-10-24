@@ -14,8 +14,6 @@ import {searchProperties} from '../../utils/api';
 import {AuthContext} from '../../AuthContext';
 import {useFocusEffect} from '@react-navigation/native';
 import {Ionicons} from '@expo/vector-icons';
-import Swiper from 'react-native-swiper';
-import {BarChart, LineChart, PieChart} from 'react-native-chart-kit';
 import {
     fetchBuyerIdTransactions,
     fetchMonthlyTransactions,
@@ -27,7 +25,17 @@ import {TransactionCard} from "../partnerApplication/TransactionCardSmall"
 import {Divider} from '@rneui/themed';
 import {BASE_URL} from "../../utils/documentApi";
 import base64 from 'react-native-base64';
+import {ImageSwiper} from "../../components/ImageSwiper";
+import {BoostingAnimation} from "../../components/BoostingAnimation";
+import {MyLineChart} from "../../components/Partner/LineChart";
+import {MyBarChart} from "../../components/Partner/BarChart";
+import {MyPieChart} from "../../components/Partner/PieChart";
+import {LoadingIndicator} from "../../components/LoadingIndicator";
+import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
 
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 // Time to start fucking around with this.
 const HomePagePartner = ({navigation}) => {
@@ -51,162 +59,10 @@ const HomePagePartner = ({navigation}) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
 
-    const MyLineChart = () => {
-        // Need to read the data from the transactions.
-        // I need to use the summary data for each month.
-        const labels = monthTransactions.length !== 0 ? monthTransactions.map(item => monthDigitToString(item.month)) : ["Jan", "Feb", "Mar", "Apr", "May", "June"];
-        const dataPoints = monthTransactions.length !== 0 ? monthTransactions.map(item => item.totalOnHoldBalance) : [0,0,0,0,0,0];
-
-        return (
-            <LineChart
-                data={{
-                    labels: labels,
-                    datasets: [{
-                        data: dataPoints,
-                    }]
-                }}
-                width={Dimensions.get('window').width - 16}  // from react-native
-                height={220}
-                chartConfig={{
-                    backgroundColor: '#e26a00',
-                    backgroundGradientFrom: '#fb8c00',
-                    backgroundGradientTo: '#ffa726',
-                    decimalPlaces: 2,  // optional, defaults to 2dp
-                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    style: {
-                        borderRadius: 16
-                    },
-                    propsForDots: {
-                        r: '6',
-                        strokeWidth: '2',
-                        stroke: '#ffa726'
-                    }
-                }}
-                bezier
-                style={{
-                    marginVertical: 8,
-                    borderRadius: 16
-                }}
-            />
-        );
-    };
-
-    const MyPieChart = () => {
-
-        function transformToPieChartData() {
-            // Assuming buyerCounts looks like this:
-            // [
-            //     {countryOfOrigin: 'Singapore', transactionCount: 20},
-            //     {countryOfOrigin: 'Malaysia', transactionCount: 2},
-            //     ...more data
-            // ]
-
-            return transactionCountryCount.map(buyer => ({
-                name: buyer.countryOfOrigin,
-                population: buyer.transactionCount,
-                color: getColorForCountry(buyer.countryOfOrigin), // function to get color based on country
-                legendFontColor: '#7F7F7F',
-                legendFontSize: 15,
-            }));
-        }
-
-        function getColorForCountry(country) {
-            // You can have a predefined map of colors or generate colors dynamically.
-            const colorMap = {
-                'SINGAPORE': 'rgba(131, 167, 234, 1)',
-                'MALAYSIA': '#F00',
-                // ... other countries and colors
-            };
-
-            return colorMap[country] || '#000'; // Default color if country is not in map
-        }
-
-        const data_pie = transformToPieChartData()
-
-        return (
-            <PieChart
-                data={data_pie}
-                width={Dimensions.get('window').width - 30}
-                height={220}
-                chartConfig={{
-                    backgroundColor: '#e26a00',
-                    backgroundGradientFrom: '#fb8c00',
-                    backgroundGradientTo: '#ffa726',
-                    decimalPlaces: 2,  // optional, defaults to 2dp
-                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    style: {
-                        borderRadius: 16
-                    },
-                    propsForDots: {
-                        r: '6',
-                        strokeWidth: '2',
-                        stroke: '#ffa726'
-                    }
-                }}
-                accessor={'population'}
-                backgroundColor={'transparent'}
-                paddingLeft={'10'}
-                center={[10, 10]}
-                absolute
-            />
-        );
-    };
-
-    const MyBarChart = () => {
-        // Need to read the data from the transactions.
-        // I need to use the summary data for each month.
-        const labels = monthTransactions.length !== 0 ? monthTransactions.map(item => monthDigitToString(item.month)) : ["Jan", "Feb", "Mar", "Apr", "May", "June"];
-        const dataPoints = monthTransactions.length !== 0 ? monthTransactions.map(item => item.transactionCount) : [0,0,0,0,0,0];
-        return (
-            <BarChart
-                data={{
-                    labels: labels,
-                    datasets: [{
-                        data: dataPoints,
-                    }]
-                }}
-                width={Dimensions.get('window').width - 16}  // from react-native
-                height={220}
-                chartConfig={{
-                    backgroundColor: '#e26a00',
-                    backgroundGradientFrom: '#fb8c00',
-                    backgroundGradientTo: '#ffa726',
-                    decimalPlaces: 2,  // optional, defaults to 2dp
-                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    style: {
-                        borderRadius: 16
-                    },
-                    barPercentage: 0.5,
-                }}
-                showValuesOnTopOfBars
-                style={{
-                    marginVertical: 8,
-                    borderRadius: 16
-                }}
-            />
-        );
-    };
-
     const handlePropertyPress = (propertyListingId) => {
         // Navigate to the Property Listing screen with the given propertyListingId
         navigation.navigate('Property Listing', {propertyListingId});
     };
-
-    function monthDigitToString(monthDigit) {
-        const monthNames = [
-            "Jan", "Feb", "Mar", "Apr", "May", "June",
-            "July", "Aug", "Sept", "Oct", "Nov", "Dec"
-        ];
-        // Check if the month digit is valid (between 1 and 12)
-        if (monthDigit < 1 || monthDigit > 12) {
-            throw new Error("Invalid month digit. It should be between 1 and 12.");
-        }
-        // Return the month name. Subtract 1 because arrays are 0-indexed.
-        return monthNames[monthDigit - 1];
-    }
 
 
     useEffect(() => {
@@ -301,28 +157,6 @@ const HomePagePartner = ({navigation}) => {
         navigation.navigate('Properties List', {title: title, properties: properties, navigation: navigation});
     };
 
-    const ImageSwiper = () => {
-        const images = [
-            require('../../assets/Home-Image.jpeg'),
-            require('../../assets/Buying-Home.jpg'),
-            require('../../assets/HDB-Flats-Near-MRT.jpg'),
-            // Add more image paths as needed
-        ];
-
-        return (
-            <View style={styles.swiperContainer}>
-                <Swiper
-                    showsButtons={false} loop={true} autoplay={true} autoplayTimeout={5}
-                >
-                    {images.map((image, index) => (
-                        <View key={index}>
-                            <Image source={image} style={styles.swiperImage}/>
-                        </View>
-                    ))}
-                </Swiper>
-            </View>
-        );
-    };
 
     const handleSearch = async () => {
         if (searchQuery.trim() === '') {
@@ -375,8 +209,14 @@ const HomePagePartner = ({navigation}) => {
 
     return (
         <ScrollView style={styles.container}>
-            <View style={{paddingHorizontal: 10, paddingTop: 10}}>
+            <View style={{paddingHorizontal: 10, paddingTop: 10, flexDirection: "row"}}>
                 <Text style={styles.sectionTitle}> {companyName} </Text>
+                {new Date(user.user.boostListingEndDate) >= new Date() && (
+                    <>
+                        <BoostingAnimation/>
+                        <Text style={styles.sectionTitle}> Boosted. </Text>
+                    </>
+                )}
             </View>
             {/* Search bar */}
             <View style={styles.searchBar}>
@@ -425,9 +265,7 @@ const HomePagePartner = ({navigation}) => {
             <ImageSwiper/>
 
             {isLoading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#007AFF"/>
-                </View>
+                <LoadingIndicator/>
             ) : (
                 <>
                     {/* Total Earnings Section */}
@@ -439,7 +277,7 @@ const HomePagePartner = ({navigation}) => {
                                     {' '}Total Earnings </Text>
                             </View>
                         </TouchableOpacity>
-                        <MyLineChart/>
+                        <MyLineChart monthTransactions={monthTransactions} screenHeight={screenHeight} screenWidth={screenWidth} navigation={navigation}/>
                     </View>
 
                     {/* Customer/Request Section */}
@@ -452,7 +290,7 @@ const HomePagePartner = ({navigation}) => {
                                     {' '}Customers (Recent) </Text>
                             </View>
                         </TouchableOpacity>
-                        <MyPieChart/>
+                        <MyPieChart transactionCountryCount={transactionCountryCount}/>
                     </View>
 
                     {/* Recently Added Properties Section */}
@@ -465,7 +303,7 @@ const HomePagePartner = ({navigation}) => {
                                     {' '}Total Transactions </Text>
                             </View>
                         </TouchableOpacity>
-                        <MyBarChart/>
+                        <MyBarChart monthTransactions={monthTransactions}/>
                     </View>
 
                     {/*Recent Transactions Section */}
@@ -505,37 +343,9 @@ const HomePagePartner = ({navigation}) => {
                                     <Text style={styles.propertyDetails}>{dateFormatter(item.transaction.createdAt)}</Text>
                                 </View>
                             </TouchableOpacity>
-                        )) : <Text> No data </Text> }
+                        )) : <LoadingIndicator/> }
                     </View>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={modalVisible}
-                        onRequestClose={() => {
-                            setModalVisible(false);
-                        }}
-                    >
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                {/* Render more details about the selectedTransaction */}
-                                <Text style={styles.propertyTitle}>{selectedTransaction?.transaction.status}</Text>
-                                <Text style={styles.propertyPrice}>{selectedTransaction?.transaction.onHoldBalance}</Text>
-                                <Image
-                                    source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                    style={{width: 50, height: 50, borderRadius: 120}}
-                                />
-                                <Text style={styles.propertyPrice}>{selectedTransaction?.userDetails.userName}</Text>
-                                <Text style={styles.propertyDetails}>Invoice ID: {selectedTransaction?.transaction.invoiceId}</Text>
-                                <Text style={styles.propertyDetails}>{dateFormatter(selectedTransaction?.transaction.createdAt)}</Text>
-                                <TouchableOpacity
-                                    style={[styles.button, styles.buttonClose]}
-                                    onPress={() => setModalVisible(!modalVisible)}
-                                >
-                                    <Text style={styles.textStyle}>Hide</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Modal>
+                    <PartnerCardModal modalVisible={modalVisible} setModalVisible={setModalVisible} dateFormatter={dateFormatter} selectedItem={selectedTransaction}/>
                 </>
             )}
         </ScrollView>
