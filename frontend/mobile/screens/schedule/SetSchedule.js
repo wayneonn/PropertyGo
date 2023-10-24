@@ -452,7 +452,7 @@ const SetSchedule = ({ route }) => {
                         <>
                         {sortedSchedules.map((item) => (
                             <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
+                                navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, scheduleId: item.scheduleId });
                             }} />
                         ))}
                     </>                   

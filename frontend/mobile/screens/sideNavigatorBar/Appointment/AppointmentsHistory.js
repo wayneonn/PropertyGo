@@ -143,6 +143,7 @@ const Appointments = ({ route }) => {
       setSellerSlots(data);
       const selectedTimeRangeAsNumber = parseInt(selectedTimeRange);
       const currentDate = new Date();
+      const todayDate = getTodayDate();
   
       // Calculate the date range based on the selected time range
       const daysLater = new Date(currentDate);
@@ -163,30 +164,6 @@ const Appointments = ({ route }) => {
     }
   };
   
-
-  const fetchScheduleData = async () => {
-    const { success, data, message } = await getScheduleByDateAndPropertyId(
-      selectedDate,
-      propertyListingId
-    );
-
-    if (success) {
-      setTakenTimeSlots(data);
-      setIsToBeUpdated(data.some(item => item.userId === userId));
-    } else {
-      console.error('Error fetching schedule data:', message);
-      setTakenTimeSlots([]);
-    }
-  };
-
-  const convertToDateTime = (timeString) => {
-    const [hours, minutes, seconds] = timeString.split(':');
-    const formattedDate = new Date();
-    formattedDate.setHours(parseInt(hours, 10));
-    formattedDate.setMinutes(parseInt(minutes, 10));
-    formattedDate.setSeconds(parseInt(seconds, 10));
-    return formattedDate;
-  };
 
   // Function to handle time slot selection
   const handleTimeSlotSelect = (time, scheduleId) => {
@@ -320,79 +297,26 @@ const Appointments = ({ route }) => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const handleSubmit = async () => {
-
-    console.log('scheduleId Here: ', scheduleId)
-
-    if (!selectedDate || !selectedTime) {
-      // Check if all fields are filled
-      Alert.alert('Incomplete Information', 'Please select a date, start time, and end time.');
-      return;
-    }
-
-    // Create the viewing availability object to be submitted
-    const scheduleData = {
-      meetupDate: selectedDate,
-      meetupTime: selectedSchedule.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
-      userId: userId,
-      propertyId: propertyListingId,
+  const getTodayDate = () => {
+    const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        timeZone: 'Asia/Singapore', // Specify the time zone for Singapore
     };
-
-    // Call the API to create or update the viewing availability
-    let response;
-
-    if (isToBeUpdated === false) {
-      response = await createSchedule(scheduleData);
-      if (response.success) {
-        Alert.alert('Success', 'Schedule booked successfully.');
-        setSelectedTime(null);
-        setSelectedDate(selectedDate);
-      } else {
-        Alert.alert('Error', 'Failed to book. Please try again later.');
-      }
-    } else {
-      response = await updateSchedule(scheduleData, userId, selectedDate);
-      if (response.success) {
-        Alert.alert('Success', 'Schedule updated successfully.');
-        setSelectedTime(null);
-        setSelectedDate(selectedDate);
-      } else {
-        Alert.alert('Error', 'Failed to update. Please try again later.');
-      }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayString = today.toLocaleString('en-SG', options);
+    const parts = todayString.split('/');
+    let todayDate;
+    if (parts.length === 3) {
+        const dd = parts[0].padStart(2, '0');
+        const mm = parts[1].padStart(2, '0');
+        const yyyy = parts[2];
+        todayDate = `${yyyy}-${mm}-${dd}`;
     }
-
-    setTimeSlots(generateTimeSlots());
-    setRefreshFlatList((prev) => !prev);
-    fetchScheduleData();
-    fetchScheduleByUser();
-  };
-
-  const handleRemove = async () => {
-    console.log('scheduleId: ', scheduleId)
-    if (scheduleId) {
-      const response = await removeSchedule(scheduleId);
-      if (response.success) {
-        // Show a success alert
-        Alert.alert('Success', 'Availability successfully removed.');
-
-        // Clear selected time and time range
-        setSelectedTime(null);
-        setScheduleId(null);
-        setIsToBeUpdated(false);
-
-        // Refresh the screen to reflect the new date
-        // setSelectedDate(new Date());
-      } else {
-        Alert.alert('Error', 'Failed to remove availability. Please try again later.');
-        console.log('Error:', response.message);
-      }
-    } else {
-      Alert.alert('No Availability to Remove', 'There is no availability to remove for the selected date.');
-    }
-
-    fetchScheduleData();
-    fetchScheduleByUser();
-  };
+    return todayDate;
+}
 
   const getMarkedDates = () => {
     const markedDates = {};
@@ -502,7 +426,7 @@ const Appointments = ({ route }) => {
                     navigation.navigate('View Appointment Detail', {
                       userId: item.sellerId,
                       propertyId: item.propertyId,
-                      schedule: item,
+                      scheduleId: item.scheduleId,
                     });
                   }}
                 />
@@ -612,7 +536,7 @@ const Appointments = ({ route }) => {
             <>
               {combinedSchedules.map((item) => (
                 <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                  navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
+                  navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, scheduleId: item.scheduleId });
                 }} />
               ))}
               {/* {filteredSellerSchedules.map((item) => (

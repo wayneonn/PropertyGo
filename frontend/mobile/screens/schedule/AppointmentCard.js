@@ -31,8 +31,9 @@ const AppointmentCard = ({ schedule, onPress, propertyId }) => {
             const data = await response.json();
             setPropertyListing(data); // Update state with the fetched data
             if (data.images && data.images.length > 0) {
-                const smallestImageId = data.images[0];
-                const imageUri = getImageUriById(smallestImageId);
+                const imageIds = data.images.map(Number);
+                const smallestImageId = Math.min(...imageIds);
+                const imageUri = getImageUriById(smallestImageId.toString());
                 setPropertyImageUri(imageUri);
             }
             console.log('Property Listing Data:', data);
@@ -94,9 +95,23 @@ const AppointmentCard = ({ schedule, onPress, propertyId }) => {
         }
     };
 
+    const getStatusTextColor = (status) => {
+        switch (status) {
+          case 'AWAIT_SELLER_CONFIRMATION':
+            return 'black';
+          default:
+            return 'white'; // Default color
+        }
+      };
+
+      if (!propertyListing) {
+        return null; // Return null if propertyListing is not loaded
+    }
+
     return (
         <TouchableOpacity style={[styles.card, { width: cardSize * 0.85, height: cardSize * 0.8 }]} onPress={() => onPress(schedule.scheduleId)}>
             <View style={styles.imageContainer}>
+                {/* Property Image */}
                 {propertyImageUri ? (
                     <Image source={{ uri: `${propertyImageUri}?timestamp=${cacheBuster}` }} style={styles.propertyImage} />
                 ) : (
@@ -106,6 +121,7 @@ const AppointmentCard = ({ schedule, onPress, propertyId }) => {
                 )}
             </View>
             <View style={styles.propertyDetails}>
+                {/* Property Details */}
                 <View style={styles.row}>
                     <Ionicons name="home-outline" size={24} color="#6b7c93" />
                     <Text style={styles.propertyTitle}>{propertyListing?.title}</Text>
@@ -120,7 +136,7 @@ const AppointmentCard = ({ schedule, onPress, propertyId }) => {
                 </View>
                 {/* Status Indicator */}
                 <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(schedule.ScheduleStatus) }]}>
-                    <Text style={styles.statusText}>{getStatusText(schedule.ScheduleStatus)}</Text>
+                    <Text style={[styles.statusText, { color: getStatusTextColor(schedule.ScheduleStatus) }]}>{getStatusText(schedule.ScheduleStatus)}</Text>
                 </View>
             </View>
             <View style={styles.timeSection}>

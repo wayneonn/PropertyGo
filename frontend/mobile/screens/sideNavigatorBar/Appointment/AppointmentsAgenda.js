@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     Alert,
     FlatList,
+    ActivityIndicator
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -24,22 +25,23 @@ const Appointments = ({ route }) => {
     const [todayUserBuySchedules, setTodayUserBuySchedules] = useState([]); // Schedules for "To Buy"
     const [todaySellerSellSchedules, setTodaySellerSellSchedules] = useState([]); // Schedules for "To Sell"
     const [isScreenLoaded, setIsScreenLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const combinedSchedulesForToday = [...todayUserBuySchedules, ...todaySellerSellSchedules];
     combinedSchedulesForToday.sort((a, b) => {
-      // Sort by meetup date first
-      const dateA = new Date(a.meetupDate);
-      const dateB = new Date(b.meetupDate);
-      if (dateA > dateB) return -1;
-      if (dateA < dateB) return 1;
-  
-      // If meetup dates are the same, sort by time
-      const timeA = a.meetupTime;
-      const timeB = b.meetupTime;
-      if (timeA > timeB) return -1;
-      if (timeA < timeB) return 1;
-  
-      return 0;
+        // Sort by meetup date first
+        const dateA = new Date(a.meetupDate);
+        const dateB = new Date(b.meetupDate);
+        if (dateA > dateB) return -1;
+        if (dateA < dateB) return 1;
+
+        // If meetup dates are the same, sort by time
+        const timeA = a.meetupTime;
+        const timeB = b.meetupTime;
+        if (timeA > timeB) return -1;
+        if (timeA < timeB) return 1;
+
+        return 0;
     });
 
     useEffect(() => {
@@ -55,6 +57,15 @@ const Appointments = ({ route }) => {
             fetchScheduleBySeller();
         }, [])
     );
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 3000); // 3 seconds in milliseconds
+
+        // Clear the timer when the component unmounts
+        return () => clearTimeout(timer);
+    }, []);
 
     const fetchScheduleByUser = async () => {
         const { success, data, message } = await getScheduleByUserId(
@@ -120,60 +131,65 @@ const Appointments = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            {isScreenLoaded && (
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollViewContent}
-                keyboardShouldPersistTaps="handled" // Add this prop
-            >
-                <View style={styles.headerContainer}>
-                    {/* Back button */}
-                    <Text style={styles.header}>
-                    <Ionicons
-                            name="calendar"
-                            size={28}
-                            color="#000"
-                        />{'  '}
-                        Your Agenda</Text>
+            {isLoading ? ( // Show loading screen while isLoading is true
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator style={styles.activityIndicator} size="large" color="#00adf5" />
                 </View>
+            ) : ( // Show the main screen when isLoading is false
+                isScreenLoaded && (
+                    <ScrollView
+                        style={styles.scrollView}
+                        contentContainerStyle={styles.scrollViewContent}
+                        keyboardShouldPersistTaps="handled" // Add this prop
+                    >
+                        <View style={styles.headerContainer}>
+                            {/* Back button */}
+                            <Text style={styles.header}>
+                                <Ionicons
+                                    name="calendar"
+                                    size={28}
+                                    color="#000"
+                                />{'  '}
+                                Your Agenda</Text>
+                        </View>
 
-                {/* Container for today's agenda */}
-                <View style={styles.todayAgendaContainer}>
-                    <Text style={styles.dateOnContainer}>
-                        <Ionicons
-                            name="calendar"
-                            size={28}
-                            color="#00adf5"
-                        />{'  '}
-                        Today's Viewings</Text>
+                        {/* Container for today's agenda */}
+                        <View style={styles.todayAgendaContainer}>
+                            <Text style={styles.dateOnContainer}>
+                                <Ionicons
+                                    name="calendar"
+                                    size={28}
+                                    color="#00adf5"
+                                />{'  '}
+                                Today's Viewings</Text>
 
-                    {/* List of user's and seller's bookings for today */}
-                    {combinedSchedulesForToday.length > 0 ? (
-                        <>
-                            {combinedSchedulesForToday.map((item) => (
+                            {/* List of user's and seller's bookings for today */}
+                            {combinedSchedulesForToday.length > 0 ? (
+                                <>
+                                    {combinedSchedulesForToday.map((item) => (
+                                        <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                            navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, scheduleId: item.scheduleId });
+                                        }} />
+                                    ))}
+                                    {/* {todaySellerSellSchedules.map((item) => (
+
                                 <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
-                                }} />
-                            ))}
-                            {/* {todaySellerSellSchedules.map((item) => (
-
-                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule: item });
+                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, scheduleId: item.scheduleId });
                                 }} />
                             ))} */}
-                        </>
-                    ) : (
-                        <Text style={styles.noAvailabilityText}>No bookings found.</Text>
-                    )}
-                </View>
+                                </>
+                            ) : (
+                                <Text style={styles.noAvailabilityText}>No bookings found.</Text>
+                            )}
+                        </View>
 
-                {/* Container for "To Buy" */}
-               
+                        {/* Container for "To Buy" */}
 
-                {/* Container for "To Sell" */}
-                
-            </ScrollView>
-            )}
+
+                        {/* Container for "To Sell" */}
+
+                    </ScrollView>
+                ))}
         </View>
     );
 };
@@ -237,6 +253,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 10,
     },
+    activityIndicator: {
+        marginTop: 300,
+    }
 });
 
 export default Appointments;

@@ -45,6 +45,243 @@ async function createSchedule(req, res) {
     }
 }
 
+async function sellerApprovesViewing(req, res) {
+    try {
+      const { scheduleId } = req.params;
+  
+      // Find the user by ID
+      const schedule = await Schedule.findByPk(scheduleId);
+  
+      if (!schedule) {
+        return res.status(404).json({ message: 'Schedule not found' });
+      }
+
+      schedule.ScheduleStatus = 'SELLER_CONFIRMED';
+  
+      // Add the property to the user's favorites
+      await schedule.save();
+
+      //Notification
+
+      const user = await User.findByPk(schedule.sellerId); // Seller Info
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      const property = await Property.findByPk(schedule.propertyId);
+
+      const content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has confirmed your request on viewing for the ${schedule.meetupDate} at ${schedule.meetupTime} for ${property.title}`;
+
+      const notificationBody = {
+          "isRecent": true,
+          "isPending": false,
+          "isCompleted": false,
+          "hasRead": false,
+          "userNotificationId": schedule.sellerId, 
+          "userId" : schedule.userId,
+          "content" : content,
+          "scheduleId" : schedule.scheduleId,
+      };
+
+      await Notification.create(notificationBody);
+
+      const scheduleUser = await schedule.getSeller();
+
+      if (scheduleUser && loggedInUsers.has(scheduleUser.userId)){
+          // console.log("propertyUser :", propertyUser)
+          req.io.emit("userNotification", {"pushToken": scheduleUser.pushToken, "title": property.title, "body": content});
+          console.log("Emitted userNewForumCommentNotification");
+      }
+  
+      res.status(201).json({ message: 'Schedule is approved' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+
+  async function sellerRejectsViewing(req, res) {
+    try {
+      const { scheduleId } = req.params;
+  
+      // Find the user by ID
+      const schedule = await Schedule.findByPk(scheduleId);
+  
+      if (!schedule) {
+        return res.status(404).json({ message: 'Schedule not found' });
+      }
+
+      schedule.ScheduleStatus = 'SELLER_REJECT';
+  
+      // Add the property to the user's favorites
+      await schedule.save();
+
+      //Notification
+
+      const user = await User.findByPk(schedule.sellerId); // Seller Info
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      const property = await Property.findByPk(schedule.propertyId);
+
+      const content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has rejected your request on viewing for the ${schedule.meetupDate} at ${schedule.meetupTime} for ${property.title}`;
+
+      const notificationBody = {
+          "isRecent": true,
+          "isPending": false,
+          "isCompleted": false,
+          "hasRead": false,
+          "userNotificationId": schedule.sellerId, 
+          "userId" : schedule.userId,
+          "content" : content,
+          "scheduleId" : schedule.scheduleId,
+      };
+
+      await Notification.create(notificationBody);
+
+      const scheduleUser = await schedule.getSeller();
+
+      if (scheduleUser && loggedInUsers.has(scheduleUser.userId)){
+          // console.log("propertyUser :", propertyUser)
+          req.io.emit("userNotification", {"pushToken": scheduleUser.pushToken, "title": property.title, "body": content});
+          console.log("Emitted userNewForumCommentNotification");
+      }
+  
+      res.status(201).json({ message: 'Schedule has been rejected by the buyer' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+
+async function getScheduleById(req, res) {
+    const scheduleId = req.params.scheduleId;
+
+    try {
+        const schedule = await Schedule.findByPk(scheduleId);
+
+        if (!schedule) {
+            return res.status(404).json({ error: 'Schedule not found' });
+        }
+
+        res.json(schedule);
+    } catch (error) {
+        console.error('Error fetching schedule:', error);
+        res.status(500).json({ error: 'Error fetching schedule' });
+    }
+}
+
+async function sellerCancelsViewing(req, res) {
+    try {
+      const { scheduleId } = req.params;
+  
+      // Find the user by ID
+      const schedule = await Schedule.findByPk(scheduleId);
+  
+      if (!schedule) {
+        return res.status(404).json({ message: 'Schedule not found' });
+      }
+
+      schedule.ScheduleStatus = 'SELLER_CANCELLED';
+  
+      // Add the property to the user's favorites
+      await schedule.save();
+
+      //Notification
+
+      const user = await User.findByPk(schedule.sellerId); // Seller Info
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      const property = await Property.findByPk(schedule.propertyId);
+
+      const content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has cancelled the viewing for the ${schedule.meetupDate} at ${schedule.meetupTime} for ${property.title}`;
+
+      const notificationBody = {
+          "isRecent": true,
+          "isPending": false,
+          "isCompleted": false,
+          "hasRead": false,
+          "userNotificationId": schedule.sellerId, 
+          "userId" : schedule.userId,
+          "content" : content,
+          "scheduleId" : schedule.scheduleId,
+      };
+
+      await Notification.create(notificationBody);
+
+      const scheduleUser = await schedule.getSeller();
+
+      if (scheduleUser && loggedInUsers.has(scheduleUser.userId)){
+          // console.log("propertyUser :", propertyUser)
+          req.io.emit("userNotification", {"pushToken": scheduleUser.pushToken, "title": property.title, "body": content});
+          console.log("Emitted userNewForumCommentNotification");
+      }
+  
+      res.status(201).json({ message: 'Schedule has been cancelled by the seller' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+
+  async function buyerCancelsViewing(req, res) {
+    try {
+      const { scheduleId } = req.params;
+  
+      // Find the user by ID
+      const schedule = await Schedule.findByPk(scheduleId);
+  
+      if (!schedule) {
+        return res.status(404).json({ message: 'Schedule not found' });
+      }
+
+      schedule.ScheduleStatus = 'BUYER_CANCELLED';
+  
+      // Add the property to the user's favorites
+      await schedule.save();
+
+      //Notification
+
+      const user = await User.findByPk(schedule.userId); // Seller Info
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      const property = await Property.findByPk(schedule.propertyId);
+
+      const content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has cancelled the viewing for the ${schedule.meetupDate} at ${schedule.meetupTime} for ${property.title}`;
+
+      const notificationBody = {
+          "isRecent": true,
+          "isPending": false,
+          "isCompleted": false,
+          "hasRead": false,
+          "userNotificationId": schedule.userId, 
+          "userId" : schedule.sellerId,
+          "content" : content,
+          "scheduleId" : schedule.scheduleId,
+      };
+
+      await Notification.create(notificationBody);
+
+      const scheduleUser = await schedule.getUser();
+
+      if (scheduleUser && loggedInUsers.has(scheduleUser.userId)){
+          // console.log("propertyUser :", propertyUser)
+          req.io.emit("userNotification", {"pushToken": scheduleUser.pushToken, "title": property.title, "body": content});
+          console.log("Emitted userNewForumCommentNotification");
+      }
+  
+      res.status(201).json({ message: 'Schedule has been cancelled by the buyer' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+
 async function getScheduleById(req, res) {
     const scheduleId = req.params.scheduleId;
 
@@ -214,4 +451,8 @@ module.exports = {
     getScheduleByUserId,
     getScheduleByPropertyId,
     getScheduleBySellerId,
+    sellerApprovesViewing,
+    sellerRejectsViewing,
+    sellerCancelsViewing,
+    buyerCancelsViewing,
 };
