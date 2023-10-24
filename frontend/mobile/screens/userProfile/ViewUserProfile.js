@@ -16,6 +16,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
 
   const fetchUser = async (userId) => {
     try {
+      console.log("userId: ", userId)
       const { success, data, message } = await getUserById(userId);
 
       if (success) {
@@ -106,6 +107,10 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Country:</Text>
+            <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Phone Number:</Text>
             <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
           </View>
           <View style={styles.row}>

@@ -3,12 +3,16 @@ const router = express.Router();
 
 const {
     createContactUs,
-    getUserContactUs
+    getUserContactUs,
+    getUserContactUsId
 } = require('../../controllers/user/contactUsController');
 
 
 router.route('/:userId/contactUs')
     .get(getUserContactUs)
     .post(createContactUs)
+
+router.route('/contactUs/:contactUsId')
+    .get(getUserContactUsId)
 
 module.exports = router;

@@ -27,3 +27,13 @@ export const getUserContactUs = async (userId) => {
         throw error;
     }
 };
+
+export const getUserContactUsId = async (contactUsId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/user/contactUs/${contactUsId}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};

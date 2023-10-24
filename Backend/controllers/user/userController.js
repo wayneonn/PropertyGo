@@ -1,4 +1,4 @@
-const { User, Property, Image, sequelize} = require('../../models');
+const { User, Property, Image, sequelize } = require('../../models');
 const sharp = require('sharp');
 
 async function getAllUsers(req, res) {
@@ -285,7 +285,7 @@ async function isPropertyInFavorites(req, res) {
   }
 }
 
-async function getPartnerByRangeAndType(req, res){
+async function getPartnerByRangeAndType(req, res) {
   try {
     const partners = await User.findAll({
       where: {
@@ -294,9 +294,28 @@ async function getPartnerByRangeAndType(req, res){
       offset: Number(req.params.start - 1),
       limit: Number(req.params.end)
     })
-    res.status(201).json({partnerInfo:partners})
+    res.status(201).json({ partnerInfo: partners })
   } catch (error) {
     console.error("Fail to fetch particular customer type: ", error)
+  }
+}
+
+async function savePushToken(req, res) {
+  try {
+    const { userId, pushToken } = req.body;
+
+    // Find the user by their user ID and update their pushToken
+    user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.pushToken = pushToken
+    await user.save();
+
+    res.status(200).json({ message: 'Push token saved successfully' });
+  } catch (error) {
+    console.error('Error saving push token:', error);
+    res.status(500).json({ error: 'Could not save push token' });
   }
 }
 
@@ -335,5 +354,6 @@ module.exports = {
   getUserFavorites,
   isPropertyInFavorites,
   getPartnerByRangeAndType,
-  editUserBoost
+  editUserBoost,
+  savePushToken
 };

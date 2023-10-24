@@ -44,6 +44,8 @@ const EditPropertyListing = ({ route }) => {
     title: '',
     description: '',
     price: '',
+    optionFee: '',
+    optionExerciseFee: '',
     bed: '',
     bathroom: '',
     tenure: '',
@@ -57,14 +59,29 @@ const EditPropertyListing = ({ route }) => {
   const formatPrice = (price) => {
     return `$${price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
   };
+  
 
   // Initialize formattedPrice and rawPrice with the initial price from propertyData
   const [formattedPrice, setFormattedPrice] = useState(
     formatPrice(propertyData.price.toString())
   );
+  const [formattedOptionPrice, setFormattedOptionPrice] = useState(formatPrice(propertyData.optionFee.toString()));
+  const [formattedOptionExercisePrice, setFormattedOptionExercisePrice] = useState(formatPrice(propertyData.optionExerciseFee.toString()));
   const [rawPrice, setRawPrice] = useState(propertyData.price.toString());
+  const [rawOptionPrice, setOptionRawPrice] = useState(propertyData.optionFee.toString());
+  const [rawOptionExercisePrice, setOptionExerciseRawPrice] = useState(propertyData.optionExerciseFee.toString());
 
+  const handleOptionPriceChange = (text) => {
+    const raw = text.replace(/[^0-9]/g, '');
+    setFormattedOptionPrice(formatPrice(raw));
+    setOptionRawPrice(raw);
+  };
 
+  const handleOptionExercisePriceChange = (text) => {
+    const raw = text.replace(/[^0-9]/g, '');
+    setFormattedOptionExercisePrice(formatPrice(raw));
+    setOptionExerciseRawPrice(raw);
+  };
 
   const [property, setProperty] = useState({
   });
@@ -100,12 +117,30 @@ const EditPropertyListing = ({ route }) => {
     // Parse the formatted price to remove dollar sign and commas
     console.log(' price:', propertyData.price);
     console.log('Raw price:', rawPrice);
-    const price = rawPrice ? parseInt(rawPrice, 10) : 0;
-    console.log('Parsed price:', price);
-    if (!propertyData.price || propertyData.price <= 0) {
+    let price = rawPrice ? parseInt(rawPrice, 10) : 0;
+    let optionPrice = rawOptionPrice ? parseInt(rawOptionPrice, 10) : 0;
+    let optionExercisePrice = rawOptionExercisePrice ? parseInt(rawOptionExercisePrice, 10) : 0;
+
+    if (!rawPrice) {
+      price = propertyData.price;
+    } else if (!price|| price <= 0) {
       Alert.alert('Invalid Price', 'Price must be a numeric value.');
       return;
-    }
+    } 
+
+    if (!optionPrice) {
+      optionPrice = propertyData.optionFee;
+    } else if (!optionPrice|| optionPrice <= 0) {
+      Alert.alert('Invalid Option Price', 'Option Price must be a numeric value.');
+      return;
+    } 
+
+    if (!optionExercisePrice) {
+      optionExercisePrice = propertyData.optionExerciseFee;
+    } else if (!optionExercisePrice|| optionExercisePrice <= 0) {
+      Alert.alert('Invalid Option Exercise Price', 'Option Exercise Price must be a numeric value.');
+      return;
+    } 
 
     if (!/^\d+$/.test(propertyData.size)) {
       Alert.alert('Invalid Size', 'Size must be a numeric value.');
@@ -154,6 +189,8 @@ const EditPropertyListing = ({ route }) => {
         {
           ...propertyData,
           price: price,
+          optionFee: optionPrice,
+          optionExerciseFee: optionExercisePrice,
           propertyType: propertyTypeUpperCase,
         }
       );
@@ -266,6 +303,8 @@ const EditPropertyListing = ({ route }) => {
         title: data.title,
         description: data.description,
         price: data.price.toString(),
+        optionFee: data.optionFee.toString(),
+        optionExerciseFee: data.optionExerciseFee.toString(),
         tenure: data.tenure.toString(),
         bed: data.bed.toString(),
         bathroom: data.bathroom.toString(),
@@ -278,6 +317,8 @@ const EditPropertyListing = ({ route }) => {
 
       // Update formattedPrice with the fetched price
       setFormattedPrice(formatPrice(data.price.toString()));
+      setFormattedOptionPrice(formatPrice(data.optionFee.toString()));
+      setFormattedOptionExercisePrice(formatPrice(data.optionExerciseFee.toString()));
 
       // Set the 'images' state with the fetched image URIs
       setImages(data.images.map((imageUri) => ({ uri: imageUri })));
@@ -565,7 +606,30 @@ const EditPropertyListing = ({ route }) => {
             onChangeText={handlePriceChange}
             style={styles.input}
           />
+        </View>
 
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Option Fee</Text>
+          <TextInput
+            placeholder="$ Option Fee Price"
+            placeholderTextColor="gray"
+            value={formattedOptionPrice}
+            keyboardType="numeric"
+            onChangeText={handleOptionPriceChange}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Option Exercise Fee</Text>
+          <TextInput
+            placeholder="$ Option Exercise Fee Price"
+            placeholderTextColor="gray"
+            value={formattedOptionExercisePrice}
+            keyboardType="numeric"
+            onChangeText={handleOptionExercisePriceChange}
+            style={styles.input}
+          />
         </View>
 
         <View style={styles.inputContainer}>

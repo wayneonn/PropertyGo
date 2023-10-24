@@ -184,18 +184,18 @@ const markForumTopicInappropriate = async (req, res) => {
     const forumTopic = await ForumTopic.findByPk(forumTopicId);
 
     if (typeOfResponse === "no") {
-        const forumTopics = await ForumTopic.findByPk(forumTopicId, {
-            include: {
-              model: User,
-              as: 'usersFlagged', 
-            }
-          });
+        // const forumTopics = await ForumTopic.findByPk(forumTopicId, {
+        //     include: {
+        //       model: User,
+        //       as: 'usersFlagged', 
+        //     }
+        //   });
 
-        for (const usersFlaggedForumTopic of forumTopics.usersFlagged) {
-            const userIdFlagged = usersFlaggedForumTopic.dataValues.userId;
+        // for (const usersFlaggedForumTopic of forumTopics.usersFlagged) {
+        //     const userIdFlagged = usersFlaggedForumTopic.dataValues.userId;
 
-            await forumTopic.removeUsersFlagged(userIdFlagged);
-        }
+        //     await forumTopic.removeUsersFlagged(userIdFlagged);
+        // }
     } else {
         forumTopic.isInappropriate = true;
     }
@@ -226,18 +226,18 @@ const resetForumTopicAppropriate = async (req, res) => {
 
     forumTopic.isInappropriate = false;
 
-    const forumTopics = await ForumTopic.findByPk(forumTopicId, {
-        include: {
-          model: User,
-          as: 'usersFlagged', 
-        }
-      });
+    // const forumTopics = await ForumTopic.findByPk(forumTopicId, {
+    //     include: {
+    //       model: User,
+    //       as: 'usersFlagged', 
+    //     }
+    //   });
 
-    for (const usersFlaggedForumTopic of forumTopics.usersFlagged) {
-        const userIdFlagged = usersFlaggedForumTopic.dataValues.userId;
+    // for (const usersFlaggedForumTopic of forumTopics.usersFlagged) {
+    //     const userIdFlagged = usersFlaggedForumTopic.dataValues.userId;
 
-        await forumTopic.removeUsersFlagged(userIdFlagged);
-    }
+    //     await forumTopic.removeUsersFlagged(userIdFlagged);
+    // }
 
     await forumTopic.save();
 
