@@ -159,56 +159,10 @@ const Appointments = ({ route }) => {
                 </View>
 
                 {/* Container for "To Buy" */}
-                <View style={styles.buyContainer}>
-                    <Text style={styles.dateOnContainer}>
-                        <MaterialCommunityIcons
-                            name="telescope"
-                            size={28}
-                            color="#00adf5"
-                        />{'  '}
-                        To Buy - Upcoming To View</Text>
-
-                    {/* List of user's bookings */}
-                    {userBuySchedules && userBuySchedules.length > 0 ? (
-                        <FlatList
-                            data={userBuySchedules}
-                            keyExtractor={(item) => item.scheduleId.toString()}
-                            renderItem={({ item }) => (
-                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule: item });
-                                }} />
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noAvailabilityText}>No bookings found.</Text>
-                    )}
-                </View>
+               
 
                 {/* Container for "To Sell" */}
-                <View style={styles.sellContainer}>
-                    <Text style={styles.dateOnContainer}>
-                        <MaterialCommunityIcons
-                            name="table-eye"
-                            size={28}
-                            color="#00adf5"
-                        />{'  '}
-                        To Sell - Buyers To View Unit</Text>
-
-                    {/* List of user's bookings */}
-                    {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
-                        <FlatList
-                            data={sellerSellSchedules}
-                            keyExtractor={(item) => item.scheduleId.toString()}
-                            renderItem={({ item }) => (
-                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, schedule: item });
-                                }} />
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noAvailabilityText}>No bookings for units listed.</Text>
-                    )}
-                </View>
+                
             </ScrollView>
         </View>
     );
