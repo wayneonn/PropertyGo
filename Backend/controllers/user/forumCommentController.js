@@ -81,8 +81,8 @@ const createForumComment = async (req, res) => {
 
 
         if (forumPostUser && loggedInUsers.has(forumPostUser.userId) && forumPostUser.userId !== userId){
-            req.io.emit("userNewForumCommentNotification", {"pushToken": forumPostUser.pushToken, "title": forumPost.title, "body": content});
-            console.log("Emitted userNewForumCommentNotification");
+            req.io.emit("userNotification", {"pushToken": forumPostUser.pushToken, "title": forumPost.title, "body": content});
+            // console.log("Emitted userNewForumCommentNotification");
         }
         res.status(201).json({ forumComment });
     } catch (error) {

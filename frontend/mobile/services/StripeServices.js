@@ -101,7 +101,6 @@ export const createTransactionRecord = async (propertyListing, user, paymentInte
         buyerId: user.userId,
         propertyId: propertyListing.propertyListingId,
         stripePaymentResponse: paymentIntent,
-        invoiceId: 3,
         status,
         transactionType,
     });
@@ -116,7 +115,6 @@ export const createTokenTransactionRecord = async (user, paymentIntent, status, 
         quantity: tokens,
         gst,
         stripePaymentResponse: paymentIntent,
-        invoiceId: 3,
         status,
         transactionType,
     });
