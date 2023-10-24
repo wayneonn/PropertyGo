@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       transactionType: {
-        type: DataTypes.ENUM("REQUEST", "OTP", "TOKEN_PURCHASE", "OPTION_FEE", "OPTION_EXERCISE_FEE"),
+        type: DataTypes.ENUM("REQUEST", "TOKEN_PURCHASE", "OPTION_FEE", "OPTION_EXERCISE_FEE"),
         allowNull: false,
       },
     },
@@ -71,11 +71,6 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "propertyId",
       as: "propertyListing",
       allowNull: true,
-    });
-    Transaction.belongsTo(models.Invoice, {
-      foreignKey: "invoiceId", // This should match the foreign key in the Invoice model
-      onDelete: "CASCADE", // If a transaction is deleted, delete the associated invoice
-      allowNull: false,
     });
   };
 
