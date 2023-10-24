@@ -47,7 +47,6 @@ const ContactUs = () => {
   const [closeContactUsId, setCloseContactUsId] = useState(0);
   const [userId, setUserId] = useState(0);
   const [createdAt, setCreatedAt] = useState();
-  const [messageUpdatedAt, setMessageUpdatedAt] = useState();
 
   const itemsPerPage = 4;
 
@@ -98,34 +97,20 @@ const ContactUs = () => {
     setShowRespondModal(!showRespondModal);
   };
 
-  const toggleShowViewResponseModal = (
-    id,
-    message,
-    userId,
-    createdAt,
-    messageUpdatedAt
-  ) => {
+  const toggleShowViewResponseModal = (id, message, userId, createdAt) => {
     setViewResponseId(id);
     setRespondMessage(message);
     setUserId(userId);
     setCreatedAt(createdAt);
-    setMessageUpdatedAt(messageUpdatedAt);
     getResponses(id);
     setShowViewResponseModal(!showViewResponseModal);
   };
 
-  const toggleShowResponsesModal = (
-    id,
-    message,
-    userId,
-    createdAt,
-    messageUpdatedAt
-  ) => {
+  const toggleShowResponsesModal = (id, message, userId, createdAt) => {
     setViewResponseId(id);
     setRespondMessage(message);
     setUserId(userId);
     setCreatedAt(createdAt);
-    setMessageUpdatedAt(messageUpdatedAt);
     getResponses(id);
     setShowResponsesModal(!showResponsesModal);
   };
@@ -647,8 +632,7 @@ const ContactUs = () => {
                                   contactus.contactUsId,
                                   contactus.message,
                                   contactus.userId,
-                                  contactus.createdAt,
-                                  contactus.messageUpdatedAt
+                                  contactus.createdAt
                                 )
                               }
                             >
@@ -826,8 +810,7 @@ const ContactUs = () => {
                                   contactus.contactUsId,
                                   contactus.message,
                                   contactus.userId,
-                                  contactus.createdAt,
-                                  contactus.messageUpdatedAt
+                                  contactus.createdAt
                                 )
                               }
                             >
@@ -1121,16 +1104,6 @@ const ContactUs = () => {
               <span className="muted-text" style={{ alignSelf: "flex-start" }}>
                 created at: {createdAt}
               </span>
-              {messageUpdatedAt != null &&
-                new Date(messageUpdatedAt).getTime() !==
-                  new Date(createdAt).getTime() && (
-                  <span
-                    className="muted-text"
-                    style={{ alignSelf: "flex-start" }}
-                  >
-                    updated at: {messageUpdatedAt}
-                  </span>
-                )}
             </div>
             {Array.isArray(responses) && responses.length > 0 ? (
               responses.map((response) => (
@@ -1351,16 +1324,6 @@ const ContactUs = () => {
               <span className="muted-text" style={{ alignSelf: "flex-start" }}>
                 created at: {createdAt}
               </span>
-              {messageUpdatedAt != null &&
-                new Date(messageUpdatedAt).getTime() !==
-                  new Date(createdAt).getTime() && (
-                  <span
-                    className="muted-text"
-                    style={{ alignSelf: "flex-start" }}
-                  >
-                    updated at: {messageUpdatedAt}
-                  </span>
-                )}
             </div>
             {Array.isArray(responses) && responses.length > 0 ? (
               responses.map((response) => (
@@ -1377,7 +1340,7 @@ const ContactUs = () => {
                     >
                       <span
                         className="muted-text"
-                        style={{ alignSelf: "flex-end", marginRight: "3.5em" }}
+                        style={{ alignSelf: "flex-end" }}
                       >
                         {adminNames[response.adminId]}
                       </span>
@@ -1395,33 +1358,10 @@ const ContactUs = () => {
                           }}
                           dangerouslySetInnerHTML={{ __html: response.message }}
                         ></div>
-                        <Button
-                          size="sm"
-                          title="Edit Response"
-                          style={{
-                            background: "transparent",
-                            border: "0",
-                            marginLeft: "0.2em",
-                          }}
-                          onClick={() =>
-                            toggleShowEditModal(
-                              response.message,
-                              response.responseId
-                            )
-                          }
-                        >
-                          <MdEditSquare
-                            style={{
-                              width: "16px",
-                              height: "16px",
-                              color: "black",
-                            }}
-                          ></MdEditSquare>
-                        </Button>
                       </div>
                       <span
                         className="muted-text"
-                        style={{ alignSelf: "flex-end", marginRight: "3.5em" }}
+                        style={{ alignSelf: "flex-end" }}
                       >
                         created at: {response.createdAt}
                       </span>
@@ -1431,7 +1371,6 @@ const ContactUs = () => {
                           className="muted-text"
                           style={{
                             alignSelf: "flex-end",
-                            marginRight: "3.5em",
                           }}
                         >
                           updated at: {response.updatedAt}
