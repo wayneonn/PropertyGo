@@ -10,7 +10,7 @@ import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
 import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {RadioCheckBox} from "../../components/Partner/RadioCheckBox";
 
-const TransactionList = () => {
+const TransactionList = ({navigation}) => {
     const {user} = useContext(AuthContext);
     const USER_ID = user.user.userId
     const [transactionPaid, setTransactionPaid] = useState([])
@@ -140,7 +140,7 @@ const TransactionList = () => {
                     )) : <LoadingIndicator/>}
                 </View>
                 <PartnerCardModal modalVisible={modalVisible} setModalVisible={setModalVisible}
-                                  selectedItem={selectedTransaction} dateFormatter={dateFormatter}/>
+                                  selectedItem={selectedTransaction} dateFormatter={dateFormatter} navigation={navigation}/>
             </ScrollView>
         )
     };
@@ -190,7 +190,7 @@ const TransactionList = () => {
                 )) : <LoadingIndicator/>}
             </View>
             <PartnerCardModal modalVisible={modalVisible} setModalVisible={setModalVisible}
-                              selectedItem={selectedTransaction} dateFormatter={dateFormatter}/>
+                              selectedItem={selectedTransaction} dateFormatter={dateFormatter} navigation={navigation}/>
         </ScrollView>
     )};
 

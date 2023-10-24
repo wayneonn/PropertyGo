@@ -209,7 +209,7 @@ const HomePagePartner = ({navigation}) => {
 
     return (
         <ScrollView style={styles.container}>
-            <View style={{paddingHorizontal: 10, paddingTop: 10, flexDirection: "row"}}>
+            <View style={{paddingHorizontal: 10, paddingTop: 10, flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
                 <Text style={styles.sectionTitle}> {companyName} </Text>
                 {new Date(user.user.boostListingEndDate) >= new Date() && (
                     <>
@@ -217,6 +217,7 @@ const HomePagePartner = ({navigation}) => {
                         <Text style={styles.sectionTitle}> Boosted. </Text>
                     </>
                 )}
+                <Divider/>
             </View>
             {/* Search bar */}
             <View style={styles.searchBar}>
@@ -303,7 +304,7 @@ const HomePagePartner = ({navigation}) => {
                                     {' '}Total Transactions </Text>
                             </View>
                         </TouchableOpacity>
-                        <MyBarChart monthTransactions={monthTransactions}/>
+                        <MyBarChart monthTransactions={monthTransactions} navigation={navigation}/>
                     </View>
 
                     {/*Recent Transactions Section */}
@@ -345,7 +346,7 @@ const HomePagePartner = ({navigation}) => {
                             </TouchableOpacity>
                         )) : <LoadingIndicator/> }
                     </View>
-                    <PartnerCardModal modalVisible={modalVisible} setModalVisible={setModalVisible} dateFormatter={dateFormatter} selectedItem={selectedTransaction}/>
+                    <PartnerCardModal navigation={navigation} modalVisible={modalVisible} setModalVisible={setModalVisible} dateFormatter={dateFormatter} selectedItem={selectedTransaction}/>
                 </>
             )}
         </ScrollView>

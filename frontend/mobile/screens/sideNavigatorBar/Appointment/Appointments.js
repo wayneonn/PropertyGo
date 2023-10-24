@@ -1,41 +1,27 @@
-import React, { useState, useEffect, useContext } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    TouchableOpacity,
-    Alert,
-    FlatList,
-} from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../../../AuthContext';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import React, {useContext, useEffect, useState} from 'react';
+import {Alert, FlatList, ScrollView, StyleSheet, Text, View,} from 'react-native';
+import {Calendar} from 'react-native-calendars';
+import {useNavigation} from '@react-navigation/native';
+import {AuthContext} from '../../../AuthContext';
 import {
     createSchedule,
-    getViewingAvailabilityByDateAndPropertyId,
-    getViewingAvailabilityByPropertyId,
-    removeViewingAvailability,
-    updateViewingAvailability,
     getScheduleByDateAndPropertyId,
-    updateSchedule,
-    removeSchedule,
-    getScheduleByUserId,
     getScheduleBySellerId,
+    getScheduleByUserId,
+    removeSchedule,
+    updateSchedule,
 } from '../../../utils/scheduleApi';
-import { set } from 'date-fns';
 import AppointmentCard from '../../schedule/AppointmentCard';
 
-const Appointments = ({ route }) => {
+const Appointments = ({route}) => {
     const navigation = useNavigation();
-    const { user } = useContext(AuthContext);
+    const {user} = useContext(AuthContext);
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedSchedule, setSelectedSchedule] = useState(null);
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
     const userId = user.user.userId;
+    const userType = user.user.userType;
     // const sellerUserId = userDetails.userId;
     // Define selected date state
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -72,7 +58,7 @@ const Appointments = ({ route }) => {
     }, []);
 
     const fetchScheduleByUser = async () => {
-        const { success, data, message } = await getScheduleByUserId(
+        const {success, data, message} = await getScheduleByUserId(
             userId
         );
 
@@ -86,7 +72,7 @@ const Appointments = ({ route }) => {
     };
 
     const fetchScheduleBySeller = async () => {
-        const { success, data, message } = await getScheduleBySellerId(
+        const {success, data, message} = await getScheduleBySellerId(
             userId
         );
 
@@ -100,7 +86,7 @@ const Appointments = ({ route }) => {
     };
 
     const fetchScheduleData = async () => {
-        const { success, data, message } = await getScheduleByDateAndPropertyId(
+        const {success, data, message} = await getScheduleByDateAndPropertyId(
             selectedDate,
             propertyListingId
         );
@@ -148,7 +134,7 @@ const Appointments = ({ route }) => {
         // Update the timeSlots array with the new userBooked value for the selected time slot
         setTimeSlots((prevTimeSlots) =>
             prevTimeSlots.map((slot) =>
-                slot.time === time ? { ...slot, userBooked: true } : slot
+                slot.time === time ? {...slot, userBooked: true} : slot
             )
         );
     };
@@ -251,7 +237,7 @@ const Appointments = ({ route }) => {
     };
 
     const formatDate = (dateString) => {
-        const options = { day: '2-digit', month: 'long', year: 'numeric' };
+        const options = {day: '2-digit', month: 'long', year: 'numeric'};
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
@@ -268,7 +254,11 @@ const Appointments = ({ route }) => {
         // Create the viewing availability object to be submitted
         const scheduleData = {
             meetupDate: selectedDate,
-            meetupTime: selectedSchedule.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            meetupTime: selectedSchedule.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }),
             userId: userId,
             propertyId: propertyListingId,
         };
@@ -331,45 +321,45 @@ const Appointments = ({ route }) => {
 
     const getMarkedDates = () => {
         const markedDates = {};
-        const seller = { key: 'seller', color: 'red' };
-        const buyer = { key: 'buyer', color: 'green' };
-    
+        const seller = {key: 'seller', color: 'red'};
+        const buyer = {key: 'buyer', color: 'green'};
+
         if (userSlots.length === 0 || sellerSlots.length === 0) {
-            markedDates[selectedDate] = { selected: true, selectedDotColor: 'blue' };
+            markedDates[selectedDate] = {selected: true, selectedDotColor: 'blue'};
         }
-    
+
         // Loop through the data and mark the dates
         userSlots.forEach((userSlot) => {
             const date = userSlot.meetupDate; // Get the date from the fetched data
-    
+
             if (!markedDates[date]) {
-                markedDates[date] = { dots: [] };
+                markedDates[date] = {dots: []};
             }
             markedDates[date].dots.push(buyer);
-    
+
             if (date === selectedDate) {
                 markedDates[date].selected = true;
                 markedDates[date].selectedDotColor = 'blue';
             }
         });
-    
+
         sellerSlots.forEach((availability) => {
             const date = availability.meetupDate; // Get the date from the fetched data
-    
+
             if (!markedDates[date]) {
-                markedDates[date] = { dots: [] };
+                markedDates[date] = {dots: []};
             }
             markedDates[date].dots.push(seller);
-    
+
             if (date === selectedDate) {
                 markedDates[date].selected = true;
                 markedDates[date].selectedDotColor = 'blue';
             }
         });
-    
+
         return markedDates;
     };
-    
+
 
     return (
         <View style={styles.container}>
@@ -409,44 +399,81 @@ const Appointments = ({ route }) => {
 
                 <View style={styles.timeSlotsContainer}>
                     <Text style={styles.dateOnContainer}>{formatDate(selectedDate)}</Text>
-                    
                 </View>
-                <View style={styles.bookingContainer}>
-                    <Text style={styles.dateOnContainer}>To Buy - Upcoming To View</Text>
 
-                    {/* List of user's bookings */}
-                    {userBuySchedules && userBuySchedules.length > 0 ? (
-                        <FlatList
-                            data={userBuySchedules}
-                            keyExtractor={(item) => item.scheduleId.toString()}
-                            renderItem={({ item }) => (
-                                <AppointmentCard schedule={item} propertyId={item.propertyId}  onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: item.sellerId, propertyId: item.propertyId, schedule : item });
-                                }} />
-                            )}
-                        />
-                    ) : (
-                        <Text style={styles.noAvailabilityText}>No bookings found.</Text>
-                    )}
-                </View>
-                <View style={styles.bookingContainer}>
-                    <Text style={styles.dateOnContainer}>To Sell - Buyers To View Unit</Text>
 
-                    {/* List of user's bookings */}
-                    {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
-                        <FlatList
-                            data={sellerSellSchedules}
-                            keyExtractor={(item) => item.scheduleId.toString()}
-                            renderItem={({ item }) => (
-                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                    navigation.navigate('View Appointment Detail', { userId: sellerUserId, propertyId: item.propertyId, schedule : item });
-                                }} />
+                {!["LAWYER", "CONTRACTOR", "PROPERTY AGENT"].includes(user.user.userType) ? (
+                    <>
+                        <View style={styles.bookingContainer}>
+                            <Text style={styles.dateOnContainer}>To Buy - Upcoming To View</Text>
+
+                            {/* List of user's bookings */}
+                            {userBuySchedules && userBuySchedules.length > 0 ? (
+                                <FlatList
+                                    data={userBuySchedules}
+                                    keyExtractor={(item) => item.scheduleId.toString()}
+                                    renderItem={({item}) => (
+                                        <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                            navigation.navigate('View Appointment Detail', {
+                                                userId: item.sellerId,
+                                                propertyId: item.propertyId,
+                                                schedule: item
+                                            });
+                                        }}/>
+                                    )}
+                                />
+                            ) : (
+                                <Text style={styles.noAvailabilityText}>No bookings found.</Text>
                             )}
-                        />
-                    ) : (
-                        <Text style={styles.noAvailabilityText}>No bookings for units listed.</Text>
-                    )}
-                </View>
+                        </View>
+                        <View style={styles.bookingContainer}>
+                            <Text style={styles.dateOnContainer}>To Sell - Buyers To View Unit</Text>
+
+                            {/* List of user's bookings */}
+                            {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
+                                <FlatList
+                                    data={sellerSellSchedules}
+                                    keyExtractor={(item) => item.scheduleId.toString()}
+                                    renderItem={({item}) => (
+                                        <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                            navigation.navigate('View Appointment Detail', {
+                                                userId: sellerUserId,
+                                                propertyId: item.propertyId,
+                                                schedule: item
+                                            });
+                                        }}/>
+                                    )}
+                                />
+                            ) : (
+                                <Text style={styles.noAvailabilityText}>No bookings for units listed.</Text>
+                            )}
+                        </View>
+                    </>) : (
+                    <>
+                        <View style={styles.bookingContainer}>
+                            <Text style={styles.dateOnContainer}>Request Schedule - Upcoming </Text>
+
+                            {/* List of user's bookings */}
+                            {userBuySchedules && userBuySchedules.length > 0 ? (
+                                <FlatList
+                                    data={userBuySchedules}
+                                    keyExtractor={(item) => item.scheduleId.toString()}
+                                    renderItem={({item}) => (
+                                        <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                            navigation.navigate('View Appointment Detail', {
+                                                userId: item.sellerId,
+                                                propertyId: item.propertyId,
+                                                schedule: item
+                                            });
+                                        }}/>
+                                    )}
+                                />
+                            ) : (
+                                <Text style={styles.noAvailabilityText}>No bookings found.</Text>
+                            )}
+                        </View>
+                    </>
+                )}
             </ScrollView>
         </View>
     );
