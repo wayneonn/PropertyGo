@@ -75,7 +75,7 @@ const AllProperties = () => {
       const filteredApprovalType = properties.filter(
         (property) =>
           property.propertyType === propertyType &&
-          property.approvalStatus === propertyStatus
+          property.approvalStatus === propertyApproval
       );
       setProperties(filteredApprovalType);
     } else if (propertyType === "") {
