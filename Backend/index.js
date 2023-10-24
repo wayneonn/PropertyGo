@@ -163,6 +163,7 @@ app.use("/property", propertyRoute);
 
 app.use(
   "/schedule",
+  injectIo(io),
   scheduleRoute,
 );
 

@@ -30,9 +30,11 @@ async function createSchedule(req, res) {
 
         await Notification.create(notificationBody);
 
+        const propertyUser = await property.getSeller();
 
-        if (property && loggedInUsers.has(property.sellerId) && property.sellerId !== userId){
-            req.io.emit("userNewForumCommentNotification", {"pushToken": property.pushToken, "title": property.title, "body": content});
+        if (propertyUser && loggedInUsers.has(propertyUser.userId)){
+            // console.log("propertyUser :", propertyUser)
+            req.io.emit("userNewForumCommentNotification", {"pushToken": propertyUser.pushToken, "title": property.title, "body": content});
             console.log("Emitted userNewForumCommentNotification");
         }
 
