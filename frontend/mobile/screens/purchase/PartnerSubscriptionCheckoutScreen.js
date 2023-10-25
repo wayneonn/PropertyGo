@@ -155,6 +155,11 @@ const PartnerSubscriptionCheckoutScreen = ({ route }) => {
         return () => deepLinkListener.remove();
     }, [handleURLCallback]);
 
+        // Function to format currency
+        const formatCurrency = (amount) => {
+            return `SGD ${amount.toFixed(2)}`;
+        };
+
     return (
         <View style={styles.container}>
             <StripeProvider publishableKey={publishableKey}>
@@ -167,29 +172,49 @@ const PartnerSubscriptionCheckoutScreen = ({ route }) => {
                     {/* Help icon */}
                 </View>
 
-                <View style={styles.itemContainer}>
-                    <View style={styles.summaryItem}>
-                        <Text style={styles.label}>Item:</Text>
+                <View style={styles.invoiceContainer}>
+                    <View style={styles.invoiceItem}>
+                        <Text style={styles.label}>Qty</Text>
+                        <Text style={styles.label}>Description</Text>
+                        <Text style={styles.label}>Amount</Text>
+                    </View>
+                    <View style={styles.descriptionLineContainer}></View>
+                    <View style={styles.invoiceItem}>
+                        <Text style={styles.info}>{quantity}{" Qty"}</Text>
                         <Text style={styles.info}>{description}</Text>
+                        <Text style={styles.info}>{formatCurrency(partnerSubscriptionCost)}</Text>
                     </View>
-                    <View style={styles.summaryItem}>
-                        <Text style={styles.label}>Quantity:</Text>
-                        <Text style={styles.info}>{quantity}</Text>
+                    <View style={(styles.invoiceItem)}>
+                        <Text style={styles.info}></Text>
+                        <Text style={styles.info}></Text>
+                        <Text style={(styles.label)}>Subtotal:</Text>
+                        <Text style={styles.info}>
+                            {formatCurrency(partnerSubscriptionCost)}
+                        </Text>
                     </View>
-                    <View style={styles.summaryItem}>
-                        <Text style={styles.label}>Price:</Text>
-                        <Text style={styles.info}>SGD {partnerSubscriptionCost.toFixed(2)}</Text>
+
+                    <View style={(styles.invoiceItem)}>
+                        <Text style={styles.info}></Text>
+                        <Text style={styles.info}></Text>
+                        <Text style={(styles.label)}>GST (8%):</Text>
+                        <Text style={styles.info}>
+                            {formatCurrency(partnerSubscriptionCost * 0.08)}
+                        </Text>
                     </View>
-                    <View style={styles.summaryItem}>
-                        <Text style={styles.label}>GST (8%):</Text>
-                        <Text style={styles.info}>SGD {(partnerSubscriptionCost * 0.08).toFixed(2)}</Text>
+                    <View style={styles.totalAmountContainer}>
+                        <Text style={styles.label}>Total Amount:</Text>
+                        <Text style={styles.info}>
+                            {formatCurrency(
+                                partnerSubscriptionCost +
+                                (taxable ? partnerSubscriptionCost * 0.08 : 0)
+                            )}
+                        </Text>
                     </View>
                 </View>
 
                 <View style={styles.checkoutContainer}>
                     <View style={styles.totalAmountContainer}>
-                        <Text style={styles.label}>Total Amount:</Text>
-                        <Text style={styles.info}>SGD {(partnerSubscriptionCost + partnerSubscriptionCost * 0.08).toFixed(2)}</Text>
+                       
                     </View>
                     {/* Styled Checkout Button */}
                     <TouchableOpacity
@@ -283,6 +308,52 @@ const styles = StyleSheet.create({
     },
     info: {
         fontSize: 16,
+    },
+    invoiceContainer: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        padding: 20,
+    },
+    invoiceHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+    invoiceItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 25,
+    },
+    descriptionLineContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: -10,
+        marginBottom: 0,
+        borderTopWidth: 1,
+        borderTopColor: '#ddd',
+        paddingTop: 5,
+        paddingBottom: 15,
+    },
+    info: {
+        fontSize: 13,
+    },
+    label: {
+        fontSize: 13,
+        fontWeight: 'bold',
+    },
+    totalAmountContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 15,
+        borderTopWidth: 1,
+        borderTopColor: '#ddd',
+        paddingTop: 10,
+        paddingBottom: 15,
     },
 });
 
