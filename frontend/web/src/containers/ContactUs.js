@@ -11,6 +11,7 @@ import {
 } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 
+import socketIOClient from "socket.io-client";
 import API from "../services/API";
 
 import Pagination from "react-bootstrap/Pagination";
@@ -350,6 +351,12 @@ const ContactUs = () => {
 
   useEffect(() => {
     fetchData();
+
+    const socket = socketIOClient("http://localhost:3000");
+
+    socket.on("newContactUsNotification", () => {
+      fetchData();
+    });
   }, [responses]);
 
   const sanitizeEditResponse = (content) => {
