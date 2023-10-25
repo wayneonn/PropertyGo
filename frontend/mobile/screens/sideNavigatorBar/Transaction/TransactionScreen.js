@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../../AuthContext';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { downloadInvoicePDF } from "../../../services/pdfReport";
 
 const TransactionScreen = ({ route }) => {
     const { user } = useContext(AuthContext);
@@ -126,9 +127,14 @@ const TransactionScreen = ({ route }) => {
                             </Text>
                         </>
                     )}
-
                 </View>
             </View>
+            <TouchableOpacity style={[styles.button, styles.buttonClose, { marginTop: 50, width: "60%" }]}
+                onPress={() => {
+                    downloadInvoicePDF(transaction.transactionId)
+                }}>
+                <Text style={styles.textStyle}>Download Invoice</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -204,6 +210,21 @@ const styles = StyleSheet.create({
     info: {
         fontSize: 13,
     },
+    button: {
+        marginBottom: 100,
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        alignSelf: "center",
+    },
+    buttonClose: {
+        backgroundColor: "#2196F3",
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    }
 });
 
 export default TransactionScreen;
