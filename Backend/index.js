@@ -5,8 +5,8 @@ const cors = require("cors");
 const app = express();
 const globalEmitter = require("./globalEmitter");
 const WebSocket = require("ws");
-const { loggedInUsers } = require('./shared');
-require('dotenv').config();
+const { loggedInUsers } = require("./shared");
+require("dotenv").config();
 
 const server = http.createServer(app);
 // socket io
@@ -47,7 +47,10 @@ const forumTopicTestData = require("./test_data/forumTopicTestData");
 const forumPostTestData = require("./test_data/forumPostTestData");
 const forumCommentTestData = require("./test_data/forumCommentTestData");
 const notificationTestData = require("./test_data/notificationTestData");
-const {createFakeTransactions, generateFakeProperties} = require("./test_data/fakerDataGenerator")
+const {
+  createFakeTransactions,
+  generateFakeProperties,
+} = require("./test_data/fakerDataGenerator");
 
 // admin routes
 const authRouter = require("./routes/admin/authRoutes");
@@ -106,7 +109,7 @@ app.use("/admin/auth", authRouter);
 app.use("/admin/faqs", injectIo(io), faqRouter);
 app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", injectIo(io), contactUsAdminRouter);
-app.use("/admin/contactUs/:id/responses",injectIo(io), responseRouter);
+app.use("/admin/contactUs/:contactUsId/responses",injectIo(io) , responseRouter);
 app.use("/admin/forumTopics", injectIo(io), forumTopicAdminRouter);
 app.use("/admin/notifications", notificationAdminRouter);
 app.use("/admin/properties", propertyAdminRouter);
@@ -138,21 +141,19 @@ app.use(
 );
 
 io.on("connection", (socket) => {
-
   console.log(`Client connected: ${socket.id}`);
 
-  socket.on('login', (userId) => {
-
+  socket.on("login", (userId) => {
     loggedInUsers.set(userId, socket.id);
-    console.log("socketID: ",socket.id)
+    console.log("socketID: ", socket.id);
     // socket.emit('login', userId)
     console.log(`User with userId ${userId} has logged in.`);
     // console.log("Login: ", socket.userId);
   });
 
-  socket.on('logout', (userId) => {
+  socket.on("logout", (userId) => {
     // Access the userId from the socket object
-    console.log("Logout: ", loggedInUsers.get(userId))
+    console.log("Logout: ", loggedInUsers.get(userId));
     // socket.to(loggedInUsers.get(userId)).emit('logout', userId)
     loggedInUsers.delete(userId);
     console.log(`User with userId ${userId} has logged out.`);
@@ -171,20 +172,11 @@ app.use(
   scheduleRoute,
 );
 
-app.use(
-  "/viewingAvailability",
-  viewingAvailabilityRoute,
-);
+app.use("/viewingAvailability", viewingAvailabilityRoute);
 
-app.use(
-  "/image",
-  imageRoute,
-);
+app.use("/image", imageRoute);
 
-app.use(
-  "/review",
-  reviewRoute,
-);
+app.use("/review", reviewRoute);
 
 app.use("/review", reviewRoute);
 
