@@ -7,7 +7,7 @@ import Appointments from '../screens/sideNavigatorBar/Appointment/Appointments'
 import Documents from '../screens/sideNavigatorBar/Documents'
 import ExploreServicesStackGroup from './ExploreServicesStackGroup';
 import FAQ from '../screens/sideNavigatorBar/FAQs'
-import Transactions from '../screens/sideNavigatorBar/Transactions'
+import TransactionStackGroup from './Transaction/TransactionStackGroup'
 import UserListingStackGroup from './UserListingStackGroup'
 import ContactUsStackGroup from './ContactUsStackGroup';
 import TopBar from '../components/Common/TopNavBar';
@@ -89,7 +89,7 @@ const drawerScreens = [
     createDrawerScreen('Subscription', SubscriptionStackGroup, 'card', 'Subscription'),
     createDrawerScreen('Appointments', Appointments, 'calendar', 'Appointments'),
     createDrawerScreen('Documents', Documents, 'document', 'Documents'),
-    createDrawerScreen('Transactions', Transactions, 'swap-horizontal', 'Transactions'),
+    createDrawerScreen('Transactions', TransactionStackGroup, 'swap-horizontal', 'Transactions'),
     createDrawerScreen('FAQ', FAQ, 'help-circle', 'FAQ'),
     createDrawerScreen('Contact Us Group', ContactUsStackGroup, 'mail', 'Contact Us'),
 ];
