@@ -20,6 +20,7 @@ const PartnerSubscriptionCheckoutScreen = ({ route }) => {
     const [custIdExists, setCustIdExists] = useState(false);
     const gst = 0.08;
     const taxable = true;
+    const boostDays = 365;
 
     // Use the route object to get the selected token package details
     const { quantity, description, partnerSubscriptionCost } = route.params; // Make sure you pass the selected package from the previous screen
@@ -30,8 +31,8 @@ const PartnerSubscriptionCheckoutScreen = ({ route }) => {
         await initializePaymentSheet(
             stripeCustomerId,
             user.user,
-            `Purchase Tokens: ${description}`,
-            partnerSubscriptionCost, 
+            description,
+            partnerSubscriptionCost,
             setStripeCustomerId,
             setEphemeralKey,
             setPaymentIntent,
@@ -47,13 +48,49 @@ const PartnerSubscriptionCheckoutScreen = ({ route }) => {
 
         try {
             const formData = new FormData();
+
+            const currentDate = new Date();
+            let formattedEndDate = null;
+
+            if (user.user.partnerSubscriptionEndDate) {
+                // If the property was previously boosted, extend the boost by adding `boostDays` to the current end date
+                const currentEndDate = new Date(user.user.partnerSubscriptionEndDate);
+                currentEndDate.setHours(currentDate.getHours()); // Set hours to current hour
+                currentEndDate.setMinutes(currentDate.getMinutes()); // Set minutes to current minute
+                currentEndDate.setDate(currentEndDate.getDate() + boostDays);
+                formattedEndDate = currentEndDate;
+            } else {
+                // If it wasn't previously boosted, set a new end date `boostDays` in the future
+                const boostEndDate = new Date(currentDate);
+                boostEndDate.setHours(currentDate.getHours()); // Set hours to current hour
+                boostEndDate.setMinutes(currentDate.getMinutes()); // Set minutes to current minute
+                boostEndDate.setDate(boostEndDate.getDate() + boostDays);
+                formattedEndDate = boostEndDate;
+            }
+
+            // Format the end date in Singapore time (SGT) and the desired format
+            const formattedEndDateString = formattedEndDate.toLocaleString('en-SG', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+
+            const isoFormattedEndDate = formattedEndDate.toISOString();
+
+
             formData.append('partnerSubscriptionPaid', true);
+            formData.append('partnerSubscriptionEndDate', isoFormattedEndDate);
             formData.append('email', user.user.email);
 
+            console.log("formattedEndDateString: ", formattedEndDateString)
+            console.log("formattedEndDate: ", formattedEndDate)
             const { success, data, message } = await updateUserProfile(user.user.userId, formData);
 
             if (success) {
-                // Alert.alert('Purchase Successful', `You have purchased ${tokens} tokens.`);
+                fetchUpdatedUserDetails(user.user, login);
+                Alert.alert('Purchase Successful', `You have subscribed at your subscription will end on the ${formattedEndDateString}!`);
             } else {
                 Alert.alert('Error', message || 'Purchase failed.');
             }
@@ -87,9 +124,13 @@ const PartnerSubscriptionCheckoutScreen = ({ route }) => {
                 createTokenTransactionRecord(user.user, paymentIntent, status, transactionType, description, quantity, partnerSubscriptionCost, taxable);
 
                 // Display the item, quantity, price, tax amount, and total amount
-                Alert.alert('Purchase Successful', `You have subscribed!`);
-
-                navigation.navigate('List Property'); // Navigate back to the TokenScreen or any other desired screen
+                // Alert.alert('Purchase Successful', `You have subscribed at your subscription will end on the ${formattedEndDateString}!`);
+                if(description === "Partner Subscription Fee"){
+                    navigation.navigate('List Property'); 
+                }   else {
+                    navigation.goBack();
+                }
+                
             }
         } catch (error) {
             console.error('Error opening payment sheet:', error);

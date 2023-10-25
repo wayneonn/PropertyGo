@@ -117,6 +117,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         defaultValue: false,
       },
+      partnerSubscriptionEndDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       freezeTableName: true,

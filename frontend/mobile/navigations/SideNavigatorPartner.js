@@ -12,6 +12,7 @@ import UserListingStackGroup from './UserListingStackGroup'
 import ContactUsStackGroup from './ContactUsStackGroup';
 import TopBar from '../components/Common/TopNavBar';
 import UserProfileStackGroup from './UserProfileStackGroup';
+import SubscriptionStackGroup from './SubscriptionStackGroup';
 import UserBottomNavigator from './UserBottomNavigator';
 import {createDrawerScreen} from '../components/DrawerScreen';
 import {AuthContext} from '../AuthContext'; // Import your AuthContext
@@ -85,6 +86,7 @@ const drawerScreens = [
     createDrawerScreen('Explore Services Stack Group', ExploreServicesStackGroup, 'search', 'Explore Services'),
     createDrawerScreen('User Profile', UserProfileStackGroup, 'person', 'User Profile'),
     createDrawerScreen('User Listings', UserListingStackGroup, 'list', 'User Listings'),
+    createDrawerScreen('Subscription', SubscriptionStackGroup, 'card', 'Subscription'),
     createDrawerScreen('Appointments', Appointments, 'calendar', 'Appointments'),
     createDrawerScreen('Documents', Documents, 'document', 'Documents'),
     createDrawerScreen('Transactions', Transactions, 'swap-horizontal', 'Transactions'),

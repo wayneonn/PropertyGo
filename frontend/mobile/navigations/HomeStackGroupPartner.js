@@ -22,20 +22,35 @@ const HomeListingsStack = createNativeStackNavigator();
 // I need to change the HomePage
 const HomeListingsStackGroup = () => {
     const { user } = useContext(AuthContext);
-    const subscriptionPaid = user.user.subscriptionPaid;
+    const subscriptionPaid = user.user.partnerSubscriptionPaid;
 
-    const screens = subscriptionPaid
+    function isExpired(dateToCompare) {
+        const today = new Date();
+        console.log("Today: ", today);
+        console.log("Date to compare: ", dateToCompare);
+
+        // Convert dateToCompare to a Date object
+        const compareDate = new Date(dateToCompare);
+
+        // Adjust the time zone offset for compareDate to match the local time zone
+        compareDate.setMinutes(compareDate.getMinutes() - today.getTimezoneOffset());
+
+        return compareDate < today;
+    }
+
+    console.log("subscriptionPaid: ", subscriptionPaid )
+    const screens = subscriptionPaid && !isExpired(user.user.partnerSubscriptionEndDate)
         ? [
               <HomeListingsStack.Screen key="List Property" name="List Property" component={HomePagePartner} />,
           ]
         : [
               <HomeListingsStack.Screen name="PartnerSubscriptionLandingPage" component={PartnerSubscriptionLandingPage} />,
+              <HomeListingsStack.Screen key="List Property" name="List Property" component={HomePagePartner} />
           ];
 
     return (
         <HomeListingsStack.Navigator screenOptions={{ headerShown: false }}>
             {screens}
-            <HomeListingsStack.Screen key="List Property" name="List Property" component={HomePagePartner} />
             <HomeListingsStack.Screen name="View Profile" component={ViewUserProfile} />
             <HomeListingsStack.Screen name="Token Checkout Screen" component={TokenCheckoutScreen} />
             <HomeListingsStack.Screen name="Partner Subscription Checkout Screen" component={PartnerSubscriptionCheckoutScreen} />

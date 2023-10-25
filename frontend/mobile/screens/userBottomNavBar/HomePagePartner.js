@@ -91,11 +91,11 @@ const HomePagePartner = ({navigation}) => {
 
     const fetchData = async () => {
         const recentAddedTransactions = await loadRecentlyAddedTransactions();
-        console.log("Finished fetching top transactions.", topTransactions);
+        // console.log("Finished fetching top transactions.", topTransactions);
         const loadMonth = await loadMonthTransactions();
-        console.log("Finished fetching monthly transaction value data.", monthTransactions);
+        // console.log("Finished fetching monthly transaction value data.", monthTransactions);
         const buyerId = await loadBuyerIdTransactions();
-        console.log("Finished fetching Buyer ID transaction value data.", buyerIdTransactions);
+        // console.log("Finished fetching Buyer ID transaction value data.", buyerIdTransactions);
         const count = await loadTransactionCountryCount();
     };
 
@@ -103,7 +103,7 @@ const HomePagePartner = ({navigation}) => {
         try {
             const topTransactionsRecv = await fetchTopTransactionsWithUsers(userId)
             setTopTenUserProfile(topTransactionsRecv.mergedData);
-            console.log("Here are the ten user profiles: ", topTenUserProfile)
+            // console.log("Here are the ten user profiles: ", topTenUserProfile)
         } catch (error) {
             console.error("Error fetching top ten transactions: ", error)
         }
@@ -113,7 +113,7 @@ const HomePagePartner = ({navigation}) => {
         try {
             const monthTransaction = await fetchMonthlyTransactions(userId);
             setMonthTransactions(monthTransaction.transactions)
-            console.log("Here are the monthly values: ", monthTransactions)
+            // console.log("Here are the monthly values: ", monthTransactions)
         } catch (error) {
             console.error("Error fetching monthly transactions: ", error);
         }
@@ -123,7 +123,7 @@ const HomePagePartner = ({navigation}) => {
         try {
             const buyerTransactions = await fetchBuyerIdTransactions(userId);
             setBuyerIdTransactions(buyerTransactions.transactions)
-            console.log("Here are the buyerId values: ", buyerIdTransactions)
+            // console.log("Here are the buyerId values: ", buyerIdTransactions)
         } catch (error) {
             console.error("Error fetching buyerId transactions: ", error);
         }
@@ -133,7 +133,7 @@ const HomePagePartner = ({navigation}) => {
         try {
             const buyerTransactions = await fetchTransactionCountryCount(userId);
             setTransactionCountryCount(buyerTransactions.buyer)
-            console.log("Here are the transaction counts: ", transactionCountryCount)
+            // console.log("Here are the transaction counts: ", transactionCountryCount)
         } catch (error) {
             console.error("Error fetching transaction counts: ", error);
         }
