@@ -7,7 +7,7 @@ import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListing";
 import SetSchedule from "../screens/schedule/SetSchedule";
 import Schedule from "../screens/schedule/Schedule";
-import PurchaseOptionFee from "../screens/purchaseProperty/PurchaseOptionFee";
+import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFee";
 import Map from "../screens/propertyListings/map";
 
 const PropertyListingsStack = createNativeStackNavigator();

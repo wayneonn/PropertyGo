@@ -11,7 +11,7 @@ import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListi
 import SearchResults from '../screens/propertyListings/SearchResults';
 import SetSchedule from "../screens/schedule/SetSchedule";
 import Schedule from "../screens/schedule/Schedule";
-import PurchaseOptionFee from "../screens/purchaseProperty/PurchaseOptionFee";
+import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFee";
 import ViewAppointmentDetail from "../screens/sideNavigatorBar/Appointment/ViewAppointmentDetail";
 import Map from "../screens/propertyListings/map";
 

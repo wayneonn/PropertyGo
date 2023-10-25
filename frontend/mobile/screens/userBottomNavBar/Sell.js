@@ -448,7 +448,9 @@ export default function PropertyListing() {
       );
 
       if (success) {
+        console.log("data: ", data);
         const propertyListingId = data.propertyListingId;
+        const title = data.title;
         console.log('Property created successfully:', propertyListingId);
         Alert.alert(
           'Property Created',
@@ -457,7 +459,7 @@ export default function PropertyListing() {
 
         fetchFolderData();
 
-        createDocument(propertyListingId);
+        createDocument(propertyListingId, title);
         
 
         navigation.navigate('Property Listing', { propertyListingId });
@@ -473,7 +475,7 @@ export default function PropertyListing() {
     }
   };
 
-  const createDocument = async (propertyListingId) => {
+  const createDocument = async (propertyListingId, title) => {
     console.log("createDocument", selectedDocuments);
     try {
       const fileData = new FormData();
@@ -494,7 +496,7 @@ export default function PropertyListing() {
   
         // Append other required data to the FormData object
         fileData.append("propertyId", propertyListingId);
-        fileData.append("description", "Intent To Sell");
+        fileData.append("description", `Intent To Sell Document (${title})`);
         fileData.append("folderId", folderId);
         fileData.append("userId", user.user.userId);
       });
