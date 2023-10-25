@@ -81,6 +81,7 @@ export default function PropertyListing() {
     propertyType: 'Resale',
     propertyStatus: 'ACTIVE',
     userId: user.user.userId,
+    sellerId: user.user.userId,
     postalCode: '822126',
     address: 'Home',
     unitNumber: '17-360',

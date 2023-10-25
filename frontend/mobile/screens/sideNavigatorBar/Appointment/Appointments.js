@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useContext } from 'react';
 import {
     View,
@@ -19,27 +20,23 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
 import {
     createSchedule,
-    getViewingAvailabilityByDateAndPropertyId,
-    getViewingAvailabilityByPropertyId,
-    removeViewingAvailability,
-    updateViewingAvailability,
     getScheduleByDateAndPropertyId,
-    updateSchedule,
-    removeSchedule,
-    getScheduleByUserId,
     getScheduleBySellerId,
+    getScheduleByUserId,
+    removeSchedule,
+    updateSchedule,
 } from '../../../utils/scheduleApi';
-import { set } from 'date-fns';
 import AppointmentCard from '../../schedule/AppointmentCard';
 
-const Appointments = ({ route }) => {
+const Appointments = ({route}) => {
     const navigation = useNavigation();
-    const { user } = useContext(AuthContext);
+    const {user} = useContext(AuthContext);
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedSchedule, setSelectedSchedule] = useState(null);
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
     const userId = user.user.userId;
+    const userType = user.user.userType;
     // const sellerUserId = userDetails.userId;
     // Define selected date state
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -108,7 +105,7 @@ const Appointments = ({ route }) => {
     });
 
     const fetchScheduleByUser = async () => {
-        const { success, data, message } = await getScheduleByUserId(
+        const {success, data, message} = await getScheduleByUserId(
             userId
         );
 
@@ -137,7 +134,7 @@ const Appointments = ({ route }) => {
     };
 
     const fetchScheduleBySeller = async () => {
-        const { success, data, message } = await getScheduleBySellerId(
+        const {success, data, message} = await getScheduleBySellerId(
             userId
         );
 
@@ -161,6 +158,60 @@ const Appointments = ({ route }) => {
             setSellerSlots([]);
             console.error('Error fetching schedule data for user:', message);
         }
+    };
+
+    const fetchScheduleData = async () => {
+        const {success, data, message} = await getScheduleByDateAndPropertyId(
+            selectedDate,
+            propertyListingId
+        );
+
+        if (success) {
+            setTakenTimeSlots(data);
+            setIsToBeUpdated(data.some(item => item.userId === userId));
+        } else {
+            console.error('Error fetching schedule data:', message);
+            setTakenTimeSlots([]);
+        }
+    };
+
+    const convertToDateTime = (timeString) => {
+        const [hours, minutes, seconds] = timeString.split(':');
+        const formattedDate = new Date();
+        formattedDate.setHours(parseInt(hours, 10));
+        formattedDate.setMinutes(parseInt(minutes, 10));
+        formattedDate.setSeconds(parseInt(seconds, 10));
+        return formattedDate;
+    };
+
+    // Function to handle time slot selection
+    const handleTimeSlotSelect = (time, scheduleId) => {
+        // Combine the selected date with the parsed time to create a DateTime object
+        const selectedDateTime = new Date(selectedDate);
+        const [timeWithoutAmPm, period] = time.split(' '); // Split time and AM/PM
+        const [hours, minutes] = timeWithoutAmPm.split(':').map(Number);
+
+        // Calculate adjusted hours for PM
+        let adjustedHours = hours;
+        if (period === 'PM' && hours !== 12) {
+            adjustedHours += 12;
+        } else if (period === 'AM' && hours === 12) {
+            adjustedHours = 0; // Midnight (12:00 AM) is represented as 0 in 24-hour format
+        }
+
+        selectedDateTime.setHours(adjustedHours);
+        selectedDateTime.setMinutes(minutes);
+
+        setSelectedTime(time);
+        setSelectedSchedule(selectedDateTime);
+        setScheduleId(scheduleId);
+
+        // Update the timeSlots array with the new userBooked value for the selected time slot
+        setTimeSlots((prevTimeSlots) =>
+            prevTimeSlots.map((slot) =>
+                slot.time === time ? {...slot, userBooked: true} : slot
+            )
+        );
     };
 
     function convertTimeTo12HourFormat(time) {
@@ -261,7 +312,7 @@ const Appointments = ({ route }) => {
     };
 
     const formatDate = (dateString) => {
-        const options = { day: '2-digit', month: 'long', year: 'numeric' };
+        const options = {day: '2-digit', month: 'long', year: 'numeric'};
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
@@ -306,7 +357,6 @@ const Appointments = ({ route }) => {
             }
         });
 
-
         return markedDates;
     };
 
@@ -329,7 +379,7 @@ const Appointments = ({ route }) => {
                         markedDates={getMarkedDates()}
                     />
                 </View>
-
+                
                 <View style={styles.dateCard}>
                     <Ionicons name="calendar" size={28} color="#00adf5" />
                     <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>

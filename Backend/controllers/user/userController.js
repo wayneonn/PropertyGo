@@ -343,6 +343,62 @@ async function editUserBoost(req, res) {
   }
 }
 
+async function uploadCompanyPictures(req, res) {
+  // Start a transaction
+  const transaction = await sequelize.transaction();
+  try {
+    const images = req.files['images'];
+    console.log('Received images:', images);
+    if (images.length === 0) {
+      await transaction.rollback();
+      console.log('No images selected. Rolling back transaction.');
+      return res.status(400).json({error: 'No images selected'});
+    }
+    const failedImages = [];
+
+    // Create and associate images with the property
+    for (let index = 0; index < images.length; index++) {
+      const image = images[index];
+      console.log('Creating image for index', index, 'with User ID', req.params.id);
+
+      try {
+        const processedImageBuffer = await sharp(image.buffer)
+            .resize({ width: 800 }) // You can set the dimensions accordingly
+            .webp()
+            .toBuffer();
+
+        const imageData = {
+          // title: `Image ${index + 1}`,
+          image: processedImageBuffer,
+          userId: req.params.id, // Associate the image with the created property
+        };
+
+        // Create the image record with the associated propertyId
+        await Image.create(imageData, { transaction });
+        console.log(`Image ${index + 1} created successfully.`);
+      } catch (imageError) {
+        console.error('Error creating image:', imageError);
+        failedImages.push({ index, error: 'Failed to create image' });
+      }
+    }
+
+    if (failedImages.length > 0) {
+      // If there were failed images, roll back the transaction
+      await transaction.rollback();
+      console.log('Rolled back transaction due to errors in creating images.');
+      return res.status(500).json({ error: 'Error creating some images', failedImages });
+    }
+
+    // If everything went well for all images, commit the transaction
+    await transaction.commit();
+    console.log('Transaction committed successfully.');
+    res.status(200).json({ message: 'Photos saved successfully' });
+  } catch (error) {
+    console.error("Error uploading company photos: ", error)
+  }
+
+}
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -355,5 +411,6 @@ module.exports = {
   isPropertyInFavorites,
   getPartnerByRangeAndType,
   editUserBoost,
-  savePushToken
+  savePushToken,
+  uploadCompanyPictures
 };

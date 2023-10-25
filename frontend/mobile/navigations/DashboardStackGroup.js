@@ -17,6 +17,7 @@ const DashboardStackGroup = () => {
             {/* Adjust accordingly */}
             {/* <PropertyListingsStack.Screen name="Map" component={Map}/> */}
             <DashboardStack.Screen name={"Top Transactions"} component={TransactionList}/>
+            <DashboardStack.Screen name={"View Profile"} component={ViewUserProfile}/>
         </DashboardStack.Navigator>
     );
 };

@@ -2,7 +2,7 @@ import {BarChart} from "react-native-chart-kit";
 import {Animated, Dimensions, Text, TouchableOpacity} from "react-native";
 import React, {useEffect, useRef, useState} from "react";
 
-export const MyBarChart = ({monthTransactions}) => {
+export const MyBarChart = ({monthTransactions, navigation}) => {
     // Need to read the data from the transactions.
     // I need to use the summary data for each month.
     const labels = monthTransactions.length !== 0 ? monthTransactions.map(item => monthDigitToString(item.month)) : ["Jan", "Feb", "Mar", "Apr", "May", "June"];

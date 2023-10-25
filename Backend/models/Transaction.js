@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       gst: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
       },
       onHoldBalance: {
         type: DataTypes.DOUBLE,

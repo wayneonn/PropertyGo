@@ -33,3 +33,37 @@ export const editUserBoost = async(USER_ID, userData) => {
             return { success: false, message: error.message };
         }
 }
+
+export const uploadCompanyPhotos = async(USER_ID, images) => {
+    try {
+        const formData = new FormData();
+
+        images.forEach((image, index) => {
+            const imageBlob = {
+                uri: image.uri,
+                type: 'image/jpeg',
+                name: `companyImage${index}.jpg`,
+            };
+
+            formData.append(`images`, imageBlob);
+        });
+
+        const response = await fetch(`${BASE_URL}/${USER_ID}/addCompanyPhotos`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return {success: true, data};
+        } else {
+            const errorData = await response.json();
+            return {success: false, message: errorData.error};
+        }
+    } catch (error) {
+        return {success: false, message: error.message};
+    }
+}
