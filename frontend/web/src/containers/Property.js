@@ -65,11 +65,13 @@ const Property = () => {
 
       console.log("buyer: " + response.data.buyerId);
 
-      const buyerResponse = await API.get(
-        `http://localhost:3000/admin/users/getUser/${response.data.buyerId}`
-      );
+      if (response.data.buyerId != null) {
+        const buyerResponse = await API.get(
+          `http://localhost:3000/admin/users/getUser/${response.data.buyerId}`
+        );
 
-      setBuyer(buyerResponse.data);
+        setBuyer(buyerResponse.data);
+      }
 
       const documentResponse = await API.get(
         `http://localhost:3000/admin/documents`
