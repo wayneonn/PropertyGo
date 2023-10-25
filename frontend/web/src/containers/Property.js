@@ -80,13 +80,14 @@ const Property = () => {
 
       // console.log("document:" + documentResponse);
 
-      const documents = documentResponse.data.data
-        .filter((document) => document.propertyId == propertyId)
-        .filter(
-          (document) =>
-            document.userId == response.data.buyerId ||
-            document.userId == sellerResponse.data.userId
-        );
+      const documents = documentResponse.data.data.filter(
+        (document) => document.propertyId == propertyId
+      );
+      // .filter(
+      //   (document) =>
+      //     document.userId == response.data.buyerId ||
+      //     document.userId == sellerResponse.data.userId
+      // );
       //need howard help fetch documents
 
       // console.log(documents);
