@@ -13,6 +13,7 @@ import StarRating from 'react-native-star-rating';
 import { Ionicons } from '@expo/vector-icons';
 import PropertyCard from '../../propertyListings/PropertyCardRectangle';
 import { set } from 'date-fns';
+import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
 
 function ViewUserProfile({ route, navigation }) { // Add navigation parameter
@@ -27,6 +28,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
   const { user } = useContext(AuthContext);
   // const isSeller = userDetails && userDetails.userId === user.user.userId;
   const [isSeller, setIsSeller] = useState(false);
+
 
   const fetchPropertyListing = async (id) => {
     try {
@@ -107,6 +109,16 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
     });
     fetchPropertyListing(propertyId);
   }, [userId, scheduleStatus]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchSchedule(scheduleId).then((scheduleData) => {
+        setSchedule(scheduleData);
+      });
+      fetchPropertyListing(propertyId);
+    }, [])
+);
+
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -370,7 +382,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
               {isSeller ? (
                 <Text style={styles.topHeader}>Buyer Details To View Your Property</Text>
               ) : (
-                <Text style={styles.topHeader}>Seller Details To View Your Property</Text>
+                <Text style={styles.topHeader}>Seller Details To View At Your Next Property</Text>
               )}
               <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(scheduleStatus) }]}>
                 <Text style={[styles.statusText, { color: getStatusTextColor(scheduleStatus) }]}>{getStatusText(scheduleStatus)}</Text>

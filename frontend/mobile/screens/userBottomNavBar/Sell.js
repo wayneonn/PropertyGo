@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -37,6 +37,7 @@ const propertyTypes = [
   { label: 'Resale', value: 'Resale' },
   { label: 'New Launch', value: 'New Launch' },
 ]
+
 
 export default function PropertyListing() {
   const { user } = useContext(AuthContext);
@@ -128,7 +129,9 @@ export default function PropertyListing() {
   const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
   const [isDocumentUploaded, setIsDocumentUploaded] = useState(false);
   
-
+ useEffect(() => {
+  fetchFolderData();
+ }, []);
 
   // Function to format the price with dollar sign and commas
   const formatPrice = (price) => {
@@ -445,7 +448,9 @@ export default function PropertyListing() {
       );
 
       if (success) {
+        console.log("data: ", data);
         const propertyListingId = data.propertyListingId;
+        const title = data.title;
         console.log('Property created successfully:', propertyListingId);
         Alert.alert(
           'Property Created',
@@ -454,7 +459,7 @@ export default function PropertyListing() {
 
         fetchFolderData();
 
-        createDocument(propertyListingId);
+        createDocument(propertyListingId, title);
         
 
         navigation.navigate('Property Listing', { propertyListingId });
@@ -470,7 +475,7 @@ export default function PropertyListing() {
     }
   };
 
-  const createDocument = async (propertyListingId) => {
+  const createDocument = async (propertyListingId, title) => {
     console.log("createDocument", selectedDocuments);
     try {
       const fileData = new FormData();
@@ -491,7 +496,7 @@ export default function PropertyListing() {
   
         // Append other required data to the FormData object
         fileData.append("propertyId", propertyListingId);
-        fileData.append("description", "OTP");
+        fileData.append("description", `Intent To Sell Document (${title})`);
         fileData.append("folderId", folderId);
         fileData.append("userId", user.user.userId);
       });
@@ -720,7 +725,7 @@ export default function PropertyListing() {
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Ionicons name="add-outline" size={24} color="white" />
-        <Text style={styles.selectDocumentButtonText}>Upload OTP Document</Text>
+        <Text style={styles.selectDocumentButtonText}>Upload Intent to Sell Document</Text>
       </View>
     </TouchableOpacity>
   )}

@@ -54,3 +54,24 @@ exports.downloadAndOpenPDF = async (USER_ID) => {
     }
 };
 
+exports.downloadInvoicePDF = async (transactionId) => {
+    try {
+        // URL of your Express server that generates the PDF
+        const pdfURL = `${BASE_URL}/user/transactions/invoicePdf/${transactionId}`;
+        // Download the PDF to a temporary location on the device
+        const { uri } = await FileSystem.downloadAsync(
+            pdfURL,
+            FileSystem.cacheDirectory + 'invoice.pdf'
+        );
+        // Check if sharing is possible
+        if (!(await Sharing.isAvailableAsync())) {
+            alert("Sharing isn't available on your platform");
+            return;
+        }
+        // Share the PDF using the device's native share modal
+        await Sharing.shareAsync(uri);
+    } catch (error) {
+        console.error("Error fetching, saving or sharing PDF:", error);
+    }
+};
+

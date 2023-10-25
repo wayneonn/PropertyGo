@@ -112,6 +112,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      partnerSubscriptionPaid: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+      },
+      partnerSubscriptionEndDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       freezeTableName: true,

@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 
-const TransactionCard = ({ transaction }) => {
+const TransactionCard = ({ transaction, onPress }) => {
     console.log("transactionCard", transaction)
     const { transactionItem, createdAt, paymentAmount, gst } = transaction;
     const totalAmount = gst ? paymentAmount * 1.08 : paymentAmount;
@@ -12,38 +12,53 @@ const TransactionCard = ({ transaction }) => {
     const localTime = transactionDate.toLocaleTimeString();
 
     return (
-        <View style={styles.card}>
-            <View style={styles.iconContainer}>
-                <FontAwesome name="shopping-cart" size={24} color="black" />
-            </View>
+        <TouchableOpacity style={styles.card} onPress={onPress}>
+            {transaction.transactionType === 'TOKEN_PURCHASE' ? (
+                <View style={[styles.iconContainer]}>
+                    <FontAwesome5 name="coins" size={24} color="black" />
+                </View>
+            ) : (
+                <View style={styles.iconContainer}>
+                    <FontAwesome5 name="file-invoice" size={24} color="black" />
+                </View>
+            )}
+
             <View style={styles.infoContainer}>
                 <Text style={styles.transactionItem}>{transactionItem}</Text>
                 <Text style={styles.dateTime}>
                     Date: {localDate} | Time: {localTime}
                 </Text>
-                <Text style={styles.totalAmount}>Total Amount: SGD {totalAmount.toFixed(2)}</Text>
+                {transaction.status === 'PENDING' ? (
+                    <Text style={styles.totalAmount}>On Hold: SGD {transaction.onHoldBalance.toFixed(2)}</Text>
+                ) : (
+                    <Text style={styles.totalAmount}>Total Amount: SGD {totalAmount.toFixed(2)}</Text>
+                )}
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };
+
 
 const styles = StyleSheet.create({
     card: {
         flexDirection: 'row',
-        backgroundColor: 'white',
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 10,
+        alignItems: 'center',
+        borderRadius: 10,
+        backgroundColor: '#fff',
+        margin: 10,
+        padding: 10,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2, // Increased shadow opacity for a stronger effect
-        shadowRadius: 4, // Increased shadow radius for a stronger effect
-        width: '95%', // Adjust the card width to fit 85% of the screen
-        alignSelf: 'center', // Center the card horizontally
-        elevation: 4, // Android elevation for a shadow effect
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     iconContainer: {
-        marginRight: 16,
+        marginLeft: 10,
+        marginRight: 26,
         alignItems: 'center',
         justifyContent: 'center',
     },

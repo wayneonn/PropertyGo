@@ -100,7 +100,7 @@ async function createProperty(req, res) {
         await transaction.commit();
         console.log('Transaction committed successfully.');
 
-        res.json({ propertyListingId: createdProperty.propertyListingId });
+        res.json({ propertyListingId: createdProperty.propertyListingId, title: createdProperty.title });
     } catch (error) {
         await transaction.rollback(); // Roll back the transaction if there was an error creating the property
         console.error('Error creating property:', error);

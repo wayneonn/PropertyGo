@@ -27,6 +27,7 @@ import {
     updateSchedule,
 } from '../../../utils/scheduleApi';
 import AppointmentCard from '../../schedule/AppointmentCard';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Appointments = ({route}) => {
     const navigation = useNavigation();
@@ -86,6 +87,13 @@ const Appointments = ({route}) => {
             console.log("timeslots: ", generateTimeSlots())
         }
     }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchScheduleByUser();
+            fetchScheduleBySeller();
+        }, [])
+    );
 
     const combinedSchedules = [...filteredBuyerSchedules, ...filteredSellerSchedules];
     combinedSchedules.sort((a, b) => {

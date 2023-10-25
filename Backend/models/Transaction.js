@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       transactionType: {
-        type: DataTypes.ENUM("REQUEST", "TOKEN_PURCHASE", "OPTION_FEE", "OPTION_EXERCISE_FEE"),
+        type: DataTypes.ENUM("REQUEST", "TOKEN_PURCHASE", "OPTION_FEE", "OPTION_EXERCISE_FEE", "PARTNER_SUBSCRIPTION"),
         allowNull: false,
       },
     },

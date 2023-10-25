@@ -1,6 +1,8 @@
-const {Transaction, User, Property, Request} = require("../../models")
-const {Op, Sequelize} = require('sequelize');
+const { Transaction, User, Property, Request } = require("../../models")
+const { Op, Sequelize } = require('sequelize');
 const puppeteer = require('puppeteer');
+const path = require('path');
+// const imagePath = path.join(__dirname, '../../assets/PropertyGo-HighRes-Logo.png');
 
 // Property ID -> Seller ID.
 // Request ID -> User ID -> Partner ID
@@ -14,7 +16,7 @@ exports.getTransactions = async (req, res) => {
         });
 
         const request = await Request.findAll({
-            where: {userId: req.params.id}, attributes: ['requestId']
+            where: { userId: req.params.id }, attributes: ['requestId']
         })
 
         // Extract propertyId values from the properties objects
@@ -24,12 +26,12 @@ exports.getTransactions = async (req, res) => {
         const transactions = await Transaction.findAll({
             where: { propertyId: propertyIds },
         });
-        res.json({transactions});
+        res.json({ transactions });
 
     } catch (error) {
         res
             .status(500)
-            .json({message: "Error fetching transaction: ", error: error.message});
+            .json({ message: "Error fetching transaction: ", error: error.message });
     }
 }
 
@@ -37,13 +39,13 @@ exports.getTransactions = async (req, res) => {
 exports.getTransactionByTransactionId = async (req, res) => {
     try {
         const transactions = await Transaction.findAll({
-            where: {transactionId: req.params.id},
+            where: { transactionId: req.params.id },
         });
-        res.json({transactions});
+        res.json({ transactions });
     } catch (error) {
         res
             .status(500)
-            .json({message: "Error fetching transaction: ", error: error.message});
+            .json({ message: "Error fetching transaction: ", error: error.message });
     }
 }
 
@@ -68,9 +70,9 @@ exports.getTopTenTransactions = async (req, res) => {
             ],
             limit: 10
         })
-        res.status(200).json({transactions: transactions});
+        res.status(200).json({ transactions: transactions });
     } catch (error) {
-        res.status(500).json({message: "Error fetching top ten transactions: ", error: error.message});
+        res.status(500).json({ message: "Error fetching top ten transactions: ", error: error.message });
     }
 }
 
@@ -107,9 +109,9 @@ exports.getTransactionValueByLastSixMonths = async (req, res) => {
             group: [Sequelize.fn('YEAR', Sequelize.col('createdAt')), Sequelize.fn('MONTH', Sequelize.col('createdAt'))],
             order: [[Sequelize.fn('YEAR', Sequelize.col('createdAt')), 'DESC'], [Sequelize.fn('MONTH', Sequelize.col('createdAt')), 'DESC']]
         })
-        res.status(200).json({transactions: transactionData});
+        res.status(200).json({ transactions: transactionData });
     } catch (error) {
-        res.status(500).json({message: "Error fetching six monthly transaction value: ", error: error.message});
+        res.status(500).json({ message: "Error fetching six monthly transaction value: ", error: error.message });
     }
 }
 
@@ -141,9 +143,9 @@ exports.getTransactionValueByBuyerId = async (req, res) => {
             group: ['buyerId'],
             order: [['buyerId', 'ASC']]
         })
-        res.status(200).json({transactions: transactionData});
+        res.status(200).json({ transactions: transactionData });
     } catch (error) {
-        res.status(500).json({message: "Error fetching monthly transaction value by ID: ", error: error.message});
+        res.status(500).json({ message: "Error fetching monthly transaction value by ID: ", error: error.message });
     }
 }
 
@@ -182,9 +184,9 @@ exports.getTopTenTransactionsWithUsers = async (req, res) => {
             userDetails: users[index]
         }));
 
-        res.status(200).json({mergedData: mergedData});
+        res.status(200).json({ mergedData: mergedData });
     } catch (error) {
-        res.status(500).json({message: "Error fetching top ten transactions: ", error: error.message});
+        res.status(500).json({ message: "Error fetching top ten transactions: ", error: error.message });
     }
 }
 
@@ -224,9 +226,9 @@ exports.getTopTenTransactionsWithUsersPaid = async (req, res) => {
             userDetails: users[index]
         }));
 
-        res.status(200).json({mergedData: mergedData});
+        res.status(200).json({ mergedData: mergedData });
     } catch (error) {
-        res.status(500).json({message: "Error fetching top ten transactions: ", error: error.message});
+        res.status(500).json({ message: "Error fetching top ten transactions: ", error: error.message });
     }
 }
 
@@ -266,13 +268,13 @@ exports.getTopTenTransactionsWithUsersPending = async (req, res) => {
             userDetails: users[index]
         }));
 
-        res.status(200).json({mergedData: mergedData});
+        res.status(200).json({ mergedData: mergedData });
     } catch (error) {
-        res.status(500).json({message: "Error fetching top ten transactions: ", error: error.message});
+        res.status(500).json({ message: "Error fetching top ten transactions: ", error: error.message });
     }
 }
 
-exports.getUserCountsByCountry = async(req, res) => {
+exports.getUserCountsByCountry = async (req, res) => {
     try {
         // First, fetch all propertyId values associated with the sellerId
         const properties = await Property.findAll({
@@ -308,7 +310,7 @@ exports.getUserCountsByCountry = async(req, res) => {
 
 
 
-        res.status(200).json({buyer: buyerCounts});
+        res.status(200).json({ buyer: buyerCounts });
     } catch (error) {
         console.error("Error fetching user counts by country:", error);
         throw error;
@@ -399,48 +401,48 @@ exports.getTransactionPDFReport = async (req, res) => {
 
         // Total Number of Transactions by Seller:
         const totalTransactions = await Transaction.count({
-            where: {propertyId: propertyIds}
+            where: { propertyId: propertyIds }
         });
 
-// Transaction Status Breakdown:
-//         const statusBreakdown = await Transaction.findAndCountAll({
-//             where: {sellerId: req.params.id},
-//             group: ['status'],
-//         });
+        // Transaction Status Breakdown:
+        //         const statusBreakdown = await Transaction.findAndCountAll({
+        //             where: {sellerId: req.params.id},
+        //             group: ['status'],
+        //         });
 
-// Total On Hold Balance:
+        // Total On Hold Balance:
         const totalOnHoldBalance = await Transaction.sum('onHoldBalance', {
-            where: {propertyId: propertyIds}
+            where: { propertyId: propertyIds }
         });
 
 
-// Total On Hold Balance:
+        // Total On Hold Balance:
         const totalPaidBalance = await Transaction.sum('onHoldBalance', {
-            where: {propertyId: propertyIds, status: "PAID"}
+            where: { propertyId: propertyIds, status: "PAID" }
         });
 
-// Number of Properties Sold:
+        // Number of Properties Sold:
         const propertiesSold = await Transaction.count({
-            where: {propertyId: propertyIds},
+            where: { propertyId: propertyIds },
             distinct: true,
             col: 'propertyId'
         });
 
-// Number of Invoices:
+        // Number of Invoices:
         const totalInvoices = await Transaction.count({
-            where: {propertyId: propertyIds},
+            where: { propertyId: propertyIds },
             distinct: true,
             col: 'invoiceId'
         });
 
-// Average Number of Documents per Transaction:
-//         const totalDocuments = await Document.count({
-//             include: [{
-//                 model: Transaction,
-//                 where: {sellerId: req.params.id}
-//             }]
-//         });
-//         const avgDocumentsPerTransaction = totalDocuments / totalTransactions;
+        // Average Number of Documents per Transaction:
+        //         const totalDocuments = await Document.count({
+        //             include: [{
+        //                 model: Transaction,
+        //                 where: {sellerId: req.params.id}
+        //             }]
+        //         });
+        //         const avgDocumentsPerTransaction = totalDocuments / totalTransactions;
 
 
         // Need to bring it out as a string.
@@ -556,8 +558,8 @@ exports.getTransactionPDFReport = async (req, res) => {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
 
-        await page.setContent(htmlContent, {waitUntil: 'networkidle0'});  // Ensure scripts are executed
-        const pdfBuffer = await page.pdf({format: 'A4'});
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });  // Ensure scripts are executed
+        const pdfBuffer = await page.pdf({ format: 'A4' });
 
         await browser.close();
 
@@ -567,11 +569,11 @@ exports.getTransactionPDFReport = async (req, res) => {
         });
         res.status(200).send(pdfBuffer);
     } catch (error) {
-        res.status(500).json({message: "Error fetching top ten transactions: ", error: error.message});
+        res.status(500).json({ message: "Error fetching top ten transactions: ", error: error.message });
     }
 }
 
-exports.createTransaction = async(req, res) => {
+exports.createTransaction = async (req, res) => {
     const transactionData = req.body;
     try {
         const createdTransaction = await Transaction.create(transactionData);
@@ -594,5 +596,189 @@ exports.getUserTransactions = async (req, res) => {
     }
 }
 
+exports.getTransactionInvoicePdf = async (req, res) => {
+    try {
+        const transactionId = req.params.id;
+        const transaction = await Transaction.findByPk(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+        const user = await User.findByPk(transaction.buyerId);
+
+        const invoiceNumber = transaction.transactionId;
+        const invoiceDate = transaction.createdAt;
+        const gst = transaction.gst; // Boolean, to charge 8% GST
+        const itemDescription = transaction.transactionItem;
+        const quantity = transaction.quantity;
+        const subtotal = transaction.paymentAmount;
+        const onHoldBalance = transaction.onHoldBalance;
+        const total = subtotal + (gst ? subtotal * 0.08 : 0);
+        const status = transaction.status; // PENDING, PAID
+        const name = user.name;
+        const email = user.email;
+        const imagePath = 'https://i.ibb.co/XxHFhhX/Property-Go-High-Res-Logo.png';
+        console.log("imagePath: ", imagePath);
+
+        const htmlContent = `
+        <html>
+        <head>
+            <title>Invoice</title>
+            <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background-color: #fff;
+            }
+    
+            .invoice-container {
+                max-width: 100%;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #fff;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 5px;
+            }
+    
+            .invoice-header {
+                text-align: center;
+                margin-bottom: 20px;
+                display: flex; /* Add flexbox container for company logo and title */
+                justify-content: space-between; /* Align items at both ends */
+                align-items: center; /* Vertically center items */
+            }
+    
+            .invoice-header h1 {
+                font-size: 24px;
+                color: #333;
+                margin: 0;
+            }
+    
+            .company-name {
+                font-weight: bold;
+                font-size: 18px;
+                color: #333;
+                margin-bottom: 10px; /* Add spacing between company name and "Invoice" */
+            }
+    
+            .company-logo img {
+                max-height: 100px; /* Set maximum height for the logo image */
+                max-width: 100px; /* Set maximum width for the logo image */
+            }
+    
+            .invoice-details {
+                margin-bottom: 20px;
+            }
+        
+                .invoice-details p {
+                    font-size: 14px;
+                    color: #333; /* Set text color to black */
+                    margin: 6px 0;
+                }
+        
+                .invoice-items {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+        
+                .invoice-items th,
+                .invoice-items td {
+                    border: 1px solid #ddd;
+                    padding: 10px;
+                    text-align: left;
+                }
+        
+                .invoice-items th {
+                    background-color: #f2f2f2;
+                    color: #555;
+                }
+        
+                .invoice-total {
+                    text-align: right;
+                    margin-top: 20px;
+                }
+        
+                .invoice-total p {
+                    font-size: 14px;
+                    font-weight: bold; /* Make Subtotal, GST, and Total text bold */
+                    color: #333; /* Set text color to black */
+                    margin: 6px 0;
+                }
+        
+                .footer {
+                    text-align: center;
+                    margin-top: 20px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="invoice-container">
+            <div class="invoice-header">
+            <div class="company-logo">
+                <img src="${imagePath}" alt="Company Logo">
+            </div>
+            <div>
+                <h1>Invoice</h1>
+                <div class="company-name">PropertyGo Pte. Ltd.</div>
+            </div>
+        </div>
+                <div class="invoice-details">
+                    <p>Invoice Number: ${invoiceNumber}</p>
+                    <p>Invoice Date: ${new Date(invoiceDate).toLocaleString('en-SG', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}</p>
+                    <p>Customer Name: ${name}</p>
+                    <p>Customer Email: ${email}</p>
+                </div>
+                <table class="invoice-items">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${itemDescription}</td>
+                            <td>${quantity}</td>
+                            <td>$${subtotal.toFixed(2)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="invoice-total">
+                    <p><strong>Subtotal:</strong> $${subtotal.toFixed(2)}</p>
+                    <p><strong>${gst ? 'GST (8%):' : 'GST (8%):'}</strong> $${(gst ? subtotal * 0.08 : 0).toFixed(2)}</p>
+                    <p><strong>Total:</strong> $${total.toFixed(2)}</p>
+                </div>
+                <div class="footer">
+                    <p>Thank you for your business!</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        
+        await page.setContent(htmlContent, { waitUntil: 'load' }); // Wait for load
+        const pdfBuffer = await page.pdf({ format: 'A4' });
+
+        await browser.close();
+
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Length': pdfBuffer.length,
+        });
+        res.status(200).send(pdfBuffer);
+    } catch (error) {
+        res.status(500).json({ message: "Error creating invoice: ", error: error.message });
+    }
+}
 
 

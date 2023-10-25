@@ -130,13 +130,13 @@ const HomePage = ({ navigation }) => {
       setSuggestions([]); // Clear suggestions if text is empty
     } else {
       // Add a delay before fetching suggestions
-      if (searchTimeout) {
-        clearTimeout(searchTimeout);
-      }
-      const timeout = setTimeout(() => {
+      // if (searchTimeout) {
+      //   clearTimeout(searchTimeout);
+      // }
+      // const timeout = setTimeout(() => {
         fetchSuggestions(text);
-      }, 1); // Adjust the delay as needed (e.g., 500 milliseconds)
-      setSearchTimeout(timeout);
+      // }, 0); // Adjust the delay as needed (e.g., 500 milliseconds)
+      // setSearchTimeout(timeout);
     }
   };
 
