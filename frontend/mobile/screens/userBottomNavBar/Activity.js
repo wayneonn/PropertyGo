@@ -92,6 +92,8 @@ const Activity = ({ parentFetchData }) => {
                             updatedAt={notification.updatedAt}
                             completed={notification.isCompleted}
                             pending={notification.isPending}
+                            redirect={notification.userNavigationScreen}
+                            hasUserRead={notification.hasUserRead}
                         />
                     );
                 })}
