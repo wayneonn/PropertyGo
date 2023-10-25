@@ -2,7 +2,7 @@ import {Image, StyleSheet, View} from "react-native";
 import Swiper from "react-native-swiper";
 import React from "react";
 
-export const ImageSwiper = () => {
+export const ImageSwiper = ({images_new}) => {
     const images = [
         require('../assets/Home-Image.jpeg'),
         require('../assets/Buying-Home.jpg'),
@@ -15,7 +15,11 @@ export const ImageSwiper = () => {
             <Swiper
                 showsButtons={false} loop={true} autoplay={true} autoplayTimeout={5}
             >
-                {images.map((image, index) => (
+                {images_new === null ? images.map((image, index) => (
+                    <View key={index}>
+                        <Image source={image} style={styles.swiperImage}/>
+                    </View>
+                )) : images_new.map((image, index) => (
                     <View key={index}>
                         <Image source={image} style={styles.swiperImage}/>
                     </View>
