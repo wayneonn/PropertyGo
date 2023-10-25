@@ -109,7 +109,7 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="*">
+          <Nav.Link className="a" href="/properties">
             <AiOutlineFolderOpen
               style={{ marginRight: "1em" }}
             ></AiOutlineFolderOpen>
@@ -126,6 +126,14 @@ const SideBar = () => {
           <Nav.Link className="a" href="/contact-us">
             <LiaStickyNote style={{ marginRight: "1em" }}></LiaStickyNote>
             Contact Us
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link className="a" href="/otp">
+            <AiOutlineCreditCard
+              style={{ marginRight: "1em" }}
+            ></AiOutlineCreditCard>
+            OTP
           </Nav.Link>
         </Nav.Item>
       </Nav>

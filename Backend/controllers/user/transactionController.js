@@ -1,12 +1,43 @@
-const {Transaction, User, Document} = require("../../models")
+const {Transaction, User, Property, Request} = require("../../models")
 const {Op, Sequelize} = require('sequelize');
 const puppeteer = require('puppeteer');
 
-// Maybe should change it to using sellerId instead.
+// Property ID -> Seller ID.
+// Request ID -> User ID -> Partner ID
+// Realistically I should ignore the Property Side since it does not concern me.
 exports.getTransactions = async (req, res) => {
     try {
+        // First, fetch all propertyId values associated with the sellerId
+        const properties = await Property.findAll({
+            where: { sellerId: req.params.id },
+            attributes: ['propertyListingId']
+        });
+
+        const request = await Request.findAll({
+            where: {userId: req.params.id}, attributes: ['requestId']
+        })
+
+        // Extract propertyId values from the properties objects
+        const propertyIds = properties.map(property => property.propertyListingId);
+        const requestIds = request.map(request => request.requestId)
+
         const transactions = await Transaction.findAll({
-            where: {sellerId: req.params.id},
+            where: { propertyId: propertyIds },
+        });
+        res.json({transactions});
+
+    } catch (error) {
+        res
+            .status(500)
+            .json({message: "Error fetching transaction: ", error: error.message});
+    }
+}
+
+
+exports.getTransactionByTransactionId = async (req, res) => {
+    try {
+        const transactions = await Transaction.findAll({
+            where: {transactionId: req.params.id},
         });
         res.json({transactions});
     } catch (error) {
@@ -16,11 +47,21 @@ exports.getTransactions = async (req, res) => {
     }
 }
 
+
 exports.getTopTenTransactions = async (req, res) => {
     try {
+        // First, fetch all propertyId values associated with the sellerId
+        const properties = await Property.findAll({
+            where: { sellerId: req.params.id },
+            attributes: ['propertyListingId']
+        });
+
+        // Extract propertyId values from the properties objects
+        const propertyIds = properties.map(property => property.propertyListingId);
+
         const transactions = await Transaction.findAll({
             where: {
-                sellerId: req.params.id,
+                propertyId: propertyIds,
             },
             order: [
                 ['createdAt', 'DESC']  // 'DESC' for descending order; use 'ASC' for ascending if preferred
@@ -39,6 +80,15 @@ exports.getTransactionValueByLastSixMonths = async (req, res) => {
         const sixMonthsAgo = new Date();
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
+        // First, fetch all propertyId values associated with the sellerId
+        const properties = await Property.findAll({
+            where: { sellerId: req.params.id },
+            attributes: ['propertyListingId']
+        });
+
+        // Extract propertyId values from the properties objects
+        const propertyIds = properties.map(property => property.propertyListingId);
+
         // 2. Construct the Query
         const transactionData = await Transaction.findAll({
             attributes: [
@@ -48,7 +98,7 @@ exports.getTransactionValueByLastSixMonths = async (req, res) => {
                 [Sequelize.fn('COUNT', Sequelize.col('transactionId')), 'transactionCount']
             ],
             where: {
-                sellerId: req.params.id,  // Replace with the sellerId you're interested in
+                propertyId: propertyIds,  // Replace with the sellerId you're interested in
                 createdAt: {
                     [Op.gte]: sixMonthsAgo
                 },
@@ -67,6 +117,15 @@ exports.getTransactionValueByBuyerId = async (req, res) => {
     try {
         const sixMonthsAgo = new Date();
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+        // First, fetch all propertyId values associated with the sellerId
+        const properties = await Property.findAll({
+            where: { sellerId: req.params.id },
+            attributes: ['propertyListingId']
+        });
+
+        // Extract propertyId values from the properties objects
+        const propertyIds = properties.map(property => property.propertyListingId);
+
         const transactionData = await Transaction.findAll({
             attributes: [
                 'buyerId',
@@ -74,7 +133,7 @@ exports.getTransactionValueByBuyerId = async (req, res) => {
                 [Sequelize.fn('COUNT', Sequelize.col('transactionId')), 'transactionCount']
             ],
             where: {
-                sellerId: req.params.id,
+                propertyId: propertyIds,
                 createdAt: {
                     [Op.gte]: sixMonthsAgo
                 }
@@ -90,9 +149,17 @@ exports.getTransactionValueByBuyerId = async (req, res) => {
 
 exports.getTopTenTransactionsWithUsers = async (req, res) => {
     try {
+        // First, fetch all propertyId values associated with the sellerId
+        const properties = await Property.findAll({
+            where: { sellerId: req.params.id },
+            attributes: ['propertyListingId']
+        });
+
+        // Extract propertyId values from the properties objects
+        const propertyIds = properties.map(property => property.propertyListingId);
         const transactions = await Transaction.findAll({
             where: {
-                sellerId: req.params.id,
+                propertyId: propertyIds,
             },
             order: [
                 ['createdAt', 'DESC']  // 'DESC' for descending order; use 'ASC' for ascending if preferred
@@ -123,9 +190,17 @@ exports.getTopTenTransactionsWithUsers = async (req, res) => {
 
 exports.getTopTenTransactionsWithUsersPaid = async (req, res) => {
     try {
+        // First, fetch all propertyId values associated with the sellerId
+        const properties = await Property.findAll({
+            where: { sellerId: req.params.id },
+            attributes: ['propertyListingId']
+        });
+
+        // Extract propertyId values from the properties objects
+        const propertyIds = properties.map(property => property.propertyListingId);
         const transactions = await Transaction.findAll({
             where: {
-                sellerId: req.params.id,
+                propertyId: propertyIds,
                 status: "PAID",
             },
             order: [
@@ -157,9 +232,17 @@ exports.getTopTenTransactionsWithUsersPaid = async (req, res) => {
 
 exports.getTopTenTransactionsWithUsersPending = async (req, res) => {
     try {
+        // First, fetch all propertyId values associated with the sellerId
+        const properties = await Property.findAll({
+            where: { sellerId: req.params.id },
+            attributes: ['propertyListingId']
+        });
+
+        // Extract propertyId values from the properties objects
+        const propertyIds = properties.map(property => property.propertyListingId);
         const transactions = await Transaction.findAll({
             where: {
-                sellerId: req.params.id,
+                propertyId: propertyIds,
                 status: "PENDING"
             },
             order: [
@@ -191,7 +274,15 @@ exports.getTopTenTransactionsWithUsersPending = async (req, res) => {
 
 exports.getUserCountsByCountry = async(req, res) => {
     try {
-        const orderClause = Sequelize.literal(`MAX(CASE WHEN sellerId = ${req.params.id} THEN 1 ELSE 0 END) DESC`);
+        // First, fetch all propertyId values associated with the sellerId
+        const properties = await Property.findAll({
+            where: { sellerId: req.params.id },
+            attributes: ['propertyListingId']
+        });
+
+        // Extract propertyId values from the properties objects
+        const propertyIds = properties.length !== 0 ? properties.map(property => property.propertyListingId) : [1];
+        const orderClause = Sequelize.literal(`MAX(CASE WHEN propertyId IN (${propertyIds.join(',')}) THEN 1 ELSE 0 END) DESC`);
         const orderClauseForTransactionId = [Sequelize.fn('MAX', Sequelize.col('Transaction.transactionId')), 'DESC'];
 
         // Count for Buyers
@@ -208,29 +299,16 @@ exports.getUserCountsByCountry = async(req, res) => {
                 }
             ],
             group: ['buyer.countryOfOrigin'],
-            order: [orderClause, orderClauseForTransactionId], // Secondary sorting by transactionId for consistent results
+            where: {
+                propertyId: propertyIds
+            },
+            order: [orderClause], // Secondary sorting by transactionId for consistent results
             raw: true
         });
 
-        // Count for Sellers
-        const sellerCounts = await Transaction.findAll({
-            attributes: [
-                [Sequelize.fn('COUNT', Sequelize.col('Transaction.transactionId')), 'transactionCount'],
-                [Sequelize.col('seller.countryOfOrigin'), 'countryOfOrigin']
-            ],
-            include: [
-                {
-                    model: User,
-                    as: 'seller',
-                    attributes: []
-                }
-            ],
-            group: ['seller.countryOfOrigin'],
-            order: [orderClause, orderClauseForTransactionId],
-            raw: true
-        });
 
-        res.status(200).json({buyer: buyerCounts, seller: sellerCounts});
+
+        res.status(200).json({buyer: buyerCounts});
     } catch (error) {
         console.error("Error fetching user counts by country:", error);
         throw error;
@@ -239,9 +317,17 @@ exports.getUserCountsByCountry = async(req, res) => {
 
 exports.getTransactionPDFReport = async (req, res) => {
     try {
+        // First, fetch all propertyId values associated with the sellerId
+        const properties = await Property.findAll({
+            where: { sellerId: req.params.id },
+            attributes: ['propertyListingId']
+        });
+
+        // Extract propertyId values from the properties objects
+        const propertyIds = properties.map(property => property.propertyListingId);
         const transactions = await Transaction.findAll({
             where: {
-                sellerId: req.params.id,
+                propertyId: propertyIds,
                 status: "PAID",
             },
             order: [
@@ -253,7 +339,7 @@ exports.getTransactionPDFReport = async (req, res) => {
 
         // Total Number of Transactions by Seller:
         const totalTransactions = await Transaction.count({
-            where: {sellerId: req.params.id}
+            where: {propertyId: propertyIds}
         });
 
 // Transaction Status Breakdown:
@@ -264,25 +350,25 @@ exports.getTransactionPDFReport = async (req, res) => {
 
 // Total On Hold Balance:
         const totalOnHoldBalance = await Transaction.sum('onHoldBalance', {
-            where: {sellerId: req.params.id}
+            where: {propertyId: propertyIds}
         });
 
 
 // Total On Hold Balance:
         const totalPaidBalance = await Transaction.sum('onHoldBalance', {
-            where: {sellerId: req.params.id, status: "PAID"}
+            where: {propertyId: propertyIds, status: "PAID"}
         });
 
 // Number of Properties Sold:
         const propertiesSold = await Transaction.count({
-            where: {sellerId: req.params.id},
+            where: {propertyId: propertyIds},
             distinct: true,
             col: 'propertyId'
         });
 
 // Number of Invoices:
         const totalInvoices = await Transaction.count({
-            where: {sellerId: req.params.id},
+            where: {propertyId: propertyIds},
             distinct: true,
             col: 'invoiceId'
         });
@@ -422,6 +508,29 @@ exports.getTransactionPDFReport = async (req, res) => {
         res.status(200).send(pdfBuffer);
     } catch (error) {
         res.status(500).json({message: "Error fetching top ten transactions: ", error: error.message});
+    }
+}
+
+exports.createTransaction = async(req, res) => {
+    const transactionData = req.body;
+    try {
+        const createdTransaction = await Transaction.create(transactionData);
+        res.json(createdTransaction);
+    } catch (error) {
+        console.error("Error creating transaction:", error);
+        res.status(500).json({ error: "Error creating transaction" });
+    }
+}
+
+exports.getUserTransactions = async (req, res) => {
+    try {
+        const transactions = await Transaction.findAll({
+            where: { buyerId: req.params.id },
+            order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
+        });
+        res.json(transactions);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching transaction: ", error: error.message });
     }
 }
 

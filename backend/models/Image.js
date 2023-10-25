@@ -30,7 +30,15 @@ module.exports = (sequelize, DataTypes) => {
               },
             as: 'propertyListing',
         });
+
+        Image.belongsTo(models.User, {
+            foreignKey: {
+                name: 'userId', allowNull: true
+            },
+            as: 'companyPhoto'
+        })
     };
+
 
     return Image;
 };

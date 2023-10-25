@@ -2,7 +2,7 @@ import {Image, Modal, StyleSheet, Text, TouchableOpacity, View} from "react-nati
 import React from "react";
 import {RatingComponent} from "../RatingStars";
 
-export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, dateFormatter}) => {
+export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, dateFormatter, navigation}) => {
     return (
         <Modal
         animationType="slide"
@@ -17,10 +17,15 @@ export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, d
                 {/* Render more details about the selectedTransaction */}
                 <Text style={styles.propertyTitle}>{selectedItem?.transaction.status}</Text>
                 <Text style={styles.propertyPrice}>{selectedItem?.transaction.onHoldBalance}</Text>
-                <Image
-                    source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                    style={{width: 50, height: 50, borderRadius: 120}}
-                />
+                <TouchableOpacity onPress={() => {
+                    navigation.navigate('View Profile', { userId: selectedItem?.userDetails.userId })
+                    setModalVisible(!modalVisible)
+                }}>
+                    <Image
+                        source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                        style={{width: 50, height: 50, borderRadius: 120}}
+                    />
+                </TouchableOpacity>
                 <Text style={styles.propertyPrice}>{selectedItem?.userDetails.userName}</Text>
                 <RatingComponent rating={selectedItem?.userDetails.rating}/>
                 <Text style={styles.propertyDetails}>Invoice ID: {selectedItem?.transaction.invoiceId}</Text>

@@ -6,6 +6,7 @@ const app = express();
 const globalEmitter = require("./globalEmitter");
 const WebSocket = require("ws");
 const { loggedInUsers } = require('./shared');
+require('dotenv').config();
 
 const server = http.createServer(app);
 // socket io
@@ -33,7 +34,7 @@ const faqTestData = require("./test_data/faqTestData");
 const contactUsTestData = require("./test_data/contactUsTestData");
 const responsesTestData = require("./test_data/responseTestData");
 const transactionTestData = require("./test_data/transactionTestData");
-const invoiceTestData = require("./test_data/invoiceTestData");
+// const invoiceTestData = require("./test_data/invoiceTestData");
 const propertyTestData = require("./test_data/propertyTestData");
 const imageTestData = require("./test_data/imageTestData");
 const reviewTestData = require("./test_data/reviewTestData");
@@ -60,6 +61,9 @@ const reviewAdminRouter = require("./routes/admin/reviewRoutes");
 const folderAdminRouter = require("./routes/admin/folderRoutes");
 const documentAdminRouter = require("./routes/admin/documentRoutes");
 const transactionAdminRouter = require("./routes/admin/transactionRoutes");
+const paymentAdminRouter = require("./routes/admin/paymentRoutes");
+const forumPostAdminRouter = require("./routes/admin/forumPostRoutes");
+const forumCommentAdminRouter = require("./routes/admin/forumCommentRoutes");
 
 //property routes
 const propertyRoute = require("./routes/user/propertyRoute");
@@ -80,6 +84,9 @@ const reviewRoute = require("./routes/user/reviewRoute");
 const faqRoute = require("./routes/user/faqRoute");
 const notificationRoute = require("./routes/user/notificationRoute");
 const responseRoute = require("./routes/user/responseRoute");
+const scheduleRoute = require("./routes/user/scheduleRoute");
+const viewingAvailabilityRoute = require("./routes/user/viewingAvailabilityRoute");
+const stripeRoute = require("./routes/user/stripeRoute");
 const e = require("express");
 
 app.use(cors());
@@ -105,6 +112,9 @@ app.use("/admin/reviews", reviewAdminRouter);
 app.use("/admin/documents", documentAdminRouter);
 app.use("/admin/folders", folderAdminRouter);
 app.use("/admin/transactions", transactionAdminRouter);
+app.use("/admin/payments", paymentAdminRouter);
+app.use("/admin/forumPosts", injectIo(io), forumPostAdminRouter);
+app.use("/admin/forumComments", injectIo(io), forumCommentAdminRouter);
 
 app.use(
   "/user",
@@ -121,7 +131,8 @@ app.use(
   partnerApplicationUserRouter,
   faqRoute,
   notificationRoute,
-  responseRoute
+  responseRoute,
+  stripeRoute
 );
 
 io.on("connection", (socket) => {
@@ -150,9 +161,16 @@ io.on("connection", (socket) => {
   });
 });
 
+app.use("/property", propertyRoute);
+
 app.use(
-  "/property",
-  propertyRoute,
+  "/schedule",
+  scheduleRoute,
+);
+
+app.use(
+  "/viewingAvailability",
+  viewingAvailabilityRoute,
 );
 
 app.use(
@@ -165,6 +183,7 @@ app.use(
   reviewRoute,
 );
 
+app.use("/review", reviewRoute);
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})
@@ -177,9 +196,9 @@ globalEmitter.on("newUserCreated", async (user) => {
   });
 });
 
-globalEmitter.on('partnerApprovalUpdate', async() => {
-    console.log("Received partner approval update notice.")
-})
+globalEmitter.on("partnerApprovalUpdate", async () => {
+  console.log("Received partner approval update notice.");
+});
 //
 // globalEmitter.on('partnerCreated', async() => {
 //     console.log("========================== Partner created =============================");
@@ -196,7 +215,7 @@ db.sequelize
     const existingAdminRecordsCount = await db.Admin.count();
     const existingFaqRecordsCount = await db.FAQ.count();
     const existingTransactionRecordsCount = await db.Transaction.count();
-    const existingInvoiceRecordsCount = await db.Invoice.count();
+    // const existingInvoiceRecordsCount = await db.Invoice.count();
     const existingPropertyRecordsCount = await db.Property.count();
     const existingImageRecordsCount = await db.Image.count();
     const existingReviewRecordsCount = await db.Review.count();
@@ -355,19 +374,19 @@ db.sequelize
       console.log("Review test data already exists in the database.");
     }
 
-    // Invoice
-    if (existingInvoiceRecordsCount === 0) {
-      try {
-        for (const invoiceData of invoiceTestData) {
-          await db.Invoice.create(invoiceData);
-        }
-        console.log("Invoice test data inserted successfully.");
-      } catch (error) {
-        console.log("Error inserting Invoice test data:", error);
-      }
-    } else {
-      console.log("Invoice test data already exists in the database.");
-    }
+    // // Invoice
+    // if (existingInvoiceRecordsCount === 0) {
+    //   try {
+    //     for (const invoiceData of invoiceTestData) {
+    //       await db.Invoice.create(invoiceData);
+    //     }
+    //     console.log("Invoice test data inserted successfully.");
+    //   } catch (error) {
+    //     console.log("Error inserting Invoice test data:", error);
+    //   }
+    // } else {
+    //   console.log("Invoice test data already exists in the database.");
+    // }
 
     // Transaction
     if (existingTransactionRecordsCount === 0) {
@@ -412,20 +431,20 @@ db.sequelize
             for (const contactUsData of contactUsTestData) {
               await db.ContactUs.create(contactUsData);
             }
-            console.log('Contact Us test data inserted successfully.');
+            console.log("Contact Us test data inserted successfully.");
           } catch (error) {
-            console.error('Error inserting Contact Us test data:', error);
+            console.error("Error inserting Contact Us test data:", error);
           }
         } else {
-          console.log('Contact Us test data already exists in the database.');
+          console.log("Contact Us test data already exists in the database.");
         }
 
-        console.log('Faq test data inserted successfully.');
+        console.log("Faq test data inserted successfully.");
       } catch (error) {
-        console.error('Error inserting Faq test data:', error);
+        console.error("Error inserting Faq test data:", error);
       }
     } else {
-      console.log('Admin test data already exists in the database.');
+      console.log("Admin test data already exists in the database.");
     }
 
     // Images

@@ -59,7 +59,13 @@ const ExploreServices = ({navigation, route}) => {
     const [searchQueryCon, setSearchQueryCon] = useState('');
     const [filterByLaw, setFilterByLaw] = useState('name');
     const [filterBy, setFilterBy] = useState('name');
-    const names = ['Name', 'Company', 'User', 'fuckshit']
+    const names = ['Name', 'Company', 'Username' ]
+    const images = [
+        require("../../assets/partnerpic-1.png"),
+        require("../../assets/partnerpic-2.png"),
+        require("../../assets/partnerpic-3.png"),
+        require("../../assets/partnerpic-4.png")
+    ]
 
     useFocusEffect(
         React.useCallback(() => {
@@ -102,7 +108,7 @@ const ExploreServices = ({navigation, route}) => {
                 return lawyer.name.toLowerCase().includes(searchQueryLaw.toLowerCase());
             case 'Company':
                 return lawyer.companyName.toLowerCase().includes(searchQueryLaw.toLowerCase());
-            case 'User':
+            case 'Username':
                 return lawyer.userName.toLowerCase().includes(searchQueryLaw.toLowerCase());
             default:
                 return true;
@@ -130,7 +136,7 @@ const ExploreServices = ({navigation, route}) => {
                 return lawyer.name.toLowerCase().includes(searchQueryCon.toLowerCase());
             case 'Company':
                 return lawyer.companyName.toLowerCase().includes(searchQueryCon.toLowerCase());
-            case 'User':
+            case 'Username':
                 return lawyer.userName.toLowerCase().includes(searchQueryCon.toLowerCase());
             default:
                 return true;
@@ -252,10 +258,8 @@ const ExploreServices = ({navigation, route}) => {
     const ContractorRoute = () => {
         return (
             <ScrollView>
+                <RadioCheckBox filterBy={filterBy} setFilterBy={setFilterBy} names={names}/>
                 <View style={[styles.scene, {backgroundColor: '#f3f3f3'}]}>
-                    <View>
-                        <RadioCheckBox filterBy={filterBy} setFilterBy={setFilterBy} names={names}/>
-                    </View>
                     <View style={{padding: 10, flexDirection: "row", alignItems: "center"}}>
                         <Icon name="search" size={20} color="#000" style={styles.searchIcon} />
                         <TextInput
@@ -347,7 +351,7 @@ const ExploreServices = ({navigation, route}) => {
 
     return (
         <View style={{flex: 1}}>
-            <ImageSwiper></ImageSwiper>
+            <ImageSwiper images_new={images}></ImageSwiper>
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={SceneMap({

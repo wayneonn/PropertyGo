@@ -21,10 +21,20 @@ import LawyersList from "./containers/LawyersList";
 import LawyerDetail from "./containers/LawyerDetail";
 import ContractorsList from "./containers/ContractorsList";
 import ContractorDetail from "./containers/ContractorDetail";
+import AllProperties from "./containers/AllProperties";
+import AllProperty from "./containers/AllProperty";
+import Otp from "./containers/Otp";
+import Payment from "./containers/Payment";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import PrivateRoute from "./PrivateRoute";
+
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+const stripePromise = loadStripe(
+  "pk_test_51O28syIn7f8SMRLwcw29qbwrE1K3EwJUAC1uXgqnWO8sYsri8EdL4WI8prHJ5y6kzvre0yFDgVdja2hPlOr32kRz00gMpVYlqW"
+);
 
 function App() {
   return (
@@ -57,6 +67,17 @@ function App() {
             path="/contractors/details/:contractorId"
             element={<ContractorDetail />}
           />
+          <Route path="/properties" element={<AllProperties />} />
+          <Route path="/property/:propertyId" element={<AllProperty />} />
+          <Route path="/otp" element={<Otp />} />
+          {/* <Route
+            path="/otp"
+            element={
+              <Elements stripe={stripePromise}>
+                <Payment />{" "}
+              </Elements>
+            }
+          /> */}
         </Route>
         <Route
           path="/"

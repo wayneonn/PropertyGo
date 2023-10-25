@@ -57,8 +57,8 @@ const FaqCreate = ({ showToast }) => {
       const response = await API.post(
         `/admin/faqs?adminId=${localStorage.getItem("loggedInAdmin")}`,
         {
-          question,
-          answer,
+          question: question,
+          answer: answer,
           faqType,
         }
       );
@@ -85,6 +85,24 @@ const FaqCreate = ({ showToast }) => {
     const doc = parser.parseFromString(html, "text/html");
     return doc.body.textContent || "";
   }
+
+  const sanitizeQuestion = (content) => {
+    const sanitizedContent = content
+      .replace(/<u>\s<\/u>/g, " ")
+      .replace(/<b>\s<\/b>/g, " ")
+      .replace(/<i>\s<\/i>/g, " ");
+
+    setQuestion(sanitizedContent);
+  };
+
+  const sanitizeAnswer = (content) => {
+    const sanitizedContent = content
+      .replace(/<u>\s<\/u>/g, " ")
+      .replace(/<b>\s<\/b>/g, " ")
+      .replace(/<i>\s<\/i>/g, " ");
+
+    setAnswer(sanitizedContent);
+  };
 
   return (
     <div>
@@ -115,7 +133,7 @@ const FaqCreate = ({ showToast }) => {
               <Form.Group>
                 <ReactQuill
                   value={question}
-                  onChange={setQuestion}
+                  onChange={sanitizeQuestion}
                   theme="snow"
                   className={
                     validationMessages.emptyFaqQuestion ||
@@ -143,7 +161,7 @@ const FaqCreate = ({ showToast }) => {
               <Form.Group>
                 <ReactQuill
                   value={answer}
-                  onChange={setAnswer}
+                  onChange={sanitizeAnswer}
                   theme="snow"
                   className={
                     validationMessages.emptyFaqAnswer ? "is-invalid" : ""

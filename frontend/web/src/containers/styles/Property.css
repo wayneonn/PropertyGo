@@ -15,7 +15,7 @@
   padding: 20px; */
   max-height: 420px;
   overflow-y: auto;
-  padding: 20px 5px 5px 5px;
+  padding: 10px 5px 5px 5px;
 }
 
 .property-main {
@@ -140,7 +140,8 @@
   justify-content: center;
   display: flex;
   color: purple;
-  margin-left: 15px;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 
 
@@ -158,7 +159,8 @@
   justify-content: center;
   display: flex;
   color: brown;
-  margin-left: 15px;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 
 .sold {
@@ -225,6 +227,9 @@
   padding: 15px;
 }
 
+.approval-actions {
+  display: flex;
+}
 
 
 
