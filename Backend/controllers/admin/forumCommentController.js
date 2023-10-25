@@ -1,4 +1,5 @@
 const { ForumComment, ForumTopic, ForumPost, User, Notification, Image } = require("../../models");
+const { loggedInUsers } = require('../../shared');
 
 const getFlaggedForumComments = async (req, res) => {
     try {
@@ -84,7 +85,24 @@ const markForumCommentInappropriate = async (req, res) => {
         "adminId": adminId
     };
 
+    const content = `The admin have flagged the forum comment of "${forumComment.message}" as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"}`
+    const userNotification = {
+        "content": content,
+        "adminNotificationId": adminId,
+        "userId": forumComment.userId,
+        "forumCommentId": forumComment.forumCommentId,
+    };
+
+    // console.log("userId  " , forumComment.userId)
+
     await Notification.create(req.body);
+    await Notification.create(userNotification);
+    const forumCommentUser = await forumComment.getUser();
+
+    if (forumCommentUser && loggedInUsers.has(forumCommentUser.userId)) {
+        req.io.emit("userNotification", { "pushToken": forumCommentUser.pushToken, "title": forumComment.message, "body": content });
+        // console.log("Emitted userNewForumCommentNotification");
+    }
 
     req.io.emit("newAdminFlaggedForumComment", "Admin has flagged forum comment");
     res.status(200).json({ forumComment });
@@ -123,7 +141,24 @@ const resetForumCommentAppropriate = async (req, res) => {
         "adminId": adminId
     };
 
+    const content = `The admin have reset the forum comment of "${forumComment.message}" to appropriate`
+    const userNotification = {
+        "content": content,
+        "adminNotificationId": adminId,
+        "userId": forumComment.userId,
+        "forumCommentId": forumComment.forumCommentId,
+    };
+
+    // console.log("userId  " , forumComment.userId)
+
     await Notification.create(req.body);
+    await Notification.create(userNotification);
+    const forumCommentUser = await forumComment.getUser();
+
+    if (forumCommentUser && loggedInUsers.has(forumCommentUser.userId)) {
+        req.io.emit("userNotification", { "pushToken": forumCommentUser.pushToken, "title": forumComment.message, "body": content });
+        // console.log("Emitted userNewForumCommentNotification");
+    }
 
     req.io.emit("newAdminResetAppropriateForumComment", "Admin has reset forum comment to appropriate");
 

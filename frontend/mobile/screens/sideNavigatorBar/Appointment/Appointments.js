@@ -1,8 +1,23 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {Alert, FlatList, ScrollView, StyleSheet, Text, View,} from 'react-native';
-import {Calendar} from 'react-native-calendars';
-import {useNavigation} from '@react-navigation/native';
-import {AuthContext} from '../../../AuthContext';
+
+import React, { useState, useEffect, useContext } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    TouchableOpacity,
+    Alert,
+    FlatList,
+    Modal,
+    Button,
+} from 'react-native';
+import { Calendar } from 'react-native-calendars';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../../AuthContext';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { Picker } from '@react-native-picker/picker';
 import {
     createSchedule,
     getScheduleByDateAndPropertyId,
@@ -38,8 +53,19 @@ const Appointments = ({route}) => {
     const [sellerSlots, setSellerSlots] = useState([]);
     const [userBuySchedules, setUserBuySchedules] = useState([]); // Schedules for "To Buy"
     const [sellerSellSchedules, setSellerSellSchedules] = useState([]); // Schedules for "To Sell"
+    const [selectedTimeRange, setSelectedTimeRange] = useState('1'); // Default: Next 7 days
+    const [selectedTextDays, setSelectedTextDays] = useState('Tomorrow');
+    const [dayPickerVisible, setDayPickerVisible] = useState(false);
+    const [filteredBuyerSchedules, setFilteredBuyerSchedules] = useState([]);
+    const [filteredSellerSchedules, setFilteredSellerSchedules] = useState([]);
 
-    const numColumns = 3;
+    const dayChoices = [
+        { label: 'Tomorrow', value: '1' },
+        { label: 'Next 3 Days', value: '3' },
+        { label: 'Next 7 Days', value: '7' },
+        { label: 'Next 15 Days', value: '15' },
+        { label: 'Next 30 Days', value: '30' },
+    ]
 
     useEffect(() => {
         // fetchViewingAvailabilityByDateAndPropertyId();
@@ -49,6 +75,10 @@ const Appointments = ({route}) => {
         fetchScheduleBySeller();
     }, [selectedDate]);
 
+    useEffect(() => {
+        fetchScheduleByUser();
+        fetchScheduleBySeller();
+    }, [selectedTimeRange]);
 
     useEffect(() => {
         if (firstLoad) {
@@ -57,6 +87,23 @@ const Appointments = ({route}) => {
         }
     }, []);
 
+    const combinedSchedules = [...filteredBuyerSchedules, ...filteredSellerSchedules];
+    combinedSchedules.sort((a, b) => {
+        // Sort by meetup date first
+        const dateA = new Date(a.meetupDate);
+        const dateB = new Date(b.meetupDate);
+        if (dateA > dateB) return -1;
+        if (dateA < dateB) return 1;
+
+        // If meetup dates are the same, sort by time
+        const timeA = a.meetupTime;
+        const timeB = b.meetupTime;
+        if (timeA > timeB) return -1;
+        if (timeA < timeB) return 1;
+
+        return 0;
+    });
+
     const fetchScheduleByUser = async () => {
         const {success, data, message} = await getScheduleByUserId(
             userId
@@ -64,8 +111,23 @@ const Appointments = ({route}) => {
 
         if (success) {
             setUserSlots(data);
-            console.log("fetchScheduleByUser", data)
-        } else {
+            const selectedTimeRangeAsNumber = parseInt(selectedTimeRange);
+            const currentDate = new Date();
+
+            // Calculate the date 7 days from now
+            const daysLater = new Date(currentDate);
+            daysLater.setHours(0, 0, 0, 0);
+            daysLater.setDate(currentDate.getDate() + selectedTimeRangeAsNumber);
+
+            const filteredSchedules = data.filter(schedule => {
+                const meetupDate = new Date(schedule.meetupDate);
+                meetupDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+                return meetupDate >= currentDate && meetupDate <= daysLater;
+            });
+
+            setFilteredBuyerSchedules(filteredSchedules);
+        }
+        else {
             setUserSlots([]);
             console.error('Error fetching schedule data for user:', message);
         }
@@ -78,7 +140,20 @@ const Appointments = ({route}) => {
 
         if (success) {
             setSellerSlots(data);
-            console.log("fetchScheduleByUser", data)
+            const selectedTimeRangeAsNumber = parseInt(selectedTimeRange);
+            const currentDate = new Date();
+
+            // Calculate the date 7 days from now
+            const daysLater = new Date(currentDate);
+            daysLater.setHours(0, 0, 0, 0);
+            daysLater.setDate(currentDate.getDate() + selectedTimeRangeAsNumber);
+            const filteredSchedules = data.filter(schedule => {
+                const meetupDate = new Date(schedule.meetupDate);
+                meetupDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+                return meetupDate >= currentDate && meetupDate <= daysLater;
+            });
+
+            setFilteredSellerSchedules(filteredSchedules);
         } else {
             setSellerSlots([]);
             console.error('Error fetching schedule data for user:', message);
@@ -241,100 +316,23 @@ const Appointments = ({route}) => {
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
-    const handleSubmit = async () => {
-
-        console.log('scheduleId Here: ', scheduleId)
-
-        if (!selectedDate || !selectedTime) {
-            // Check if all fields are filled
-            Alert.alert('Incomplete Information', 'Please select a date, start time, and end time.');
-            return;
-        }
-
-        // Create the viewing availability object to be submitted
-        const scheduleData = {
-            meetupDate: selectedDate,
-            meetupTime: selectedSchedule.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            }),
-            userId: userId,
-            propertyId: propertyListingId,
-        };
-
-        // Call the API to create or update the viewing availability
-        let response;
-
-        if (isToBeUpdated === false) {
-            response = await createSchedule(scheduleData);
-            if (response.success) {
-                Alert.alert('Success', 'Schedule booked successfully.');
-                setSelectedTime(null);
-                setSelectedDate(selectedDate);
-            } else {
-                Alert.alert('Error', 'Failed to book. Please try again later.');
-            }
-        } else {
-            response = await updateSchedule(scheduleData, userId, selectedDate);
-            if (response.success) {
-                Alert.alert('Success', 'Schedule updated successfully.');
-                setSelectedTime(null);
-                setSelectedDate(selectedDate);
-            } else {
-                Alert.alert('Error', 'Failed to update. Please try again later.');
-            }
-        }
-
-        setTimeSlots(generateTimeSlots());
-        setRefreshFlatList((prev) => !prev);
-        fetchScheduleData();
-        fetchScheduleByUser();
-    };
-
-    const handleRemove = async () => {
-        console.log('scheduleId: ', scheduleId)
-        if (scheduleId) {
-            const response = await removeSchedule(scheduleId);
-            if (response.success) {
-                // Show a success alert
-                Alert.alert('Success', 'Availability successfully removed.');
-
-                // Clear selected time and time range
-                setSelectedTime(null);
-                setScheduleId(null);
-                setIsToBeUpdated(false);
-
-                // Refresh the screen to reflect the new date
-                // setSelectedDate(new Date());
-            } else {
-                Alert.alert('Error', 'Failed to remove availability. Please try again later.');
-                console.log('Error:', response.message);
-            }
-        } else {
-            Alert.alert('No Availability to Remove', 'There is no availability to remove for the selected date.');
-        }
-
-        fetchScheduleData();
-        fetchScheduleByUser();
-    };
-
     const getMarkedDates = () => {
         const markedDates = {};
-        const seller = {key: 'seller', color: 'red'};
-        const buyer = {key: 'buyer', color: 'green'};
+        const seller = { key: 'seller', color: 'red' };
+        const buyer = { key: 'buyer', color: 'green' };
 
-        if (userSlots.length === 0 || sellerSlots.length === 0) {
-            markedDates[selectedDate] = {selected: true, selectedDotColor: 'blue'};
-        }
+        console.log('selectedDate: ', selectedDate);
+        // if (userSlots.length === 0 || sellerSlots.length === 0) {
+        markedDates[selectedDate] = { selected: true, selectedDotColor: 'blue' };
+        // }
 
         // Loop through the data and mark the dates
         userSlots.forEach((userSlot) => {
             const date = userSlot.meetupDate; // Get the date from the fetched data
 
-            if (!markedDates[date]) {
-                markedDates[date] = {dots: []};
-            }
+            // if (!markedDates[date]) {
+            markedDates[date] = { dots: [] };
+            // }
             markedDates[date].dots.push(buyer);
 
             if (date === selectedDate) {
@@ -345,10 +343,12 @@ const Appointments = ({route}) => {
 
         sellerSlots.forEach((availability) => {
             const date = availability.meetupDate; // Get the date from the fetched data
-
             if (!markedDates[date]) {
-                markedDates[date] = {dots: []};
+                markedDates[date] = { dots: [] }; // Create a new entry with an empty dots array
+            } else if (!markedDates[date].dots) {
+                markedDates[date].dots = []; // If dots array doesn't exist, create it
             }
+
             markedDates[date].dots.push(seller);
 
             if (date === selectedDate) {
@@ -363,117 +363,149 @@ const Appointments = ({route}) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollViewContent}
-                keyboardShouldPersistTaps="handled" // Add this prop
-            >
+            <ScrollView style={styles.scrollView}>
                 <View style={styles.headerContainer}>
                     <Text style={styles.header}>Appointments</Text>
                 </View>
+
                 <View style={styles.calendarContainer}>
                     <Calendar
                         onDayPress={handleDayPress}
+                        onMonthChange={handleDayPress}
                         minDate={new Date()}
                         markingType={'multi-dot'}
-                        style={{
-                            borderWidth: 0.5,
-                            borderColor: 'gray',
-                            height: 360,
-                        }}
-                        theme={{
-                            backgroundColor: '#ffffff',
-                            calendarBackground: '#ffffff',
-                            textSectionTitleColor: '#b6c1cd',
-                            selectedDayBackgroundColor: '#00adf5',
-                            selectedDayTextColor: '#ffffff',
-                            todayTextColor: '#00adf5',
-                            dayTextColor: '#2d4150',
-                            textDisabledColor: '#d9e1e8',
-                        }}
+                        style={styles.calendar}
+                        theme={calendarTheme}
                         markedDates={getMarkedDates()}
                     />
                 </View>
-
-                {/* Time Slots Matrix (Bottom Half) */}
-
-                <View style={styles.timeSlotsContainer}>
-                    <Text style={styles.dateOnContainer}>{formatDate(selectedDate)}</Text>
+                
+                <View style={styles.dateCard}>
+                    <Ionicons name="calendar" size={28} color="#00adf5" />
+                    <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
                 </View>
 
+                <View style={styles.bookingContainer}>
+                    <Text style={styles.sectionHeader}>
+                        <MaterialCommunityIcons
+                            name="telescope"
+                            size={28}
+                            color="#00adf5"
+                        />{' '}
+                        To Buy - Upcoming To View
+                    </Text>
+                    {userBuySchedules && userBuySchedules.length > 0 ? (
+                        <>
+                            {userBuySchedules.map((item) => (
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, scheduleId: item.scheduleId});
+                                }} />
+                            ))}
+                        </>
+                    ) : (
+                        <Text style={styles.noAvailabilityText}>No bookings found.</Text>
+                    )}
+                </View>
 
-                {!["LAWYER", "CONTRACTOR", "PROPERTY AGENT"].includes(user.user.userType) ? (
-                    <>
-                        <View style={styles.bookingContainer}>
-                            <Text style={styles.dateOnContainer}>To Buy - Upcoming To View</Text>
+                <View style={styles.bookingContainer}>
+                    <Text style={styles.sectionHeader}>
+                        <MaterialCommunityIcons
+                            name="table-eye"
+                            size={28}
+                            color="#00adf5"
+                        />{' '}
+                        To Sell - Buyers To View Unit
+                    </Text>
+                    {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
+                        <>
+                            {sellerSellSchedules.map((item) => (
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, scheduleId: item.scheduleId});
+                                }} />
+                            ))}
+                        </>
+                    ) : (
+                        <Text style={styles.noAvailabilityText}>
+                            No bookings for units listed.
+                        </Text>
+                    )}
+                </View>
 
-                            {/* List of user's bookings */}
-                            {userBuySchedules && userBuySchedules.length > 0 ? (
-                                <FlatList
-                                    data={userBuySchedules}
-                                    keyExtractor={(item) => item.scheduleId.toString()}
-                                    renderItem={({item}) => (
-                                        <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                            navigation.navigate('View Appointment Detail', {
-                                                userId: item.sellerId,
-                                                propertyId: item.propertyId,
-                                                schedule: item
-                                            });
-                                        }}/>
-                                    )}
+                <View style={styles.bookingContainer}>
+                    <View style={styles.sectionHeaderContainer}>
+                        <Text style={styles.sectionHeader}>
+                            <MaterialCommunityIcons
+                                name="calendar-search"
+                                size={28}
+                                color="#00adf5"
+                            />{' '}
+                            Upcoming Days
+                        </Text>
+                        {/* Picker */}
+                        <TouchableOpacity
+                            style={styles.propertyTypePickerButton}
+                            onPress={() => setDayPickerVisible(true)}
+                        >
+                            <Text style={styles.propertyTypePickerText}>
+                                {selectedTextDays}
+                            </Text>
+                            <Icon name="caret-down" size={20} color="black" />
+                        </TouchableOpacity>
+                        {/* Picker */}
+                    </View>
+
+                    <Modal
+                        transparent={true}
+                        animationType="slide"
+                        visible={dayPickerVisible}
+                        onRequestClose={() => setDayPickerVisible(false)}
+                    >
+                        <View style={styles.modalContainer}>
+                            <Picker
+                                selectedValue={selectedTimeRange}
+                                onValueChange={(value) => {
+                                    setSelectedTimeRange(value);
+                                    // Find the corresponding label and set it as selectedTextDays
+                                    const selectedLabel = dayChoices.find((item) => item.value === value);
+                                    if (selectedLabel) {
+                                        setSelectedTextDays(selectedLabel.label);
+                                    }
+                                    console.log('selectedTimeRange: ', selectedTimeRange, "selectedTextDays: ", selectedTextDays);
+                                }}
+                                style={styles.picker}
+                            >
+                                {dayChoices.map((type, index) => (
+                                    <Picker.Item
+                                        key={index}
+                                        label={type.label}
+                                        value={type.value}
+                                    />
+                                ))}
+                            </Picker>
+
+                            <View style={styles.okButtonContainer}>
+                                <Button
+                                    title="OK"
+                                    onPress={() => setDayPickerVisible(false)}
                                 />
-                            ) : (
-                                <Text style={styles.noAvailabilityText}>No bookings found.</Text>
-                            )}
+                            </View>
                         </View>
-                        <View style={styles.bookingContainer}>
-                            <Text style={styles.dateOnContainer}>To Sell - Buyers To View Unit</Text>
-
-                            {/* List of user's bookings */}
-                            {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
-                                <FlatList
-                                    data={sellerSellSchedules}
-                                    keyExtractor={(item) => item.scheduleId.toString()}
-                                    renderItem={({item}) => (
-                                        <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                            navigation.navigate('View Appointment Detail', {
-                                                userId: sellerUserId,
-                                                propertyId: item.propertyId,
-                                                schedule: item
-                                            });
-                                        }}/>
-                                    )}
-                                />
-                            ) : (
-                                <Text style={styles.noAvailabilityText}>No bookings for units listed.</Text>
-                            )}
-                        </View>
-                    </>) : (
-                    <>
-                        <View style={styles.bookingContainer}>
-                            <Text style={styles.dateOnContainer}>Request Schedule - Upcoming </Text>
-
-                            {/* List of user's bookings */}
-                            {userBuySchedules && userBuySchedules.length > 0 ? (
-                                <FlatList
-                                    data={userBuySchedules}
-                                    keyExtractor={(item) => item.scheduleId.toString()}
-                                    renderItem={({item}) => (
-                                        <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                            navigation.navigate('View Appointment Detail', {
-                                                userId: item.sellerId,
-                                                propertyId: item.propertyId,
-                                                schedule: item
-                                            });
-                                        }}/>
-                                    )}
-                                />
-                            ) : (
-                                <Text style={styles.noAvailabilityText}>No bookings found.</Text>
-                            )}
-                        </View>
-                    </>
-                )}
+                    </Modal>
+                    {/* Picker */}
+                    {combinedSchedules.length > 0 ? (
+                        <>
+                            {combinedSchedules.map((item) => (
+                                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                                    navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, scheduleId: item.scheduleId });
+                                }} />
+                            ))}
+                        </>
+                    ) : (
+                        <Text style={styles.noAvailabilityText}>
+                            No bookings for units listed.
+                        </Text>
+                    )}
+                </View>
             </ScrollView>
         </View>
     );
@@ -485,42 +517,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         padding: 16,
     },
-    calendarContainer: {
+    scrollView: {
         flex: 1,
-        borderRadius: 8,
-        padding: 0,
-        marginBottom: 10,
-    },
-    timeSlotsContainer: {
-        flex: 1,
-        backgroundColor: 'white',
-        borderRadius: 8,
-        padding: 16,
-        borderWidth: 0.2,
-        borderColor: 'gray',
-    },
-    timeSlot: {
-        flex: 1,
-        padding: 8,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 4,
-        marginBottom: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: 4,
-        minHeight: 40,
-    },
-    selectedTimeSlot: {
-        backgroundColor: 'cyan',
-    },
-    timeText: {
-        fontSize: 16,
-    },
-    dateOnContainer: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginLeft: 5,
     },
     headerContainer: {
         marginBottom: 20,
@@ -531,50 +529,37 @@ const styles = StyleSheet.create({
         marginTop: 5,
         textAlign: 'center',
     },
-    saveChangesButton: {
-        backgroundColor: 'green',
-        padding: 10,
-        borderRadius: 5,
-        marginTop: 10,
+    calendarContainer: {
+        borderRadius: 8,
+        marginBottom: 10,
+    },
+    calendar: {
+        borderWidth: 0.5,
+        borderColor: 'gray',
+        borderRadius: 8,
+        marginBottom: 10,
+        backgroundColor: 'white',
+    },
+    dateCard: {
+        // backgroundColor: '#f5f5f5',
+        padding: 8,
+        borderRadius: 8,
+        marginVertical: 10,
+        flexDirection: 'row',
         alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: '60%',
-        marginRight: 40,
-        marginLeft: 0,
+        borderWidth: 0.1,
     },
-    saveChangesButtonText: {
-        color: 'white',
+    dateText: {
+        fontSize: 25,
+        fontWeight: 'bold',
         marginLeft: 10,
+        textAlign: 'center',
+        alignItems: 'center',
     },
-    timePickers: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    backButton: {
-        padding: 10,
-        marginRight: 20,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10,
-    },
-    removeButton: {
-        backgroundColor: 'red',
-        padding: 10,
-        borderRadius: 5,
-        marginTop: 10,
-        // alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: 50,
-        marginLeft: 50,
-        // flex: 1,
-    },
-    removeButtonText: {
-        color: 'white',
-        marginLeft: 10,
+    sectionHeader: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
     noAvailabilityText: {
         fontSize: 16,
@@ -582,7 +567,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     bookingContainer: {
-        flex: 1,
         marginTop: 10,
         backgroundColor: 'white',
         borderRadius: 8,
@@ -591,25 +575,51 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         marginBottom: 10,
     },
-    bookingItem: {
-        marginTop: 10,
-        borderWidth: 1,
-        borderColor: 'lightgray',
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 10,
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        paddingBottom: 20, // Add padding to make the button visible
+    },
+    picker: {
         backgroundColor: 'white',
     },
-    bookingItemText: {
-        fontSize: 16,
-        marginBottom: 8,
+    okButtonContainer: {
+        backgroundColor: 'white',
     },
-    bookingItemTextLabel: {
-        fontSize: 16,
-        marginBottom: 8,
-        fontWeight: 'bold',
+    propertyTypePickerButton: {
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        borderColor: 'gray',
+        fontSize: 14,
+        padding: 8,
+        width: '40%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    propertyTypePickerText: {
+        fontSize: 14,
+    },
+    sectionHeaderContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 10,
     },
 
 });
+
+const calendarTheme = {
+    backgroundColor: '#ffffff',
+    calendarBackground: '#ffffff',
+    textSectionTitleColor: '#b6c1cd',
+    selectedDayBackgroundColor: '#00adf5',
+    selectedDayTextColor: '#ffffff',
+    todayTextColor: '#00adf5',
+    dayTextColor: '#2d4150',
+    textDisabledColor: '#d9e1e8',
+};
 
 export default Appointments;

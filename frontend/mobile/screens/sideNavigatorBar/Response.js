@@ -1,34 +1,45 @@
-import React, { useState, useContext, useCallback } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, TextInput, RefreshControl, Image, TouchableHighlight, FlatList } from 'react-native';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, TextInput, RefreshControl, Image, TouchableHighlight, FlatList , useWindowDimensions} from 'react-native';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { getUserContactUsId } from '../../utils/contactUsApi';
 import { getTimeAgo } from '../../services/CalculateTimeAgo';
 import { createResponse } from '../../utils/responseApi';
+import { socket } from '../../navigations/LoginNavigator';
+import HTML from 'react-native-render-html';
 
 const Response = ({ route }) => {
     const { user } = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
     const contactUs = route.params.contactUs;
     const [newMessage, setNewMessage] = useState('');
-
+    const windowWidth = useWindowDimensions().width;
     // console.log("contact US :", contactUs)
     // console.log("messages:", messages)
 
-    const useResponseCallback = useCallback(() => {
-        const fetchData = async () => {
-            try {
-                const updatedContactUs = await getUserContactUsId(contactUs.contactUsId);
-                setMessages([{ message: contactUs.message, userId: contactUs.userId, createdAt: contactUs.createdAt }, ...updatedContactUs.responses])
-            } catch (error) {
-                console.error(error);
-            }
+    const fetchData = async () => {
+        try {
+            const updatedContactUs = await getUserContactUsId(contactUs.contactUsId);
+            setMessages([{ message: contactUs.message, userId: contactUs.userId, createdAt: contactUs.createdAt }, ...updatedContactUs.responses])
+        } catch (error) {
+            console.error(error);
         }
+    }
+
+    const useResponseCallback = useCallback(() => {
         fetchData();
     }, [])
 
     useFocusEffect(useResponseCallback);
+
+    useEffect(() => {
+        socket.on("userNotification", (data) => {
+            // console.log("RESPONDEDEDEDE")
+            useResponseCallback();
+        });
+    })
+
 
     const handleSubmit = async () => {
 
@@ -56,7 +67,7 @@ const Response = ({ route }) => {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
                     <View style={item.userId ? styles.sentMessage : styles.receivedMessage}>
-                        <Text style={styles.messageText}>{item.message} </Text>
+                        <Text style={styles.messageText}><HTML source={{ html: item.message.replace(/<\/?p>/g, '').replace(/<html>|<\/html>/g, '')}} contentWidth={windowWidth}/></Text>
                         <Text style={styles.time}>{getTimeAgo(item.createdAt)}</Text>
                     </View>
                 )}
@@ -123,8 +134,8 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     time: {
-        fontSize:10,
-        color:"grey",
+        fontSize: 10,
+        color: "grey",
         alignSelf: 'flex-end',
         // justifyContent: "flex-end"
     }

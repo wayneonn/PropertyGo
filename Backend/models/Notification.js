@@ -38,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,
+        },
+        userNavigationScreen: {
+            type: DataTypes.STRING,
+            allowNull: true,
         }
     }, {
         freezeTableName: true
@@ -97,6 +101,14 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true,
             },
             as: 'userNotification',
+        });
+
+        Notification.belongsTo(models.Schedule, {
+            foreignKey: {
+                name: 'scheduleId',
+                allowNull: true,
+            },
+            as: 'schedule',
         });
     };
 
