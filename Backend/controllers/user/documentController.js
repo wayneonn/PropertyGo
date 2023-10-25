@@ -61,16 +61,18 @@ exports.uploadDocuments = async (req, res) => {
       });
     }
 
-    if (partnerApplicationId !== null) {
+    if (partnerApplicationId != null) {
       const user = await User.findByPk(userId);
 
       req.body = {
-        "content": `A new Partner Application has been created by ${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}`,
-        "isRecent": false,
-        "isPending": true,
-        "isCompleted": false,
-        "hasRead": false,
-        "userId": userId
+        content: `A new Partner Application has been created by ${
+          user.userName.charAt(0).toUpperCase() + user.userName.slice(1)
+        }`,
+        isRecent: false,
+        isPending: true,
+        isCompleted: false,
+        hasRead: false,
+        userId: userId,
       };
 
       await Notification.create(req.body);
