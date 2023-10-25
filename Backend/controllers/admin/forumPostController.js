@@ -57,18 +57,18 @@ const markForumPostInappropriate = async (req, res) => {
     const forumPost = await ForumPost.findByPk(forumPostId);
 
     if (typeOfResponse === "no") {
-        const forumPosts = await ForumPost.findByPk(forumPostId, {
-            include: {
-              model: User,
-              as: 'usersFlagged', 
-            }
-          });
+        // const forumPosts = await ForumPost.findByPk(forumPostId, {
+        //     include: {
+        //       model: User,
+        //       as: 'usersFlagged', 
+        //     }
+        //   });
 
-        for (const usersFlaggedForumPost of forumPosts.usersFlagged) {
-            const userIdFlagged = usersFlaggedForumPost.dataValues.userId;
+        // for (const usersFlaggedForumPost of forumPosts.usersFlagged) {
+        //     const userIdFlagged = usersFlaggedForumPost.dataValues.userId;
 
-            await forumPost.removeUsersFlagged(userIdFlagged);
-        }
+        //     await forumPost.removeUsersFlagged(userIdFlagged);
+        // }
     } else {
         forumPost.isInappropriate = true;
     }
@@ -117,18 +117,18 @@ const resetForumPostAppropriate = async (req, res) => {
 
     forumPost.isInappropriate = false;
 
-    const forumPosts = await ForumPost.findByPk(forumPostId, {
-        include: {
-          model: User,
-          as: 'usersFlagged', 
-        }
-      });
+    // const forumPosts = await ForumPost.findByPk(forumPostId, {
+    //     include: {
+    //       model: User,
+    //       as: 'usersFlagged', 
+    //     }
+    //   });
 
-    for (const usersFlaggedForumPost of forumPosts.usersFlagged) {
-        const userIdFlagged = usersFlaggedForumPost.dataValues.userId;
+    // for (const usersFlaggedForumPost of forumPosts.usersFlagged) {
+    //     const userIdFlagged = usersFlaggedForumPost.dataValues.userId;
 
-        await forumPost.removeUsersFlagged(userIdFlagged);
-    }
+    //     await forumPost.removeUsersFlagged(userIdFlagged);
+    // }
 
     await forumPost.save();
 
