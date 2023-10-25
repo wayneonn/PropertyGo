@@ -28,17 +28,17 @@ exports.createFakeTransactions = async (numOfRecords) => {
         // const requestId = await getRandomRequestId()
         // const invoiceId = await getRandomInvoiceId()
         // const propertyId = await getRandomPropertyId()
-
+        const transactionItem = faker.helpers.arrayElement(["Token Purchase", "Option Fee"]);
         const fakeTransaction = {
             onHoldBalance: faker.finance.amount(300, 1000, 2),
             status: faker.helpers.arrayElement(['PENDING', 'PAID']),
             buyerId: faker.number.int({min: 1, max:6}),
-            sellerId: faker.number.int({min: 1, max:6}),
             propertyId: faker.number.int({min:1, max:29}),
+            transactionItem: transactionItem,
             invoiceId: faker.number.int({min:1, max:6}),
-            createdAt: faker.date.between({from:'2023-01-01', to:'2023-09-30'})
+            createdAt: faker.date.between({from:'2023-01-01', to:'2023-09-30'}),
+            quantity: transactionItem === "Token Purchase" ? faker.helpers.arrayElement([5, 10, 15, 20, 25,30, 40, 50]): 1
         };
-
         transactions.push(fakeTransaction);
     }
 
@@ -76,7 +76,8 @@ exports.generateFakeProperties = async(numOfRecords) => {
             boostListingEndDate: faker.datatype.boolean() ? faker.date.between({from: '2023-01-01', to: '2023-12-31'}) : null,
             longitude: faker.location.longitude(),
             latitude: faker.location.latitude(),
-            userId: faker.number.int({min:1, max:7})
+            sellerId: faker.number.int({min:1, max:5})
+
         };
 
         properties.push(fakeProperty);
@@ -88,5 +89,4 @@ exports.generateFakeProperties = async(numOfRecords) => {
         console.error('Error creating fake properties:', error);
     }
 };
-
 

@@ -37,6 +37,7 @@ const UserBottomNavigator = () => {
 
     useEffect(() => {
         socket.on("userNotification", (data) => {
+            // console.log("RESPONDEDEDEDasdasdE")
             fetchData()
         });
     })

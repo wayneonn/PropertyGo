@@ -84,21 +84,21 @@ const markForumPostInappropriate = async (req, res) => {
         "adminId": adminId
     };
 
-    
+    const content = `The admin have flagged the forum post of "${forumPost.title}" as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"}`
     const userNotification = {
-        "content" : `The admin have flagged the forum post of "${forumPost.title}" as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"}`,
+        "content" : content,
         "adminNotificationId": adminId,
         "userId" : forumPost.userId,
         "forumPostId" : forumPost.forumPostId,
     };
 
-    console.log("userId  " , forumPost.userId)
+    // console.log("userId  " , forumPost.userId)
 
     await Notification.create(req.body);
     await Notification.create(userNotification);
     const forumPostUser = await forumPost.getUser();
 
-    if (forumPostUser && loggedInUsers.has(forumPostUser.userId) && forumPostUser.userId !== userId){
+    if (forumPostUser && loggedInUsers.has(forumPostUser.userId)){
         req.io.emit("userNotification", {"pushToken": forumPostUser.pushToken, "title": forumPost.title, "body": content});
         // console.log("Emitted userNewForumCommentNotification");
     }
@@ -140,8 +140,24 @@ const resetForumPostAppropriate = async (req, res) => {
         "hasRead": false,
         "adminId": adminId
     };
+    const content = `The admin have reset the forum post of "${forumPost.title}" to appropriate`
+    const userNotification = {
+        "content" : content,
+        "adminNotificationId": adminId,
+        "userId" : forumPost.userId,
+        "forumPostId" : forumPost.forumPostId,
+        "userNavigationScreen" : "forumPost"
+    };
+
 
     await Notification.create(req.body);
+    await Notification.create(userNotification);
+    const forumPostUser = await forumPost.getUser();
+
+    if (forumPostUser && loggedInUsers.has(forumPostUser.userId)){
+        req.io.emit("userNotification", {"pushToken": forumPostUser.pushToken, "title": forumPost.title, "body": content});
+        // console.log("Emitted userNewForumCommentNotification");
+    }
 
     req.io.emit("newAdminResetAppropriateForumPost", "Admin has reset forum post to appropriate");
 

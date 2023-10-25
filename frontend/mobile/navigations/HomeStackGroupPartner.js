@@ -5,10 +5,11 @@ import EditPropertyListing from "../screens/propertyListings/EditPropertyListing
 import PropertiesList from "../screens/propertyListings/PropertiesList";
 import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import TokenScreen from "../screens/token/TokenScreen"; // Import your Coins screen here
-import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListing";
 import SearchResults from '../screens/propertyListings/SearchResults';
+import BoostProfileListing from "../screens/dashboard/BoostProfileListing";
 import Map from "../screens/propertyListings/map";
 import HomePagePartner from "../screens/userBottomNavBar/HomePagePartner";
+import {PhotoGalleryUpload} from "../screens/dashboard/PhotoGalleryUpload";
 
 const HomeListingsStack = createNativeStackNavigator();
 
@@ -22,13 +23,11 @@ const HomeListingsStackGroup = () => {
             {/* Adjust accordingly */}
             {/* <PropertyListingsStack.Screen name="Map" component={Map}/> */}
             <HomeListingsStack.Screen name="List Property" component={HomePagePartner}/>
-            <HomeListingsStack.Screen name="Property Listing" component={PropertyListing}/>
-            <HomeListingsStack.Screen name="Edit Property Listing" component={EditPropertyListing}/>
-            <HomeListingsStack.Screen name="Properties List" component={PropertiesList}/>
             <HomeListingsStack.Screen name="View Profile" component={ViewUserProfile}/>
             <HomeListingsStack.Screen name="Token" component={TokenScreen}/>
-            <HomeListingsStack.Screen name="Boost Listing" component={BoostPropertyListing}/>
+            <HomeListingsStack.Screen name="Boost Listing" component={BoostProfileListing}/>
             <HomeListingsStack.Screen name="Search Results" component={SearchResults}/>
+            <HomeListingsStack.Screen name={"Upload Photos"} component={PhotoGalleryUpload}/>
         </HomeListingsStack.Navigator>
     );
 };

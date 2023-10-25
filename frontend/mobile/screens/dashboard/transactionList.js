@@ -1,42 +1,41 @@
-import React, { useEffect, useState, useContext } from 'react';
-import {
-    View,
-    Text,
-    Image,
-    ScrollView,
-    StyleSheet,
-    ActivityIndicator,
-    TouchableOpacity, Dimensions, Modal
-} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useFocusEffect} from "@react-navigation/native";
 import {fetchTopTransactionsWithUsersStatus} from "../../utils/transactionApi";
-import { AuthContext } from '../../AuthContext';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import base64 from "react-native-base64";
-import {createPDF, downloadAndOpenPDF} from "../../services/pdfReport";
-import {dateFormatter, convertImage} from "../../services/commonFunctions";
+import {AuthContext} from '../../AuthContext';
+import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
+import {downloadAndOpenPDF} from "../../services/pdfReport";
+import {convertImage, dateFormatter} from "../../services/commonFunctions";
+import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
+import {LoadingIndicator} from "../../components/LoadingIndicator";
+import {RadioCheckBox} from "../../components/Partner/RadioCheckBox";
 
-const TransactionList = () => {
+const TransactionList = ({navigation}) => {
     const {user} = useContext(AuthContext);
     const USER_ID = user.user.userId
     const [transactionPaid, setTransactionPaid] = useState([])
     const [transactionPending, setTransactionPending] = useState([])
     const [index, setIndex] = useState(0);
     const [routes] = useState([
-        { key: 'paid', title: 'PAID' },
-        { key: 'pending', title: 'PENDING' },
+        {key: 'paid', title: 'PAID'},
+        {key: 'pending', title: 'PENDING'},
     ]);
     const cardSize = Dimensions.get('window').width;
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [sortCriteriaPaid, setSortCriteriaPaid] = useState('name');
+    const [sortCriteriaPending, setSortCriteriaPending] = useState('name');
+    const [sortOrderPaid, setSortOrderPaid] = useState('desc');
+    const [sortOrderPending, setSortOrderPending] = useState('desc')
+    const names = ["Name", "Company", "Username"]
 
 
     // Fetch the needed info from the unique API's, screw having to use the frontend.
     const handleFocus = () => {
         // This code will be executed when the screen regains focus
         // You can place any logic you want to run here
-        console.log('Screen has regained focus');
-        // For example, you can refetch data or perform any other actions
+        console.log('Transactions has regained focus');
+        // For example, you can re-fetch data or perform any other actions
         fetchTransactionPending().then(r => console.log("Fetched pending."));
         fetchTransactionPaid().then(r => console.log("Fetch paid."));
     };
@@ -67,93 +66,101 @@ const TransactionList = () => {
         console.log("Data fetched.")
     }, []);
 
+    // Common sorting function.
+    const sortTransactions = (transactions, criteria, order) => {
+        return transactions.sort((a, b) => {
+            let compareA, compareB;
 
-    const LoadingIndicator = () => {
+            switch (criteria) {
+                case 'Name':
+                    compareA = a.userDetails.userName !== null ? a.userDetails.userName.toLowerCase() : "a";
+                    compareB = b.userDetails.userName !== null ? b.userDetails.userName.toLowerCase() : "b";
+                    break;
+                case 'Company':
+                    compareA = a.userDetails.companyName !== null ? a.userDetails.companyName.toLowerCase() : "a";
+                    compareB = b.userDetails.companyName !== null ? b.userDetails.companyName.toLowerCase() : "b";
+                    break;
+                case 'Username':
+                    compareA = a.userDetails.userName !== null ? a.userDetails.userName.toLowerCase() : "a";
+                    compareB = b.userDetails.userName !== null ? b.userDetails.userName.toLowerCase() : "b";
+                    break;
+                default:
+                    break;
+            }
+
+            if (order === 'desc') {
+                return compareA > compareB ? 1 : -1;
+            } else {
+                return compareA < compareB ? 1 : -1;
+            }
+        });
+    };
+
+    const PaidRoute = () => {
+        const sortedPaid = sortTransactions(transactionPaid, sortCriteriaPaid, sortOrderPaid)
         return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-        )
-    }
-    const PaidRoute = () => (
-        // Render your PAID array values here.
-        <ScrollView>
-            <View style={[styles.scene, { backgroundColor: '#f3f3f3' }]}>
-                <TouchableOpacity style={[styles.button, styles.buttonClose, {marginTop: 10, width:"80%"}]} onPress={() => {downloadAndOpenPDF(USER_ID)}}>
-                    <Text style={styles.textStyle}>Create PDF Report</Text>
-                </TouchableOpacity>
-                <Text>&nbsp;</Text>
-                {transactionPaid.length !== 0 ?  transactionPaid.map((item) => (
-                    <TouchableOpacity
-                        style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.25}]}
-                        onPress={() => {
-                            setSelectedTransaction(item);
-                            setModalVisible(true);
-                        }}
-                    >
-                        <View style={styles.profileHeader}>
-                            {item.userDetails.profileImage !== null ? (
-                                <Image
-                                    source={{uri: `data:image/jpeg;base64,${convertImage(item.userDetails.profileImage.data)}`}}
-                                    style={styles.profileImage}
-                                />
-                            ) : (
-                                <Image
-                                    source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                    style={{width: 50, height: 50, borderRadius: 120}}
-                                />
-                            )}
-                        </View>
-                        <View style={styles.propertyDetails}>
-                            <Text style={styles.propertyTitle}>{item.transaction.status}</Text>
-                            <Text style={styles.propertyPrice}>{item.transaction.onHoldBalance}</Text>
-                            <Text style={styles.propertyPrice}>{item.userDetails.userName}</Text>
-                            <Text style={styles.propertyDetails}>{dateFormatter(item.transaction.createdAt)}</Text>
-                        </View>
+            // Render your PAID array values here.
+            <ScrollView>
+                <View style={[styles.scene, {backgroundColor: '#f3f3f3'}]}>
+                    <TouchableOpacity style={[styles.button, styles.buttonClose, {marginTop: 10, width: "80%"}]}
+                                      onPress={() => {
+                                          downloadAndOpenPDF(USER_ID)
+                                      }}>
+                        <Text style={styles.textStyle}>Create PDF Report</Text>
                     </TouchableOpacity>
-                )) : <LoadingIndicator/> }
-            </View>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(false);
-                }}
-            >
-                <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        {/* Render more details about the selectedTransaction */}
-                        <Text style={styles.propertyTitle}>{selectedTransaction?.transaction.status}</Text>
-                        <Text style={styles.propertyPrice}>{selectedTransaction?.transaction.onHoldBalance}</Text>
-                            <Image
-                                source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                style={{width: 50, height: 50, borderRadius: 120}}
-                            />
-                        <Text style={styles.propertyPrice}>{selectedTransaction?.userDetails.userName}</Text>
-                        <Text style={styles.propertyDetails}>Invoice ID: {selectedTransaction?.transaction.invoiceId}</Text>
-                        <Text style={styles.propertyDetails}>{dateFormatter(selectedTransaction?.transaction.createdAt)}</Text>
+                    <Text>&nbsp;</Text>
+                    <RadioCheckBox filterBy={sortCriteriaPaid} setFilterBy={setSortCriteriaPaid} names={names}/>
+                    {sortedPaid.length !== 0 ? sortedPaid.map((item) => (
                         <TouchableOpacity
-                            style={[styles.button, styles.buttonClose]}
-                            onPress={() => setModalVisible(!modalVisible)}
+                            style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.25}]}
+                            onPress={() => {
+                                setSelectedTransaction(item);
+                                setModalVisible(true);
+                            }}
                         >
-                            <Text style={styles.textStyle}>Hide</Text>
+                            <View style={styles.profileHeader}>
+                                {item.userDetails.profileImage !== null ? (
+                                    <Image
+                                        source={{uri: `data:image/jpeg;base64,${convertImage(item.userDetails.profileImage.data)}`}}
+                                        style={styles.profileImage}
+                                    />
+                                ) : (
+                                    <Image
+                                        source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                                        style={{width: 50, height: 50, borderRadius: 120}}
+                                    />
+                                )}
+                            </View>
+                            <View style={styles.propertyDetails}>
+                                <Text style={styles.propertyTitle}>{item.transaction.status}</Text>
+                                <Text style={styles.propertyPrice}>{item.transaction.onHoldBalance}</Text>
+                                <Text style={styles.propertyPrice}>{item.userDetails.userName}</Text>
+                                <Text style={styles.propertyDetails}>{dateFormatter(item.transaction.createdAt)}</Text>
+                            </View>
                         </TouchableOpacity>
-                    </View>
+                    )) : <LoadingIndicator/>}
                 </View>
-            </Modal>
-        </ScrollView>
-    );
+                <PartnerCardModal modalVisible={modalVisible} setModalVisible={setModalVisible}
+                                  selectedItem={selectedTransaction} dateFormatter={dateFormatter} navigation={navigation}/>
+            </ScrollView>
+        )
+    };
 
-    const PendingRoute = () => (
+    const PendingRoute = () => {
+        const sortedPending = sortTransactions(transactionPending, sortCriteriaPending, sortOrderPending)
+        return (
         // Render your PENDING array values here.
         <ScrollView>
-            <View style={[styles.scene, { backgroundColor: '#f3f3f3' }]}>
-                <TouchableOpacity style={[styles.button, styles.buttonClose, {marginTop: 10, width:"80%"}]} onPress={() => {downloadAndOpenPDF(USER_ID)}}>
+            <View style={[styles.scene, {backgroundColor: '#f3f3f3'}]}>
+                <TouchableOpacity style={[styles.button, styles.buttonClose, {marginTop: 10, width: "80%"}]}
+                                  onPress={() => {
+                                      downloadAndOpenPDF(USER_ID)
+                                  }}>
                     <Text style={styles.textStyle}>Create PDF Report</Text>
                 </TouchableOpacity>
                 <Text>&nbsp;</Text>
-                {transactionPending.length !== 0 ?  transactionPending.map((item) => (
+                <RadioCheckBox filterBy={sortCriteriaPending} setFilterBy={setSortCriteriaPending} names={names}/>
+                {sortedPending.length !== 0 ? sortedPending.map((item) => (
                     <TouchableOpacity
                         style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.25}]}
                         onPress={() => {
@@ -181,39 +188,12 @@ const TransactionList = () => {
                             <Text style={styles.propertyDetails}>{dateFormatter(item.transaction.createdAt)}</Text>
                         </View>
                     </TouchableOpacity>
-                )) : <LoadingIndicator/> }
+                )) : <LoadingIndicator/>}
             </View>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(false);
-                }}
-            >
-                <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        {/* Render more details about the selectedTransaction */}
-                        <Text style={styles.propertyTitle}>{selectedTransaction?.transaction.status}</Text>
-                        <Text style={styles.propertyPrice}>{selectedTransaction?.transaction.onHoldBalance}</Text>
-                        <Image
-                            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                            style={{width: 50, height: 50, borderRadius: 120}}
-                        />
-                        <Text style={styles.propertyPrice}>{selectedTransaction?.userDetails.userName}</Text>
-                        <Text style={styles.propertyDetails}>Invoice ID: {selectedTransaction?.transaction.invoiceId}</Text>
-                        <Text style={styles.propertyDetails}>{dateFormatter(selectedTransaction?.transaction.createdAt)}</Text>
-                        <TouchableOpacity
-                            style={[styles.button, styles.buttonClose]}
-                            onPress={() => setModalVisible(!modalVisible)}
-                        >
-                            <Text style={styles.textStyle}>Hide</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+            <PartnerCardModal modalVisible={modalVisible} setModalVisible={setModalVisible}
+                              selectedItem={selectedTransaction} dateFormatter={dateFormatter} navigation={navigation}/>
         </ScrollView>
-    );
+    )};
 
     const fetchTransactionPaid = async () => {
         try {
@@ -237,18 +217,18 @@ const TransactionList = () => {
 
     return (
         <TabView
-            navigationState={{ index, routes }}
+            navigationState={{index, routes}}
             renderScene={SceneMap({
                 paid: PaidRoute,
                 pending: PendingRoute,
             })}
             onIndexChange={setIndex}
-            initialLayout={{ width: '100%' }}
+            initialLayout={{width: '100%'}}
             renderTabBar={props => (
                 <TabBar
                     {...props}
-                    indicatorStyle={{ backgroundColor: 'white' }}
-                    style={{ backgroundColor: '#888' }}
+                    indicatorStyle={{backgroundColor: 'white'}}
+                    style={{backgroundColor: '#888'}}
                 />
             )}
         />

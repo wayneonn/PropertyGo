@@ -303,3 +303,87 @@ export const getViewingAvailabilityByDateAndPropertyId = async (date, propertyId
       return { success: false, message: error.message };
     }
   };
+
+  export const sellerApprovesViewing = async (scheduleId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${SCHEDULE_ENDPOINT}/sellerApprovesViewing/${scheduleId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const sellerRejectsViewing = async (scheduleId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${SCHEDULE_ENDPOINT}/sellerRejectsViewing/${scheduleId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const sellerCancelsViewing = async (scheduleId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${SCHEDULE_ENDPOINT}/sellerCancelsViewing/${scheduleId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const buyerCancelsViewing = async (scheduleId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${SCHEDULE_ENDPOINT}/buyerCancelsViewing/${scheduleId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };

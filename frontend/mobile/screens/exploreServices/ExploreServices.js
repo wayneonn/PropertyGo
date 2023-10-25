@@ -21,6 +21,7 @@ import {RatingComponent} from "../../components/RatingStars";
 import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {ImageSwiper} from "../../components/ImageSwiper";
 import {BoostingAnimation} from "../../components/BoostingAnimation"
+import {RadioCheckBox} from "../../components/Partner/RadioCheckBox";
 import { CheckBox } from 'react-native-elements';
 
 
@@ -56,6 +57,15 @@ const ExploreServices = ({navigation, route}) => {
     const [modalVisible, setModalVisible] = useState(false)
     const [searchQueryLaw, setSearchQueryLaw] = useState('');
     const [searchQueryCon, setSearchQueryCon] = useState('');
+    const [filterByLaw, setFilterByLaw] = useState('name');
+    const [filterBy, setFilterBy] = useState('name');
+    const names = ['Name', 'Company', 'Username' ]
+    const images = [
+        require("../../assets/partnerpic-1.png"),
+        require("../../assets/partnerpic-2.png"),
+        require("../../assets/partnerpic-3.png"),
+        require("../../assets/partnerpic-4.png")
+    ]
 
     useFocusEffect(
         React.useCallback(() => {
@@ -91,15 +101,15 @@ const ExploreServices = ({navigation, route}) => {
         }
     }
 
-    const [filterByLaw, setFilterByLaw] = useState('name');
+    // Needs to have a more detailed and intricate sorting function.
     const filteredLawyers = lawyers.filter(lawyer => {
         switch(filterByLaw) {
-            case 'name':
+            case 'Name':
                 return lawyer.name.toLowerCase().includes(searchQueryLaw.toLowerCase());
-            case 'companyName':
+            case 'Company':
                 return lawyer.companyName.toLowerCase().includes(searchQueryLaw.toLowerCase());
-            case 'date':
-                return new Date(lawyer.createdAt).toISOString().split('T')[0] === searchQueryLaw;
+            case 'Username':
+                return lawyer.userName.toLowerCase().includes(searchQueryLaw.toLowerCase());
             default:
                 return true;
         }
@@ -118,39 +128,41 @@ const ExploreServices = ({navigation, route}) => {
 
         // If both have the same boostEndDate status or both don't have a valid boostEndDate, maintain their relative order
         return 0;
-    });;
+    });
+
+    const filteredContractors = contractor.filter(lawyer => {
+        switch(filterBy) {
+            case 'Name':
+                return lawyer.name.toLowerCase().includes(searchQueryCon.toLowerCase());
+            case 'Company':
+                return lawyer.companyName.toLowerCase().includes(searchQueryCon.toLowerCase());
+            case 'Username':
+                return lawyer.userName.toLowerCase().includes(searchQueryCon.toLowerCase());
+            default:
+                return true;
+        }
+    }).sort((a, b) => {
+        const currentDate = new Date();
+        const aBoostEndDate = new Date(a.boostListingEndDate);
+        const bBoostEndDate = new Date(b.boostListingEndDate);
+
+        // Check if boostEndDate is valid and hasn't expired for both
+        const aHasBoost = aBoostEndDate && aBoostEndDate > currentDate;
+        const bHasBoost = bBoostEndDate && bBoostEndDate > currentDate;
+
+        // Prioritize entries with a valid and non-expired boostEndDate
+        if (aHasBoost && !bHasBoost) return -1;
+        if (!aHasBoost && bHasBoost) return 1;
+
+        // If both have the same boostEndDate status or both don't have a valid boostEndDate, maintain their relative order
+        return 0;
+    });
 
     const LawyerRoute = () => {
-
         return (
             <ScrollView>
                 <View>
-                    <View style={{ flexDirection: "row", alignSelf:"center", alignContent:"flex-start", marginTop: 5}}>
-                        <CheckBox
-                            title='Name'
-                            checkedIcon='dot-circle-o'
-                            uncheckedIcon='circle-o'
-                            checked={filterByLaw === 'name'}
-                            onPress={() => setFilterByLaw('name')}
-                            containerStyle={styles.checkBox}
-                        />
-                        <CheckBox
-                            title='Company'
-                            checkedIcon='dot-circle-o'
-                            uncheckedIcon='circle-o'
-                            checked={filterByLaw === 'companyName'}
-                            onPress={() => setFilterByLaw('companyName')}
-                            containerStyle={styles.checkBox}
-                        />
-                        <CheckBox
-                            title='Date'
-                            checkedIcon='dot-circle-o'
-                            uncheckedIcon='circle-o'
-                            checked={filterByLaw === 'date'}
-                            onPress={() => setFilterByLaw('date')}
-                            containerStyle={styles.checkBox}
-                        />
-                    </View>
+                    <RadioCheckBox filterBy={filterByLaw} setFilterBy={setFilterByLaw} names={names}/>
                 </View>
                 <View style={{padding: 10, marginLeft: 10, flexDirection: "row", alignItems: "center"}}>
                     <Icon name="search" size={20} color="#000" style={styles.searchIcon} />
@@ -182,7 +194,7 @@ const ExploreServices = ({navigation, route}) => {
                                 ) : (
                                     <Image
                                         source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                        style={{width: 50, height: 50, borderRadius: 120}}
+                                        style={styles.profileImage}
                                     />
                                 )}
                             </View>
@@ -194,9 +206,9 @@ const ExploreServices = ({navigation, route}) => {
                                 <Text style={styles.propertyPrice}>E-Mail: {item.email}</Text>
                                 <Text style={styles.propertyDetails}>{dateFormatter(item.createdAt)}</Text>
                             </View>
-                            {new Date(item.boostListingEndDate) >= new Date() && (
+                            {new Date(item.boostListingEndDate) >= new Date() ? (
                                 <BoostingAnimation/>
-                            )}
+                            ) : <Text> &nbsp; &nbsp; </Text>}
                         </TouchableOpacity>
                     )) : <LoadingIndicator/>}
                 </View>
@@ -244,66 +256,10 @@ const ExploreServices = ({navigation, route}) => {
     }
 
     const ContractorRoute = () => {
-        const [filterBy, setFilterBy] = useState('name');
-
-        const filteredContractors = contractor.filter(lawyer => {
-            switch(filterBy) {
-                case 'name':
-                    return lawyer.name.toLowerCase().includes(searchQueryCon.toLowerCase());
-                case 'companyName':
-                    return lawyer.companyName.toLowerCase().includes(searchQueryCon.toLowerCase());
-                case 'date':
-                    return new Date(lawyer.createdAt).toISOString().split('T')[0] === searchQueryCon;
-                default:
-                    return true;
-            }
-        }).sort((a, b) => {
-            const currentDate = new Date();
-            const aBoostEndDate = new Date(a.boostListingEndDate);
-            const bBoostEndDate = new Date(b.boostListingEndDate);
-
-            // Check if boostEndDate is valid and hasn't expired for both
-            const aHasBoost = aBoostEndDate && aBoostEndDate > currentDate;
-            const bHasBoost = bBoostEndDate && bBoostEndDate > currentDate;
-
-            // Prioritize entries with a valid and non-expired boostEndDate
-            if (aHasBoost && !bHasBoost) return -1;
-            if (!aHasBoost && bHasBoost) return 1;
-
-            // If both have the same boostEndDate status or both don't have a valid boostEndDate, maintain their relative order
-            return 0;
-        });
         return (
             <ScrollView>
+                <RadioCheckBox filterBy={filterBy} setFilterBy={setFilterBy} names={names}/>
                 <View style={[styles.scene, {backgroundColor: '#f3f3f3'}]}>
-                    <View>
-                        <View style={{ flexDirection: "row", alignSelf:"center", alignContent:"flex-start", marginTop: 5}}>
-                            <CheckBox
-                                title='Name'
-                                checkedIcon='dot-circle-o'
-                                uncheckedIcon='circle-o'
-                                checked={filterBy === 'name'}
-                                onPress={() => setFilterBy('name')}
-                                containerStyle={styles.checkBox}
-                            />
-                            <CheckBox
-                                title='Company'
-                                checkedIcon='dot-circle-o'
-                                uncheckedIcon='circle-o'
-                                checked={filterBy === 'companyName'}
-                                onPress={() => setFilterBy('companyName')}
-                                containerStyle={styles.checkBox}
-                            />
-                            <CheckBox
-                                title='Date'
-                                checkedIcon='dot-circle-o'
-                                uncheckedIcon='circle-o'
-                                checked={filterBy === 'date'}
-                                onPress={() => setFilterBy('date')}
-                                containerStyle={styles.checkBox}
-                            />
-                        </View>
-                    </View>
                     <View style={{padding: 10, flexDirection: "row", alignItems: "center"}}>
                         <Icon name="search" size={20} color="#000" style={styles.searchIcon} />
                         <TextInput
@@ -330,7 +286,7 @@ const ExploreServices = ({navigation, route}) => {
                                 ) : (
                                     <Image
                                         source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                        style={{width: 50, height: 50, borderRadius: 120}}
+                                        style={styles.profileImage}
                                     />
                                 )}
                             </View>
@@ -342,9 +298,9 @@ const ExploreServices = ({navigation, route}) => {
                                 <Text style={styles.propertyPrice}>E-Mail: {item.email}</Text>
                                 <Text style={styles.propertyDetails}>{dateFormatter(item.createdAt)}</Text>
                             </View>
-                            {new Date(item.boostListingEndDate) >= new Date() && (
+                            {new Date(item.boostListingEndDate) >= new Date() ? (
                                 <BoostingAnimation/>
-                            )}
+                            ) : <Text> &nbsp;&nbsp; </Text>}
                         </TouchableOpacity>
                     )) : <LoadingIndicator/>}
                 </View>
@@ -395,7 +351,7 @@ const ExploreServices = ({navigation, route}) => {
 
     return (
         <View style={{flex: 1}}>
-            <ImageSwiper></ImageSwiper>
+            <ImageSwiper images_new={images}></ImageSwiper>
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={SceneMap({
@@ -420,14 +376,20 @@ const styles = StyleSheet.create({
     scene: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'space-between',
     },
-
+    profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 120,
+        alignSelf: "center"
+    },
     card: {
         backgroundColor: '#fff',
         alignSelf: 'center', // Center the card
         justifyContent: 'center',
         alignItems: "center",
+        alignContent: "center",
         flexDirection: "row",
         marginVertical: 5, // A little margin top and bottom for spacing between cards
         paddingTop: 10,
@@ -442,7 +404,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 4.65,
         elevation: 7,
-        marginLeft: 10,
     },
 
     profileHeader: {
@@ -620,7 +581,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center"
     }
-
 });
 
 export default ExploreServices;

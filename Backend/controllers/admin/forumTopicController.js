@@ -1,5 +1,6 @@
 const moment = require("moment");
 const { ForumTopic, ForumPost, Admin, User, Notification } = require("../../models");
+const { loggedInUsers } = require('../../shared');
 
 // helper function
 const getForumTopicForUniqueness = ({ topicName }) => {
@@ -210,8 +211,23 @@ const markForumTopicInappropriate = async (req, res) => {
         "hasRead": false,
         "adminId": adminId
     };
+    const content = `The admin have flagged the forum topic of "${forumTopic.topicName}" as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"}`
+    const userNotification = {
+        "content": content,
+        "adminNotificationId": adminId,
+        "userId": forumTopic.userId,
+        "forumTopicId": forumTopic.forumTopicId,
+    };
+
 
     await Notification.create(req.body);
+    await Notification.create(userNotification);
+    const forumTopicUser = await forumTopic.getUser();
+
+    if (forumTopicUser && loggedInUsers.has(forumTopicUser.userId)) {
+        req.io.emit("userNotification", { "pushToken": forumTopicUser.pushToken, "title": forumTopic.topicName, "body": content });
+        // console.log("Emitted userNewForumCommentNotification");
+    }
 
     req.io.emit("newAdminFlaggedForumTopic", "Admin has flagged forum topic");
     res.status(200).json({ forumTopic });
@@ -250,7 +266,24 @@ const resetForumTopicAppropriate = async (req, res) => {
         "adminId": adminId
     };
 
+    const content = `The admin have reset the forum topic of "${forumTopic.topicName}" to appropriate`
+    const userNotification = {
+        "content": content,
+        "adminNotificationId": adminId,
+        "userId": forumTopic.userId,
+        "forumTopicId": forumTopic.forumTopicId,
+    };
+
+
     await Notification.create(req.body);
+    await Notification.create(userNotification);
+    const forumTopicUser = await forumTopic.getUser();
+
+    if (forumTopicUser && loggedInUsers.has(forumTopicUser.userId)) {
+        req.io.emit("userNotification", { "pushToken": forumTopicUser.pushToken, "title": forumTopic.topicName, "body": content });
+        // console.log("Emitted userNewForumCommentNotification");
+    }
+
 
     req.io.emit("newAdminResetAppropriateForumTopic", "Admin has reset forum topic to appropriate");
 

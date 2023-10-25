@@ -73,8 +73,8 @@ const createForumComment = async (req, res) => {
             "userId" : forumPostUser.userId,
             "content" : content,
             "forumPostId" : forumPost.forumPostId,
-            "forumCommentId" : forumComment.forumCommentId
-
+            "forumCommentId" : forumComment.forumCommentId,
+            "userNavigationScreen" : "forumPost"
         };
 
         await Notification.create(notificationBody);
