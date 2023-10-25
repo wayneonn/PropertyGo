@@ -35,6 +35,15 @@ const AppointmentTabNavigator = () => {
       }}
     >
       <Tab.Screen
+        name="Appointment Agenda"
+        component={AppointmentAgenda}
+        options={{
+          tabBarLabel: ({ color, focused }) => (
+            <CustomTabLabel label="Agenda" color={color} icon="list-outline" />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Appointment Upcoming"
         component={AppointmentMain}
         options={{
@@ -49,15 +58,6 @@ const AppointmentTabNavigator = () => {
         options={{
           tabBarLabel: ({ color, focused }) => (
             <CustomTabLabel label="History" color={color} icon="time-outline" />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Appointment Agenda"
-        component={AppointmentAgenda}
-        options={{
-          tabBarLabel: ({ color, focused }) => (
-            <CustomTabLabel label="Agenda" color={color} icon="list-outline" />
           ),
         }}
       />

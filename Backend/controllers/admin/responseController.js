@@ -1,5 +1,6 @@
 const moment = require("moment");
 const { ContactUs, Response } = require("../../models");
+const { loggedInUsers } = require('../../shared');
 
 const getAllResponses = async (req, res) => {
   const { contactUsId: contactUsId } = req.params;
@@ -55,6 +56,18 @@ const addResponse = async (req, res) => {
   });
 
   const updatedContactUs = await ContactUs.findByPk(contactUsId);
+  //Might need create notification
+
+  const contactUsUser = await contactUs.getUser();
+  const content = `The admin has responded to your ContactUs: "${contactUs.title}"`;
+
+  if (contactUsUser && loggedInUsers.has(contactUsUser.userId)){
+    req.io.emit("userNotification", {"pushToken": contactUsUser.pushToken, "title": contactUs.title, "body": content});
+    // console.log("Emitted userNewForumCommentNotification");
+}
+
+  contactUs.updatedAt = moment().format("YYYY-MM-DD HH:mm:ss");
+  await contactUs.save();
 
   res.status(201).json({ contactUs: updatedContactUs });
 };

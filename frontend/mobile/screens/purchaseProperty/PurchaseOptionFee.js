@@ -19,11 +19,25 @@ const PurchaseOptionFee = ({ route }) => {
     const stripeCustomerId = user.user.stripeCustomerId;
     const description = "Purchase Option Fee";
     const amount = propertyListing.optionFee;
-    const isAService = true;
+    const taxable = false;
 
     const initializePayment = async () => {
         // console.log("amount at purchaseOptionFee: ", amount);
-        await initializePaymentSheet(stripeCustomerId, user.user, description, amount, setStripeCustomerId, setEphemeralKey, setPaymentIntent, setPublishableKey, setCustIdExists, initPaymentSheet, setLoading, isAService);
+        // await initializePaymentSheet(stripeCustomerId, user.user, description, amount, setStripeCustomerId, setEphemeralKey, setPaymentIntent, setPublishableKey, setCustIdExists, initPaymentSheet, setLoading, isAService);
+        await initializePaymentSheet(
+            stripeCustomerId,
+            user.user,
+            description,
+            amount, 
+            setStripeCustomerId,
+            setEphemeralKey,
+            setPaymentIntent,
+            setPublishableKey,
+            setCustIdExists,
+            initPaymentSheet,
+            setLoading,
+            taxable,
+        );
     };
 
     const openPaymentSheet = async () => {

@@ -29,6 +29,8 @@ const db = require("./models");
 
 // seed data
 const userTestData = require("./test_data/userTestData");
+const scheduleTestData = require("./test_data/scheduleTestData");
+const viewingAvailabilityTestData = require("./test_data/viewingAvailabilityTestData");
 const adminTestData = require("./test_data/adminTestData");
 const faqTestData = require("./test_data/faqTestData");
 const contactUsTestData = require("./test_data/contactUsTestData");
@@ -106,8 +108,8 @@ app.use("/admins", adminRouter);
 app.use("/admin/auth", authRouter);
 app.use("/admin/faqs", injectIo(io), faqRouter);
 app.use("/admin/users", adminUserRouter);
-app.use("/admin/contactUs", contactUsAdminRouter);
-app.use("/admin/contactUs/:contactUsId/responses", responseRouter);
+app.use("/admin/contactUs", injectIo(io), contactUsAdminRouter);
+app.use("/admin/contactUs/:id/responses",injectIo(io), responseRouter);
 app.use("/admin/forumTopics", injectIo(io), forumTopicAdminRouter);
 app.use("/admin/notifications", notificationAdminRouter);
 app.use("/admin/properties", propertyAdminRouter);
@@ -164,7 +166,11 @@ io.on("connection", (socket) => {
 
 app.use("/property", propertyRoute);
 
-app.use("/schedule", scheduleRoute);
+app.use(
+  "/schedule",
+  injectIo(io),
+  scheduleRoute,
+);
 
 app.use("/viewingAvailability", viewingAvailabilityRoute);
 
@@ -204,6 +210,8 @@ db.sequelize
     const existingAdminRecordsCount = await db.Admin.count();
     const existingFaqRecordsCount = await db.FAQ.count();
     const existingTransactionRecordsCount = await db.Transaction.count();
+    const existingScheduleRecordsCount = await db.Schedule.count();
+    const existingViewingAvailabilityCount = await db.ViewingAvailability.count();
     // const existingInvoiceRecordsCount = await db.Invoice.count();
     const existingPropertyRecordsCount = await db.Property.count();
     const existingImageRecordsCount = await db.Image.count();
@@ -305,6 +313,32 @@ db.sequelize
       }
     } else {
       console.log("Property test data already exists in the database.");
+    }
+
+    if (existingScheduleRecordsCount === 0) {
+      try {
+        for (const scheduleData of scheduleTestData) {
+          await db.Schedule.create(scheduleData);
+        }
+        console.log("Schedule test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Schedule test data:", error);
+      }
+    } else {
+      console.log("Schedule test data already exists in the database.");
+    }
+
+    if (existingViewingAvailabilityCount === 0) {
+      try {
+        for (const viewingAvailability of viewingAvailabilityTestData) {
+          await db.ViewingAvailability.create(viewingAvailability);
+        }
+        console.log("Viewing Availability test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Viewing Availability test data:", error);
+      }
+    } else {
+      console.log("Viewing Availability test data already exists in the database.");
     }
 
     // Images
