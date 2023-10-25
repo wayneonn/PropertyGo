@@ -218,6 +218,9 @@ async function getPropertiesByRegion(req, res) {
                     as: 'favouritedByUsers',
                 },
             ],
+            where: {
+                approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+            },
         });
 
         // Check if properties is undefined or empty
@@ -291,6 +294,9 @@ async function getPropertiesByFavoriteCount(req, res) {
                     as: 'favouritedByUsers',
                 },
             ],
+            where: {
+                approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+            },
         });
 
         // Check if properties is undefined or empty
@@ -362,6 +368,9 @@ async function getRecentlyAddedProperties(req, res) {
                     as: 'favouritedByUsers',
                 },
             ],
+            where: {
+                approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+            },
             order: [['postedAt', 'DESC']],
         });
 
