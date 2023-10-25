@@ -357,6 +357,10 @@ const ContactUs = () => {
     socket.on("newContactUsNotification", () => {
       fetchData();
     });
+
+    socket.on("newResponseNotification", () => {
+      getResponses(viewResponseId);
+    });
   }, [responses]);
 
   const sanitizeEditResponse = (content) => {
