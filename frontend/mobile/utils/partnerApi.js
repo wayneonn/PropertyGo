@@ -39,6 +39,7 @@ export const uploadCompanyPhotos = async(USER_ID, images) => {
         const formData = new FormData();
 
         images.forEach((image, index) => {
+            console.log("URI: ", image.uri)
             const imageBlob = {
                 uri: image.uri,
                 type: 'image/jpeg',
@@ -61,6 +62,7 @@ export const uploadCompanyPhotos = async(USER_ID, images) => {
             return {success: true, data};
         } else {
             const errorData = await response.json();
+            console.log("Image upload error data: ", errorData)
             return {success: false, message: errorData.error};
         }
     } catch (error) {
