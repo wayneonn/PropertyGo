@@ -15,7 +15,7 @@ export const ImageSwiper = ({images_new}) => {
             <Swiper
                 showsButtons={false} loop={true} autoplay={true} autoplayTimeout={5}
             >
-                {images_new === null ? images.map((image, index) => (
+                {images_new === undefined ? images.map((image, index) => (
                     <View key={index}>
                         <Image source={image} style={styles.swiperImage}/>
                     </View>

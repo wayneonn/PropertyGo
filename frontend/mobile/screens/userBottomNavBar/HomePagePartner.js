@@ -264,6 +264,10 @@ const HomePagePartner = ({navigation}) => {
             ) : null}
 
             <ImageSwiper/>
+            <TouchableOpacity style={styles.saveChangesButton} onPress={() => navigation.navigate("Upload Photos")}>
+                <Ionicons name="save-outline" size={18} color="white" />
+                <Text style={styles.saveChangesButtonText}>Upload Photos</Text>
+            </TouchableOpacity>
 
             {isLoading ? (
                 <LoadingIndicator/>
@@ -506,6 +510,21 @@ const styles = StyleSheet.create({
     },
     suggestionItemLast: {
         borderBottomWidth: 0, // Remove border for the last item
+    },
+    saveChangesButton: {
+        backgroundColor: 'blue',
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 10,
+        alignItems: 'center', // Center horizontally
+        flexDirection: 'row',
+        justifyContent: 'center', // Center vertically
+        alignSelf: "center",
+        width: '90%',
+    },
+    saveChangesButtonText: {
+        color: 'white',
+        marginLeft: 10,
     },
     suggestionText: {
         fontSize: 14, // Make text smaller

@@ -281,7 +281,7 @@ exports.getUserCountsByCountry = async(req, res) => {
         });
 
         // Extract propertyId values from the properties objects
-        const propertyIds = properties.map(property => property.propertyListingId);
+        const propertyIds = properties.length !== 0 ? properties.map(property => property.propertyListingId) : [1];
         const orderClause = Sequelize.literal(`MAX(CASE WHEN propertyId IN (${propertyIds.join(',')}) THEN 1 ELSE 0 END) DESC`);
         const orderClauseForTransactionId = [Sequelize.fn('MAX', Sequelize.col('Transaction.transactionId')), 'DESC'];
 
@@ -299,7 +299,10 @@ exports.getUserCountsByCountry = async(req, res) => {
                 }
             ],
             group: ['buyer.countryOfOrigin'],
-            order: [orderClause, orderClauseForTransactionId], // Secondary sorting by transactionId for consistent results
+            where: {
+                propertyId: propertyIds
+            },
+            order: [orderClause], // Secondary sorting by transactionId for consistent results
             raw: true
         });
 
