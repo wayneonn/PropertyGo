@@ -31,6 +31,7 @@ import {
 } from '../../../utils/scheduleApi';
 import { set } from 'date-fns';
 import AppointmentCard from '../../schedule/AppointmentCard';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Appointments = ({ route }) => {
   const navigation = useNavigation();
@@ -101,6 +102,13 @@ const Appointments = ({ route }) => {
     fetchScheduleBySeller();
   }, [selectedTimeRange]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+        fetchScheduleByUser();
+        fetchScheduleBySeller();
+    }, [])
+);
+
 
   useEffect(() => {
     if (firstLoad) {
@@ -111,59 +119,59 @@ const Appointments = ({ route }) => {
 
   const fetchScheduleByUser = async () => {
     const { success, data, message } = await getScheduleByUserId(userId);
-  
+
     if (success) {
       setUserSlots(data);
       const selectedTimeRangeAsNumber = parseInt(selectedTimeRange);
       const currentDate = new Date();
-  
+
       // Calculate the date range based on the selected time range
       const daysLater = new Date(currentDate);
       daysLater.setHours(0, 0, 0, 0);
       daysLater.setDate(currentDate.getDate() - selectedTimeRangeAsNumber);
       currentDate.setDate(currentDate.getDate() - 1);
-  
+
       const filteredSchedules = data.filter(schedule => {
         const meetupDate = new Date(schedule.meetupDate);
         meetupDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
         return meetupDate <= currentDate && meetupDate >= daysLater;
       });
-  
+
       setFilteredBuyerSchedules(filteredSchedules);
     } else {
       setUserSlots([]);
       console.error('Error fetching schedule data for user:', message);
     }
   };
-  
+
   const fetchScheduleBySeller = async () => {
     const { success, data, message } = await getScheduleBySellerId(userId);
-  
+
     if (success) {
       setSellerSlots(data);
       const selectedTimeRangeAsNumber = parseInt(selectedTimeRange);
       const currentDate = new Date();
       const todayDate = getTodayDate();
-  
+
       // Calculate the date range based on the selected time range
       const daysLater = new Date(currentDate);
       daysLater.setHours(0, 0, 0, 0);
       daysLater.setDate(currentDate.getDate() - selectedTimeRangeAsNumber);
       currentDate.setDate(currentDate.getDate() - 1);
-  
+
       const filteredSchedules = data.filter(schedule => {
         const meetupDate = new Date(schedule.meetupDate);
         meetupDate.setHours(0, 0, 0, 0); // Set time to midnight for comparison
         return meetupDate <= currentDate && meetupDate >= daysLater;
       });
-  
+
       setFilteredSellerSchedules(filteredSchedules);
     } else {
       setSellerSlots([]);
       console.error('Error fetching schedule data for user:', message);
     }
   };
-  
+
 
   // Function to handle time slot selection
   const handleTimeSlotSelect = (time, scheduleId) => {
@@ -299,10 +307,10 @@ const Appointments = ({ route }) => {
 
   const getTodayDate = () => {
     const options = {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        timeZone: 'Asia/Singapore', // Specify the time zone for Singapore
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      timeZone: 'Asia/Singapore', // Specify the time zone for Singapore
     };
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -310,13 +318,13 @@ const Appointments = ({ route }) => {
     const parts = todayString.split('/');
     let todayDate;
     if (parts.length === 3) {
-        const dd = parts[0].padStart(2, '0');
-        const mm = parts[1].padStart(2, '0');
-        const yyyy = parts[2];
-        todayDate = `${yyyy}-${mm}-${dd}`;
+      const dd = parts[0].padStart(2, '0');
+      const mm = parts[1].padStart(2, '0');
+      const yyyy = parts[2];
+      todayDate = `${yyyy}-${mm}-${dd}`;
     }
     return todayDate;
-}
+  }
 
   const getMarkedDates = () => {
     const markedDates = {};
@@ -415,23 +423,13 @@ const Appointments = ({ route }) => {
             To Buy - Upcoming To View
           </Text>
           {userBuySchedules && userBuySchedules.length > 0 ? (
-            <FlatList
-              data={userBuySchedules}
-              keyExtractor={(item) => item.scheduleId.toString()}
-              renderItem={({ item }) => (
-                <AppointmentCard
-                  schedule={item}
-                  propertyId={item.propertyId}
-                  onPress={() => {
-                    navigation.navigate('View Appointment Detail', {
-                      userId: item.sellerId,
-                      propertyId: item.propertyId,
-                      scheduleId: item.scheduleId,
-                    });
-                  }}
-                />
-              )}
-            />
+            <>
+              {userBuySchedules.map((item) => (
+                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                  navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, scheduleId: item.scheduleId });
+                }} />
+              ))}
+            </>
           ) : (
             <Text style={styles.noAvailabilityText}>No bookings found.</Text>
           )}
@@ -447,23 +445,13 @@ const Appointments = ({ route }) => {
             To Sell - Buyers To View Unit
           </Text>
           {sellerSellSchedules && sellerSellSchedules.length > 0 ? (
-            <FlatList
-              data={sellerSellSchedules}
-              keyExtractor={(item) => item.scheduleId.toString()}
-              renderItem={({ item }) => (
-                <AppointmentCard
-                  schedule={item}
-                  propertyId={item.propertyId}
-                  onPress={() => {
-                    navigation.navigate('View Appointment Detail', {
-                      userId: item.userId,
-                      propertyId: item.propertyId,
-                      schedule: item,
-                    });
-                  }}
-                />
-              )}
-            />
+            <>
+              {sellerSellSchedules.map((item) => (
+                <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
+                  navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, scheduleId: item.scheduleId });
+                }} />
+              ))}
+            </>
           ) : (
             <Text style={styles.noAvailabilityText}>
               No bookings for units listed.

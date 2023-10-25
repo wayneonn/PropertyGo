@@ -9,6 +9,8 @@ import SetSchedule from "../screens/schedule/SetSchedule";
 import Schedule from "../screens/schedule/Schedule";
 import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFee";
 import Map from "../screens/propertyListings/map";
+import TokenScreen from "../screens/token/TokenScreen"; // Import your Coins screen here
+import TokenCheckoutScreen from "../screens/token/TokenCheckoutScreen"; 
 
 const PropertyListingsStack = createNativeStackNavigator();
 
@@ -26,6 +28,8 @@ const PropertyListingsStackGroup = () => {
             <PropertyListingsStack.Screen name="Boost Listing" component={BoostPropertyListing}/>
             <PropertyListingsStack.Screen name="Set Schedule" component={SetSchedule}/>
             <PropertyListingsStack.Screen name="Schedule" component={Schedule}/>
+            <PropertyListingsStack.Screen name="Token" component={TokenScreen}/>
+            <PropertyListingsStack.Screen name="Token Checkout Screen" component={TokenCheckoutScreen}/>
             <PropertyListingsStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/>
         </PropertyListingsStack.Navigator>
     );

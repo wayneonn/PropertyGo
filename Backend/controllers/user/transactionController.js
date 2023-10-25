@@ -664,7 +664,13 @@ exports.getTransactionInvoicePdf = async (req, res) => {
         </div>
                 <div class="invoice-details">
                     <p>Invoice Number: ${invoiceNumber}</p>
-                    <p>Invoice Date: ${new Date(invoiceDate).toLocaleDateString('en-SG')}</p>
+                    <p>Invoice Date: ${new Date(invoiceDate).toLocaleString('en-SG', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}</p>
                     <p>Customer Name: ${name}</p>
                     <p>Customer Email: ${email}</p>
                 </div>
@@ -697,14 +703,10 @@ exports.getTransactionInvoicePdf = async (req, res) => {
         </html>
         `;
 
-
-
-
-
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });  // Ensure scripts are executed
+        
+        await page.setContent(htmlContent, { waitUntil: 'load' }); // Wait for load
         const pdfBuffer = await page.pdf({ format: 'A4' });
 
         await browser.close();

@@ -801,8 +801,8 @@ const styles = StyleSheet.create({
   },
   statusIndicator: {
     position: 'absolute',
-    // bottom: 7,
-    right: -90,
+    top: -8,
+    right: -95,
     borderWidth: 0.18,
     paddingVertical: 0,
     paddingHorizontal: 8,
