@@ -106,7 +106,7 @@ module.exports = [
     propertyStatus: "ACTIVE",
     // userId: 2,
     // agentId: 6,
-    sellerId: 4,
+    sellerId: 6,
     // transactionId: 4,
     postalCode: 730132,
     unitNumber: "08-123",
