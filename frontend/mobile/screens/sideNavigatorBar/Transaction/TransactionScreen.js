@@ -1,66 +1,128 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Alert, Linking, StyleSheet, TouchableOpacity } from 'react-native';
-import { useStripe, StripeProvider } from '@stripe/stripe-react-native';
+import React, { useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../../AuthContext';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { FontAwesome, Ionicons } from '@expo/vector-icons'; // Import the desired icon library
-import { is } from 'date-fns/locale';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
-const PartnerSubscriptionCheckoutScreen = ({ route }) => {
-    const { user, login } = useContext(AuthContext);
-    const navigation = useNavigation();
-    const { initPaymentSheet, presentPaymentSheet, handleURLCallback } = useStripe();
-    const [loading, setLoading] = useState(false);
-    const [newStripeCustomerId, setStripeCustomerId] = useState('');
-    const [ephemeralKey, setEphemeralKey] = useState('');
-    const [paymentIntent, setPaymentIntent] = useState('');
-    const [publishableKey, setPublishableKey] = useState('');
-    const [custIdExists, setCustIdExists] = useState(false);
-    const gst = 0.08;
-    const taxable = true;
-    const boostDays = 365;
+const TransactionScreen = ({ route }) => {
+    const { user } = useContext(AuthContext);
+    const navigation = useNavigation(); // Use useNavigation to access the navigation object
+    const { transaction } = route.params;
 
-    // Use the route object to get the selected token package details
-    const { transaction } = route.params; // Make sure you pass the selected package from the previous screen
+    // Function to format date in a readable way
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+
+    // Function to format currency
+    const formatCurrency = (amount) => {
+        return `SGD ${amount.toFixed(2)}`;
+    };
 
     return (
         <View style={styles.container}>
-            <StripeProvider publishableKey={publishableKey}>
-                <View style={styles.headerContainer}>
-                    {/* Back button */}
-                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                        <Ionicons name="arrow-back" size={24} color="black" />
-                    </TouchableOpacity>
-                    <Text style={styles.header}>Invoice</Text>
-                    {/* Help icon */}
-                </View>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+                <Text style={styles.header}>Invoice</Text>
+            </View>
 
-                <View style={styles.itemContainer}>
-                    <View style={styles.summaryItem}>
-                        <Text style={styles.label}>Item:</Text>
+            <View style={styles.invoiceHeader}>
+                <Text style={[styles.label, { marginLeft: 160 }]}>Invoice Date:</Text>
+                <Text style={[styles.info, { marginRight: 10 }]}>{formatDate(transaction.createdAt)}</Text>
+            </View>
+
+            <View style={styles.invoiceContainer}>
+                <View style={styles.invoiceItem}>
+                    <Text style={styles.label}>Qty</Text>
+                    <Text style={styles.label}>Description</Text>
+                    <Text style={styles.label}>Amount</Text>
+                </View>
+                <View style={styles.descriptionLineContainer}></View>
+
+                {transaction.transactionType === 'OPTION_FEE' ? (
+                    <View style={styles.invoiceItem}>
+                        <Text style={styles.info}>{transaction.quantity}{" Qty"}</Text>
                         <Text style={styles.info}>{transaction.transactionItem}</Text>
+                        <Text style={styles.info}>
+                            {transaction.status === 'PENDING'
+                                ? formatCurrency(transaction.onHoldBalance)
+                                : formatCurrency(transaction.paymentAmount)}
+                        </Text>
                     </View>
-                    <View style={styles.summaryItem}>
-                        <Text style={styles.label}>Quantity:</Text>
-                        <Text style={styles.info}>{transaction.quantity}</Text>
+                ) : (
+                    <View style={styles.invoiceItem}>
+                        <Text style={styles.info}>{transaction.quantity}{" Qty"}</Text>
+                        <Text style={styles.info}>{transaction.transactionItem}</Text>
+                        <Text style={styles.info}>{formatCurrency(transaction.paymentAmount)}</Text>
                     </View>
-                    <View style={styles.summaryItem}>
-                        <Text style={styles.label}>Price:</Text>
-                        <Text style={styles.info}>SGD {transaction.paymentAmount.toFixed(2)}</Text>
-                    </View>
-                    <View style={styles.summaryItem}>
-                        <Text style={styles.label}>GST (8%):</Text>
-                        <Text style={styles.info}>SGD {(transaction.paymentAmount * 0.08).toFixed(2)}</Text>
-                    </View>
+                )}
+
+
+                <View style={(styles.invoiceItem)}>
+                    {transaction.status === 'PENDING' ? (
+                        <>
+                            <Text style={styles.info}></Text>
+                            <Text style={styles.info}></Text>
+                            <Text style={(styles.label)}>On Hold:</Text>
+                            <Text style={styles.info}>
+                                {formatCurrency(transaction.onHoldBalance)}
+                            </Text>
+                        </>
+                    ) : (
+                        <>
+                            <Text style={styles.info}></Text>
+                            <Text style={styles.info}></Text>
+                            <Text style={(styles.label)}>Subtotal:</Text>
+                            <Text style={styles.info}>
+                                {formatCurrency(transaction.paymentAmount)}
+                            </Text>
+                        </>
+                    )}
                 </View>
 
-                <View style={styles.checkoutContainer}>
-                    <View style={styles.totalAmountContainer}>
-                        <Text style={styles.label}>Total Amount:</Text>
-                        <Text style={styles.info}>SGD {(transaction.paymentAmount + transaction.paymentAmount * 0.08).toFixed(2)}</Text>
+                {transaction.gst && (
+                    <View style={(styles.invoiceItem)}>
+                        <Text style={styles.info}></Text>
+                        <Text style={styles.info}></Text>
+                        <Text style={(styles.label)}>GST (8%):</Text>
+                        <Text style={styles.info}>
+                            {formatCurrency(transaction.paymentAmount * 0.08)}
+                        </Text>
                     </View>
+                )}
+
+
+
+                <View style={styles.totalAmountContainer}>
+                    {transaction.status === 'PENDING' ? (
+                        <>
+                            <Text style={styles.label}>Total Amount:</Text>
+                            <Text style={styles.info}>
+                                {formatCurrency(
+                                    transaction.onHoldBalance
+                                )}
+                            </Text>
+                        </>
+                    ) : (
+                        <>
+                            <Text style={styles.label}>Total Amount:</Text>
+                            <Text style={styles.info}>
+                                {formatCurrency(
+                                    transaction.paymentAmount +
+                                    (transaction.gst ? transaction.paymentAmount * 0.08 : 0)
+                                )}
+                            </Text>
+                        </>
+                    )}
+
                 </View>
-            </StripeProvider>
+            </View>
         </View>
     );
 };
@@ -84,15 +146,13 @@ const styles = StyleSheet.create({
         marginTop: 10,
         paddingBottom: 20,
     },
-    itemContainer: {
-        flex: 1,
-        marginBottom: 20,
+    backButton: {
+        position: 'absolute',
+        top: 20,
+        left: 20,
+        zIndex: 1,
     },
-    summaryItem: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 15,
-        padding: 10,
+    invoiceContainer: {
         backgroundColor: 'white',
         borderRadius: 10,
         elevation: 2,
@@ -100,49 +160,44 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
+        padding: 20,
     },
-    checkoutContainer: {
-        borderTopColor: '#ddd',
-        borderTopWidth: 1,
-        padding: 10,
+    invoiceHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+    invoiceItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 25,
     },
     totalAmountContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 15,
+        marginTop: 15,
+        borderTopWidth: 1,
+        borderTopColor: '#ddd',
+        paddingTop: 10,
+        paddingBottom: 15,
     },
-    checkoutButton: {
+    descriptionLineContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#4CAF50',
-        borderRadius: 25,
-        padding: 15,
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
-    },
-    checkoutButtonText: {
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginLeft: 10,
-    },
-    backButton: {
-        position: 'absolute',
-        top: 20,
-        left: 20,
-        zIndex: 1,
+        justifyContent: 'space-between',
+        marginTop: -10,
+        marginBottom: 0,
+        borderTopWidth: 1,
+        borderTopColor: '#ddd',
+        paddingTop: 5,
+        paddingBottom: 15,
     },
     label: {
-        fontSize: 16,
+        fontSize: 13,
         fontWeight: 'bold',
     },
     info: {
-        fontSize: 16,
+        fontSize: 13,
     },
 });
 
-export default PartnerSubscriptionCheckoutScreen;
+export default TransactionScreen;
