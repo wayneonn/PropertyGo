@@ -33,6 +33,12 @@ const TransactionScreen = ({ route }) => {
             </View>
 
             <View style={styles.invoiceHeader}>
+                <Text style={[styles.label, { marginLeft: 172 }]}>Invoice No:</Text>
+                <Text style={[styles.info, { marginRight: 58 }]}>{transaction.transactionId}</Text>
+            </View>
+
+
+            <View style={styles.invoiceHeader}>
                 <Text style={[styles.label, { marginLeft: 160 }]}>Invoice Date:</Text>
                 <Text style={[styles.info, { marginRight: 10 }]}>{formatDate(transaction.createdAt)}</Text>
             </View>
