@@ -3,7 +3,8 @@ const router = express.Router();
 const multer = require('multer');
 const { sequelize } = require('../../models');
 const { getAllUsers, createUser, updateUser, uploadProfilePicture, getUserById, addFavoriteProperty, removeFavoriteProperty, getUserFavorites, isPropertyInFavorites, getPartnerByRangeAndType,
-    editUserBoost, savePushToken
+    editUserBoost, savePushToken,
+    uploadCompanyPictures
 } = require('../../controllers/user/userController');
 
 const storage = multer.memoryStorage();
@@ -20,7 +21,7 @@ router.get('/:userId/favorites', getUserFavorites);
 router.get('/:userId/isPropertyInFavorites/:propertyId', isPropertyInFavorites);
 router.get('/partners/:type/:start/:end', getPartnerByRangeAndType);
 router.put('/:id/boost', editUserBoost);
-
+router.post('/:id/addCompanyPhotos', upload.array('images', 10), uploadCompanyPictures)
 router.route('/savePushToken').post(savePushToken)
 
 module.exports = router;

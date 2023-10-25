@@ -306,7 +306,7 @@ db.sequelize
         for (const propertyData of propertyTestData) {
           await db.Property.create(propertyData);
         }
-        //const fake_prop = await generateFakeProperties(1000)
+        const fake_prop = await generateFakeProperties(1000)
         console.log("Property test data inserted successfully.");
       } catch (error) {
         console.log("Error inserting Property test data:", error);
@@ -418,7 +418,7 @@ db.sequelize
           await db.Transaction.create(transactionData);
         }
         console.log("Transaction data inserted successfully.");
-        // const genData = await createFakeTransactions(1000);
+        const genData = await createFakeTransactions(1000);
       } catch (error) {
         console.log("Error inserting transaction data: ", error);
       }

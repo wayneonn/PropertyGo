@@ -10,7 +10,7 @@ import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
 import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {RadioCheckBox} from "../../components/Partner/RadioCheckBox";
 
-const TransactionList = () => {
+const TransactionList = ({navigation}) => {
     const {user} = useContext(AuthContext);
     const USER_ID = user.user.userId
     const [transactionPaid, setTransactionPaid] = useState([])
@@ -27,6 +27,7 @@ const TransactionList = () => {
     const [sortCriteriaPending, setSortCriteriaPending] = useState('name');
     const [sortOrderPaid, setSortOrderPaid] = useState('desc');
     const [sortOrderPending, setSortOrderPending] = useState('desc')
+    const names = ["Name", "Company", "Username"]
 
 
     // Fetch the needed info from the unique API's, screw having to use the frontend.
@@ -71,15 +72,15 @@ const TransactionList = () => {
             let compareA, compareB;
 
             switch (criteria) {
-                case 'name':
+                case 'Name':
                     compareA = a.userDetails.userName !== null ? a.userDetails.userName.toLowerCase() : "a";
                     compareB = b.userDetails.userName !== null ? b.userDetails.userName.toLowerCase() : "b";
                     break;
-                case 'companyName':
+                case 'Company':
                     compareA = a.userDetails.companyName !== null ? a.userDetails.companyName.toLowerCase() : "a";
                     compareB = b.userDetails.companyName !== null ? b.userDetails.companyName.toLowerCase() : "b";
                     break;
-                case 'username':
+                case 'Username':
                     compareA = a.userDetails.userName !== null ? a.userDetails.userName.toLowerCase() : "a";
                     compareB = b.userDetails.userName !== null ? b.userDetails.userName.toLowerCase() : "b";
                     break;
@@ -108,7 +109,7 @@ const TransactionList = () => {
                         <Text style={styles.textStyle}>Create PDF Report</Text>
                     </TouchableOpacity>
                     <Text>&nbsp;</Text>
-                    <RadioCheckBox filterBy={sortCriteriaPaid} setFilterBy={setSortCriteriaPaid}/>
+                    <RadioCheckBox filterBy={sortCriteriaPaid} setFilterBy={setSortCriteriaPaid} names={names}/>
                     {sortedPaid.length !== 0 ? sortedPaid.map((item) => (
                         <TouchableOpacity
                             style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.25}]}
@@ -140,7 +141,7 @@ const TransactionList = () => {
                     )) : <LoadingIndicator/>}
                 </View>
                 <PartnerCardModal modalVisible={modalVisible} setModalVisible={setModalVisible}
-                                  selectedItem={selectedTransaction} dateFormatter={dateFormatter}/>
+                                  selectedItem={selectedTransaction} dateFormatter={dateFormatter} navigation={navigation}/>
             </ScrollView>
         )
     };
@@ -158,7 +159,7 @@ const TransactionList = () => {
                     <Text style={styles.textStyle}>Create PDF Report</Text>
                 </TouchableOpacity>
                 <Text>&nbsp;</Text>
-                <RadioCheckBox filterBy={sortCriteriaPending} setFilterBy={setSortCriteriaPending}/>
+                <RadioCheckBox filterBy={sortCriteriaPending} setFilterBy={setSortCriteriaPending} names={names}/>
                 {sortedPending.length !== 0 ? sortedPending.map((item) => (
                     <TouchableOpacity
                         style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.25}]}
@@ -190,7 +191,7 @@ const TransactionList = () => {
                 )) : <LoadingIndicator/>}
             </View>
             <PartnerCardModal modalVisible={modalVisible} setModalVisible={setModalVisible}
-                              selectedItem={selectedTransaction} dateFormatter={dateFormatter}/>
+                              selectedItem={selectedTransaction} dateFormatter={dateFormatter} navigation={navigation}/>
         </ScrollView>
     )};
 
