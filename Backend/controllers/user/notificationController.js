@@ -1,5 +1,5 @@
 const { Touchscreen } = require("puppeteer");
-const { Notification, ForumPost, User, Admin, Image } = require("../../models");
+const { Notification, ForumPost, User, Admin, Image, ForumTopic } = require("../../models");
 const Sequelize = require('sequelize');
 
 //Helper function!
@@ -52,6 +52,10 @@ const getAllNotification = async (req, res) => {
                           as: 'images',
                         },
                       ],
+                },
+                {
+                    model: ForumTopic,
+                    as: 'forumTopic',
                 },
                 {
                     model: User,

@@ -35,7 +35,7 @@ const Activity = ({ parentFetchData }) => {
     useFocusEffect(useParentCallback);
 
     const handleNotificationPress = (notification) => {
-        if (notification.userNavigationScreen === "forumPost") {
+        if (notification.userNavigationScreen === "forumComment") {
             navigation.navigate('Forum Side Navigator', {
                 screen: 'Forum Stack Group',
                 params: {
@@ -45,6 +45,24 @@ const Activity = ({ parentFetchData }) => {
                     },
                 },
             });
+        }
+
+        if (notification.userNavigationScreen === "forumPost") {
+            navigation.navigate('Forum Side Navigator', {
+                screen: 'Forum Stack Group',
+                params: {
+                    screen: "Forum Post Tab Navigator",
+                    params: {
+                        topic: notification.forumTopic
+                    },
+                },
+            });
+        }
+        if (notification.userNavigationScreen === "forumTopic") {
+            navigation.navigate('Forum Side Navigator');
+        }
+        if (notification.userNavigationScreen === "response") {
+            navigation.navigate("ContactUs Status");
         }
     };
 
