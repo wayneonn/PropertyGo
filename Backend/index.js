@@ -109,7 +109,7 @@ app.use("/admin/auth", authRouter);
 app.use("/admin/faqs", injectIo(io), faqRouter);
 app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", injectIo(io), contactUsAdminRouter);
-app.use("/admin/contactUs/:id/responses",injectIo(io), responseRouter);
+app.use("/admin/contactUs/:contactUsId/responses",injectIo(io) , responseRouter);
 app.use("/admin/forumTopics", injectIo(io), forumTopicAdminRouter);
 app.use("/admin/notifications", notificationAdminRouter);
 app.use("/admin/properties", propertyAdminRouter);
