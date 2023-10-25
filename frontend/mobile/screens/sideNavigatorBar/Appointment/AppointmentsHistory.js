@@ -76,14 +76,14 @@ const Appointments = ({ route }) => {
     // Sort by meetup date first
     const dateA = new Date(a.meetupDate);
     const dateB = new Date(b.meetupDate);
-    if (dateA > dateB) return -1;
-    if (dateA < dateB) return 1;
+    if (dateA < dateB) return -1;
+    if (dateA > dateB) return 1;
 
     // If meetup dates are the same, sort by time
     const timeA = a.meetupTime;
     const timeB = b.meetupTime;
-    if (timeA > timeB) return -1;
-    if (timeA < timeB) return 1;
+    if (timeA < timeB) return -1;
+    if (timeA > timeB) return 1;
 
     return 0;
   });

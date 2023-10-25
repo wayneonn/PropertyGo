@@ -38,8 +38,8 @@ const Appointments = ({ route }) => {
         // If meetup dates are the same, sort by time
         const timeA = a.meetupTime;
         const timeB = b.meetupTime;
-        if (timeA > timeB) return -1;
-        if (timeA < timeB) return 1;
+        if (timeA < timeB) return -1;
+        if (timeA > timeB) return 1;
 
         return 0;
     });
