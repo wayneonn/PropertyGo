@@ -4,8 +4,9 @@ import { getTimeAgo } from '../../services/CalculateTimeAgo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFocusEffect } from '@react-navigation/native';
 import base64 from 'react-native-base64';
+import { AntDesign } from '@expo/vector-icons';
 
-const NotificationItem = ({ onPress, profileImage, content, updatedAt, completed, pending }) => {
+const NotificationItem = ({ onPress, profileImage, content, updatedAt, completed, pending, redirect, hasUserRead }) => {
 
     const [convertedProfileImage, setConvertedProfileImage] = useState(null);
 
@@ -35,7 +36,8 @@ const NotificationItem = ({ onPress, profileImage, content, updatedAt, completed
             <View
                 style={{
                     ...styles.topicItemContainer,
-                    borderColor: completed ? "green" : pending ? "red" : "black"
+                    borderColor: completed ? "green" : pending ? "red" : "black",
+                    backgroundColor: hasUserRead ? 'white' : "#DDD" 
                 }}
             >
                 <View style={styles.notificationContent}>
@@ -55,8 +57,10 @@ const NotificationItem = ({ onPress, profileImage, content, updatedAt, completed
                     <View style={styles.rightContent}>
                         {completed ? <Text style={styles.completed}>Completed!</Text> : null}
                         {pending ? <Text style={styles.pending}>Pending Action!</Text> : null}
+                        {redirect ? <AntDesign name="rightsquareo" size={22} color="black"/>: null}
                         <Text style={styles.timestamp}>{getTimeAgo(updatedAt)}</Text>
                     </View>
+                    
                 </View>
             </View>
         </TouchableOpacity>
@@ -67,7 +71,7 @@ export default NotificationItem;
 
 const styles = StyleSheet.create({
     topicItemContainer: {
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
         borderRadius: 5,
         marginHorizontal: 10,
         marginVertical: 5,
@@ -88,6 +92,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgray', // Background color for the user profile picture
         alignItems: "center",
         justifyContent: 'center',
+        borderWidth:1,
         // Add styles for the user profile picture
     },
     middleContent: {
@@ -97,6 +102,7 @@ const styles = StyleSheet.create({
     },
     rightContent: {
         alignItems: 'center',
+        justifyContent:"center"
     },
     pending: {
         // Add styles for the timestamp

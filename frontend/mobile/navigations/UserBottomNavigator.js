@@ -37,6 +37,7 @@ const UserBottomNavigator = () => {
 
     useEffect(() => {
         socket.on("userNotification", (data) => {
+            // console.log("RESPONDEDEDEDasdasdE")
             fetchData()
         });
     })
@@ -81,7 +82,15 @@ const UserBottomNavigator = () => {
                                         <Text style={styles.notificationCountText}>{notificationCount}</Text>
                                     </View>
                                 )}
-                                <Ionicons name={iconName} size={size} color={"#FFD700"} />
+                                <Ionicons
+                                    name={iconName}
+                                    size={size}
+                                    color="#FFD700"
+                                    style={[
+                                        styles.icon,
+                                        notificationCount > 0 ? { marginRight: 15 } : null // Add marginRight conditionally
+                                    ]}
+                                />
                             </View>
                         );
 
@@ -120,20 +129,27 @@ export default UserBottomNavigator;
 const styles = StyleSheet.create({
     tabLabelContainer: {
         flexDirection: 'row',
-        //   alignItems: 'center',
+        // alignItems: 'center',
+        // justifyContent:'center'
+
     },
     notificationBadge: {
+        position: 'relative', // Allows for overlapping
+        zIndex: 2, // Control the overlapping order (higher than the icon)
         backgroundColor: 'red',
         borderRadius: 8,
         width: 16,
         height: 16,
         justifyContent: 'center',
         alignItems: 'center',
-        //   marginLeft: 4, // Adjust the spacing
     },
     notificationCountText: {
         color: 'white',
         fontSize: 10,
         fontWeight: 'bold',
+    },
+    icon: {
+        position: 'relative', // Allows for overlapping
+        zIndex: 1, // Control the overlapping order (lower than the badge)
     },
 });

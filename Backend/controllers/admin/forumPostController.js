@@ -1,4 +1,5 @@
 const { ForumTopic, ForumPost, User, Notification, Image } = require("../../models");
+const { loggedInUsers } = require('../../shared');
 
 const getFlaggedForumPosts = async (req, res) => {
     try {
@@ -56,18 +57,18 @@ const markForumPostInappropriate = async (req, res) => {
     const forumPost = await ForumPost.findByPk(forumPostId);
 
     if (typeOfResponse === "no") {
-        const forumPosts = await ForumPost.findByPk(forumPostId, {
-            include: {
-              model: User,
-              as: 'usersFlagged', 
-            }
-          });
+        // const forumPosts = await ForumPost.findByPk(forumPostId, {
+        //     include: {
+        //       model: User,
+        //       as: 'usersFlagged', 
+        //     }
+        //   });
 
-        for (const usersFlaggedForumPost of forumPosts.usersFlagged) {
-            const userIdFlagged = usersFlaggedForumPost.dataValues.userId;
+        // for (const usersFlaggedForumPost of forumPosts.usersFlagged) {
+        //     const userIdFlagged = usersFlaggedForumPost.dataValues.userId;
 
-            await forumPost.removeUsersFlagged(userIdFlagged);
-        }
+        //     await forumPost.removeUsersFlagged(userIdFlagged);
+        // }
     } else {
         forumPost.isInappropriate = true;
     }
@@ -83,7 +84,25 @@ const markForumPostInappropriate = async (req, res) => {
         "adminId": adminId
     };
 
+    const content = `The admin have flagged the forum post of "${forumPost.title}" as ${typeOfResponse === "no" ? "appropriate" : "inappropriate"}`
+    const userNotification = {
+        "content" : content,
+        "adminNotificationId": adminId,
+        "userId" : forumPost.userId,
+        "forumPostId" : forumPost.forumPostId,
+    };
+
+    // console.log("userId  " , forumPost.userId)
+
     await Notification.create(req.body);
+    await Notification.create(userNotification);
+    const forumPostUser = await forumPost.getUser();
+
+    if (forumPostUser && loggedInUsers.has(forumPostUser.userId)){
+        req.io.emit("userNotification", {"pushToken": forumPostUser.pushToken, "title": forumPost.title, "body": content});
+        // console.log("Emitted userNewForumCommentNotification");
+    }
+
 
     req.io.emit("newAdminFlaggedForumPost", "Admin has flagged forum post");
     res.status(200).json({ forumPost });
@@ -98,18 +117,18 @@ const resetForumPostAppropriate = async (req, res) => {
 
     forumPost.isInappropriate = false;
 
-    const forumPosts = await ForumPost.findByPk(forumPostId, {
-        include: {
-          model: User,
-          as: 'usersFlagged', 
-        }
-      });
+    // const forumPosts = await ForumPost.findByPk(forumPostId, {
+    //     include: {
+    //       model: User,
+    //       as: 'usersFlagged', 
+    //     }
+    //   });
 
-    for (const usersFlaggedForumPost of forumPosts.usersFlagged) {
-        const userIdFlagged = usersFlaggedForumPost.dataValues.userId;
+    // for (const usersFlaggedForumPost of forumPosts.usersFlagged) {
+    //     const userIdFlagged = usersFlaggedForumPost.dataValues.userId;
 
-        await forumPost.removeUsersFlagged(userIdFlagged);
-    }
+    //     await forumPost.removeUsersFlagged(userIdFlagged);
+    // }
 
     await forumPost.save();
 
@@ -121,8 +140,24 @@ const resetForumPostAppropriate = async (req, res) => {
         "hasRead": false,
         "adminId": adminId
     };
+    const content = `The admin have reset the forum post of "${forumPost.title}" to appropriate`
+    const userNotification = {
+        "content" : content,
+        "adminNotificationId": adminId,
+        "userId" : forumPost.userId,
+        "forumPostId" : forumPost.forumPostId,
+        "userNavigationScreen" : "forumPost"
+    };
+
 
     await Notification.create(req.body);
+    await Notification.create(userNotification);
+    const forumPostUser = await forumPost.getUser();
+
+    if (forumPostUser && loggedInUsers.has(forumPostUser.userId)){
+        req.io.emit("userNotification", {"pushToken": forumPostUser.pushToken, "title": forumPost.title, "body": content});
+        // console.log("Emitted userNewForumCommentNotification");
+    }
 
     req.io.emit("newAdminResetAppropriateForumPost", "Admin has reset forum post to appropriate");
 

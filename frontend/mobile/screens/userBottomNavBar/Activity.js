@@ -35,7 +35,7 @@ const Activity = ({ parentFetchData }) => {
     useFocusEffect(useParentCallback);
 
     const handleNotificationPress = (notification) => {
-        if (notification.forumPostId) {
+        if (notification.userNavigationScreen === "forumPost") {
             navigation.navigate('Forum Side Navigator', {
                 screen: 'Forum Stack Group',
                 params: {
@@ -92,6 +92,8 @@ const Activity = ({ parentFetchData }) => {
                             updatedAt={notification.updatedAt}
                             completed={notification.isCompleted}
                             pending={notification.isPending}
+                            redirect={notification.userNavigationScreen}
+                            hasUserRead={notification.hasUserRead}
                         />
                     );
                 })}

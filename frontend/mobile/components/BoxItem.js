@@ -1,8 +1,11 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { getTimeAgo } from '../services/CalculateTimeAgo';
+import HTML from 'react-native-render-html';
 
 const BoxItem = ({ onPress, parentTitleStatus, title, reason, message, updatedAt, responses }) => {
+    
+    const windowWidth = useWindowDimensions().width;
     const backgroundColor =
         parentTitleStatus === 'Replied'
             ? 'rgba(0, 255, 0, 0.1)'
@@ -27,7 +30,7 @@ const BoxItem = ({ onPress, parentTitleStatus, title, reason, message, updatedAt
                     <Text style={styles.reasonText}>{reason}</Text>
                     <Text style={styles.messageText}><Text style={{ fontWeight: 'bold' }}>Description:</Text> {message}</Text>
                     {latestResponse && (
-                        <Text style={styles.messageText}><Text style={{ fontWeight: 'bold' }}>Reply:</Text> {latestResponse.message}</Text>
+                        <Text style={styles.messageText}><Text style={{ fontWeight: 'bold' }}>Reply: </Text><HTML source={{ html: latestResponse.message.replace(/<\/?p>/g, '').replace(/<html>|<\/html>/g, '')}} contentWidth={windowWidth}/></Text>
                     )}
                 </View>
                 <View style={styles.rightBox}>
@@ -64,7 +67,9 @@ const styles = StyleSheet.create({
     messageText: {
         fontSize: 14,
         marginTop: 5,
-
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     timestampText: {
         fontSize: 12,

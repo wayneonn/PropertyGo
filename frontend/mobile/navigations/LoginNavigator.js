@@ -147,30 +147,8 @@ const LoginNavigator = () => {
             console.log("socketID:  ", socket.id); // This will have a value after the connection is established
         });
 
-        // Event listener for user login
-        // socket.on("userNewFlaggedForumTopicNotification", (data) => {
-        //     // Handle user login event
-        //     const pushToken = data.pushToken;
-        //     const title = data.title;
-        //     const body = data.body;
-
-        //     // console.log({pushToken,title,body})
-        //     sendPushNotification({pushToken,title,body});
-        // });
-
-        // // Event listener for user logout
-        // socket.on("userNewRemoveFlaggedForumTopicNotification", (data) => {
-        //     // Handle user logout event
-        //     const pushToken = data.pushToken;
-        //     const title = data.title;
-        //     const body = data.body;
-
-        //     // console.log({pushToken,title,body})
-        //     sendPushNotification({pushToken,title,body});
-        // });
-
         socket.on("userNotification", (data) => {
-            console.log("Received userNewForumCommentNotification");
+            // console.log("Received userNewForumCommentNotification");
             // Handle user logout event
             const pushToken = data.pushToken;
             const title = data.title;
