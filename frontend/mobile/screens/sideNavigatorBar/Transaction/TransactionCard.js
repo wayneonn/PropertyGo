@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const TransactionCard = ({ transaction }) => {
+const TransactionCard = ({ transaction, onPress }) => {
     console.log("transactionCard", transaction)
     const { transactionItem, createdAt, paymentAmount, gst } = transaction;
     const totalAmount = gst ? paymentAmount * 1.08 : paymentAmount;
@@ -12,7 +12,7 @@ const TransactionCard = ({ transaction }) => {
     const localTime = transactionDate.toLocaleTimeString();
 
     return (
-        <View style={styles.card}>
+        <TouchableOpacity style={styles.card} onPress={onPress}>
             <View style={styles.iconContainer}>
                 <FontAwesome name="shopping-cart" size={24} color="black" />
             </View>
@@ -23,9 +23,10 @@ const TransactionCard = ({ transaction }) => {
                 </Text>
                 <Text style={styles.totalAmount}>Total Amount: SGD {totalAmount.toFixed(2)}</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };
+
 
 const styles = StyleSheet.create({
     card: {

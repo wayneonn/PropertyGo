@@ -6,10 +6,12 @@ import TransactionCard from './TransactionCard'; // Import the TransactionCard c
 import {useFocusEffect} from "@react-navigation/native";
 import { fetchUserTransactions } from '../../../utils/transactionApi';
 import { AuthContext } from '../../../AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 const TransactionScreen = () => {
     const [transactions, setTransactions] = useState([]);
     const { user } = useContext(AuthContext);
+    const navigation = useNavigation();
     const userId = user.user.userId;
 
     useEffect(() => {
@@ -47,7 +49,10 @@ const TransactionScreen = () => {
                 <FlatList
                     data={transactions}
                     keyExtractor={(item) => item.transactionId.toString()}
-                    renderItem={({ item }) => <TransactionCard transaction={item} />}
+                    renderItem={({ item }) => 
+                    <TransactionCard transaction={item} onPress={() => {
+                        navigation.navigate('Transaction Screen', { transaction: item});
+                    }} />}
                 />
             ) : (
                 <Text style={styles.noAvailabilityText}>No transactions found.</Text>
