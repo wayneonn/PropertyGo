@@ -71,29 +71,6 @@ const TokenScreen = ({ navigation }) => {
                 },
                 {
                     text: 'Purchase',
-                    // onPress: async () => {
-                    //     // Update the user's token amount and save it to the API
-                    //     const updatedTokenAmount = tokenAmount + tokens;
-
-                    //     try {
-                    //         const formData = new FormData();
-                    //         formData.append('token', updatedTokenAmount);
-                    //         formData.append('email', user.user.email);
-                    //         console.log('user.user.userId', user.user.userId);
-                    //         console.log('formData', formData);
-                    //         const { success, data, message } = await updateUserProfile(user.user.userId, formData);
-
-                    //         if (success) {
-                    //             setTokenAmount(updatedTokenAmount);
-                    //             Alert.alert('Purchase Successful', `You have purchased ${tokens} tokens.`);
-                    //         } else {
-                    //             Alert.alert('Error', message || 'Purchase failed.');
-                    //         }
-                    //     } catch (error) {
-                    //         console.error('Error updating user profile:', error);
-                    //         Alert.alert('Error', 'Purchase failed.');
-                    //     }
-                    // },
                     onPress: () => {    
                         navigation.navigate('Token Checkout Screen', { tokens, tokenAmount, tokenName, currentTokenAmount });
                     }

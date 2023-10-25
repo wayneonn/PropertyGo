@@ -65,11 +65,13 @@ const Property = () => {
 
       console.log("buyer: " + response.data.buyerId);
 
-      const buyerResponse = await API.get(
-        `http://localhost:3000/admin/users/getUser/${response.data.buyerId}`
-      );
+      if (response.data.buyerId != null) {
+        const buyerResponse = await API.get(
+          `http://localhost:3000/admin/users/getUser/${response.data.buyerId}`
+        );
 
-      setBuyer(buyerResponse.data);
+        setBuyer(buyerResponse.data);
+      }
 
       const documentResponse = await API.get(
         `http://localhost:3000/admin/documents`
@@ -80,13 +82,14 @@ const Property = () => {
 
       // console.log("document:" + documentResponse);
 
-      const documents = documentResponse.data.data
-        .filter((document) => document.propertyId == propertyId)
-        .filter(
-          (document) =>
-            document.userId == response.data.buyerId ||
-            document.userId == sellerResponse.data.userId
-        );
+      const documents = documentResponse.data.data.filter(
+        (document) => document.propertyId == propertyId
+      );
+      // .filter(
+      //   (document) =>
+      //     document.userId == response.data.buyerId ||
+      //     document.userId == sellerResponse.data.userId
+      // );
       //need howard help fetch documents
 
       // console.log(documents);

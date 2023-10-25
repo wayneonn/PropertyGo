@@ -5,6 +5,7 @@ import EditPropertyListing from "../screens/propertyListings/EditPropertyListing
 import PropertiesList from "../screens/propertyListings/PropertiesList";
 import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import TokenScreen from "../screens/token/TokenScreen"; // Import your Coins screen here
+import TokenCheckoutScreen from "../screens/token/TokenCheckoutScreen"; 
 import SearchResults from '../screens/propertyListings/SearchResults';
 import BoostProfileListing from "../screens/dashboard/BoostProfileListing";
 import Map from "../screens/propertyListings/map";
@@ -25,6 +26,7 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="List Property" component={HomePagePartner}/>
             <HomeListingsStack.Screen name="View Profile" component={ViewUserProfile}/>
             <HomeListingsStack.Screen name="Token" component={TokenScreen}/>
+            <HomeListingsStack.Screen name="Token Checkout Screen" component={TokenCheckoutScreen}/>
             <HomeListingsStack.Screen name="Boost Listing" component={BoostProfileListing}/>
             <HomeListingsStack.Screen name="Search Results" component={SearchResults}/>
             <HomeListingsStack.Screen name={"Upload Photos"} component={PhotoGalleryUpload}/>

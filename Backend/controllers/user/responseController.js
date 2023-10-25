@@ -15,6 +15,8 @@ const addResponse = async (req, res) => {
 
         await contactUs.save();
 
+        req.io.emit("newResponseNotification", "New response has been created");
+
         res.status(201).json({ response });
     } catch (error) {
         console.error(error);

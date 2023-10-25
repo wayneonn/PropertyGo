@@ -347,7 +347,7 @@ async function uploadCompanyPictures(req, res) {
   // Start a transaction
   const transaction = await sequelize.transaction();
   try {
-    const images = req.files['images'];
+    const images = req.files;
     console.log('Received images:', images);
     if (images.length === 0) {
       await transaction.rollback();

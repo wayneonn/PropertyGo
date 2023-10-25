@@ -70,6 +70,28 @@ export const fetchTransactionCountryCount = async(USER_ID) => {
     }
 }
 
+export const fetchAverageCountryCount = async() => {
+    try {
+        const res = await fetch(`${BASE_URL}/user/transactions/data/average`)
+        const results = await res.json();
+        console.log(results, "Average count.")
+        return results;
+    } catch (error) {
+        console.log("Error fetching average transaction values: ", error)
+    }
+}
+
+export const fetchAverageTransactionCount = async() => {
+    try {
+        const res = await fetch(`${BASE_URL}/user/transactions/data/count`)
+        const results = await res.json();
+        console.log(results, "Average count of transactions.")
+        return results;
+    } catch (error) {
+        console.log("Error fetching average transaction values: ", error)
+    }
+}
+
 export const createTransaction = async (transactionData) => {
     // console.log("transactionData: ", transactionData)
     try {
