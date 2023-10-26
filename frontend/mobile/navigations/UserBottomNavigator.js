@@ -62,8 +62,15 @@ const UserBottomNavigator = () => {
         fetchData();
     }, [notificationCount]);
 
-    return (
-        (subscriptionPaid && !isExpired(user.user.partnerSubscriptionEndDate)) ?
+    function isUserPartnerValid() {
+        if (["LAWYER", "CONTRACTOR", "PROPERTY AGENT"].includes(user.user.userType)) {
+            return subscriptionPaid && !isExpired(user.user.partnerSubscriptionEndDate)
+        } else {
+            return true
+        }
+    }
+
+    return ((isUserPartnerValid) ?
         (<>
         <Tab.Navigator
             screenOptions={({ route }) => ({
