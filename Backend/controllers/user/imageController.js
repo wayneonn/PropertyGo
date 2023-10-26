@@ -46,6 +46,8 @@ async function getImageById(req, res) {
 
         // Send the image binary data
         res.send(image.image);
+
+
     } catch (error) {
         console.error('Error fetching image:', error);
         res.status(500).json({ error: 'Error fetching image' });
@@ -161,6 +163,44 @@ async function createImageWithPropertyId(req, res) {
     }
 }
 
+async function getImagesByPartner(req, res) {
+    try {
+        const userId  = req.params.id;
+
+        // Find the images by ID
+        const images = await Image.findAll({
+            where: {
+                userId: userId
+            }, attributes: ["imageId"]
+        });
+
+        if (!images || images.length === 0) {
+            return res.status(404).json({ error: 'No images found.' });
+        }
+
+        const uri_image = images.map((image) => `http://localhost:3000/image/${image.imageId}`)
+        res.json({ images: uri_image });
+    } catch (error) {
+        console.error('Error fetching images:', error);
+        res.status(500).json({ error: 'Error fetching images' });
+    }
+}
+
+// async function getImageIdByPartner (req, res) {
+//     try {
+//         const imageIds = await Image.findAll({
+//             where: {
+//                 userId: req.params.id
+//             }, attributes: ["imageId"]
+//         })
+//
+//         res.status(201).json({ imageId: imageIds })
+//     } catch (error) {
+//         console.error(error)
+//     }
+// }
+
+
 
 
 module.exports = {
@@ -169,4 +209,5 @@ module.exports = {
     removeImageById,
     updateImageById,
     createImageWithPropertyId,
+    getImagesByPartner
 };

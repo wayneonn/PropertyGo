@@ -46,7 +46,6 @@ const UserRoleScreen = () => {
                             <Picker.Item label="Select role" value="" />
                             <Picker.Item label="Lawyer" value="LAWYER" />
                             <Picker.Item label="Contractor" value="CONTRACTOR" />
-                            <Picker.Item label="Property Agent" value="PROPERTY_AGENT" />
                         </Picker>
                         {errors.userRole && <Text style={styles.errorText}>{errors.userRole}</Text>}
                         <Text>&nbsp;</Text>

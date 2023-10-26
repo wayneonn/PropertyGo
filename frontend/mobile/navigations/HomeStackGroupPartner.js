@@ -52,6 +52,7 @@ const HomeListingsStackGroup = () => {
         <HomeListingsStack.Navigator screenOptions={{ headerShown: false }}>
             {screens}
             <HomeListingsStack.Screen name="View Profile" component={ViewUserProfile} />
+            <HomeListingsStack.Screen name="Token" component={TokenScreen}/>
             <HomeListingsStack.Screen name="Token Checkout Screen" component={TokenCheckoutScreen} />
             <HomeListingsStack.Screen name="Partner Subscription Checkout Screen" component={PartnerSubscriptionCheckoutScreen} />
             <HomeListingsStack.Screen name="Boost Listing" component={BoostProfileListing} />

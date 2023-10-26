@@ -1,6 +1,7 @@
 // This is the API for PartnerApp
 
 import {BASE_URL} from "./documentApi";
+import {Alert} from "react-native";
 
 export const fetchPartnerByRangeAndType = async(USER_TYPE, START, END) => {
     try {
@@ -49,13 +50,19 @@ export const uploadCompanyPhotos = async(USER_ID, images) => {
             formData.append(`images`, imageBlob);
         });
 
-        const response = await fetch(`${BASE_URL}/${USER_ID}/addCompanyPhotos`, {
+        // I am boosted.
+        const response = await fetch(`${BASE_URL}/user/${USER_ID}/addCompanyPhotos`, {
             method: 'POST',
             body: formData,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         });
+        const res = await response.json()
+        // Alert.alert(
+        //     "This is the response",
+        //     `Response: ${res}`
+        // )
 
         if (response.ok) {
             const data = await response.json();
@@ -69,3 +76,13 @@ export const uploadCompanyPhotos = async(USER_ID, images) => {
         return {success: false, message: error.message};
     }
 }
+
+export const fetchImages = async (USER_ID) => {
+    try {
+        const response = await fetch(`${BASE_URL}/image/getImagesByPartnerId/${USER_ID}`);
+        const data = await response.json();
+        return data.images;
+    } catch (error) {
+        console.error('Error fetching images:', error);
+    }
+};

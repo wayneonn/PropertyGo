@@ -392,6 +392,8 @@ async function uploadCompanyPictures(req, res) {
     // If everything went well for all images, commit the transaction
     await transaction.commit();
     console.log('Transaction committed successfully.');
+    // Inform image update.
+    req.io.emit("newImageLoaded", "New image update has been called.");
     res.status(200).json({ message: 'Photos saved successfully' });
   } catch (error) {
     console.error("Error uploading company photos: ", error)

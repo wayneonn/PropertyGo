@@ -398,6 +398,7 @@ exports.getTransactionPDFReport = async (req, res) => {
             limit: 10
         })
 
+        const imagePath = 'https://i.ibb.co/XxHFhhX/Property-Go-High-Res-Logo.png';
 
         // Total Number of Transactions by Seller:
         const totalTransactions = await Transaction.count({
@@ -432,7 +433,7 @@ exports.getTransactionPDFReport = async (req, res) => {
         const totalInvoices = await Transaction.count({
             where: { propertyId: propertyIds },
             distinct: true,
-            col: 'invoiceId'
+
         });
 
         // Average Number of Documents per Transaction:
@@ -498,10 +499,22 @@ exports.getTransactionPDFReport = async (req, res) => {
                         width: 300px;
                         height: 300px;
                     }
+
+                    .company-logo img {
+                        max-height: 100px; /* Set maximum height for the logo image */
+                        max-width: 100px; /* Set maximum width for the logo image */
+                    }
                 </style>
             </head>
             <body>
+            <div class="company-logo">
+                    <img src="${imagePath}" alt="Company Logo">
+                </div>
+
+                
                 <h1>Partner Report</h1>
+        
+                
                 <table>
                     <tr>
                         <th>Statistic</th>

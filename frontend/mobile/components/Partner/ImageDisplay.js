@@ -1,41 +1,45 @@
-import {Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Image, ScrollView, StyleSheet, Text, FlatList, TouchableOpacity, View} from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import FullScreenImage from "../../screens/propertyListings/FullScreenImage";
-import React, {useContext, useState} from "react";
+import React, {useContext, useState, useEffect} from "react";
 import * as ImagePicker from "expo-image-picker";
-import {Ionicons} from "@expo/vector-icons";
-import {uploadCompanyPhotos} from "../../utils/partnerApi";
+import {fetchImages} from "../../utils/partnerApi";
 import {AuthContext} from "../../AuthContext";
+import {useFocusEffect} from "@react-navigation/native";
+import {removeImageById} from "../../utils/api";
+import socketIOClient from 'socket.io-client';
 
-export const ImageUpload = ({images, setImages}) => {
+
+export const ImageDisplayComponent = () => {
     const [fullScreenImage, setFullScreenImage] = useState(null);
     const { user } = useContext(AuthContext);
-    const handleChoosePhoto = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const [images, setImages] = useState([])
 
-        if (permissionResult.granted === false) {
-            console.warn('Permission to access photos was denied');
-            return;
-        }
-
-        // Check if the number of selected photos is already 10 or more
-        if (images.length >= 10) {
-            Alert.alert('Limit Exceeded', 'You can only select up to 10 photos.');
-            return;
-        }
-
-        const options = {
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            // allowsEditing: true,
-            quality: 1,
-        };
-
-        let response = await ImagePicker.launchImageLibraryAsync(options);
-
-        if (!response.cancelled) {
-            setImages([...images, response]);
-        }
+    const loadImages = async () => {
+        const fetchedImages = await fetchImages(user.user.userId);
+        setImages(fetchedImages);
     };
+
+    useEffect(() => {
+        loadImages();
+
+        const socket = socketIOClient("http://localhost:3000");
+
+        socket.on("newImageLoaded", () => {
+            loadImages();
+        });
+
+        socket.on("newImageRemoved", () => {
+            loadImages();
+        });
+    }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            console.log('Image gained focus');
+            loadImages()
+        }, [])
+    );
 
     const handleImagePress = (index) => {
         Alert.alert(
@@ -45,10 +49,6 @@ export const ImageUpload = ({images, setImages}) => {
                 {
                     text: 'View Image',
                     onPress: () => viewImage(index),
-                },
-                {
-                    text: 'Replace',
-                    onPress: () => replaceImage(index),
                 },
                 {
                     text: 'Remove',
@@ -64,14 +64,34 @@ export const ImageUpload = ({images, setImages}) => {
     };
 
     const viewImage = (index) => {
-        console.log("View Image: ", images[index].uri)
-        setFullScreenImage(images[index].uri)
+        console.log("View Image: ", images[index])
+        setFullScreenImage(images[index])
     }
 
-    const removeImage = (index) => {
+    const removeImage = async (index) => {
         const updatedImages = [...images];
+        const str = updatedImages[index];
+        const lastIndex = str.lastIndexOf('/');
+        const imageId = lastIndex !== -1 ? str.substring(lastIndex + 1) : str;
         updatedImages.splice(index, 1);
         setImages(updatedImages);
+        try {
+            const res = await removeImageById(imageId)
+            if (res.success) {
+                Alert.alert(
+                    "Image deleted",
+                    "You have successfully deleted your image."
+                )
+            } else {
+                Alert.alert(
+                    "Failed to delete image.",
+                    `Error: ${res.message} occurred removing ${imageId}`
+                )
+            }
+        } catch (error) {
+            console.log("Delete photo error. ", error)
+        }
+
     };
 
     const replaceImage = async (index) => {
@@ -98,65 +118,39 @@ export const ImageUpload = ({images, setImages}) => {
         }
     };
 
-    const handleSubmit = async() => {
-        // Validation checks
-        if (images.length === 0) {
-            Alert.alert('No images selected', 'Please select at least one image.');
-            return;
-        }
+    const renderItem = ({ item, index }) => (
+        <TouchableOpacity
+            key={index}
+            onPress={() => handleImagePress(index)}
+            style={styles.imageContainer}
+        >
+            <Image source={{ uri: item }} style={styles.image} />
+        </TouchableOpacity>
+    );
 
-        try {
-            const res = await uploadCompanyPhotos(user.user.userId, images)
-            const result = res.json()
-            if (res.success) {
-                Alert.alert(
-                    'Upload Succeeded',
-                    'The photos has been created successfully.'
-                );
-            } else {
-                Alert.alert(
-                    "Some error occurred",
-                    `Please try again. ${result}`
-                )
-            }
-        } catch (error) {
-            console.error("Error uploading photos. ", error)
-        }
-
-    }
 
     return (
         <>
-        <View style={styles.imageRow}>
-        <ScrollView horizontal={true}>
-            {/* Add a View to hold the Add Image button */}
-            <View>
-                <TouchableOpacity onPress={handleChoosePhoto} style={styles.imagePicker}>
-                    <Icon name="camera" size={40} color="#aaa" />
-                </TouchableOpacity>
+            <View style={styles.imageRow}>
+                {images && images.length > 0 ? (
+                    <FlatList
+                        data={images}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => index.toString()}
+                        numColumns={3}
+                        horizontal={false} // This ensures vertical scrolling
+                    />
+                ) : (
+                    <TouchableOpacity style={styles.imagePicker}>
+                        <Icon name="camera" size={40} color="#aaa"/>
+                    </TouchableOpacity>
+                )}
             </View>
 
-            {/* Map over the images */}
-            {images.map((image, index) => (
-                <TouchableOpacity
-                    key={index}
-                    onPress={() => handleImagePress(index)}
-                    style={styles.imageContainer}
-                >
-                    <Image source={{ uri: image.uri }} style={styles.image} />
-                </TouchableOpacity>
-            ))}
-        </ScrollView>
-    </View>
-
-    <FullScreenImage
-        imageUrl={fullScreenImage}
-        onClose={() => setFullScreenImage(null)} // Close the full-screen image view
-    />
-            <TouchableOpacity style={styles.saveChangesButton} onPress={handleSubmit}>
-                <Ionicons name="save-outline" size={18} color="white" />
-                <Text style={styles.saveChangesButtonText}>Submit</Text>
-            </TouchableOpacity>
+            <FullScreenImage
+                imageUrl={fullScreenImage}
+                onClose={() => setFullScreenImage(null)} // Close the full-screen image view
+            />
 
         </>)
 }
@@ -192,9 +186,11 @@ const styles = StyleSheet.create({
         height: 60,
     },
     imageRow: {
-        flexDirection: 'row',
+        maxHeight: 400,
         marginBottom: 10,
         paddingVertical: 10,
+        paddingLeft: 10,
+        alignItems: "center"
     },
     imagePicker: {
         alignItems: 'center',
@@ -205,6 +201,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     imageContainer: {
+        marginTop: 10,
         position: 'relative',
         marginRight: 10,
     },
