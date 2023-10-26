@@ -115,12 +115,12 @@ const ContactUsStatus = ({ navigation }) => {
           ))
         )}
 
-        <Text style={{ ...styles.statusHeader, color: 'green' }}>Closed</Text>
+        <Text style={{ ...styles.statusHeader, color: 'grey' }}>Closed</Text>
         {closedData.length === 0 ? (
           renderEmptyListComponent()
         ) : (
           closedData.map((item) => (
-            <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Closed" onPress={() => handleTopicPress(item)}/>
+            <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Closed"/>
           ))
         )}
 

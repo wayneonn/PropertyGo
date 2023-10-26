@@ -9,7 +9,7 @@ const BoxItem = ({ onPress, parentTitleStatus, title, reason, message, updatedAt
     const backgroundColor =
         parentTitleStatus === 'Replied'
             ? 'rgba(0, 255, 0, 0.1)'
-            : 'rgba(255, 0, 0, 0.1)';
+            : parentTitleStatus === 'Pending' ? 'rgba(255, 0, 0, 0.1)' : '#ccc';
 
     let latestResponse = null;
 
