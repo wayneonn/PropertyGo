@@ -300,7 +300,7 @@ const ExploreServices = ({navigation, route}) => {
                             style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.28}]}
                             onPress={() => {
                                 setSelectedContractor(item);
-                                setModalVisible(!modalVisible);
+                                fetchProfileImages(item.userId).then(r => console.log("Finished fetching."))
                             }}
                         >
                             <View style={styles.profileHeader}>
@@ -368,6 +368,7 @@ const ExploreServices = ({navigation, route}) => {
                             <Text style={styles.propertyDetails}>Project
                                 Completed: {selectedContractor?.projectsCompleted}</Text>
                             <Text style={styles.propertyDetails}>{dateFormatter(selectedContractor?.createdAt)}</Text>
+                            <ImageSwiper images_new={modalImage}/>
                             <Text>&nbsp;</Text>
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonClose]}
