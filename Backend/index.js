@@ -137,7 +137,7 @@ app.use(
   faqRoute,
   notificationRoute,
   responseRoute,
-  stripeRoute
+  stripeRoute,
 );
 
 io.on("connection", (socket) => {
@@ -174,7 +174,7 @@ app.use(
 
 app.use("/viewingAvailability", viewingAvailabilityRoute);
 
-app.use("/image", imageRoute);
+app.use("/image", injectIo(io), imageRoute);
 
 app.use("/review", reviewRoute);
 

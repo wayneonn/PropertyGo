@@ -21,6 +21,7 @@ export default function PartnerApp() {
                     <Stack.Screen name="Intro" component={IntroScreen} options={{ headerShown: false }}/>
                     <Stack.Screen name="Company Info" component={CompanyInfoScreen}/>
                     <Stack.Screen name="User Role" component={UserRoleScreen}/>
+                    {/*Do I even need the credit card info?*/}
                     <Stack.Screen name="Credit Card Info" component={creditCardInfoScreen} />
                     <Stack.Screen name="Document Submission" component={documentSubmissionScreen} options={{
                         headerLeft: () => null,

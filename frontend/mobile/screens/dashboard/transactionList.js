@@ -267,7 +267,12 @@ const styles = StyleSheet.create({
     profileHeader: {
         paddingHorizontal: 10,
     },
-
+    profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 120,
+        alignSelf: "center"
+    },
     propertyTitle: {
         fontSize: 16,
         fontWeight: 'bold',

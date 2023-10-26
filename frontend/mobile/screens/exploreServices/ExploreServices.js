@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {AuthContext} from "../../AuthContext";
-import {fetchPartnerByRangeAndType} from "../../utils/partnerApi";
+import {fetchImages, fetchPartnerByRangeAndType} from "../../utils/partnerApi";
 import {useFocusEffect} from "@react-navigation/native";
 import {SceneMap, TabBar, TabView} from "react-native-tab-view";
 import {dateFormatter, convertImage} from "../../services/commonFunctions";
@@ -66,6 +66,7 @@ const ExploreServices = ({navigation, route}) => {
         require("../../assets/partnerpic-3.png"),
         require("../../assets/partnerpic-4.png")
     ]
+    const [modalImage, setModalImage] = useState([])
 
     useFocusEffect(
         React.useCallback(() => {
@@ -98,6 +99,16 @@ const ExploreServices = ({navigation, route}) => {
             console.log("Found contractors: ", contractor)
         } catch (error) {
             console.error("Error fetching contractor: ", error)
+        }
+    }
+
+    const fetchProfileImages = async(USER_ID) => {
+        try {
+            const fetchedImages = await fetchImages(USER_ID);
+            setModalImage(fetchedImages);
+            setModalVisible(!modalVisible);
+        } catch (error) {
+            console.error(error)
         }
     }
 
@@ -182,7 +193,7 @@ const ExploreServices = ({navigation, route}) => {
                             style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.28}]}
                             onPress={() => {
                                 setSelectedLawyer(item);
-                                setModalVisible(!modalVisible);
+                                fetchProfileImages(item.userId).then(r => console.log("Finished fetching."))
                             }}
                         >
                             <View style={styles.profileHeader}>
@@ -226,14 +237,29 @@ const ExploreServices = ({navigation, route}) => {
                             <Text style={styles.propertyTitle}>{selectedLawyer?.name}</Text>
                             <Text style={styles.propertyTitle}>{selectedLawyer?.companyName}</Text>
                             <Text style={styles.propertyPrice}><RatingComponent rating={selectedLawyer?.rating}/></Text>
-                            <Image
-                                source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                style={{width: 50, height: 50, borderRadius: 120}}
-                            />
+                            <TouchableOpacity onPress={() => {
+                                navigation.navigate('View Profile', { userId: selectedLawyer?.userId })
+                                setModalVisible(!modalVisible)
+                            }}>
+                                {
+                                    (selectedLawyer?.profileImage !== null && selectedLawyer !== null) ? (
+                                        <Image
+                                            source={{uri: `data:image/jpeg;base64,${convertImage(selectedLawyer.profileImage.data)}`}}
+                                            style={styles.profileImage}
+                                        />
+                                    ) : (
+                                        <Image
+                                            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                                            style={styles.profileImage}
+                                        />
+                                    )
+                                }
+                        </TouchableOpacity>
                             <Text style={styles.propertyPrice}>{selectedLawyer?.userName}</Text>
                             <Text style={styles.propertyDetails}>Project
                                 Completed: {selectedLawyer?.projectsCompleted}</Text>
                             <Text style={styles.propertyDetails}>{dateFormatter(selectedLawyer?.createdAt)}</Text>
+                            <ImageSwiper images_new={modalImage}/>
                             <Text>&nbsp;</Text>
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonClose]}
@@ -310,6 +336,7 @@ const ExploreServices = ({navigation, route}) => {
                     visible={modalVisible}
                     onRequestClose={() => {
                         setModalVisible(!modalVisible);
+                        fetchImages(selectedContractor?.userId)
                     }}
                 >
                     <View style={styles.centeredView}>
@@ -319,10 +346,24 @@ const ExploreServices = ({navigation, route}) => {
                             <Text style={styles.propertyTitle}>{selectedContractor?.companyName}</Text>
                             <Text style={styles.propertyPrice}><RatingComponent
                                 rating={selectedContractor?.rating}/></Text>
-                            <Image
-                                source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                style={{width: 50, height: 50, borderRadius: 120}}
-                            />
+                            <TouchableOpacity onPress={() => {
+                                navigation.navigate('View Profile', { userId: selectedContractor?.userDetails.userId })
+                                setModalVisible(!modalVisible)
+                            }}>
+                                {
+                                    (selectedContractor?.profileImage !== null && selectedContractor !== null) ? (
+                                        <Image
+                                            source={{uri: `data:image/jpeg;base64,${convertImage(selectedContractor.profileImage.data)}`}}
+                                            style={styles.profileImage}
+                                        />
+                                    ) : (
+                                        <Image
+                                            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                                            style={styles.profileImage}
+                                        />
+                                    )
+                                }
+                            </TouchableOpacity>
                             <Text style={styles.propertyPrice}>{selectedContractor?.userName}</Text>
                             <Text style={styles.propertyDetails}>Project
                                 Completed: {selectedContractor?.projectsCompleted}</Text>
@@ -557,7 +598,7 @@ const styles = StyleSheet.create({
         margin: 20,
         backgroundColor: "white",
         borderRadius: 20,
-        padding: 35,
+        padding: 10,
         alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {

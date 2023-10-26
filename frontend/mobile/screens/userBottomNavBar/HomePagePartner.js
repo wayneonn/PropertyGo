@@ -24,7 +24,6 @@ import {
 } from "../../utils/transactionApi";
 import {TransactionCard} from "../partnerApplication/TransactionCardSmall"
 import {Divider} from '@rneui/themed';
-import {BASE_URL} from "../../utils/documentApi";
 import base64 from 'react-native-base64';
 import {ImageSwiper} from "../../components/ImageSwiper";
 import {BoostingAnimation} from "../../components/BoostingAnimation";
@@ -33,6 +32,8 @@ import {TransactionChart} from "../../components/Partner/TransactionChart";
 import {MyPieChart} from "../../components/Partner/PieChart";
 import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
+import {fetchImages} from "../../utils/partnerApi";
+import socketIOClient from 'socket.io-client';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -40,7 +41,6 @@ const screenHeight = Dimensions.get('window').height;
 
 // Time to start fucking around with this.
 const HomePagePartner = ({navigation}) => {
-    const [popularProperties, setPopularProperties] = useState([]);
     const [recentlyAddedProperties, setRecentlyAddedProperties] = useState([]);
     const [topTransactions, setTopTransactions] = useState([]);
     const [monthTransactions, setMonthTransactions] = useState([]);
@@ -53,13 +53,13 @@ const HomePagePartner = ({navigation}) => {
     const {user} = useContext(AuthContext);
     const userId = user.user.userId;
     const companyName = user.user.companyName
-    const [canRunEffect, setCanRunEffect] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [searchTimeout, setSearchTimeout] = useState(null);
     const cardSize = Dimensions.get('window').width;
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [modalImage, setModalImage] = useState([])
 
     const handlePropertyPress = (propertyListingId) => {
         // Navigate to the Property Listing screen with the given propertyListingId
@@ -74,12 +74,7 @@ const HomePagePartner = ({navigation}) => {
         loadTransactionCountryCount()
         loadAverageTransactionValue()
         loadAverageTransactionCount()
-    }, []);
-
-    useEffect( async () => {
-        await fetchData(); // Initial fetch
-        const intervalId = setInterval(fetchData, 5000); // Set interval for repeated fetches
-        return () => clearInterval(intervalId); // Cleanup function to clear the interval
+        loadProfileImages(userId)
     }, []);
     
     useFocusEffect(
@@ -91,6 +86,7 @@ const HomePagePartner = ({navigation}) => {
             loadTransactionCountryCount()
             loadAverageTransactionValue()
             loadAverageTransactionCount()
+            loadProfileImages(userId)
             setSearchQuery('');
         }, [])
     );
@@ -164,6 +160,15 @@ const HomePagePartner = ({navigation}) => {
             console.log("Here are the avg. counts: ", averageTransactions)
         } catch (error) {
             console.error("Error fetching avg. transaction counts: ", error);
+        }
+    }
+
+    const loadProfileImages = async(USER_ID) => {
+        try {
+            const fetchedImages = await fetchImages(USER_ID);
+            setModalImage(fetchedImages);
+        } catch (error) {
+            console.log("Cannot fetch profile listings. ", error)
         }
     }
 
@@ -290,7 +295,7 @@ const HomePagePartner = ({navigation}) => {
                 )
             ) : null}
 
-            <ImageSwiper/>
+            <ImageSwiper images_new={modalImage}/>
             <TouchableOpacity style={styles.saveChangesButton} onPress={() => navigation.navigate("Upload Photos")}>
                 <Ionicons name="save-outline" size={18} color="white" />
                 <Text style={styles.saveChangesButtonText}>Upload Photos</Text>
@@ -369,8 +374,8 @@ const HomePagePartner = ({navigation}) => {
                                     )}
                                 </View>
                                 <View style={styles.propertyDetails}>
-                                    <Text style={styles.propertyTitle}>{item.transaction.status}</Text>
-                                    <Text style={styles.propertyPrice}>{item.transaction.onHoldBalance}</Text>
+                                    <Text style={[styles.propertyTitle, {color: item.transaction.status === "PAID" ? "green" : "red"}]}>{item.transaction.status}</Text>
+                                    <Text style={[styles.propertyPrice, {color: "#353531"}]}>{item.transaction.onHoldBalance}</Text>
                                     <Text style={styles.propertyPrice}>{item.userDetails.userName}</Text>
                                     <Text style={styles.propertyDetails}>{dateFormatter(item.transaction.createdAt)}</Text>
                                 </View>
@@ -454,6 +459,13 @@ const styles = StyleSheet.create({
 
     profileHeader: {
         paddingHorizontal: 10,
+    },
+
+    profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 120,
+        alignSelf: "center"
     },
 
     propertyTitle: {

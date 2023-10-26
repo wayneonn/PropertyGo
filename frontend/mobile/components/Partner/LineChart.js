@@ -143,7 +143,7 @@ export const MyLineChart = ({monthTransactions, averageTransactions, screenWidth
                         justifyContent: 'center',
                     }}>
                         <Text style={{ color: 'white', fontSize: 16 }}>
-                            Your total earnings this month are lower than last month. Consider buying a boost!
+                            Your total earnings this month are {<Text style={{fontWeight:"bold", color:"#942911"}}>lower</Text>} than last month. Consider buying a boost!
                         </Text>
                     </Animated.View>
                 </TouchableOpacity>
