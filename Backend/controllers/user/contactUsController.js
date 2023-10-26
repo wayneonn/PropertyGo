@@ -17,7 +17,7 @@ const createContactUs = async (req, res) => {
             "isPending": true,
             "isCompleted": false,
             "hasRead": false,
-            "userId": userId
+            "userNotificationId": userId
         }
 
         await Notification.create(req.body);

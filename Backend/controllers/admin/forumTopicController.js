@@ -272,6 +272,7 @@ const resetForumTopicAppropriate = async (req, res) => {
         "adminNotificationId": adminId,
         "userId": forumTopic.userId,
         "forumTopicId": forumTopic.forumTopicId,
+        "userNavigationScreen" : "forumTopic"
     };
 
 

@@ -67,6 +67,12 @@ const ContactUsStatus = ({ navigation }) => {
           .filter((item) => item.status === 'REPLIED')
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       );
+      setClosedData(
+        contactUsData
+          .filter((item) => item.status === 'CLOSED')
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.timeStamp))
+      );
+
     } catch (error) {
       console.error(error);
     }

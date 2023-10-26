@@ -90,6 +90,7 @@ const markForumPostInappropriate = async (req, res) => {
         "adminNotificationId": adminId,
         "userId" : forumPost.userId,
         "forumPostId" : forumPost.forumPostId,
+        "forumTopicId": forumPost.forumTopicId,
     };
 
     // console.log("userId  " , forumPost.userId)
@@ -146,6 +147,7 @@ const resetForumPostAppropriate = async (req, res) => {
         "adminNotificationId": adminId,
         "userId" : forumPost.userId,
         "forumPostId" : forumPost.forumPostId,
+        "forumTopicId": forumPost.forumTopicId,
         "userNavigationScreen" : "forumPost"
     };
 

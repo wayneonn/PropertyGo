@@ -317,6 +317,66 @@ exports.getUserCountsByCountry = async (req, res) => {
     }
 }
 
+exports.getAverageValues = async (req, res) => {
+    try {
+        const averageOnHoldBalances = await Transaction.findAll({
+            attributes: [
+                [Sequelize.fn('MONTH', Sequelize.col('createdAt')), 'month'],
+                [Sequelize.fn('YEAR', Sequelize.col('createdAt')), 'year'],
+                [Sequelize.fn('AVG', Sequelize.col('onHoldBalance')), 'average_onHoldBalance']
+            ],
+            group: [Sequelize.fn('MONTH', Sequelize.col('createdAt')), Sequelize.fn('YEAR', Sequelize.col('createdAt'))],
+            order: [[Sequelize.fn('YEAR', Sequelize.col('createdAt')), 'DESC'], [Sequelize.fn('MONTH', Sequelize.col('createdAt')), 'DESC']],
+            limit: 7
+        });
+
+        return res.status(200).json({
+            data: averageOnHoldBalances
+        });
+
+    } catch (error) {
+        console.error("Error getting average values: ", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+    }
+}
+
+exports.getAverageTransactions = async (req, res) => {
+    try {
+        // First, get the total number of users on the platform.
+        const totalUsers = await User.count();
+
+        // Guard against dividing by zero.
+        if (totalUsers === 0) {
+            throw new Error("No users found.");
+        }
+
+        const averageTransactionsPerUserPerMonth = await Transaction.findAll({
+            attributes: [
+                [Sequelize.fn('MONTH', Sequelize.col('createdAt')), 'month'],
+                [Sequelize.fn('YEAR', Sequelize.col('createdAt')), 'year'],
+                [Sequelize.literal(`COUNT(transactionId) / ${totalUsers}`), 'averageTransactionsPerUser']
+            ],
+            group: [Sequelize.fn('MONTH', Sequelize.col('createdAt')), Sequelize.fn('YEAR', Sequelize.col('createdAt'))],
+            order: [[Sequelize.fn('YEAR', Sequelize.col('createdAt')), 'DESC'], [Sequelize.fn('MONTH', Sequelize.col('createdAt')), 'DESC']],
+            limit: 7
+        });
+
+        return res.status(200).json({
+            data: averageTransactionsPerUserPerMonth
+        });
+
+    } catch (error) {
+        console.error("Error getting average transaction count per user: ", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+    }
+}
+
 exports.getTransactionPDFReport = async (req, res) => {
     try {
         // First, fetch all propertyId values associated with the sellerId

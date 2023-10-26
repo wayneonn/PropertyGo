@@ -40,6 +40,8 @@ const AllProperty = () => {
 
       setApprovalStatus(response.data.approvalStatus);
 
+      console.log("seller id: " + response.data.sellerId);
+
       const sellerResponse = await API.get(
         `http://localhost:3000/admin/users/getUser/${response.data.sellerId}`
       );
@@ -63,11 +65,13 @@ const AllProperty = () => {
 
       // const buyerId = transactions[0].buyerId;
 
-      const buyerResponse = await API.get(
-        `http://localhost:3000/admin/users/getUser/${response.data.buyerId}`
-      );
+      if (response.data.buyerId != null) {
+        const buyerResponse = await API.get(
+          `http://localhost:3000/admin/users/getUser/${response.data.buyerId}`
+        );
 
-      setBuyer(buyerResponse.data);
+        setBuyer(buyerResponse.data);
+      }
 
       const documentResponse = await API.get(
         `http://localhost:3000/admin/documents`
@@ -76,11 +80,13 @@ const AllProperty = () => {
       console.log("buyer " + response.data.buyerId);
       console.log("seller " + sellerResponse.data.userId);
 
-      // console.log("document:" + documentResponse);
+      console.log("document:" + documentResponse);
 
       const documents = documentResponse.data.data.filter(
         (document) => document.propertyId == propertyId
       );
+
+      console.log("documents size: " + documents.length);
       // .filter(
       //   (document) =>
       //     document.userId == response.data.buyerId ||

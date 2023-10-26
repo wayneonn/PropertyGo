@@ -91,6 +91,7 @@ const markForumCommentInappropriate = async (req, res) => {
         "adminNotificationId": adminId,
         "userId": forumComment.userId,
         "forumCommentId": forumComment.forumCommentId,
+        "forumPostId" : forumComment.forumPostId,
     };
 
     // console.log("userId  " , forumComment.userId)
@@ -146,7 +147,9 @@ const resetForumCommentAppropriate = async (req, res) => {
         "content": content,
         "adminNotificationId": adminId,
         "userId": forumComment.userId,
+        "forumPostId" : forumComment.forumPostId,
         "forumCommentId": forumComment.forumCommentId,
+        "userNavigationScreen" : "forumComment"
     };
 
     // console.log("userId  " , forumComment.userId)

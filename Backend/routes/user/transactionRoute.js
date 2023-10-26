@@ -2,7 +2,9 @@ const express = require("express");
 const { getTransactions, getTopTenTransactions, getTransactionValueByLastSixMonths, getTransactionValueByBuyerId,
     getTopTenTransactionsWithUsers, getTopTenTransactionsWithUsersPaid, getTopTenTransactionsWithUsersPending,
     getTransactionPDFReport, getUserCountsByCountry, getTransactionByTransactionId, createTransaction, getUserTransactions,
-    getTransactionInvoicePdf} = require("../../controllers/user/transactionController")
+    getAverageValues, getAverageTransactions, getTransactionInvoicePdf
+} = require("../../controllers/user/transactionController")
+
 
 const router = express.Router();
 
@@ -19,4 +21,6 @@ router.get("/transactions/pdf/:id", getTransactionPDFReport)
 router.get("/transactions/invoicePdf/:id", getTransactionInvoicePdf)
 router.get("/transactions/countrycount/:id", getUserCountsByCountry)
 router.post("/transactions/createTransaction", createTransaction)
+router.get("/transactions/data/average", getAverageValues)
+router.get("/transactions/data/count", getAverageTransactions)
 module.exports = router;
