@@ -337,7 +337,7 @@ const HomePagePartner = ({navigation}) => {
                             <View style={styles.titleContainer}>
                                 <Text style={styles.sectionTitle}> {' '}<Ionicons name="time-outline" size={24}
                                                                                   style={styles.titleIcon}/>
-                                    {' '}Total Transactions </Text>
+                                    {' '}Total Request </Text>
                             </View>
                         </TouchableOpacity>
                         <TransactionChart monthTransactions={monthTransactions} averageCount={countTransactions} navigation={navigation}/>
@@ -349,7 +349,7 @@ const HomePagePartner = ({navigation}) => {
                             onPress={() => handleTitlePress('Top Transactions', topTransactions)}>
                         <Text style={styles.sectionTitle}> {' '}<Ionicons name="navigate-circle-outline" size={24}
                                                                           style={styles.titleIcon}/>
-                            {' '}Recent Transactions </Text>
+                            {' '}Recent Request </Text>
                         </TouchableOpacity>
                         <Divider/>
                         {topTenUserProfile.length !== 0 ?  topTenUserProfile.map((item) => (
