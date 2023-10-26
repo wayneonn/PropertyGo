@@ -35,6 +35,22 @@ const UserBottomNavigator = () => {
         }
     };
 
+    const subscriptionPaid = user.user.partnerSubscriptionPaid;
+
+    function isExpired(dateToCompare) {
+        const today = new Date();
+        console.log("Today: ", today);
+        console.log("Date to compare: ", dateToCompare);
+
+        // Convert dateToCompare to a Date object
+        const compareDate = new Date(dateToCompare);
+
+        // Adjust the time zone offset for compareDate to match the local time zone
+        compareDate.setMinutes(compareDate.getMinutes() - today.getTimezoneOffset());
+
+        return compareDate < today;
+    }
+
     useEffect(() => {
         socket.on("userNotification", (data) => {
             // console.log("RESPONDEDEDEDasdasdE")
@@ -47,6 +63,8 @@ const UserBottomNavigator = () => {
     }, [notificationCount]);
 
     return (
+        (subscriptionPaid && !isExpired(user.user.partnerSubscriptionEndDate)) ?
+        (<>
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 headerShown: false,
@@ -121,6 +139,64 @@ const UserBottomNavigator = () => {
                 {props => <Activity {...props} component={Activity} parentFetchData={fetchData} />}
             </Tab.Screen>
         </Tab.Navigator>
+        </>) :  <Tab.Navigator
+                screenOptions={({ route }) => ({
+                    headerShown: false,
+                    tabBarIcon: ({ color, focused, size }) => {
+                        let iconName;
+
+                        if (route.name === "Home") {
+                            iconName = focused ? "home" : "home-outline";
+                        } else if (route.name === "Favourite") {
+                            iconName = focused ? "favorite" : "favorite-border";
+                        } else if (route.name === "Sell") {
+                            iconName = "add-sharp";
+                        } else if (route.name === "Forum") {
+                            iconName = focused ? "forum" : "forum-outline";
+                        } else if (route.name === "Activity") {
+                            iconName = focused ? "md-notifications-sharp" : "md-notifications-outline";
+                        } else if (route.name === "Dashboard") {
+                            iconName = "dashboard";
+                        } else if (route.name === "Boost") {
+                            iconName = focused ? "rocket" : "rocket-outline";
+                        }
+
+                        const iconComponent =
+                            route.name === "Favourite" || route.name === "Dashboard" ? (
+                                <MaterialIcons name={iconName} size={size} color={"#FFD700"} />
+                            ) : route.name === "Forum" ? (
+                                <MaterialCommunityIcons name={iconName} size={size} color={"#FFD700"} />
+                            ) : (
+                                <View style={styles.tabLabelContainer}>
+                                    {/* {console.log("notificationCount", notificationCount)} */}
+                                    {notificationCount > 0 && iconName === "md-notifications-outline" && (
+                                        <View style={styles.notificationBadge}>
+                                            <Text style={styles.notificationCountText}>{notificationCount}</Text>
+                                        </View>
+                                    )}
+                                    <Ionicons
+                                        name={iconName}
+                                        size={size}
+                                        color="#FFD700"
+                                        style={[
+                                            styles.icon,
+                                            notificationCount > 0 ? { marginRight: 15 } : null // Add marginRight conditionally
+                                        ]}
+                                    />
+                                </View>
+                            );
+
+                        return iconComponent;
+                    },
+                    tabBarActiveTintColor: "#000000",
+                    tabBarLabelStyle: {
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                    },
+                })}
+            >
+                <Tab.Screen name="Home" component={HomeStackGroupPartner} />
+            </Tab.Navigator>
     );
 };
 
