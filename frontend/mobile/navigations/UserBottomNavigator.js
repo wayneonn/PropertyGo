@@ -70,7 +70,7 @@ const UserBottomNavigator = () => {
         }
     }
 
-    return ((isUserPartnerValid) ?
+    return ((isUserPartnerValid()) ?
         (<>
         <Tab.Navigator
             screenOptions={({ route }) => ({
