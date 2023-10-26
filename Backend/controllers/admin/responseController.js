@@ -1,5 +1,5 @@
 const moment = require("moment");
-const { ContactUs, Response } = require("../../models");
+const { ContactUs, Response, Notification } = require("../../models");
 const { loggedInUsers } = require('../../shared');
 
 const getAllResponses = async (req, res) => {
@@ -63,6 +63,7 @@ const addResponse = async (req, res) => {
 
   if (contactUsUser && loggedInUsers.has(contactUsUser.userId)) {
     req.io.emit("userNotification", { "pushToken": contactUsUser.pushToken, "title": contactUs.title, "body": content });
+    // console.log("asdasdsadsadasda")
     // console.log("Emitted userNewForumCommentNotification");
   }
 
