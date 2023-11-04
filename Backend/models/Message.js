@@ -24,7 +24,27 @@ module.exports = (sequelize, DataTypes) => {
             name: 'chatId',
             allowNull: false,
           },
+          as: 'chat'
         });
+
+        Message.belongsTo(models.User, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: true,
+                name: 'senderId'
+            },
+            as: 'sender',
+        })
+
+        Message.belongsTo(models.User, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: true,
+                name: 'receiverId'
+            },
+            as: 'receiver',
+        })
+
       };      
 
     return Message;

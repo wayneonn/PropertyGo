@@ -48,10 +48,10 @@ module.exports = (sequelize, DataTypes) => {
     });
     Request.belongsTo(models.Chat, {
       foreignKey: {
-        name: "chatId", // This will be the foreign key in the Request table
-        allowNull: false, // A request must have a user associated with it
+        name: "chatId", 
+        allowNull: true, 
       },
-      onDelete: "CASCADE", // If a user is deleted, delete their associated requests
+      onDelete: "CASCADE", 
       as: "chat",
     });
     Request.hasMany(models.Transaction, {

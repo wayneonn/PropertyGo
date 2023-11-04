@@ -193,17 +193,46 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Chat, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: "userId",
+        name: "receiverId",
+        allowNull: false
       },
       as: "receiverChats",
     });
     User.hasMany(models.Chat, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: "userId",
+        name: "senderId",
+        allowNull: false
       },
       as: "senderChats",
     });
+
+    User.hasMany(models.Message, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: "receiverId",
+        allowNull: true
+      },
+      as: "receiverMessages",
+    });
+    User.hasMany(models.Message, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: "senderId",
+        allowNull: true
+      },
+      as: "senderMessages",
+    });
+
+    User.hasMany(models.Response, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: "userId",
+        allowNull: true
+      },
+      as: "responses",
+    });
+
     User.belongsToMany(models.Property, {
       through: "UserFavourites",
       foreignKey: "userId",

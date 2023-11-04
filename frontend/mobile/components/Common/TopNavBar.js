@@ -29,7 +29,7 @@ const TopBar = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => {
-                        // Handle your action here
+                        navigation.navigate("Chat")
                     }}
                     style={styles.icon}
                 >
