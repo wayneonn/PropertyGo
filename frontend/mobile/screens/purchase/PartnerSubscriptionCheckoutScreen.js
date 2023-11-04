@@ -198,7 +198,7 @@ const PartnerSubscriptionCheckoutScreen = ({ route }) => {
                         <Text style={styles.info}></Text>
                         <Text style={(styles.label)}>GST (8%):</Text>
                         <Text style={styles.info}>
-                            {formatCurrency(partnerSubscriptionCost * 0.08)}
+                            {formatCurrency((taxable ? partnerSubscriptionCost * 0.08 : 0))}
                         </Text>
                     </View>
                     <View style={styles.totalAmountContainer}>

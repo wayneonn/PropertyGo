@@ -486,7 +486,7 @@ const PropertyListingScreen = ({ route }) => {
               <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buyButton} onPress={() => {
-              navigation.navigate('Purchase Option Fee', { propertyListing });
+              navigation.navigate('Purchase Option Fee', { propertyListing, quantity : 1 });
             }}>
               <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>
