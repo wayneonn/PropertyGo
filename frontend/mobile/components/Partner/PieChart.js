@@ -86,7 +86,7 @@ export const MyPieChart = ({transactionCountryCount}) => {
                 justifyContent: 'center',
             }}>
                 <Text style={{ color: 'white', fontSize: 16 }}>
-                    Most of your customers are from {<Text style={{fontWeight: "bold"}}>{result.maxName}</Text>}, you should market more there.
+                    Most of your request are from {<Text style={{fontWeight: "bold"}}>{result.maxName}</Text>}, you should market more there.
                 </Text>
             </Animated.View>
         </>
