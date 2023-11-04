@@ -11,7 +11,8 @@ import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListi
 import SearchResults from '../screens/propertyListings/SearchResults';
 import SetSchedule from "../screens/schedule/SetSchedule";
 import Schedule from "../screens/schedule/Schedule";
-import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFee";
+import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFeeCheckoutScreen";
+import PurchaseOptionFeeInfo from "../screens/purchase/PurchaseOptionFeeInfo";
 import ViewAppointmentDetail from "../screens/sideNavigatorBar/Appointment/ViewAppointmentDetail";
 import Map from "../screens/propertyListings/map";
 
@@ -37,6 +38,7 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="Schedule" component={Schedule}/>
             <HomeListingsStack.Screen name="View Appointment Detail" component={ViewAppointmentDetail}/>
             <HomeListingsStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/>
+            <HomeListingsStack.Screen name="Purchase Option Fee Info" component={PurchaseOptionFeeInfo}/>
         </HomeListingsStack.Navigator>
     );
 };

@@ -7,7 +7,8 @@ import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListing";
 import SetSchedule from "../screens/schedule/SetSchedule";
 import Schedule from "../screens/schedule/Schedule";
-import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFee";
+import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFeeCheckoutScreen";
+import PurchaseOptionFeeInfo from "../screens/purchase/PurchaseOptionFeeInfo";
 import Map from "../screens/propertyListings/map";
 import TokenScreen from "../screens/token/TokenScreen"; // Import your Coins screen here
 import TokenCheckoutScreen from "../screens/token/TokenCheckoutScreen"; 
@@ -31,6 +32,7 @@ const PropertyListingsStackGroup = () => {
             <PropertyListingsStack.Screen name="Token" component={TokenScreen}/>
             <PropertyListingsStack.Screen name="Token Checkout Screen" component={TokenCheckoutScreen}/>
             <PropertyListingsStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/>
+            <PropertyListingsStack.Screen name="Purchase Option Fee Info" component={PurchaseOptionFeeInfo}/>
         </PropertyListingsStack.Navigator>
     );
 };
