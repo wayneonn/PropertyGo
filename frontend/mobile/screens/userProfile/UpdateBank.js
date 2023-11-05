@@ -1,21 +1,43 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, Button, TextInput, ScrollView } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import { AuthContext } from "../../AuthContext";
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { updateUserProfile, loginUser } from "../../utils/api";
-import { useNavigation } from '@react-navigation/native';
+import React, {useContext, useEffect, useState} from 'react';
+import {Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Button} from 'react-native';
+import {AuthContext} from '../../AuthContext';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import {Picker} from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
+import {loginUser, updateUserProfile, updateUserProfilePicture} from '../../utils/api';
+import base64 from 'react-native-base64';
+import {Ionicons} from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Picker } from '@react-native-picker/picker';
 
-const SellerOnboarding = ({ }) => {
-    const [subscriptionEndDate, setSubscriptionEndDate] = useState(null); // Replace with actual subscription end date
-    const { user, login } = React.useContext(AuthContext);
+const countries = [
+    {label: 'Select Country', value: ''},
+    {label: 'Singapore', value: 'Singapore'},
+    {label: 'Indonesia', value: 'Indonesia'},
+    {label: 'Malaysia', value: 'Malaysia'},
+];
+
+function EditProfile({navigation, route}) {
+    const {user, login, upd} = useContext(AuthContext);
+    const [bankName, setBankName] = useState(user.user.bankName);
+    const [bankAccount, setBankAccount] = useState(user.user.bankAccount.toString() || '');
+
     const [bankNameVisible, setBankNameVisible] = useState(false);
-    const [bankName, setBankName] = useState('');
-    const [bankAccount, setBankAccount] = useState('');
-    const navigation = useNavigation();
-    const endDate = new Date(user.user.partnerSubscriptionEndDate);
+    const [profileImage, setProfileImage] = useState(null);
+    const [profileImageBase64, setProfileImageBase64] = useState(null);
+
+    const fetchUpdatedUserDetails = async () => {
+        try {
+            const {success, data, message} = await loginUser(user.user.userName, user.user.password);
+
+            if (success) {
+                login(data);
+            } else {
+                Alert.alert('Error', message);
+            }
+        } catch (error) {
+            console.error('Error fetching updated user details:', error);
+        }
+    };
 
     const bankNames = [
         { label: 'Select Bank Name', value: '' },
@@ -57,58 +79,48 @@ const SellerOnboarding = ({ }) => {
         { label: 'Xfers Pte Ltd', value: 'Xfers Pte Ltd' }
     ];
 
-    const updateUser = async (user, login) => {
-        const formData = new FormData();
-        formData.append('bankName', bankName);
-        formData.append('bankAccount', bankAccount);
-        formData.append('email', user.email);
-        formData.append('countryOfOrigin', user.countryOfOrigin);
-        formData.append('dateOfBirth', user.dateOfBirth);
-    
-        const { success, data, message } = await updateUserProfile(user.userId, formData);
-        // console.log("updateUserStripeCustomerId success: ", success, " data: ", data, " message: ", message);
-        fetchUpdatedUserDetails(user, login);
-    };
+    const saveChanges = async () => {
 
-    const fetchUpdatedUserDetails = async (user, login) => {
-        console.log("fetchUpdatedUserDetails user: ", user);
         try {
-            const { success, data, message } = await loginUser(user.userName, user.password);
-    
+            const formData = new FormData();
+            formData.append('name', user.user.name);
+            formData.append('email', user.user.email);
+            formData.append('countryOfOrigin', user.user.countryOfOrigin);
+            formData.append('dateOfBirth', user.user.dateOfBirth);
+            formData.append('bankName', bankName);
+            formData.append('bankAccount', bankAccount);
+
+            const {success, data, message} = await updateUserProfile(user.user.userId, formData);
+
             if (success) {
-                console.log("success!: ");
-                login(data);
+                    if (success) {
+                        fetchUpdatedUserDetails();
+                        Alert.alert('Success', 'Bank Account updated successfully!');
+                    } else {
+                        Alert.alert('Error', response.message || 'Bank update failed.');
+                    }
             } else {
-                Alert.alert('Error', message);
+                console.error('Failed to update user profile:', message);
+                Alert.alert('Error', message || 'Profile update failed.');
             }
         } catch (error) {
-            console.error('Error fetching updated user details:', error);
+            console.error('Error updating user profile:', error);
         }
     };
 
-    const handleSubmit = async () => {
-        updateUser(user.user, login);
-        navigation.navigate('List Property');
-    }
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.headerContainer}>
+                {/* Back button */}
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                    <Ionicons name="arrow-back" size={24} color="black"/>
+                </TouchableOpacity>
+                <Text style={styles.header}>Edit Bank Account</Text>
+            </View>
+
+            <View style={styles.profileInfo}>
 
 
-return (
-        <View style={styles.container}>
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollViewContent}
-                keyboardShouldPersistTaps="handled"
-            >
-                <View style={styles.image}>
-                    <MaterialCommunityIcons
-                        name="alert-circle-outline"
-                        size={144}
-                        color="black"
-                    />
-                </View>
-                <Text style={styles.title}>You do not have a Bank Account Registered with us!</Text>
-                <Text style={styles.descriptionDate}>For first-time sellers, please input your Bank Name and Bank Account Number!</Text>
-                <Text style={styles.descriptionDate}></Text>
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Bank Name</Text>
                     <TouchableOpacity
@@ -155,69 +167,166 @@ return (
                     </View>
                 </Modal>
 
+
                 <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Tenure</Text>
+                    <Text style={styles.label}>Bank Account Number:</Text>
                     <TextInput
-                        placeholder="123-456-789"
-                        placeholderTextColor="gray"
+                        style={styles.input}
+                        value={bankAccount}
+                        placeholder="Bank Account Number"
                         maxLength={9}
                         keyboardType="numeric"
-                        value={bankAccount}
-                        onChangeText={(text) => setBankAccount(text)} // Fixed the onChangeText function
-                        style={styles.input}
+                        onChangeText={(text) => setBankAccount(text)}
                     />
                 </View>
+            </View>
 
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleSubmit}
-                >
-                    <Text style={styles.buttonText}>Submit</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </View>
+            {/* Save Changes button with icon */}
+            <TouchableOpacity style={styles.saveChangesButton} onPress={saveChanges}>
+                <Ionicons name="save-outline" size={18} color="white"/>
+                <Text style={styles.saveChangesButtonText}>Save Changes</Text>
+            </TouchableOpacity>
+        </ScrollView>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
+        flexGrow: 1,
+        padding: 20,
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    backButton: {
+        marginRight: 20,
+    },
+    header: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginLeft: 40,
+        marginTop: 20,
+        marginBottom: 40,
+    },
+    profileHeader: {
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    profileImage: {
+        width: 150,
+        height: 150,
+        borderRadius: 120,
+    },
+    profileImagePlaceholder: {
+        width: 150,
+        height: 150,
+        borderRadius: 120,
+        backgroundColor: 'gray',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    heading: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 10,
+    },
+    profileInfo: {
+        marginTop: 20,
+    },
+    inputRow: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        marginBottom: 20,
+        width: '100%',
+    },
+    label: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        width: '100%',
+    },
+    input: {
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        borderColor: 'gray',
+        fontSize: 14,
+        padding: 10,
+        width: '100%',
+    },
+    countryPickerButton: {
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        borderColor: 'gray',
+        fontSize: 14,
+        padding: 8,
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    countryPickerText: {
+        fontSize: 14,
+    },
+    modalContainer: {
         flex: 1,
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    picker: {
+        backgroundColor: 'white',
+    },
+    datePicker: {
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        borderColor: 'gray',
+        fontSize: 14,
+        padding: 8,
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    datePickerText: {
+        fontSize: 14,
+    },
+    updatePasswordButton: {
+        backgroundColor: 'dodgerblue',
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 20,
+        alignItems: 'center', // Center horizontally
+        flexDirection: 'row',
+        justifyContent: 'center', // Center vertically
+        width: '60%',
+        marginLeft: 70,
+    },
+    updatePasswordButtonText: {
+        color: 'white',
+        marginLeft: 10,
+    },
+    saveChangesButton: {
+        backgroundColor: 'green',
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 10,
+        alignItems: 'center', // Center horizontally
+        flexDirection: 'row',
+        justifyContent: 'center', // Center vertically
+        width: '60%',
+        marginLeft: 70,
+    },
+    saveChangesButtonText: {
+        color: 'white',
+        marginLeft: 10,
+    },
+    buttonContent: {
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 20,
-        backgroundColor: '#ffffff',
-    },
-    image: {
-        marginTop: 20,
-        marginBottom: 20,
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        paddingHorizontal: 20,
-        color: '#333333',
-        textAlign: 'center',
-    },
-    endDateText: {
-        fontSize: 18,
-        marginBottom: 20,
-        color: '#666666',
-    },
-    button: {
-        marginTop: 40,
-        backgroundColor: '#007BFF',
-        width: '50%',
-        alignSelf: 'center',
-        paddingHorizontal: 40,
-        paddingVertical: 15,
-        borderRadius: 8,
-    },
-    buttonText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'white',
     },
     descriptionDate: {
         fontSize: 16,
@@ -285,4 +394,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SellerOnboarding;
+export default EditProfile;
