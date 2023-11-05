@@ -210,18 +210,10 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Message, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: "receiverId",
-        allowNull: true
+        name: "userId",
+        allowNull: false
       },
-      as: "receiverMessages",
-    });
-    User.hasMany(models.Message, {
-      onDelete: "CASCADE",
-      foreignKey: {
-        name: "senderId",
-        allowNull: true
-      },
-      as: "senderMessages",
+      as: "messages",
     });
 
     User.hasMany(models.Response, {

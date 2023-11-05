@@ -47,6 +47,8 @@ const forumTopicTestData = require("./test_data/forumTopicTestData");
 const forumPostTestData = require("./test_data/forumPostTestData");
 const forumCommentTestData = require("./test_data/forumCommentTestData");
 const notificationTestData = require("./test_data/notificationTestData");
+const messageTestData = require("./test_data/messageTestData");
+
 const {
   createFakeTransactions,
   generateFakeProperties,
@@ -92,6 +94,8 @@ const responseRoute = require("./routes/user/responseRoute");
 const scheduleRoute = require("./routes/user/scheduleRoute");
 const viewingAvailabilityRoute = require("./routes/user/viewingAvailabilityRoute");
 const stripeRoute = require("./routes/user/stripeRoute");
+const chatRoute = require("./routes/user/chatRoute");
+const messageRoute = require("./routes/user/messageRoute");
 const e = require("express");
 
 app.use(cors());
@@ -109,7 +113,7 @@ app.use("/admin/auth", authRouter);
 app.use("/admin/faqs", injectIo(io), faqRouter);
 app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", injectIo(io), contactUsAdminRouter);
-app.use("/admin/contactUs/:contactUsId/responses",injectIo(io) , responseRouter);
+app.use("/admin/contactUs/:contactUsId/responses", injectIo(io), responseRouter);
 app.use("/admin/forumTopics", injectIo(io), forumTopicAdminRouter);
 app.use("/admin/notifications", notificationAdminRouter);
 app.use("/admin/properties", propertyAdminRouter);
@@ -138,6 +142,8 @@ app.use(
   notificationRoute,
   responseRoute,
   stripeRoute,
+  chatRoute,
+  messageRoute,
 );
 
 io.on("connection", (socket) => {
@@ -226,6 +232,7 @@ db.sequelize
     const existingForumCommentRecordsCount = await db.ForumComment.count();
     const existingResponseRecordsCount = await db.Response.count();
     const existingNotificationRecordsCount = await db.Notification.count();
+    const existingMessageRecordsCount = await db.Message.count();
 
     // General order of data insertion:
     // User -> Admin -> FAQ -> Property -> Image -> Chat -> Transaction -> Invoice -> Review
@@ -544,6 +551,21 @@ db.sequelize
       }
     } else {
       console.log("ForumComment test data already exists in the database.");
+    }
+
+    // Message
+    if (existingMessageRecordsCount === 0) {
+      try {
+        for (const messageData of messageTestData) {
+          await db.Message.create(messageData);
+        }
+
+        console.log("Message test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Message test data:", error);
+      }
+    } else {
+      console.log("Message test data already exists in the database.");
     }
 
     // if (existingNotificationRecordsCount === 0) {

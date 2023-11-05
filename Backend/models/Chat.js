@@ -54,15 +54,15 @@ module.exports = (sequelize, DataTypes) => {
             as: 'messages'
         });
 
-        Chat.hasMany(models.Request, {
+        Chat.hasOne(models.Request, {
             onDelete: "CASCADE",
             foreignKey: {
                 name: 'chatId',
                 allowNull: true
             },
-            as: 'requests'
+            as: 'request'
         });
-        
+
     };
 
     return Chat;

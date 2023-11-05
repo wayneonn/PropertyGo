@@ -30,19 +30,10 @@ module.exports = (sequelize, DataTypes) => {
         Message.belongsTo(models.User, {
             onDelete: "CASCADE",
             foreignKey: {
-                allowNull: true,
-                name: 'senderId'
+                allowNull: false,
+                name: 'userId'
             },
-            as: 'sender',
-        })
-
-        Message.belongsTo(models.User, {
-            onDelete: "CASCADE",
-            foreignKey: {
-                allowNull: true,
-                name: 'receiverId'
-            },
-            as: 'receiver',
+            as: 'user',
         })
 
       };      
