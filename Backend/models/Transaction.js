@@ -44,8 +44,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       transactionType: {
-        type: DataTypes.ENUM("REQUEST", "TOKEN_PURCHASE", "OPTION_FEE", "OPTION_EXERCISE_FEE", "PARTNER_SUBSCRIPTION"),
+        type: DataTypes.ENUM("REQUEST", "TOKEN_PURCHASE", "OPTION_FEE", "OPTION_EXERCISE_FEE", "PARTNER_SUBSCRIPTION", "COMMISSION_FEE"),
         allowNull: false,
+      },
+      reimbursed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
       },
     },
     {

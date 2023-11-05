@@ -121,6 +121,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      bankName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      bankAccount: {
+        type: DataTypes.DOUBLE,
+        allowNull: true,
+      },
     },
     {
       freezeTableName: true,

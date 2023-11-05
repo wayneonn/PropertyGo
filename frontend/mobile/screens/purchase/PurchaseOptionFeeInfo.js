@@ -20,7 +20,7 @@ const PurchaseOptionFeeInfo = ({ route }) => {
             </View>
 
 
-            <Text style={styles.headerTwo}>Process on Purchasing a Property with PropertyGo 😁 🏠</Text>
+            <Text style={styles.headerTwo}>Process on Purchasing a Property with PropertyGo 😁🏠</Text>
             <Text style={styles.headerDescription}>Step 1: Payment of Option Fee via Stripe</Text>
             <Text style={styles.description}>1. Upon finding a property of interest, the buyer will initiate the property purchasing process by making a payment for the Option Fee via the provided Stripe payment gateway. This fee is required to secure the property and holds it for the buyer's consideration.</Text>
             <Text style={styles.description}>2. The paid amount will be placed on hold for a period of 3 days. During this time, the seller will be notified of the payment and given the opportunity to respond.</Text>
@@ -32,9 +32,8 @@ const PurchaseOptionFeeInfo = ({ route }) => {
             <Text style={styles.description}>1. After the buyer signs the document, it will be forwarded to the admin for their signature as a witness to the transaction.</Text>
             <Text style={styles.headerDescription}>Step 4: Setting the Option to Purchase Deadline</Text>
             <Text style={styles.description}>1. The seller will also specify an Option to Purchase deadline within the application. The buyer must sign the document before this deadline.</Text>
-            <Text style={styles.description}>2. During this period, the property listing's status will be changed from 'ON HOLD' to 'ACTIVE' again, indicating that the property is still available for other potential buyers.</Text>
             <Text style={styles.headerDescription}>Step 5: Exercising the Purchase</Text>
-            <Text style={styles.description}>1. If the buyer decides to proceed with the purchase, they will pay the Option Exercise Fee as specified by the seller.</Text>
+            <Text style={styles.description}>1. If the buyer decides to proceed with the purchase, they will pay the Option Exercise Fee as specified by the seller. Otherwise if it's past the OTP Deadline, the property listing's status will be changed from 'ON HOLD' to 'ACTIVE' again, where the property will be available for other potential buyers to purchase again.</Text>
             <Text style={styles.description}>2. Subsequently, the buyer and seller can continue the transaction process, including arranging the down payment and housing financing through the Platform's chat.</Text>
             <Text></Text>
             {/* Button to proceed to checkout */}
