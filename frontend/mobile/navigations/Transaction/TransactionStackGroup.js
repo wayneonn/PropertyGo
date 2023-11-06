@@ -3,6 +3,7 @@ import ViewAppointmentDetail from "../../screens/sideNavigatorBar/Appointment/Vi
 import TransactionMainTabNavigator from './TransactionMainTabNavigator';
 import TransactionScreen from '../../screens/sideNavigatorBar/Transaction/TransactionScreen';
 import OptionTransactionDetailOrder from '../../screens/sideNavigatorBar/Transaction/OptionTransactionDetailOrder';
+import SellerOptionTransactionDetailOrder from '../../screens/sideNavigatorBar/Transaction/SellerOptionTransactionDetailOrder';
 import PropertyUserListing from "../../screens/propertyListings/PropertyUserListing";
 import EditPropertyUserListing from "../../screens/propertyListings/EditPropertyUserListing";
 import ViewUserProfile from "../../screens/userProfile/ViewUserProfile";
@@ -24,6 +25,7 @@ const TransactionStackGroup = () => {
             <TransactionStack.Screen name={"Transaction Main"} component={TransactionMainTabNavigator}/>
             <TransactionStack.Screen name={"Transaction Screen"} component={TransactionScreen}/>
             <TransactionStack.Screen name={"Option Transaction Order Screen"} component={OptionTransactionDetailOrder}/>
+            <TransactionStack.Screen name={"Seller Option Transaction Order Screen"} component={SellerOptionTransactionDetailOrder}/>
             <TransactionStack.Screen name="Property Listing" component={PropertyUserListing}/>
             <TransactionStack.Screen name="Edit Property User Listing" component={EditPropertyUserListing}/>
             <TransactionStack.Screen name="View Profile" component={ViewUserProfile}/>

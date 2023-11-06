@@ -3,7 +3,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, ScrollView, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native'; // Import ScrollView from 'react-native'
 import TransactionCard from './TransactionCard'; // Import the TransactionCard component
-import OptionTransactionCard from './CardComponents/OptionTransactionCard'; 
+import OptionTransactionCard from './CardComponents/OptionTransactionCard';
+// import SellerOptionTransactionDetailOrder from './SellerOptionTransactionDetailOrder';
 import { useFocusEffect } from "@react-navigation/native";
 import { fetchUserTransactions } from '../../../utils/transactionApi';
 import { AuthContext } from '../../../AuthContext';
@@ -61,28 +62,35 @@ const TransactionScreen = () => {
                     <ActivityIndicator style={styles.activityIndicator} size="large" color="#00adf5" />
                 </View>
             ) : ( // Show the main screen when isLoading is false
-            <ScrollView>
-                <Text style={styles.header}>Transactions</Text>
-                {transactions && transactions.length > 0 ? (
-                    <FlatList
-                        data={transactions}
-                        keyExtractor={(item) => item.transactionId.toString()}
-                        renderItem={({ item }) =>
-                        (item.transactionType === 'OPTION_FEE') ? (
-                            <OptionTransactionCard transaction={item} propertyId={item.propertyId} onPress={() => {
-                                navigation.navigate('Option Transaction Order Screen', { transaction: item });
-                            }} />
-                        ) : (
-                            <TransactionCard transaction={item} onPress={() => {
-                                navigation.navigate('Transaction Screen', { transaction: item });
-                            }} />
-                        )
-                        }
-                    />
-                ) : (
-                    <Text style={styles.noAvailabilityText}>No transactions found.</Text>
-                )}
-            </ScrollView> 
+                <ScrollView>
+                    <View style={styles.headerContainer}>
+                        <Text style={styles.header}>Transactions</Text>
+                    </View>
+                    {transactions && transactions.length > 0 ? (
+                        <FlatList
+                            data={transactions}
+                            keyExtractor={(item) => item.transactionId.toString()}
+                            renderItem={({ item }) =>
+                                (item.transactionType === 'OPTION_FEE') ? (
+                                    (item.userId === userId) ? (
+                                        <OptionTransactionCard transaction={item} propertyId={item.propertyId} onPress={() => {
+                                            navigation.navigate('Seller Option Transaction Order Screen', { transaction: item });
+                                        }} />) : (
+                                        <OptionTransactionCard transaction={item} propertyId={item.propertyId} onPress={() => {
+                                            navigation.navigate('Option Transaction Order Screen', { transaction: item });
+                                        }} />
+                                    )
+                                ) : (
+                                    <TransactionCard transaction={item} onPress={() => {
+                                        navigation.navigate('Transaction Screen', { transaction: item });
+                                    }} />
+                                )
+                            }
+                        />
+                    ) : (
+                        <Text style={styles.noAvailabilityText}>No transactions found.</Text>
+                    )}
+                </ScrollView>
             )}
         </View>
     );
@@ -108,6 +116,15 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center',
         marginTop: 10,
+    },
+    headerContainer: {
+        marginBottom: 20,
+    },
+    header: {
+        fontSize: 25,
+        fontWeight: 'bold',
+        marginTop: 5,
+        textAlign: 'center',
     },
 });
 
