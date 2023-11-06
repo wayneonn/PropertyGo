@@ -68,6 +68,7 @@ const OrderDetailScreen = ({ route }) => {
 
                     <PropertyCardRectangle
                         property={propertyListing}
+                        transaction={transaction}
                         seller={seller}
                         onPress={() => {
                             navigation.navigate('Property Listing', { propertyListingId: propertyListing.propertyListingId })

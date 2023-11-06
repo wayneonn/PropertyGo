@@ -7,14 +7,16 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { getImageUriById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites } from '../../../../utils/api';
 import { AuthContext } from '../../../../AuthContext';
 import DefaultImage from '../../../../assets/No-Image-Available-Small.jpg';
 
-const PropertyCardRectangle = ({ property, onPress, seller }) => {
+const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
   const [propertyImageUri, setPropertyImageUri] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
+  const navigation = useNavigation();
   const { user } = useContext(AuthContext);
 
   const formatPrice = (price) => {
@@ -25,7 +27,7 @@ const PropertyCardRectangle = ({ property, onPress, seller }) => {
       return 'N/A'; // Handle the case when price is null, undefined, or not a number
     }
   };
-  
+
   useEffect(() => {
     loadPropertyDetails();
     setCacheBuster(Date.now());
@@ -81,6 +83,17 @@ const PropertyCardRectangle = ({ property, onPress, seller }) => {
           <Text>{'             '}</Text>
           <Text style={styles.optionFeeAmount}>${formatPrice(property.optionFee)}</Text>
         </View>
+        <View style={styles.invoiceButtonContainer}>
+          <View style={styles.invoiceButtonBorder}></View>
+          <TouchableOpacity
+            style={styles.chatButton}
+            onPress={() => {
+              navigation.navigate('Transaction Screen', { transaction });
+            }}
+          >
+            <Text style={styles.chatButtonText}>View Invoice</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       {/* Conditional rendering of favorite button */}
     </TouchableOpacity>
@@ -133,10 +146,12 @@ const styles = StyleSheet.create({
   soldBy: {
     fontSize: 12,
     color: '#777',
+    marginTop: -10,
   },
   optionFeeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: -10,
   },
   optionFeeLabel: {
     fontSize: 16,
@@ -167,6 +182,30 @@ const styles = StyleSheet.create({
   placeholderImageImage: {
     width: '100%', // Adjust the width as needed to match the desired size
     height: '100%', // Adjust the height as needed to match the desired size
+  },
+  chatButton: {
+    backgroundColor: 'dodgerblue',
+    padding: 4,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 130,
+    marginTop: 8, 
+  },
+  chatButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  invoiceButtonContainer: {
+    alignItems: 'center',
+  },
+  invoiceButtonBorder: {
+    width: '80%',
+    borderBottomWidth: 0.3, // Add a bottom border to create the line on top of the button
+    borderBottomColor: 'grey', // You can change the color to your preference
+    marginTop: 8,
+    marginBottom: 2, 
   },
 });
 

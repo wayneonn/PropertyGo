@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     amountContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        // textAlign: 'right',
         marginRight: -70,
     },
     amountLabel: {
