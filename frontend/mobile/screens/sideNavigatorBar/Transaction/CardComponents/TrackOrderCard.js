@@ -14,7 +14,7 @@ import StepIndicator from 'react-native-step-indicator';
 
 const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transactionDate }) => {
 
-    const labels = ["Payment Made", "Buyer Uploaded OTP", "Seller Uploaded OTP", "Awaiting Admin To Sign As Witness", "Ready To Proceed To Exercise Purchase!"];
+    const labels = ["Payment Made", "Seller Uploaded OTP", "Buyer Uploaded OTP", "Awaiting Admin To Sign As Witness", "Ready To Proceed To Exercise Purchase!"];
     const stepIndicatorStyles = {
         stepIndicatorSize: 25,
         currentStepIndicatorSize: 30,
@@ -43,9 +43,9 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
     const statusStage = (status) => {
         if (status === 'REQUEST_PLACED') {
             return 1;
-        } else if (status === 'BUYER_UPLOADED') {
-            return 2;
         } else if (status === 'SELLER_UPLOADED') {
+            return 2;
+        } else if (status === 'BUYER_UPLOADED') {
             return 3;
         } else if (status === 'ADMIN_UPLOADED') {
             return 4;

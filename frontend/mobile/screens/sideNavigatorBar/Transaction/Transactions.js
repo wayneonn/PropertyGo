@@ -74,7 +74,7 @@ const TransactionScreen = () => {
                                 (item.transactionType === 'OPTION_FEE') ? (
                                     (item.userId === userId) ? (
                                         <OptionTransactionCard transaction={item} propertyId={item.propertyId} onPress={() => {
-                                            navigation.navigate('Seller Option Transaction Order Screen', { transaction: item });
+                                            navigation.navigate('Seller Option Transaction Order Screen', { transactionId: item.transactionId });
                                         }} />) : (
                                         <OptionTransactionCard transaction={item} propertyId={item.propertyId} onPress={() => {
                                             navigation.navigate('Option Transaction Order Screen', { transaction: item });

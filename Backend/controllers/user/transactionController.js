@@ -1,4 +1,5 @@
 const { Transaction, User, Property, Request, Notification } = require("../../models")
+const { loggedInUsers } = require('../../shared');
 const { Op, Sequelize } = require('sequelize');
 const puppeteer = require('puppeteer');
 const path = require('path');
@@ -642,6 +643,59 @@ exports.createOptionFeeTransaction = async (req, res) => {
     } catch (error) {
         console.error("Error creating transaction:", error);
         res.status(500).json({ error: "Error creating transaction" });
+    }
+}
+
+exports.sellerUploadedOTP = async (req, res) => {
+    const { transactionId } = req.params; // Assuming you pass transactionId as a parameter
+    try {
+        const transaction = await Transaction.findByPk(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+
+        // Update the transaction with optionFeeStatusEnum "SELLER_UPLOADED"
+        transaction.optionFeeStatusEnum = "SELLER_UPLOADED";
+        await transaction.save();
+
+        const property = await Property.findByPk(transaction.propertyId);
+        const seller = await User.findByPk(property.sellerId);
+        const buyer = await User.findByPk(transaction.buyerId);
+        const buyerId = buyer.userId;
+        const sellerId = seller.userId;
+
+        if (!seller) {
+            return res.status(404).json({ message: 'Seller not found' });
+        }
+
+        if (!buyer) {
+            return res.status(404).json({ message: 'Buyer not found' });
+        }
+
+        const content = `${seller.userName.charAt(0).toUpperCase() + seller.userName.slice(1)} has uploaded the OTP Document for the property ${property.title}. Please upload the Option to Purchase (OTP) to complete the transaction.`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": sellerId,
+            "userId" : buyerId,
+            "content" : content,
+            "transactionId" : transaction.transactionId,
+        };
+
+        await Notification.create(notificationBody);
+
+        if (buyer && loggedInUsers.has(buyer.userId)){
+            req.io.emit("userNotification", {"pushToken": buyer.pushToken, "title": property.title, "body": content});
+            console.log("Emitted sellerUploadedOTP Notification");
+        }
+
+        res.json(transaction);
+    } catch (error) {
+        console.error("Error updating transaction:", error);
+        res.status(500).json({ error: "Error updating transaction" });
     }
 }
 
