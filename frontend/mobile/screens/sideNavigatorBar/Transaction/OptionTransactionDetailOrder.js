@@ -84,25 +84,6 @@ const OrderDetailScreen = ({ route }) => {
                 <Text>Loading...</Text>
             )}
 
-
-            {/* {propertyListing && seller ? (
-                <PropertyCardRectangle
-                    property={propertyListing}
-                    seller={seller}
-                    onPress={() => {
-                        navigation.navigate('Property Listing', { propertyListingId: propertyListing.propertyListingId })
-                    }}
-                />
-            ) : (
-                <Text>Loading...</Text>
-            )}
-
-            <TrackOrderCard optionFeeStatus={transaction.optionFeeStatus}
-                optionFee={propertyListing.optionFee}
-                transactionId={transaction.transactionId}
-                transactionDate={transaction.createdAt}
-            /> */}
-
             <TouchableOpacity style={styles.cancelButton}>
                 <Text style={styles.cancelButtonText}>Cancel Order</Text>
             </TouchableOpacity>

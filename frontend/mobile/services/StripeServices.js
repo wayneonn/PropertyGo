@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { useStripe } from '@stripe/stripe-react-native';
 import { paymentSheet } from "../utils/stripeApi";
 import { updateUserProfile, loginUser } from "../utils/api";
-import { createTransaction } from "../utils/transactionApi";
+import { createTransaction, createOptionFeeTransaction } from "../utils/transactionApi";
 import { AuthContext } from '../AuthContext';
 
 export const initializePaymentSheet = async (
@@ -92,7 +92,7 @@ export const updateUserStripeCustomerId = async (stripeCustomerId, user, login) 
 };
 
 export const createTransactionRecord = async (propertyListing, user, paymentIntent, status, transactionType, transactionItem, quantity, paymentAmount, gst) => {
-    const { data, success, message } = await createTransaction({
+    const { data, success, message } = await createOptionFeeTransaction({
         onHoldBalance: propertyListing.optionFee,
         transactionItem: transactionItem,
         paymentAmount,

@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       optionFeeStatusEnum: {
-        type: DataTypes.ENUM("REQUEST_PLACED", "BUYER_UPLOADED", "SELLER_UPLOADED", "ADMIN_SIGNED", "COMPLETED"),
+        type: DataTypes.ENUM("REQUEST_PLACED", "BUYER_UPLOADED", "SELLER_UPLOADED", "ADMIN_SIGNED", "COMPLETED", "SELLER_DID_NOT_RESPOND"),
         allowNull: true,
       },
     },
@@ -81,6 +81,14 @@ module.exports = (sequelize, DataTypes) => {
       as: "propertyListing",
       allowNull: true,
     });
+    Transaction.hasMany(models.Notification, {
+      onDelete: "CASCADE",
+      foreignKey: {
+          allowNull: true,
+          name: 'transactionId'
+      },
+      as: 'notifications',
+  });
   };
 
   return Transaction;

@@ -1,4 +1,4 @@
-const { Transaction, User, Property, Request } = require("../../models")
+const { Transaction, User, Property, Request, Notification } = require("../../models")
 const { Op, Sequelize } = require('sequelize');
 const puppeteer = require('puppeteer');
 const path = require('path');
@@ -590,6 +590,54 @@ exports.createTransaction = async (req, res) => {
     const transactionData = req.body;
     try {
         const createdTransaction = await Transaction.create(transactionData);
+        res.json(createdTransaction);
+    } catch (error) {
+        console.error("Error creating transaction:", error);
+        res.status(500).json({ error: "Error creating transaction" });
+    }
+}
+
+exports.createOptionFeeTransaction = async (req, res) => {
+    const transactionData = req.body;
+    try {
+        const createdTransaction = await Transaction.create(transactionData);
+
+        const property = await Property.findByPk(createdTransaction.propertyId);
+        // const propertyUser = await property.getUser();
+
+        const seller = await User.findByPk(property.sellerId);
+        if (!seller) {
+            return res.status(404).json({ message: 'Seller not found' });
+        }
+
+        const buyer = await User.findByPk(createdTransaction.buyerId);
+        if (!buyer) {
+            return res.status(404).json({ message: 'Buyer not found' });
+        }
+
+        const content = `${buyer.userName.charAt(0).toUpperCase() + buyer.userName.slice(1)} has made a payment for the Option Fee on your property ${property.title}. Please upload the Option to Purchase (OTP) to complete the transaction.`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": createdTransaction.buyerId,
+            "userId" : seller.userId,
+            "content" : content,
+            "transactionId" : createdTransaction.transactionId,
+        };
+
+        await Notification.create(notificationBody);
+
+        // const transactionUser = await transaction.getSeller();
+
+        if (seller && loggedInUsers.has(seller.userId)){
+            // console.log("propertyUser :", propertyUser)
+            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+            console.log("Emitted userNewForumCommentNotification");
+        }
+
         res.json(createdTransaction);
     } catch (error) {
         console.error("Error creating transaction:", error);
