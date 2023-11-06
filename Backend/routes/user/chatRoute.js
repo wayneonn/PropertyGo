@@ -8,7 +8,7 @@ const {
     getChatById
 } = require('../../controllers/user/chatController');
 
-router.route('/:userId/chat')
+router.route('/:senderId/chat')
     .post(createChat)
 
 router.route('/:userId/chat/getUserReceiverChat')

@@ -14,7 +14,7 @@ import Schedule from "../screens/schedule/Schedule";
 import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFee";
 import ViewAppointmentDetail from "../screens/sideNavigatorBar/Appointment/ViewAppointmentDetail";
 import Map from "../screens/propertyListings/map";
-import Chat from "../screens/chat/Chat";
+import ChatTabNavigator from "./ChatTabNavigator";
 import Message from "../screens/chat/Message";
 
 const HomeListingsStack = createNativeStackNavigator();
@@ -39,7 +39,7 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="Schedule" component={Schedule}/>
             <HomeListingsStack.Screen name="View Appointment Detail" component={ViewAppointmentDetail}/>
             <HomeListingsStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/>
-            <HomeListingsStack.Screen name="Chat" component={Chat}/>
+            <HomeListingsStack.Screen name="Chat" component={ChatTabNavigator}/>
             <HomeListingsStack.Screen name="Message" component={Message}/>
         </HomeListingsStack.Navigator>
     );

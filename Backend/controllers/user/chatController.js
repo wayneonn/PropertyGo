@@ -1,34 +1,65 @@
-const {Chat, User, Message, Request} = require("../../models");
+const { Chat, User, Message, Request, Property, Image } = require("../../models");
 
 const createChat = async (req, res) => {
-    const { userId } = req.params;
+    const { senderId } = req.params;
+    const { receiverId, propertyId } = req.body;
 
-    req.body.userId = userId;
+    // Convert userId to an integer
+    const parsedSenderId = parseInt(senderId);
+
+    if (isNaN(parsedSenderId)) {
+        return res.status(400).json({ message: 'Invalid userId' });
+    }
 
     try {
-        const chat = await Chat.create(req.body);
-        res.status(201).json({ chat });
+        // Check if a chat with the same combination of senderId, receiverId, and propertyId already exists
+        const existingChat = await Chat.findOne({
+            where: {
+                senderId: parsedSenderId,
+                receiverId,
+                propertyId,
+            },
+        });
 
+        if (existingChat) {
+            return res.status(400).json({ message: 'Chat with the same combination already exists' });
+        }
+
+        // If no existing chat is found, create a new chat
+        const chat = await Chat.create({ senderId: parsedSenderId, receiverId, propertyId });
+        res.status(201).json({ chat });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
+
 const getUserReceiverChat = async (req, res) => {
     try {
-        const user = await User.findByPk(req.params.userId, {
-            include: [{
-                model: Chat,
-                as: 'receiverChats',
-            }]
-        });
+
+        const user = await User.findByPk(req.params.userId);
 
         if (!user) {
             return res.status(404).json({ message: 'User Not Found' });
         }
 
-        const receiverChats = user['receiverChats'];
+        const receiverChats = await user.getReceiverChats({
+            order: [['updatedAt', 'DESC']],
+            include: [{
+                model: User,
+                as: 'sender'
+            },
+            {
+                model: Property,
+                as: 'propertyListing'
+            },
+            {
+                model: Message,
+                as: 'messages'
+            }]
+        });
+
         // console.log(receiverChats);
         res.status(200).json(receiverChats);
 
@@ -40,19 +71,33 @@ const getUserReceiverChat = async (req, res) => {
 
 const getUserSenderChat = async (req, res) => {
     try {
-        const user = await User.findByPk(req.params.userId, {
-            include: [{
-                model: Chat,
-                as: 'senderChats',
-            }]
-        });
+        const user = await User.findByPk(req.params.userId);
 
         if (!user) {
             return res.status(404).json({ message: 'User Not Found' });
         }
 
-        const senderChats = user['senderChats'];
+        const senderChats = await user.getSenderChats({
+            order: [['updatedAt', 'DESC']],
+            include: [{
+                model: User,
+                as: 'receiver',
+            },
+            {
+                model: Property,
+                as: 'propertyListing',
+                include :[{
+                    model: Image,
+                    as: 'propertyImages',
+                }]
+            },
+            {
+                model: Message,
+                as: 'messages'
+            }]
+        });
         // console.log(senderChats);
+
         res.status(200).json(senderChats);
 
     } catch (error) {

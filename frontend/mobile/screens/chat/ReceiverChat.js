@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
-const Chat = ({ navigation }) => {
+const ReceiverChat = ({ navigation }) => {
 
     return (
         <View>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
-            <Text>Chat</Text>
+            <Text>ReceiverChat</Text>
         </View>
     );
 };
@@ -95,4 +95,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Chat;
+export default ReceiverChat;
