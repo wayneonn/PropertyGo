@@ -9,18 +9,41 @@ import TrackOrderCard from './CardComponents/TrackOrderCard';
 import {
     getPropertyListing, getUserById
 } from '../../../utils/api';
+import {
+    getTransactionByTransactionId
+} from '../../../utils/transactionApi';
 import StepIndicator from 'react-native-step-indicator';
+import { useFocusEffect } from '@react-navigation/native';
 
 const OrderDetailScreen = ({ route }) => {
     const navigation = useNavigation();
     const [propertyListing, setPropertyListing] = useState(null);
+    const [transaction, setTransaction] = useState(null);
     const [seller, setSeller] = useState(null);
-    const { transaction } = route.params;
+    const { transactionId } = route.params;
+
+    useFocusEffect(
+        React.useCallback(() => {
+            console.log('page gained focus');
+            fetchTransaction(transactionId);
+        }, [])
+    );
 
     useEffect(() => {
-        fetchPropertyListing(transaction.propertyId);
-        fetchUser(transaction.userId)
+        fetchTransaction(transactionId);
     }, []);
+
+    const fetchTransaction = async (id) => {
+        try {
+            const { success, data, message } = await getTransactionByTransactionId(id);
+            console.log("data: ", data.transactions[0])
+            setTransaction(data.transactions[0]); // Update state with the fetched data
+            fetchPropertyListing(data.transactions[0].propertyId);
+            fetchUser(data.transactions[0].userId);
+        } catch (error) {
+            console.error('Error fetching transaction:', error);
+        }
+    };
 
     const fetchPropertyListing = async (id) => {
         try {
@@ -62,7 +85,7 @@ const OrderDetailScreen = ({ route }) => {
                 <Text style={styles.header}>Detail Order</Text>
             </View>
 
-            {propertyListing && seller ? (   
+            {propertyListing && seller ? (
                 <>
                     <CustomerCard sellerId={transaction.userId} />
 
@@ -75,7 +98,7 @@ const OrderDetailScreen = ({ route }) => {
                         }}
                     />
 
-                    <TrackOrderCard optionFeeStatus={transaction.optionFeeStatus}
+                    <TrackOrderCard optionFeeStatus={transaction.optionFeeStatusEnum}
                         optionFee={propertyListing.optionFee}
                         transactionId={transaction.transactionId}
                         transactionDate={transaction.createdAt}
@@ -83,6 +106,17 @@ const OrderDetailScreen = ({ route }) => {
                 </>
             ) : (
                 <Text>Loading...</Text>
+            )}
+
+            {transaction && transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ? (
+                <TouchableOpacity style={styles.uploadButton}
+                    onPress={() => {
+                        navigation.navigate('Buyer Upload OTP', { property: propertyListing, transaction: transaction });
+                    }}>
+                    <Text style={styles.cancelButtonText}>Upload OTP</Text>
+                </TouchableOpacity>
+            ) : (
+                <Text></Text>
             )}
 
             <TouchableOpacity style={styles.cancelButton}>
@@ -175,6 +209,13 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'center',
         fontWeight: 'bold',
+    },
+    uploadButton: {
+        backgroundColor: '#4CAF50',
+        padding: 15,
+        borderRadius: 20,
+        margin: 20,
+        marginBottom: 1,
     },
 });
 

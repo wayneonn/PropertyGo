@@ -77,7 +77,7 @@ const TransactionScreen = () => {
                                             navigation.navigate('Seller Option Transaction Order Screen', { transactionId: item.transactionId });
                                         }} />) : (
                                         <OptionTransactionCard transaction={item} propertyId={item.propertyId} onPress={() => {
-                                            navigation.navigate('Option Transaction Order Screen', { transaction: item });
+                                            navigation.navigate('Option Transaction Order Screen', { transactionId: item.transactionId });
                                         }} />
                                     )
                                 ) : (
