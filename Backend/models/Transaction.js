@@ -51,6 +51,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: true,
       },
+      optionFeeStatusEnum: {
+        type: DataTypes.ENUM("REQUEST_PLACED", "BUYER_UPLOADED", "SELLER_UPLOADED", "ADMIN_SIGNED", "COMPLETED"),
+        allowNull: true,
+      },
     },
     {
       freezeTableName: true,

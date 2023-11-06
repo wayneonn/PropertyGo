@@ -99,10 +99,12 @@ export const createTransactionRecord = async (propertyListing, user, paymentInte
         quantity,
         gst,
         buyerId: user.userId,
+        userId: propertyListing.sellerId,
         propertyId: propertyListing.propertyListingId,
         stripePaymentResponse: paymentIntent,
         status,
         transactionType,
+        optionFeeStatus: "REQUEST_PLACED",
     });
   console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
 };

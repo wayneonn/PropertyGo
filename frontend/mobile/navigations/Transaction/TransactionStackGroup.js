@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ViewAppointmentDetail from "../../screens/sideNavigatorBar/Appointment/ViewAppointmentDetail";
 import TransactionMainTabNavigator from './TransactionMainTabNavigator';
 import TransactionScreen from '../../screens/sideNavigatorBar/Transaction/TransactionScreen';
+import OptionTransactionDetailOrder from '../../screens/sideNavigatorBar/Transaction/OptionTransactionDetailOrder';
 import PropertyUserListing from "../../screens/propertyListings/PropertyUserListing";
 import EditPropertyListing from "../../screens/propertyListings/EditPropertyListing";
 import SetSchedule from "../../screens/schedule/SetSchedule";
@@ -20,6 +21,7 @@ const TransactionStackGroup = () => {
             {/* <AppointmentStack.Screen name={"Appointment Main"} component={AppointmentMain}/> */}
             <TransactionStack.Screen name={"Transaction Main"} component={TransactionMainTabNavigator}/>
             <TransactionStack.Screen name={"Transaction Screen"} component={TransactionScreen}/>
+            <TransactionStack.Screen name={"Option Transaction Order Screen"} component={OptionTransactionDetailOrder}/>
         </TransactionStack.Navigator>
     );
 };

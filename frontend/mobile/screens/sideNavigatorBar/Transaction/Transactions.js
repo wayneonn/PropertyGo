@@ -67,9 +67,16 @@ const TransactionScreen = () => {
                         data={transactions}
                         keyExtractor={(item) => item.transactionId.toString()}
                         renderItem={({ item }) =>
+                        (item.transactionType === 'OPTION_FEE') ? (
+                            <TransactionCard transaction={item} onPress={() => {
+                                navigation.navigate('Option Transaction Order Screen', { transaction: item });
+                            }} />
+                        ) : (
                             <TransactionCard transaction={item} onPress={() => {
                                 navigation.navigate('Transaction Screen', { transaction: item });
-                            }} />}
+                            }} />
+                        )
+                        }
                     />
                 ) : (
                     <Text style={styles.noAvailabilityText}>No transactions found.</Text>
