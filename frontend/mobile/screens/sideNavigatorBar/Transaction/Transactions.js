@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, ScrollView, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native'; // Import ScrollView from 'react-native'
 import TransactionCard from './TransactionCard'; // Import the TransactionCard component
+import OptionTransactionCard from './CardComponents/OptionTransactionCard'; 
 import { useFocusEffect } from "@react-navigation/native";
 import { fetchUserTransactions } from '../../../utils/transactionApi';
 import { AuthContext } from '../../../AuthContext';
@@ -68,7 +69,7 @@ const TransactionScreen = () => {
                         keyExtractor={(item) => item.transactionId.toString()}
                         renderItem={({ item }) =>
                         (item.transactionType === 'OPTION_FEE') ? (
-                            <TransactionCard transaction={item} onPress={() => {
+                            <OptionTransactionCard transaction={item} propertyId={item.propertyId} onPress={() => {
                                 navigation.navigate('Option Transaction Order Screen', { transaction: item });
                             }} />
                         ) : (

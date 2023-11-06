@@ -104,7 +104,7 @@ export const createTransactionRecord = async (propertyListing, user, paymentInte
         stripePaymentResponse: paymentIntent,
         status,
         transactionType,
-        optionFeeStatus: "REQUEST_PLACED",
+        optionFeeStatusEnum: "REQUEST_PLACED",
     });
   console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
 };
