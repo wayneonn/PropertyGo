@@ -86,7 +86,7 @@ const getUserSenderChat = async (req, res) => {
             {
                 model: Property,
                 as: 'propertyListing',
-                include :[{
+                include: [{
                     model: Image,
                     as: 'propertyImages',
                 }]
@@ -116,7 +116,26 @@ const getChatById = async (req, res) => {
 
         // Fetch chat information
         const chat = await Chat.findByPk(chatId, {
-            include: [{ model: Message, as: 'messages' }, { model: Request, as: 'request' }],
+            include: [{
+                model: User,
+                as: 'receiver',
+            },
+            {
+                model: User,
+                as: 'sender',
+            },
+            {
+                model: Property,
+                as: 'propertyListing',
+                include: [{
+                    model: Image,
+                    as: 'propertyImages',
+                }]
+            },
+            {
+                model: Message,
+                as: 'messages'
+            }],
         });
 
         if (chat) {

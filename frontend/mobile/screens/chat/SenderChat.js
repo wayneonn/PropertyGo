@@ -2,18 +2,22 @@ import React, { useState, useContext, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, RefreshControl } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import SearchBar from '../../components/Forum/SearchBar';
 import ChatItem from '../../components/Chat/ChatItem';
 import { getUserSenderChat } from '../../utils/chatApi';
+import ChatModal from '../../components/Chat/ChatModal';
 import base64 from 'react-native-base64';
 
 const SenderChat = ({ navigation }) => {
 
     const { user } = useContext(AuthContext);
     const [chats, setChats] = useState([]);
+    const [filteredChats, setFilteredChats] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [refreshing, setRefreshing] = useState(false);
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [filter, setFilter] = useState(null);
 
     const useParentCallback = useCallback(() => {
         const fetchData = async () => {
@@ -21,8 +25,11 @@ const SenderChat = ({ navigation }) => {
 
                 const chatDatas = await getUserSenderChat(user.user.userId);
                 // console.log(chatDatas);
-                setChats(chatDatas)
-                // setSearchQuery('');
+                setChats(chatDatas);
+                setFilteredChats(chatDatas);
+                setSearchQuery('');
+                setFilter(null);
+
             } catch (error) {
                 console.error(error);
             }
@@ -40,17 +47,19 @@ const SenderChat = ({ navigation }) => {
     };
 
     const handleSearch = (text) => {
+        setFilter(null);
+        
         // Filter the chats based on the search query
-        // const filtered = chats.filter((chat) =>
-        //   chat.chatName.toLowerCase().includes(text.toLowerCase())
-        // );
+        const filtered = chats.filter((chat) =>
+          chat.propertyListing.title.toLowerCase().includes(text.toLowerCase())
+        );
         // // console.log("text :" + text)
 
-        // if (text === "") {
-        //   setFilteredTopics(chats);
-        // } else {
-        //   setFilteredTopics(filtered);
-        // }
+        if (text === "") {
+          setFilteredChats(chats);
+        } else {
+          setFilteredChats(filtered);
+        }
 
         setSearchQuery(text);
     };
@@ -58,6 +67,28 @@ const SenderChat = ({ navigation }) => {
     const handleChatPress = (chatId) => {
         setSearchQuery('');
         navigation.navigate("Message", { chatId });
+    };
+
+    const toggleModal = () => {
+        setModalVisible(!isModalVisible);
+    };
+
+    const handleFilterPress = async (f) => {
+        // console.log(f)
+        setFilter(f)
+        if (f === "isReplied") {
+
+            setFilteredChats(chats.filter((chat) => chat.senderReplied === true));
+
+        } else if (f === "isPendingReply") {
+
+            setFilteredChats(chats.filter((chat) => chat.senderReplied === false));
+
+        } else {
+
+            setFilteredChats(chats);
+        }
+        setModalVisible(!isModalVisible);
     };
 
     return (
@@ -71,16 +102,17 @@ const SenderChat = ({ navigation }) => {
             }>
                 <View style={styles.header}>
                     <Text style={styles.title}>Chats</Text>
-                    {/* <TouchableOpacity onPress={handleFilterPress} style={styles.filterButton}>
-              <AntDesign name={sort ? "arrowup" : "arrowdown"} size={20} color="black" />
-            </TouchableOpacity> */}
+                    <TouchableOpacity style={styles.filterButton} onPress={toggleModal}>
+                        {/* <Text style={styles.filter}>Filter</Text> */}
+                        <AntDesign name="filter" size={24} color="blue" />
+                    </TouchableOpacity>
                 </View>
                 <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
                 {/* <ChatItem onPress={null} /> */}
-                {!(chats.length === 0) ? chats.map((chat, index) => (
+                {!(filteredChats.length === 0) ? filteredChats.map((chat, index) => (
                     <ChatItem
                         key={chat.chatId}
-                        onPress={() => handleChatPress(chat)}
+                        onPress={() => handleChatPress(chat.chatId)}
                         updatedAt={chat.updatedAt}
                         name={chat.receiver.name}
                         title={chat.propertyListing.title}
@@ -91,7 +123,7 @@ const SenderChat = ({ navigation }) => {
                     />
                 )) : null}
             </ScrollView>
-            {/* <AddForumTopicModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumTopic} chats={chatsUnrestricted}/> */}
+            <ChatModal isVisible={isModalVisible} onClose={toggleModal} onFilter={handleFilterPress} />
         </SafeAreaView>
 
     );
@@ -128,7 +160,16 @@ const styles = StyleSheet.create({
         // flex:1,
         // borderWidth:1,
         // backgroundColor: "black"
-    }
+    },
+    filter: {
+        fontSize: 18,
+        marginHorizontal: 5,
+        fontWeight: 'bold', // Add fontWeight to make the title bold
+        color: "blue"
+    },
+    filterButton: {
+        paddingHorizontal: 10,
+    },
 });
 
 export default SenderChat;

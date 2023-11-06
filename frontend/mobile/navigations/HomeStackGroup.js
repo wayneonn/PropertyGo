@@ -40,7 +40,7 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="View Appointment Detail" component={ViewAppointmentDetail}/>
             <HomeListingsStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/>
             <HomeListingsStack.Screen name="Chat" component={ChatTabNavigator}/>
-            <HomeListingsStack.Screen name="Message" component={Message}/>
+            {/* <HomeListingsStack.Screen name="Message" component={Message}/> */}
         </HomeListingsStack.Navigator>
     );
 };

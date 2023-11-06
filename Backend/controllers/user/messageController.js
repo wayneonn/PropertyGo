@@ -1,4 +1,4 @@
-const { Message } = require("../../models");
+const { Message, Chat } = require("../../models");
 
 const addMessage = async (req, res) => {
     try {
@@ -11,6 +11,20 @@ const addMessage = async (req, res) => {
         // Create a new message associated with the chat
         const message = await Message.create(req.body);
 
+        const chat = await Chat.findByPk(chatId)
+        
+        if (!chat) {
+            return res.status(404).json({ message: 'Chat Not Found' });
+        }
+
+        if (chat.senderId === userId) {
+            chat.senderReplied = true;
+        } else {
+            chat.senderReplied = false;
+        }
+
+        chat.save()
+        
         res.status(201).json({ message });
     } catch (error) {
         console.error(error);

@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, TextInput, RefreshControl, Image, TouchableHighlight, FlatList , useWindowDimensions} from 'react-native';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { useFocusEffect} from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { getUserContactUsId } from '../../utils/contactUsApi';
