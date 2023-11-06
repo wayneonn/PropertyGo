@@ -62,14 +62,35 @@ const OrderDetailScreen = ({ route }) => {
                 <Text style={styles.header}>Detail Order</Text>
             </View>
 
-            <CustomerCard sellerId={transaction.userId} />
+            {propertyListing && seller ? (   
+                <>
+                    <CustomerCard sellerId={transaction.userId} />
 
-            {propertyListing && seller ? (
+                    <PropertyCardRectangle
+                        property={propertyListing}
+                        seller={seller}
+                        onPress={() => {
+                            navigation.navigate('Property Listing', { propertyListingId: propertyListing.propertyListingId })
+                        }}
+                    />
+
+                    <TrackOrderCard optionFeeStatus={transaction.optionFeeStatus}
+                        optionFee={propertyListing.optionFee}
+                        transactionId={transaction.transactionId}
+                        transactionDate={transaction.createdAt}
+                    />
+                </>
+            ) : (
+                <Text>Loading...</Text>
+            )}
+
+
+            {/* {propertyListing && seller ? (
                 <PropertyCardRectangle
                     property={propertyListing}
                     seller={seller}
                     onPress={() => {
-                        navigation.navigate('Property Listing', { propertyListingId: item.propertyListingId })
+                        navigation.navigate('Property Listing', { propertyListingId: propertyListing.propertyListingId })
                     }}
                 />
             ) : (
@@ -77,10 +98,10 @@ const OrderDetailScreen = ({ route }) => {
             )}
 
             <TrackOrderCard optionFeeStatus={transaction.optionFeeStatus}
-            optionFee = {propertyListing.optionFee}
-            transactionId = {transaction.transactionId}
-            transactionDate = {transaction.createdAt}
-            />
+                optionFee={propertyListing.optionFee}
+                transactionId={transaction.transactionId}
+                transactionDate={transaction.createdAt}
+            /> */}
 
             <TouchableOpacity style={styles.cancelButton}>
                 <Text style={styles.cancelButtonText}>Cancel Order</Text>

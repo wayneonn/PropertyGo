@@ -4,11 +4,13 @@ import TransactionMainTabNavigator from './TransactionMainTabNavigator';
 import TransactionScreen from '../../screens/sideNavigatorBar/Transaction/TransactionScreen';
 import OptionTransactionDetailOrder from '../../screens/sideNavigatorBar/Transaction/OptionTransactionDetailOrder';
 import PropertyUserListing from "../../screens/propertyListings/PropertyUserListing";
-import EditPropertyListing from "../../screens/propertyListings/EditPropertyListing";
-import SetSchedule from "../../screens/schedule/SetSchedule";
+import EditPropertyUserListing from "../../screens/propertyListings/EditPropertyUserListing";
 import ViewUserProfile from "../../screens/userProfile/ViewUserProfile";
-import Schedule from "../../screens/schedule/SetSchedule";
-import Map from "../../screens/propertyListings/map";
+import BoostPropertyListing from "../../screens/propertyListings/BoostPropertyListing";
+import TokenScreen from "../../screens/token/TokenScreen";
+import TokenCheckoutScreen from "../../screens/token/TokenCheckoutScreen"; 
+import SetSchedule from "../../screens/schedule/SetSchedule";
+import Schedule from "../../screens/schedule/Schedule";
 
 import TransactionList from "../../screens/dashboard/transactionList"
 
@@ -22,6 +24,14 @@ const TransactionStackGroup = () => {
             <TransactionStack.Screen name={"Transaction Main"} component={TransactionMainTabNavigator}/>
             <TransactionStack.Screen name={"Transaction Screen"} component={TransactionScreen}/>
             <TransactionStack.Screen name={"Option Transaction Order Screen"} component={OptionTransactionDetailOrder}/>
+            <TransactionStack.Screen name="Property Listing" component={PropertyUserListing}/>
+            <TransactionStack.Screen name="Edit Property User Listing" component={EditPropertyUserListing}/>
+            <TransactionStack.Screen name="View Profile" component={ViewUserProfile}/>
+            <TransactionStack.Screen name="Boost Listing" component={BoostPropertyListing}/>
+            <TransactionStack.Screen name="Token" component={TokenScreen}/>
+            <TransactionStack.Screen name="Token Checkout Screen" component={TokenCheckoutScreen}/>
+            <TransactionStack.Screen name="Set Schedule" component={SetSchedule}/>
+            <TransactionStack.Screen name="Schedule" component={Schedule}/>
         </TransactionStack.Navigator>
     );
 };
