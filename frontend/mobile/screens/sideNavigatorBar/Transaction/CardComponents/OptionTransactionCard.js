@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     View,
     Text,
@@ -14,11 +14,14 @@ import {
 } from '../../../../utils/api';
 import { format } from 'date-fns';
 import DefaultImage from '../../../../assets/No-Image-Available.webp';
+import { AuthContext } from '../../../../AuthContext';
 
 const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
     const [propertyListing, setPropertyListing] = useState(null);
     const [propertyImageUri, setPropertyImageUri] = useState('');
     const [cacheBuster, setCacheBuster] = useState(Date.now());
+    const { user } = useContext(AuthContext);
+    const isSeller = user.user.userId === transaction.userId;
     const cardSize = Dimensions.get('window').width;
 
     const fetchPropertyListing = async (id) => {
@@ -53,38 +56,79 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
 
     // Function to get the color based on status
     const getStatusColor = (status) => {
-        switch (status) {
-            case 'REQUEST_PLACED':
-            case 'BUYER_UPLOADED':
-            case 'SELLER_UPLOADED':
-            case 'ADMIN_UPLOADED':
-                return 'yellow';
-            case 'COMPLETED':
-                return 'green';
-            case 'SELLER_DID_NOT_RESPOND':
-                return 'red';
-            default:
-                return 'blue'; // Default color
+        if (isSeller) {
+            switch (status) {
+                case 'REQUEST_PLACED':
+                    return 'yellow';
+                case 'BUYER_UPLOADED':
+                    return 'orange';
+                case 'SELLER_UPLOADED':
+                    return 'orange';
+                case 'ADMIN_UPLOADED':
+                    return 'orange';
+                case 'COMPLETED':
+                    return 'green';
+                case 'SELLER_DID_NOT_RESPOND':
+                    return 'red';
+                default:
+                    return 'blue'; // Default color
+            }
+        } else {
+            switch (status) {
+                case 'REQUEST_PLACED':
+                    return 'orange';
+                case 'BUYER_UPLOADED':
+                    return 'orange';
+                case 'SELLER_UPLOADED':
+                    return 'yellow';
+                case 'ADMIN_UPLOADED':
+                    return 'orange';
+                case 'COMPLETED':
+                    return 'green';
+                case 'SELLER_DID_NOT_RESPOND':
+                    return 'red';
+                default:
+                    return 'blue'; // Default color
+            }
         }
     };
 
     // Function to get the status text based on status
     const getStatusText = (status) => {
-        switch (status) {
-            case 'REQUEST_PLACED':
-                return 'Pending';
-            case 'BUYER_UPLOADED':
-                return 'Buyer Uploaded OTP';
-            case 'SELLER_UPLOADED':
-                return 'Seller Uploaded OTP';
-            case 'ADMIN_UPLOADED':
-                return 'Admin Uploaded OTP';
-            case 'COMPLETED':
-                return 'Confirmed';
-            case 'SELLER_DID_NOT_RESPOND':
-                return 'Seller Did Not Respond';
-            default:
-                return status; // Default status text
+        if (isSeller) {
+            switch (status) {
+                case 'REQUEST_PLACED':
+                    return 'Pending Your Response To Upload';
+                case 'BUYER_UPLOADED':
+                    return 'Awaiting Admin Response To Upload';
+                case 'SELLER_UPLOADED':
+                    return 'Awaiting Buyer Response To Upload';
+                case 'ADMIN_UPLOADED':
+                    return 'Admin Has Uploaded';
+                case 'COMPLETED':
+                    return 'Completed';
+                case 'SELLER_DID_NOT_RESPOND':
+                    return 'Seller Did Not Respond';
+                default:
+                    return status; // Default status text
+            }
+        } else {
+            switch (status) {
+                case 'REQUEST_PLACED':
+                    return 'Awaiting Seller Response To Upload';
+                case 'BUYER_UPLOADED':
+                    return 'Awaiting Admin Response To Upload';
+                case 'SELLER_UPLOADED':
+                    return 'Pending Your Response To Upload';
+                case 'ADMIN_UPLOADED':
+                    return 'Admin Uploaded OTP';
+                case 'COMPLETED':
+                    return 'Confirmed';
+                case 'SELLER_DID_NOT_RESPOND':
+                    return 'Seller Did Not Respond';
+                default:
+                    return status; // Default status text
+            }
         }
     };
 
@@ -123,10 +167,12 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
                 <Text style={styles.dateTime}>
                     Date: {localDate} | Time: {localTime}
                 </Text>
+                {/* <Text>Seller: {isSeller.toString()}</Text> */}
                 {/* Status Indicator */}
                 <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(transaction.optionFeeStatusEnum) }]}>
                     <Text style={[styles.statusText, { color: getStatusTextColor(transaction.optionFeeStatusEnum) }]}>{getStatusText(transaction.optionFeeStatusEnum)}</Text>
                 </View>
+
             </View>
             <View style={styles.timeSection}>
                 <Text style={styles.scheduleTime}>{''}</Text>

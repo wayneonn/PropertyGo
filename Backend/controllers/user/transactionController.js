@@ -648,7 +648,12 @@ exports.createOptionFeeTransaction = async (req, res) => {
 exports.getUserTransactions = async (req, res) => {
     try {
         const transactions = await Transaction.findAll({
-            where: { buyerId: req.params.id },
+            where: { 
+                [Op.or]: [
+                    { userId: req.params.id },
+                    { buyerId: req.params.id }
+                ]
+            },
             order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
         });
         res.json(transactions);
