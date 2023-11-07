@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       optionFeeStatusEnum: {
-        type: DataTypes.ENUM("REQUEST_PLACED", "BUYER_UPLOADED", "SELLER_UPLOADED", "ADMIN_SIGNED", "COMPLETED", "SELLER_DID_NOT_RESPOND", "ADMIN_REJECTED", "BUYER_REJECTED"),
+        type: DataTypes.ENUM("REQUEST_PLACED", "BUYER_UPLOADED", "SELLER_UPLOADED", "ADMIN_SIGNED", "COMPLETED", "SELLER_DID_NOT_RESPOND", "ADMIN_REJECTED", "BUYER_CANCELLED", "SELLER_CANCELLED", "BUYER_REQUEST_REUPLOAD"),
         allowNull: true,
       },
     },

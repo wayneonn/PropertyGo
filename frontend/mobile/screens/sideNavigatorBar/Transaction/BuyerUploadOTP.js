@@ -182,7 +182,7 @@ export default function SellerReuploadOTP({ route }) {
       //   }
       // );
 
-      navigation.navigate('Option Transaction Order Screen', { transactionId: transaction.transactionId });
+      navigation.navigate('Purchase Option Fee', {propertyListing: property, quantity: 1, transaction});
 
       Alert.alert(
         'Document Uploaded',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     View,
     Text,
@@ -12,9 +12,10 @@ import { AuthContext } from '../../../../AuthContext';
 import DefaultImage from '../../../../assets/No-Image-Available-Small.jpg';
 import StepIndicator from 'react-native-step-indicator';
 
-const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transactionDate }) => {
-
-    const labels = ["Payment Made", "Seller Uploaded OTP", "Buyer Uploaded OTP", "Awaiting Admin To Sign As Witness", "Ready To Proceed To Exercise Purchase!"];
+const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transactionDate, transactionUserId }) => {
+    const { user } = useContext(AuthContext);
+    const isSeller = (user.user.userId === transactionUserId)
+    const labels = ["Request Placed", "Seller Uploaded OTP", "Buyer Uploaded OTP", "Awaiting Admin To Sign As Witness", "Ready To Proceed To Exercise Purchase!"];
     const stepIndicatorStyles = {
         stepIndicatorSize: 25,
         currentStepIndicatorSize: 30,
@@ -54,6 +55,112 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
         }
     }
 
+    // Function to get the color based on status
+    const getStatusColor = (status) => {
+        if (isSeller) {
+            switch (status) {
+                case 'REQUEST_PLACED':
+                case 'BUYER_REQUEST_REUPLOAD':
+                    return 'yellow';
+                case 'BUYER_UPLOADED':
+                case 'SELLER_UPLOADED':
+                case 'ADMIN_UPLOADED':
+                    return 'orange';
+                case 'COMPLETED':
+                    return 'green';
+                case 'SELLER_DID_NOT_RESPOND':
+                case 'BUYER_CANCELLED':
+                case 'SELLER_CANCELLED':
+                case 'ADMIN_REJECTED':
+                    return 'red';
+                default:
+                    return 'blue'; // Default color
+            }
+        } else {
+            switch (status) {
+                case 'REQUEST_PLACED':
+                case 'BUYER_UPLOADED':
+                case 'BUYER_REQUEST_REUPLOAD':
+                case 'ADMIN_UPLOADED':
+                    return 'orange';
+                case 'SELLER_UPLOADED':
+                    return 'yellow';
+                case 'COMPLETED':
+                    return 'green';
+                case 'SELLER_DID_NOT_RESPOND':
+                case 'BUYER_CANCELLED':
+                case 'SELLER_CANCELLED':
+                case 'ADMIN_REJECTED':
+                    return 'red';
+                default:
+                    return 'blue'; // Default color
+            }
+        }
+    };
+
+    // Function to get the status text based on status
+    const getStatusText = (status) => {
+        if (isSeller) {
+            switch (status) {
+                case 'REQUEST_PLACED':
+                    return '⚠️ Pending Your Response To Upload';
+                case 'BUYER_UPLOADED':
+                    return '⏳ Awaiting Admin Response To Upload';
+                case 'SELLER_UPLOADED':
+                    return '⏳ Awaiting Buyer Response To Upload';
+                case 'ADMIN_UPLOADED':
+                    return 'Admin Has Uploaded';
+                case 'COMPLETED':
+                    return 'Completed';
+                case 'SELLER_DID_NOT_RESPOND':
+                    return 'Seller Did Not Respond';
+                case 'BUYER_CANCELLED':
+                    return 'Buyer Cancelled The Request';
+                case 'SELLER_CANCELLED':
+                    return 'You Cancelled The Request';
+                case 'ADMIN_REJECTED':
+                    return 'Admin Rejected The Document';
+                default:
+                    return status; // Default status text
+            }
+        } else {
+            switch (status) {
+                case 'REQUEST_PLACED':
+                    return '⏳ Awaiting Seller Response To Upload';
+                case 'BUYER_UPLOADED':
+                    return '⏳ Awaiting Admin Response To Upload';
+                case 'SELLER_UPLOADED':
+                    return '⚠️ Pending Your Response To Upload';
+                case 'ADMIN_UPLOADED':
+                    return 'Admin Uploaded OTP';
+                case 'COMPLETED':
+                    return 'Confirmed';
+                case 'SELLER_DID_NOT_RESPOND':
+                    return 'Seller Did Not Respond';
+                case 'BUYER_CANCELLED':
+                    return 'You Cancelled The Request';
+                case 'SELLER_CANCELLED':
+                    return 'Seller Cancelled The Request';
+                case 'ADMIN_REJECTED':
+                    return 'Admin Rejected The Document';
+                default:
+                    return status; // Default status text
+            }
+        }
+    };
+
+    const getStatusTextColor = (status) => {
+        switch (status) {
+            case 'SELLER_DID_NOT_RESPOND':
+            case 'BUYER_CANCELLED':
+            case 'SELLER_CANCELLED':
+            case 'ADMIN_REJECTED':
+                return 'white';
+            default:
+                return 'black'; // Default color
+        }
+    };
+
     // Format the transactionDate
     const formattedDate = new Date(transactionDate);
     const formattedDateString = formattedDate.toLocaleString('en-US', {
@@ -79,6 +186,7 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
                 </View>
                 <Text style={styles.transactionId}>Transaction ID - {transactionId}</Text>
                 <Text style={styles.transactionDate}>{formattedDateString}</Text>
+                {/* <View style={styles.stepIndicatorView}> */}
                 <StepIndicator
                     customStyles={stepIndicatorStyles}
                     stepCount={5}
@@ -86,7 +194,12 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
                     currentPosition={statusStage(optionFeeStatus)}
                     labels={labels}
                 />
-            
+                {/* </View> */}
+                <Text></Text>
+                <Text></Text>
+                <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(optionFeeStatus) }]}>
+                    <Text style={[styles.statusText, { color: getStatusTextColor(optionFeeStatus) }]}>{getStatusText(optionFeeStatus)}</Text>
+                </View>
             </View>
         </TouchableOpacity>
     );
@@ -101,7 +214,7 @@ const styles = StyleSheet.create({
         margin: 10,
         padding: 15,
         width: '94%',
-        aspectRatio: 1,
+        aspectRatio: 0.8,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -145,6 +258,26 @@ const styles = StyleSheet.create({
     transactionDate: {
         color: '#888',
     },
+    statusIndicator: {
+        position: 'absolute',
+        bottom: 1,
+        left: -5,
+        borderWidth: 0.18,
+        paddingVertical: 2,
+        paddingHorizontal: 8,
+        borderRadius: 5,
+        backgroundColor: 'yellow', // Default color
+    },
+    statusText: {
+        fontSize: 10,
+        letterSpacing: 1,
+        fontWeight: 'bold',
+        color: '#000',
+        padding: 2,
+    },
+    stepIndicatorView: {
+        marginBottom: 1,
+    }
 });
 
 export default TrackOrderCard;

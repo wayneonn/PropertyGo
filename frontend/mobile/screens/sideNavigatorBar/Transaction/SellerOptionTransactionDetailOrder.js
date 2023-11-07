@@ -102,6 +102,7 @@ const OrderDetailScreen = ({ route }) => {
                         optionFee={propertyListing.optionFee}
                         transactionId={transaction.transactionId}
                         transactionDate={transaction.createdAt}
+                        transactionUserId={transaction.userId}
                     />
                 </>
             ) : (

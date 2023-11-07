@@ -64,11 +64,16 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
                     return 'orange';
                 case 'SELLER_UPLOADED':
                     return 'orange';
+                case 'BUYER_REQUEST_REUPLOAD':
+                    return 'yellow';
                 case 'ADMIN_UPLOADED':
                     return 'orange';
                 case 'COMPLETED':
                     return 'green';
                 case 'SELLER_DID_NOT_RESPOND':
+                case 'BUYER_CANCELLED':
+                case 'SELLER_CANCELLED':
+                case 'ADMIN_REJECTED':
                     return 'red';
                 default:
                     return 'blue'; // Default color
@@ -81,11 +86,16 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
                     return 'orange';
                 case 'SELLER_UPLOADED':
                     return 'yellow';
+                case 'BUYER_REQUEST_REUPLOAD':
+                    return 'orange';
                 case 'ADMIN_UPLOADED':
                     return 'orange';
                 case 'COMPLETED':
                     return 'green';
                 case 'SELLER_DID_NOT_RESPOND':
+                case 'BUYER_CANCELLED':
+                case 'SELLER_CANCELLED':
+                case 'ADMIN_REJECTED':
                     return 'red';
                 default:
                     return 'blue'; // Default color
@@ -98,7 +108,7 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
         if (isSeller) {
             switch (status) {
                 case 'REQUEST_PLACED':
-                    return 'Pending Your Response To Upload';
+                    return '⚠️ Pending Your Response To Upload';
                 case 'BUYER_UPLOADED':
                     return 'Awaiting Admin Response To Upload';
                 case 'SELLER_UPLOADED':
@@ -109,6 +119,12 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
                     return 'Completed';
                 case 'SELLER_DID_NOT_RESPOND':
                     return 'Seller Did Not Respond';
+                case 'BUYER_CANCELLED':
+                    return 'Buyer Cancelled The Request';
+                case 'SELLER_CANCELLED':
+                    return 'You Cancelled The Request';
+                case 'ADMIN_REJECTED':
+                    return 'Admin Rejected The Document';
                 default:
                     return status; // Default status text
             }
@@ -119,13 +135,19 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
                 case 'BUYER_UPLOADED':
                     return 'Awaiting Admin Response To Upload';
                 case 'SELLER_UPLOADED':
-                    return 'Pending Your Response To Upload';
+                    return '⚠️ Pending Your Response To Upload';
                 case 'ADMIN_UPLOADED':
                     return 'Admin Uploaded OTP';
                 case 'COMPLETED':
                     return 'Confirmed';
                 case 'SELLER_DID_NOT_RESPOND':
                     return 'Seller Did Not Respond';
+                case 'BUYER_CANCELLED':
+                    return 'You Cancelled The Request';
+                case 'SELLER_CANCELLED':
+                    return 'Seller Cancelled The Request';
+                case 'ADMIN_REJECTED':
+                    return 'Admin Rejected The Document';
                 default:
                     return status; // Default status text
             }
@@ -135,6 +157,9 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
     const getStatusTextColor = (status) => {
         switch (status) {
             case 'SELLER_DID_NOT_RESPOND':
+            case 'BUYER_CANCELLED':
+            case 'SELLER_CANCELLED':
+            case 'ADMIN_REJECTED':
                 return 'white';
             default:
                 return 'black'; // Default color

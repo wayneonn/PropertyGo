@@ -91,7 +91,8 @@ export const updateUserStripeCustomerId = async (stripeCustomerId, user, login) 
     fetchUpdatedUserDetails(user, login);
 };
 
-export const createTransactionRecord = async (propertyListing, user, paymentIntent, status, transactionType, transactionItem, quantity, paymentAmount, gst) => {
+//Option Fee
+export const createTransactionRecord = async (propertyListing, user, status, transactionType, transactionItem, quantity, paymentAmount, gst) => {
     const { data, success, message } = await createOptionFeeTransaction({
         onHoldBalance: propertyListing.optionFee,
         transactionItem: transactionItem,
@@ -101,12 +102,12 @@ export const createTransactionRecord = async (propertyListing, user, paymentInte
         buyerId: user.userId,
         userId: propertyListing.sellerId,
         propertyId: propertyListing.propertyListingId,
-        stripePaymentResponse: paymentIntent,
         status,
         transactionType,
         optionFeeStatusEnum: "REQUEST_PLACED",
     });
   console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
+  return data;
 };
 
 export const createTokenTransactionRecord = async (user, paymentIntent, status, transactionType, tokenName, tokens, tokenAmount, gst) => {

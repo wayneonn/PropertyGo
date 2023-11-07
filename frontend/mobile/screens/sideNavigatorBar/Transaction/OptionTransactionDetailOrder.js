@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +14,9 @@ import {
 } from '../../../utils/transactionApi';
 import StepIndicator from 'react-native-step-indicator';
 import { useFocusEffect } from '@react-navigation/native';
+import {
+    buyerCancelOTP,
+} from '../../../utils/transactionApi';
 
 const OrderDetailScreen = ({ route }) => {
     const navigation = useNavigation();
@@ -73,6 +76,33 @@ const OrderDetailScreen = ({ route }) => {
         }
     };
 
+    const handleCancelOrder = () => {
+        Alert.alert(
+            'Confirm Cancellation',
+            'Are you sure you want to place a cancellation for this property?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'Confirm', onPress: cancelOrder },
+            ],
+            { cancelable: false }
+        );
+    }
+
+    const cancelOrder = async () => {
+        await buyerCancelOTP(transaction.transactionId, {
+            optionToPurchaseDocumentId: transaction.optionToPurchaseDocumentId,
+        });
+        Alert.alert(
+            'Cancel Successful',
+            'You have successfully cancelled the order.'
+        );
+        navigation.navigate('Option Transaction Order Screen', { transactionId: transaction.transactionId });
+    }
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.headerContainer}>
@@ -102,6 +132,7 @@ const OrderDetailScreen = ({ route }) => {
                         optionFee={propertyListing.optionFee}
                         transactionId={transaction.transactionId}
                         transactionDate={transaction.createdAt}
+                        transactionUserId={transaction.userId}
                     />
                 </>
             ) : (
@@ -119,9 +150,6 @@ const OrderDetailScreen = ({ route }) => {
                 <Text></Text>
             )}
 
-            <TouchableOpacity style={styles.cancelButton}>
-                <Text style={styles.cancelButtonText}>Cancel Order</Text>
-            </TouchableOpacity>
         </ScrollView>
     );
 };

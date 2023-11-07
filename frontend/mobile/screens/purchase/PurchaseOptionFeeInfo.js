@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Alert, Button } from 'react-native';
+import { updateUserStripeCustomerId, initializePaymentSheet, createTransactionRecord, fetchUpdatedUserDetails, handleDeepLink } from '../../services/StripeServices';
 import { AuthContext } from '../../AuthContext';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +9,34 @@ const PurchaseOptionFeeInfo = ({ route }) => {
     const { user } = useContext(AuthContext);
     const { propertyListing } = route.params;
     const navigation = useNavigation();
+    const description = "Purchase Option Fee";
+
+    const handleSubmit = () => {
+        Alert.alert(
+            'Confirm Request',
+            'Are you sure you want to place a request for this property?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'Confirm', onPress: createTransaction },
+            ],
+            { cancelable: false }
+        );
+    }
+
+    const createTransaction = async () => {
+        const status = "PENDING"
+        const transactionType = "OPTION_FEE"
+        const gst = false;
+        const paymentAmount = 0; //As payment is still processing
+        const transaction = await createTransactionRecord(propertyListing, user.user, status, transactionType, description, 1, paymentAmount, gst);
+        Alert.alert('Success', 'Your request is confirmed!');
+        console.log("transaction: ", transaction);
+        navigation.navigate('Option Transaction Order Screen', { transactionId: transaction.transactionId });
+    }
 
     return (
         <ScrollView>
@@ -37,10 +66,8 @@ const PurchaseOptionFeeInfo = ({ route }) => {
             <Text style={styles.description}>2. Subsequently, the buyer and seller can continue the transaction process, including arranging the down payment and housing financing through the Platform's chat.</Text>
             <Text></Text>
             {/* Button to proceed to checkout */}
-            <TouchableOpacity style={styles.checkoutButton} onPress={() => {
-                navigation.navigate('Purchase Option Fee', { propertyListing, quantity: 1, });
-            }}>
-                <Text style={styles.checkoutButtonText}>Proceed To Checkout</Text>
+            <TouchableOpacity style={styles.checkoutButton} onPress={handleSubmit}>
+                <Text style={styles.checkoutButtonText}>Proceed To Request</Text>
                 </TouchableOpacity>
         </ScrollView>
     );
