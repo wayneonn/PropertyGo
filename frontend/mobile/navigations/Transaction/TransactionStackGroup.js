@@ -15,6 +15,8 @@ import TokenScreen from "../../screens/token/TokenScreen";
 import TokenCheckoutScreen from "../../screens/token/TokenCheckoutScreen"; 
 import SetSchedule from "../../screens/schedule/SetSchedule";
 import Schedule from "../../screens/schedule/Schedule";
+import PurchaseOptionFee from "../../screens/purchase/PurchaseOptionFeeCheckoutScreen";
+import PurchaseOptionFeeInfo from "../../screens/purchase/PurchaseOptionFeeInfo";
 
 import TransactionList from "../../screens/dashboard/transactionList"
 
@@ -40,6 +42,8 @@ const TransactionStackGroup = () => {
             <TransactionStack.Screen name="Token Checkout Screen" component={TokenCheckoutScreen}/>
             <TransactionStack.Screen name="Set Schedule" component={SetSchedule}/>
             <TransactionStack.Screen name="Schedule" component={Schedule}/>
+            <TransactionStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/>
+            <TransactionStack.Screen name="Purchase Option Fee Info" component={PurchaseOptionFeeInfo}/>
         </TransactionStack.Navigator>
     );
 };
