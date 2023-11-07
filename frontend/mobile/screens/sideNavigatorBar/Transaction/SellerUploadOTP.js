@@ -143,11 +143,43 @@ export default function SellerUploadOTP({ route }) {
 
   const handleSubmit = async () => {
     try {
+
+      // Check if optionExpiryDate is not today or before today
+
+      console.log("optionExpiryDate: ", (optionExpiryDate && optionExpiryDate <= new Date()) )
+
+      if (selectedDocuments.length === 0 && !optionExpiryDate) {
+        Alert.alert(
+          'Missing Document and Option Expiry Date',
+          'Please select a document to upload and choose a valid option expiry date.'
+        );
+        return;
+      } else if (selectedDocuments.length === 0) {
+        Alert.alert(
+          'Missing Document',
+          'Please select a document to upload.'
+        );
+        return;
+      } else if (!optionExpiryDate) {
+        Alert.alert(
+          'Option Expiry Date',
+          'Choose a valid option expiry date.'
+        );
+        return;
+      }
+
+      if ( optionExpiryDate && optionExpiryDate <= new Date()) {
+        Alert.alert(
+          'Invalid Option Expiry Date',
+          'Please select a valid option expiry date that is not today or in the past.'
+        );
+        return;
+      }
+
       console.log("property: ", property)
       const propertyListingId = property.propertyListingId;
       const title = property.title;
       console.log('Property created successfully:', propertyListingId);
-
 
       await fetchFolderData();
 
@@ -160,9 +192,16 @@ export default function SellerUploadOTP({ route }) {
       });
 
       const { success, data, message } = await editProperty(
-        propertyListingId, // Pass the propertyListingId
+        propertyListingId,
         {
-          optionExpiryDate: optionExpiryDate,
+          optionExpiryDate: new Date(
+            optionExpiryDate.getFullYear(),
+            optionExpiryDate.getMonth(),
+            optionExpiryDate.getDate(),
+            16, // Set the time to 16:00:00 (4PM)
+            0,  // Minutes
+            0   // Seconds
+          ),
         }
       );
 
@@ -181,6 +220,7 @@ export default function SellerUploadOTP({ route }) {
       );
     }
   };
+
 
   const createDocument = async (propertyListingId, title) => {
     console.log("createDocument", selectedDocuments);
@@ -381,35 +421,35 @@ export default function SellerUploadOTP({ route }) {
             </Text>
 
             <View style={styles.inputRow}>
-            <Text style={styles.label}>Option Expiry Date:</Text>
-            <TouchableOpacity
-              style={styles.datePickerButton}
-              onPress={() => setDatePickerVisibility(true)}
-            >
-              <Text style={styles.pickerText}>
-                {optionExpiryDate ? optionExpiryDate.toDateString() : 'Option Expiry'}
-              </Text>
-              <Ionicons name="calendar-outline" size={20} color="black" />
-            </TouchableOpacity>
-            <Modal
-              transparent={true}
-              animationType="slide"
-              visible={isDatePickerVisible}
-              onRequestClose={() => setDatePickerVisibility(false)}
-            >
-              <View style={styles.modalView}>
-                <DateTimePicker
-                  isVisible={isDatePickerVisible}
-                  mode="date"
-                  onConfirm={(date) => {
-                    setOptionExpiryDate(date);
-                    setDatePickerVisibility(false);
-                  }}
-                  onCancel={() => setDatePickerVisibility(false)}
-                />
-              </View>
-            </Modal>
-          </View>
+              <Text style={styles.label}>Option Expiry Date:</Text>
+              <TouchableOpacity
+                style={styles.datePickerButton}
+                onPress={() => setDatePickerVisibility(true)}
+              >
+                <Text style={styles.pickerText}>
+                  {optionExpiryDate ? optionExpiryDate.toDateString() : 'Option Expiry'}
+                </Text>
+                <Ionicons name="calendar-outline" size={20} color="black" />
+              </TouchableOpacity>
+              <Modal
+                transparent={true}
+                animationType="slide"
+                visible={isDatePickerVisible}
+                onRequestClose={() => setDatePickerVisibility(false)}
+              >
+                <View style={styles.modalView}>
+                  <DateTimePicker
+                    isVisible={isDatePickerVisible}
+                    mode="date"
+                    onConfirm={(date) => {
+                      setOptionExpiryDate(date);
+                      setDatePickerVisibility(false);
+                    }}
+                    onCancel={() => setDatePickerVisibility(false)}
+                  />
+                </View>
+              </Modal>
+            </View>
 
             {selectedDocuments.length > 0 ? (
               <View style={styles.documentContainer}>
