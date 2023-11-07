@@ -19,11 +19,12 @@ import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
-  getImageUriById,
+  getImageUriById, editProperty
 } from '../../../utils/api';
 import {
   sellerUploadedOTP,
 } from '../../../utils/transactionApi';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 import { MaterialCommunityIcons, Ionicons, FontAwesome } from '@expo/vector-icons'; // Import Ionicons from the correct library
 import { AuthContext } from '../../../AuthContext';
 import { useNavigation } from '@react-navigation/native';
@@ -56,7 +57,7 @@ export default function SellerUploadOTP({ route }) {
     const { area, region } = await getAreaAndRegion(postalCode);
     setProperty({ ...property, area, region });
   };
-  const [documents, setDocuments] = useState([]);
+  const [documentId, setDocumentId] = useState(null);
   const [fullScreenImage, setFullScreenImage] = useState(null);
   const [images, setImages] = useState([]);
   const userId = user.user.userId;
@@ -70,6 +71,8 @@ export default function SellerUploadOTP({ route }) {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
   const [isDocumentUploaded, setIsDocumentUploaded] = useState(false);
+  const [optionExpiryDate, setOptionExpiryDate] = useState(null);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const openHDBLink = () => {
     const url = 'https://services2.hdb.gov.sg/webapp/BB24OTPDlWeb/BB24POptionToPurchase.jsp';
@@ -146,13 +149,24 @@ export default function SellerUploadOTP({ route }) {
       console.log('Property created successfully:', propertyListingId);
 
 
-      fetchFolderData();
+      await fetchFolderData();
 
-      createDocument(propertyListingId, title);
+      const otpDocumentId = await createDocument(propertyListingId, title);
 
-      sellerUploadedOTP(transaction.transactionId);
+      console.log("otpDocumentId: ", otpDocumentId)
 
-      navigation.navigate('Seller Option Transaction Order Screen', { transactionId : transaction.transactionId });
+      await sellerUploadedOTP(transaction.transactionId, {
+        optionToPurchaseDocumentId: otpDocumentId,
+      });
+
+      const { success, data, message } = await editProperty(
+        propertyListingId, // Pass the propertyListingId
+        {
+          optionExpiryDate: optionExpiryDate,
+        }
+      );
+
+      navigation.navigate('Seller Option Transaction Order Screen', { transactionId: transaction.transactionId });
 
       Alert.alert(
         'Document Uploaded',
@@ -202,13 +216,17 @@ export default function SellerUploadOTP({ route }) {
       // Check the response status and log the result
       if (response.ok) {
         const data = await response.json();
-        console.log("Upload response:", data);
+        const firstDocumentId = data.documentIds[0];
+        console.log("Upload response:", data, "documentId: ", firstDocumentId);
+        return firstDocumentId;
         // await documentFetch();
       } else {
         console.log("File upload failed ", response);
+        return null
       }
     } catch (error) {
       console.log("Error upload:", error);
+      return null;
     }
 
   }
@@ -304,125 +322,99 @@ export default function SellerUploadOTP({ route }) {
           {/* Add your square boxes for images here. You might need another package or custom UI for this. */}
         </View>
         <View style={styles.inputContainer}>
-        <View style={styles.propertyDetailsTop}>
-          <View style={styles.propertyDetailsTopLeft}>
-            <Text style={styles.forSaleText}>For Sales</Text>
-            <Text style={styles.title}>{propertyListing.title}</Text>
-            <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
-            <Text style={styles.pricePerSqm}>
-              ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
-            </Text>
-            <Text style={styles.roomsAndSize}>
-              {propertyListing.bed} <Ionicons name="bed" size={16} color="#333" />  |
-              {'  '}{propertyListing.bathroom} <Ionicons name="water" size={16} color="#333" />  |
-              {'  '}{propertyListing.size} sqm  <Ionicons name="cube-outline" size={16} color="#333" /> {/* Added cube icon */}
-            </Text>
+          <View style={styles.propertyDetailsTop}>
+            <View style={styles.propertyDetailsTopLeft}>
+              <Text style={styles.forSaleText}>For Sales</Text>
+              <Text style={styles.title}>{propertyListing.title}</Text>
+              <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
+              <Text style={styles.pricePerSqm}>
+                ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
+              </Text>
+              <Text style={styles.roomsAndSize}>
+                {propertyListing.bed} <Ionicons name="bed" size={16} color="#333" />  |
+                {'  '}{propertyListing.bathroom} <Ionicons name="water" size={16} color="#333" />  |
+                {'  '}{propertyListing.size} sqm  <Ionicons name="cube-outline" size={16} color="#333" /> {/* Added cube icon */}
+              </Text>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.dateContainer}>
-          <FontAwesome name="calendar" size={16} color="#333" />
-          <Text style={styles.dateText}>{"Listed on: "}{formatDate(propertyListing.createdAt)}</Text>
-        </View>
+          <View style={styles.dateContainer}>
+            <FontAwesome name="calendar" size={16} color="#333" />
+            <Text style={styles.dateText}>{"Listed on: "}{formatDate(propertyListing.createdAt)}</Text>
+          </View>
 
-        <Text style={styles.dateContainer}>
-          <Ionicons name="time-outline" size={17} color="#333" />
-          {" "}
-          <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
-        </Text>
-
-        <Text style={styles.locationTitle}>Description</Text>
-        <Text style={styles.description}>{propertyListing.description}</Text>
-        <Text style={styles.description}>{"\n"}</Text>
-
-        {/* Upload Document */}
-        <View>
-          <Text style={styles.locationTitle}>Upload OTP Document</Text>
-          <Text style={styles.description}>
-            1. Click on the{' '}
-            <Text
-              style={{ color: 'blue', textDecorationLine: 'underline' }}
-              onPress={openHDBLink}
-            >
-              HDB Option To Purchase Download Link
-            </Text>{' '}
-            to access the OTP document.
+          <Text style={styles.dateContainer}>
+            <Ionicons name="time-outline" size={17} color="#333" />
+            {" "}
+            <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
           </Text>
 
-          {/* Instruction 2: Provide instructions for downloading and filling the PDF */}
-          <Text style={styles.description}>
-            2. Download the PDF document from the provided link and save it to your device.
-          </Text>
+          <Text style={styles.locationTitle}>Description</Text>
+          <Text style={styles.description}>{propertyListing.description}</Text>
+          <Text style={styles.description}>{"\n"}</Text>
 
-          <Text style={styles.description}>
-            3. Fill in the necessary details in the PDF document as required.
-          </Text>
-
-          <Text style={styles.description}>
-            4. Upload the document in the blue button below.
-          </Text>
-
-          {selectedDocuments.length > 0 ? (
-            <View style={styles.documentContainer}>
-              <TouchableOpacity
-                style={styles.selectedDocumentContainer}
-                onPress={async () => {
-                  if (selectedDocuments && selectedDocuments[0].uri) {
-
-                    const filePath = selectedDocuments[0].uri;
-                    console.log('Opening document:', filePath);
-
-                    // Check if the file exists
-                    const fileInfo = await FileSystem.getInfoAsync(filePath);
-                    // console.log('File exists:', fileInfo)
-                    if (fileInfo.exists) {
-                      // Request permission to access the file
-                      console.log('File exists:', filePath)
-                      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-                      openPdf(filePath);
-                    } else {
-                      console.warn('Selected document file does not exist.');
-                    }
-                  } else {
-                    console.warn('Selected document URI is not valid.');
-                  }
-                }}
+          {/* Upload Document */}
+          <View>
+            <Text style={styles.locationTitle}>Upload OTP Document</Text>
+            <Text style={styles.description}>
+              1. Click on the{' '}
+              <Text
+                style={{ color: 'blue', textDecorationLine: 'underline' }}
+                onPress={openHDBLink}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Ionicons name="document-text-outline" size={24} color="blue" />
-                  <Text style={styles.selectedDocumentText}> Selected Document: </Text>
-                  <Text style={styles.selectedDocumentName}>
-                    {selectedDocuments[0].name}
-                  </Text>
-                </View>
+                HDB Option To Purchase Download Link
+              </Text>{' '}
+              to access the OTP document.
+            </Text>
 
-              </TouchableOpacity>
-              <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity
-                  style={styles.replaceDocumentButton}
-                  onPress={handleSelectDocument}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons name="repeat-outline" size={24} color="white" />
-                    <Text style={styles.removeDocumentButtonText}> Replace</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.removeDocumentButton}
-                  onPress={() => {
-                    // Handle removing the selected document
-                    setSelectedDocuments([]);
-                    setIsDocumentUploaded(false);
+            {/* Instruction 2: Provide instructions for downloading and filling the PDF */}
+            <Text style={styles.description}>
+              2. Download the PDF document from the provided link and save it to your device.
+            </Text>
+
+            <Text style={styles.description}>
+              3. Fill in the necessary details in the PDF document as required.
+            </Text>
+
+            <Text style={styles.description}>
+              4. Upload the document in the blue button below and select the Option Expiry Date.
+            </Text>
+
+            <View style={styles.inputRow}>
+            <Text style={styles.label}>Option Expiry Date:</Text>
+            <TouchableOpacity
+              style={styles.datePickerButton}
+              onPress={() => setDatePickerVisibility(true)}
+            >
+              <Text style={styles.pickerText}>
+                {optionExpiryDate ? optionExpiryDate.toDateString() : 'Option Expiry'}
+              </Text>
+              <Ionicons name="calendar-outline" size={20} color="black" />
+            </TouchableOpacity>
+            <Modal
+              transparent={true}
+              animationType="slide"
+              visible={isDatePickerVisible}
+              onRequestClose={() => setDatePickerVisibility(false)}
+            >
+              <View style={styles.modalView}>
+                <DateTimePicker
+                  isVisible={isDatePickerVisible}
+                  mode="date"
+                  onConfirm={(date) => {
+                    setOptionExpiryDate(date);
+                    setDatePickerVisibility(false);
                   }}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons name="trash-bin-outline" size={24} color="white" />
-                    <Text style={styles.removeDocumentButtonText}> Remove</Text>
-                  </View>
-                </TouchableOpacity>
+                  onCancel={() => setDatePickerVisibility(false)}
+                />
+              </View>
+            </Modal>
+          </View>
 
+            {selectedDocuments.length > 0 ? (
+              <View style={styles.documentContainer}>
                 <TouchableOpacity
-                  style={styles.viewDocumentButton}
+                  style={styles.selectedDocumentContainer}
                   onPress={async () => {
                     if (selectedDocuments && selectedDocuments[0].uri) {
 
@@ -446,25 +438,82 @@ export default function SellerUploadOTP({ route }) {
                   }}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons name="eye-outline" size={24} color="white" />
-                    <Text style={styles.removeDocumentButtonText}>   View    </Text>
+                    <Ionicons name="document-text-outline" size={24} color="blue" />
+                    <Text style={styles.selectedDocumentText}> Selected Document: </Text>
+                    <Text style={styles.selectedDocumentName}>
+                      {selectedDocuments[0].name}
+                    </Text>
                   </View>
-                </TouchableOpacity>
 
+                </TouchableOpacity>
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity
+                    style={styles.replaceDocumentButton}
+                    onPress={handleSelectDocument}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Ionicons name="repeat-outline" size={24} color="white" />
+                      <Text style={styles.removeDocumentButtonText}> Replace</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.removeDocumentButton}
+                    onPress={() => {
+                      // Handle removing the selected document
+                      setSelectedDocuments([]);
+                      setIsDocumentUploaded(false);
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Ionicons name="trash-bin-outline" size={24} color="white" />
+                      <Text style={styles.removeDocumentButtonText}> Remove</Text>
+                    </View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.viewDocumentButton}
+                    onPress={async () => {
+                      if (selectedDocuments && selectedDocuments[0].uri) {
+
+                        const filePath = selectedDocuments[0].uri;
+                        console.log('Opening document:', filePath);
+
+                        // Check if the file exists
+                        const fileInfo = await FileSystem.getInfoAsync(filePath);
+                        // console.log('File exists:', fileInfo)
+                        if (fileInfo.exists) {
+                          // Request permission to access the file
+                          console.log('File exists:', filePath)
+                          const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+                          openPdf(filePath);
+                        } else {
+                          console.warn('Selected document file does not exist.');
+                        }
+                      } else {
+                        console.warn('Selected document URI is not valid.');
+                      }
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Ionicons name="eye-outline" size={24} color="white" />
+                      <Text style={styles.removeDocumentButtonText}>   View    </Text>
+                    </View>
+                  </TouchableOpacity>
+
+                </View>
               </View>
-            </View>
-          ) : (
-            <TouchableOpacity
-              style={styles.selectDocumentButton}
-              onPress={handleSelectDocument}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="add-outline" size={24} color="white" />
-                <Text style={styles.selectDocumentButtonText}>Select OTP Document</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.selectDocumentButton}
+                onPress={handleSelectDocument}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="add-outline" size={24} color="white" />
+                  <Text style={styles.selectDocumentButtonText}>Select OTP Document</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
 
         </View>
       </ScrollView>
@@ -497,7 +546,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    marginBottom: 5,
+    marginBottom: 10,
     fontWeight: 'bold',
   },
   input: {
@@ -741,7 +790,39 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.4, // Add a bottom border to create the line on top of the button
     borderBottomColor: 'grey', // You can change the color to your preference
     marginTop: 8,
-    marginBottom: 2, 
+    marginBottom: 2,
+  },
+  datePickerButton: {
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    borderColor: 'gray',
+    fontSize: 14,
+    padding: 8,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  modalView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  pickerText: {
+    fontSize: 14,
+    color: 'black',
+  },
+  icon: {
+    marginLeft: 10,
+  },
+  inputRow: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    marginLeft: 20,
+    marginTop: 10,
+    marginBottom: 10,
+    width: '90%',
   },
 });
 

@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       optionFeeStatusEnum: {
-        type: DataTypes.ENUM("REQUEST_PLACED", "BUYER_UPLOADED", "SELLER_UPLOADED", "ADMIN_SIGNED", "COMPLETED", "SELLER_DID_NOT_RESPOND"),
+        type: DataTypes.ENUM("REQUEST_PLACED", "BUYER_UPLOADED", "SELLER_UPLOADED", "ADMIN_SIGNED", "COMPLETED", "SELLER_DID_NOT_RESPOND", "ADMIN_REJECTED", "BUYER_REJECTED"),
         allowNull: true,
       },
     },
@@ -84,11 +84,16 @@ module.exports = (sequelize, DataTypes) => {
     Transaction.hasMany(models.Notification, {
       onDelete: "CASCADE",
       foreignKey: {
-          allowNull: true,
-          name: 'transactionId'
+        allowNull: true,
+        name: 'transactionId'
       },
       as: 'notifications',
-  });
+    });
+    Transaction.belongsTo(models.Document, {
+      as: "otpDocument",
+      foreignKey: "optionToPurchaseDocumentId",
+      allowNull: true,
+    });
   };
 
   return Transaction;

@@ -43,11 +43,12 @@ exports.uploadDocuments = async (req, res) => {
 
   // I think the Blob is being saved wrongly.
   try {
+    const documentIds = []; // Array to store the created document IDs
+
     for (const file of files) {
       const bufferData = Buffer.from(file.buffer);
-      console.log([bufferData]);
 
-      await Document.create({
+      const createdDocument = await Document.create({
         title: file.originalname,
         type: file.mimetype,
         size: file.size,
@@ -59,8 +60,11 @@ exports.uploadDocuments = async (req, res) => {
         partnerApplicationId: partnerApplicationId,
         propertyId: propertyId,
       });
+
+      documentIds.push(createdDocument.documentId); // Store the created document's ID
     }
 
+    // Check if there are any partner application notifications to create
     if (partnerApplicationId != null) {
       const user = await User.findByPk(userId);
 
@@ -80,17 +84,14 @@ exports.uploadDocuments = async (req, res) => {
       req.io.emit("newPartnerApplicationNotification", req.body.content);
     }
 
-    res.json({ message: "File upload successful" });
+    // Return the document IDs along with the success message as JSON
+    console.log("documentIds: ", documentIds);
+    res.json({ message: "File upload successful", documentIds });
   } catch (error) {
     // Handle any errors
     console.error(error);
     res.status(500).json({ message: "File upload to Firebase failed" });
   }
-
-  // Check the data received.
-  // Generally the data is sent over the right way.
-  console.log(files);
-  console.log(description);
 };
 
 exports.getDocumentsMetadata = async (req, res) => {

@@ -647,6 +647,7 @@ exports.createOptionFeeTransaction = async (req, res) => {
 }
 
 exports.sellerUploadedOTP = async (req, res) => {
+    const transactionData = req.body;
     const { transactionId } = req.params; // Assuming you pass transactionId as a parameter
     try {
         const transaction = await Transaction.findByPk(transactionId);
@@ -656,6 +657,7 @@ exports.sellerUploadedOTP = async (req, res) => {
 
         // Update the transaction with optionFeeStatusEnum "SELLER_UPLOADED"
         transaction.optionFeeStatusEnum = "SELLER_UPLOADED";
+        transaction.optionToPurchaseDocumentId = transactionData.optionToPurchaseDocumentId;
         await transaction.save();
 
         const property = await Property.findByPk(transaction.propertyId);

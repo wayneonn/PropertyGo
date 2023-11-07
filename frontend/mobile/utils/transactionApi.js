@@ -138,7 +138,7 @@ export const createTransaction = async (transactionData) => {
     }
   };
 
-  export const sellerUploadedOTP = async (transactionId) => {
+  export const sellerUploadedOTP = async (transactionId, transactionData) => {
     // console.log("transactionData: ", transactionData)
     try {
       const response = await fetch(`${BASE_URL}/user/transactions/sellerUploadedOTP/${transactionId}`, {
@@ -146,6 +146,7 @@ export const createTransaction = async (transactionData) => {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(transactionData),
       });
   
       if (response.ok) {
