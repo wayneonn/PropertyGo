@@ -3,6 +3,7 @@ import ViewAppointmentDetail from "../../screens/sideNavigatorBar/Appointment/Vi
 import TransactionMainTabNavigator from './TransactionMainTabNavigator';
 import TransactionScreen from '../../screens/sideNavigatorBar/Transaction/TransactionScreen';
 import SellerUploadOTP from '../../screens/sideNavigatorBar/Transaction/SellerUploadOTP';
+import SellerReuploadOTP from '../../screens/sideNavigatorBar/Transaction/SellerReuploadOTP';
 import BuyerUploadOTP from '../../screens/sideNavigatorBar/Transaction/BuyerUploadOTP';
 import OptionTransactionDetailOrder from '../../screens/sideNavigatorBar/Transaction/OptionTransactionDetailOrder';
 import SellerOptionTransactionDetailOrder from '../../screens/sideNavigatorBar/Transaction/SellerOptionTransactionDetailOrder';
@@ -27,6 +28,7 @@ const TransactionStackGroup = () => {
             <TransactionStack.Screen name={"Transaction Main"} component={TransactionMainTabNavigator}/>
             <TransactionStack.Screen name={"Transaction Screen"} component={TransactionScreen}/>
             <TransactionStack.Screen name={"Seller Upload OTP"} component={SellerUploadOTP}/>
+            <TransactionStack.Screen name={"Seller Reupload OTP"} component={SellerReuploadOTP}/>
             <TransactionStack.Screen name={"Buyer Upload OTP"} component={BuyerUploadOTP}/>
             <TransactionStack.Screen name={"Option Transaction Order Screen"} component={OptionTransactionDetailOrder}/>
             <TransactionStack.Screen name={"Seller Option Transaction Order Screen"} component={SellerOptionTransactionDetailOrder}/>

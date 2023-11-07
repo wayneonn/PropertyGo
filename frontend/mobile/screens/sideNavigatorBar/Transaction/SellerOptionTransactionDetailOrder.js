@@ -116,7 +116,18 @@ const OrderDetailScreen = ({ route }) => {
                     <Text style={styles.cancelButtonText}>Upload OTP</Text>
                 </TouchableOpacity>
             ) : (
-                <Text></Text>
+                <></>
+            )}
+            
+            {transaction && transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ? (
+                <TouchableOpacity style={styles.uploadButton}
+                onPress={() => {
+                    navigation.navigate('Seller Reupload OTP', { property : propertyListing, transaction : transaction});
+                  }}>
+                    <Text style={styles.cancelButtonText}>Reupload OTP</Text>
+                </TouchableOpacity>
+            ) : (
+                <></>
             )}
 
             <TouchableOpacity style={styles.cancelButton}>

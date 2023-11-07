@@ -31,7 +31,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getAreaAndRegion } from '../../../services/GetAreaAndRegion';
 import { DocumentSelector } from '../../../components/PropertyDocumentSelector';
 import * as DocumentPicker from 'expo-document-picker';
-import { BASE_URL, fetchFolders, createFolder, fetchTransactions } from "../../../utils/documentApi";
+import { BASE_URL, fetchFolders, createFolder, fetchTransactions, updateDocument } from "../../../utils/documentApi";
 import * as FileSystem from 'expo-file-system'; // Import FileSystem from expo-file-system
 import * as Permissions from 'expo-permissions';
 import * as IntentLauncher from 'expo-intent-launcher';
@@ -48,7 +48,7 @@ const propertyTypes = [
 ]
 
 
-export default function SellerUploadOTP({ route }) {
+export default function SellerReuploadOTP({ route }) {
   const { property, transaction } = route.params;
   const propertyListing = property;
   const { user } = useContext(AuthContext);
@@ -146,7 +146,7 @@ export default function SellerUploadOTP({ route }) {
 
       // Check if optionExpiryDate is not today or before today
 
-      console.log("optionExpiryDate: ", (optionExpiryDate && optionExpiryDate <= new Date()) )
+      console.log("optionExpiryDate: ", (optionExpiryDate && optionExpiryDate <= new Date()))
 
       if (selectedDocuments.length === 0 && !optionExpiryDate) {
         Alert.alert(
@@ -176,14 +176,15 @@ export default function SellerUploadOTP({ route }) {
         return;
       }
 
-      console.log("property: ", property)
       const propertyListingId = property.propertyListingId;
       const title = property.title;
-      console.log('Property created successfully:', propertyListingId);
+      console.log('Property Id:', propertyListingId);
 
       await fetchFolderData();
 
-      const otpDocumentId = await createDocument(propertyListingId, title);
+      await createDocument(propertyListingId, title);
+
+      const otpDocumentId = transaction.optionToPurchaseDocumentId;
 
       console.log("otpDocumentId: ", otpDocumentId)
 
@@ -209,14 +210,14 @@ export default function SellerUploadOTP({ route }) {
 
       Alert.alert(
         'Document Uploaded',
-        'The OTP Document has been uploaded successfully.'
+        'The OTP Document has been updated successfully.'
       );
 
     } catch (error) {
       console.log('Error uploading document:', error);
       Alert.alert(
         'Error',
-        'An error occurred while uploading the document.'
+        'An error occurred while updating the document.'
       );
     }
   };
@@ -226,50 +227,52 @@ export default function SellerUploadOTP({ route }) {
     console.log("createDocument", selectedDocuments);
     try {
       const fileData = new FormData();
-
+  
       selectedDocuments.forEach((document) => {
         const fileUri = document.uri;
         const fileType = document.mimeType;
         const fileName = document.name;
         const folderId = propertyFolderId;
-
+  
         fileData.append("documents", {
           uri: fileUri,
           name: fileName,
           type: fileType,
         });
-
+  
         console.log("File URI: ", fileUri);
-
+  
         // Append other required data to the FormData object
         fileData.append("propertyId", propertyListingId);
         fileData.append("description", `OTP Document (${title})`);
         fileData.append("folderId", folderId);
         fileData.append("userId", user.user.userId);
       });
-
-      const response = await fetch(`${BASE_URL}/user/documents/upload`, {
-        method: "post",
+  
+      console.log("fileData: ", fileData);
+      console.log("optionToPurchaseDocumentId at createdocument: ", transaction.optionToPurchaseDocumentId);
+      const response = await fetch(`${BASE_URL}/user/documents/${transaction.optionToPurchaseDocumentId}/update`, {
+        method: "put",
         body: fileData,
       });
-
+  
       // Check the response status and log the result
       if (response.ok) {
         const data = await response.json();
-        const firstDocumentId = data.documentIds[0];
+        const firstDocumentId = data.documentId;
         console.log("Upload response:", data, "documentId: ", firstDocumentId);
         return firstDocumentId;
         // await documentFetch();
       } else {
         console.log("File upload failed ", response);
-        return null
+        return null;
       }
     } catch (error) {
       console.log("Error upload:", error);
       return null;
     }
-
-  }
+  };
+  
 
   const openPdf = async (filePath) => {
     try {
@@ -319,6 +322,64 @@ export default function SellerUploadOTP({ route }) {
     const min = String(date.getMinutes()).padStart(2, '0');
     return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
   };
+
+  const downloadPDF = async () => {
+    const response = await fetch(
+        `${BASE_URL}/user/documents/${transaction.optionToPurchaseDocumentId}/data`
+    );
+    console.log(response)
+    const result = await response.json();
+    console.log(result)
+    // The web version is kinda not needed.
+    if (Platform.OS === "web") {
+        const byteCharacters = atob(result.document); // Decode the Base64 string
+        const byteArrays = [];
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+            const slice = byteCharacters.slice(offset, offset + 512);
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+        const blob = new Blob(byteArrays, {type: "application/pdf"});
+        const url = URL.createObjectURL(blob);
+        await openBrowserAsync(url); // Assuming this opens the URL in a new browser tab/window
+        FileSaver.saveAs(blob, document.name); // Assuming document.name is the desired name of the downloaded file
+        URL.revokeObjectURL(url);
+    } else {
+        try {
+            // Slight issue opening certain PDF files.
+            // Native FileSystem logic
+
+            const fileName = (FileSystem.documentDirectory + result.title).replace(/\s/g, '_');
+            console.log('Filename:', fileName);
+
+            await FileSystem.writeAsStringAsync(
+                fileName,
+                result.document,
+                {encoding: FileSystem.EncodingType.Base64}
+            );
+
+            const isAvailable = await Sharing.isAvailableAsync();
+            if (!isAvailable) {
+                alert(`Uh oh, sharing isn't available on your platform`);
+                return;
+            }
+
+            if (fileName) {
+                // alert("Downloaded to " + fileName);
+                await Sharing.shareAsync(fileName);
+            } else {
+                alert("Failed to download PDF");
+            }
+        } catch (error) {
+            console.error("Error opening the file", error);
+            alert("Failed to open PDF");
+        }
+    }
+};
 
   return (
     <View style={styles.container}>
@@ -395,7 +456,7 @@ export default function SellerUploadOTP({ route }) {
 
           {/* Upload Document */}
           <View>
-            <Text style={styles.locationTitle}>Upload OTP Document</Text>
+            <Text style={styles.locationTitle}>Reupload OTP Document</Text>
             <Text style={styles.description}>
               1. Click on the{' '}
               <Text
@@ -477,7 +538,7 @@ export default function SellerUploadOTP({ route }) {
                     }
                   }}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap',  }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', }}>
                     <Ionicons name="document-text-outline" size={24} color="blue" />
                     <Text style={styles.selectedDocumentText}> Selected Document: </Text>
                     <Text style={styles.selectedDocumentName}>
@@ -486,7 +547,7 @@ export default function SellerUploadOTP({ route }) {
                   </View>
 
                 </TouchableOpacity>
-                <View style={{ flexDirection: 'row', marginBottom: 40 }}>
+                <View style={{ flexDirection: 'row', marginBottom: 50 }}>
                   <TouchableOpacity
                     style={styles.replaceDocumentButton}
                     onPress={handleSelectDocument}
@@ -555,6 +616,16 @@ export default function SellerUploadOTP({ route }) {
             )}
           </View>
 
+          <TouchableOpacity
+            style={styles.viewCurrentDocumentButton}
+            onPress={downloadPDF}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Ionicons name="cloud-download-outline" size={24} color="white" />
+              <Text style={styles.selectDocumentButtonText}>{"  "}View OTP Document</Text>
+            </View>
+          </TouchableOpacity>
+
         </View>
       </ScrollView>
       <View style={styles.invoiceButtonBorder}></View>
@@ -613,6 +684,17 @@ const styles = StyleSheet.create({
     marginLeft: 70,
     marginTop: 20,
     marginBottom: -40,
+  },
+  viewCurrentDocumentButton: {
+    backgroundColor: '#9b59b6',
+    padding: 10,
+    borderRadius: 25,
+    alignItems: 'center',
+    width: '60%',
+    justifyContent: 'center',
+    marginLeft: 70,
+    marginTop: 60,
+    marginBottom: -80,
   },
   selectDocumentButtonText: {
     color: 'white',
@@ -708,7 +790,7 @@ const styles = StyleSheet.create({
   },
   selectedDocumentName: {
     fontSize: 16,
-    marginTop: 0,
+    
   },
   imageGalleryContainer: {
     position: 'relative',
