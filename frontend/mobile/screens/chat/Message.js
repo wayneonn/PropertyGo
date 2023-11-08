@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, TextInput, RefreshControl, Image, TouchableHighlight, FlatList, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Button, TextInput, RefreshControl, Image, TouchableHighlight, FlatList, useWindowDimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -11,7 +11,7 @@ import { getChatById } from '../../utils/chatApi';
 import { addMessage } from '../../utils/messageApi'
 import base64 from 'react-native-base64';
 
-const Message = ({ route }) => {
+const Message = ({ route, navigation }) => {
 
   const { user } = useContext(AuthContext);
   const [messages, setMessages] = useState([]);
@@ -66,8 +66,47 @@ const Message = ({ route }) => {
 
   };
 
+  const handlePropertyPress = (propertyListingId) => {
+    navigation.navigate('Property Listing', { propertyListingId })
+  };
+
+  const handleMakeOffer = () => {
+    // navigation.navigate("Message", { chatId });
+  };
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={() => handlePropertyPress(chat.propertyListing.propertyListingId)}>
+        <View style={styles.PropertyItemContainer}>
+          <View style={styles.contentContainer}>
+            <View style={styles.detailContainer}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>{chat ? chat.propertyListing.title : "Loading"}</Text>
+              </View>
+              <Text style={styles.message}>
+                ${chat ? chat.propertyListing.price.toFixed(2) : "0.00"}
+              </Text>
+              <TouchableOpacity
+                style={styles.makeOfferButton}
+                onPress={handleMakeOffer}
+              >
+                <Text style={styles.buttonText}>Make Offer!</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.propertyImageContainer}>
+              {chat && chat.propertyListing.propertyImages.length !== 0 ? (
+                <Image source={{ uri: `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.propertyListing.propertyImages[0].data)}` }} style={styles.propertyImage} />
+              ) : (
+                <View style={styles.propertyImagePlaceholder}>
+                  <Ionicons name="home" size={24} color="white" />
+                </View>
+              )}
+            </View>
+          </View>
+          {/* <Button style={styles.makeOfferButton} title="Make Offer!" onPress={ } /> */}
+
+        </View>
+      </TouchableOpacity>
       <FlatList
         data={messages}
         keyExtractor={(item, index) => index.toString()}
@@ -88,7 +127,7 @@ const Message = ({ route }) => {
               <Text style={styles.time}>{getTimeAgo(item.createdAt)}</Text>
             </View>
           </View>
-          
+
         )}
       />
       <View style={styles.horizontalContainer}>
@@ -108,22 +147,74 @@ const Message = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+  PropertyItemContainer: {
+    backgroundColor: 'white',
+    // borderRadius: 5,
+    // marginHorizontal: 10,
+    // marginVertical: 5,
+    borderBottomWidth: 0.5,
+    paddingVertical: 10,
+    borderColor: "#ccc"
+  },
+  contentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    // borderWidth: 1,
+    paddingHorizontal: 14
+  },
+  detailContainer: {
+    flex: 1, // Allow the message container to take up available space
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  title: {
+    fontSize: 16,
+    // marginLeft: 15,
+    marginRight: 5,
+    fontWeight: 'bold',
+  },
+  message: {
+    fontSize: 15,
+    // borderWidth:1
+    // marginLeft: 15,
+    // alignContent:"center",
+    // justifyContent:"center"
+  },
+  propertyImage: {
+    width: 60, // Make the property image take up the full width of its container
+    height: 60,
+    borderRadius: 5,
+  },
+  propertyImagePlaceholder: {
+    width: 60, // Make the placeholder take up the full width of its container
+    height: 60,
+    borderRadius: 5,
+    backgroundColor: 'gray',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
-    padding: 10,
+    // padding: 10,
     backgroundColor: "white"
   },
   messageSentContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end', 
+    justifyContent: 'flex-end',
     alignItems: 'center',
+    paddingHorizontal: 10,
     // borderWidth:1,
   },
   messageReceivedContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-start', 
+    justifyContent: 'flex-start',
     alignItems: 'center',
     maxWidth: 350,
+    paddingHorizontal: 10,
     // borderWidth:1,
   },
   sentMessage: {
@@ -184,6 +275,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  makeOfferButton: {
+    backgroundColor: "#FFD700",
+    borderWidth: 1,
+    // marginHorizontal: 15,
+    marginTop: 5,
+    width: '35%',
+    paddingVertical: 5,
+    alignItems: "center",
+    borderRadius: 6
+  },
+  buttonText:{
+    fontWeight: 'bold',
+  }
 });
 
 export default Message;

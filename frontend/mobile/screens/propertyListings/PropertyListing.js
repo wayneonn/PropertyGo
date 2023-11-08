@@ -23,6 +23,7 @@ import DefaultImage from '../../assets/No-Image-Available.webp';
 import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FullScreenImage from './FullScreenImage';
+import { createChat } from '../../utils/chatApi';
 
 
 const PropertyListingScreen = ({ route }) => {
@@ -280,6 +281,21 @@ const PropertyListingScreen = ({ route }) => {
     }
   };
 
+  const handleChatWithSeller = async () => {
+
+    chatData = {
+      propertyId: propertyListingId,
+      receiverId: propertyListing.sellerId
+    }
+
+    const data = await createChat(user.user.userId, chatData);
+
+    console.log(data.chatId)
+
+    navigation.navigate("Message", { chatId: data.chatId });
+
+  }
+
 
   return (
     <View style={styles.mainContainer}>
@@ -477,7 +493,7 @@ const PropertyListingScreen = ({ route }) => {
             >
               <Ionicons name="calendar-outline" size={24} color="black" />
             </TouchableOpacity> */}
-            <TouchableOpacity style={styles.chatWithSellerButton}>
+            <TouchableOpacity style={styles.chatWithSellerButton} onPress={handleChatWithSeller}>
               <Text style={styles.buttonTextUser}>Chat With Seller</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.viewScheduleButton} onPress={() => {

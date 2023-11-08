@@ -22,12 +22,12 @@ const createChat = async (req, res) => {
         });
 
         if (existingChat) {
-            return res.status(400).json({ message: 'Chat with the same combination already exists' });
+            return res.status(201).json({ chatId: existingChat.chatId });
         }
 
         // If no existing chat is found, create a new chat
         const chat = await Chat.create({ senderId: parsedSenderId, receiverId, propertyId });
-        res.status(201).json({ chat });
+        res.status(201).json({ chatId: chat.chatId});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -52,11 +52,19 @@ const getUserReceiverChat = async (req, res) => {
             },
             {
                 model: Property,
-                as: 'propertyListing'
+                as: 'propertyListing',
+                include: [{
+                    model: Image,
+                    as: 'propertyImages',
+                }]
             },
             {
                 model: Message,
                 as: 'messages'
+            },
+            {
+                model: Request,
+                as: 'request'
             }]
         });
 
@@ -84,6 +92,10 @@ const getUserSenderChat = async (req, res) => {
                 as: 'receiver',
             },
             {
+                model: User,
+                as: 'sender',
+            },
+            {
                 model: Property,
                 as: 'propertyListing',
                 include: [{
@@ -94,7 +106,7 @@ const getUserSenderChat = async (req, res) => {
             {
                 model: Message,
                 as: 'messages'
-            }]
+            }],
         });
         // console.log(senderChats);
 
@@ -135,6 +147,10 @@ const getChatById = async (req, res) => {
             {
                 model: Message,
                 as: 'messages'
+            },
+            {
+                model: Request,
+                as: 'request'
             }],
         });
 
