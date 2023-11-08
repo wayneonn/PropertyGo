@@ -117,6 +117,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      flatType: {
+        type: DataTypes.ENUM("1_ROOM", "2_ROOM", "3_ROOM", "4_ROOM", "5_ROOM", "EXECUTIVE"),
+        allowNull: false,
+      },
     },
     {
       freezeTableName: true,
