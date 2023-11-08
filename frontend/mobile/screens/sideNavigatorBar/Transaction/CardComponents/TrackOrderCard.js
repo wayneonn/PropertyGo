@@ -12,7 +12,7 @@ import { AuthContext } from '../../../../AuthContext';
 import DefaultImage from '../../../../assets/No-Image-Available-Small.jpg';
 import StepIndicator from 'react-native-step-indicator';
 
-const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transactionDate, transactionUserId }) => {
+const TrackOrderCard = ({ optionFeeStatus, paymentAmount, onHoldBalance, transactionId, transactionDate, transactionUserId }) => {
     const { user } = useContext(AuthContext);
     const isSeller = (user.user.userId === transactionUserId)
     const labels = ["Request Placed", "Seller Uploaded OTP", "Buyer Uploaded OTP", "Awaiting Admin To Sign As Witness", "Ready To Proceed To Exercise Purchase!"];
@@ -50,7 +50,7 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
             return 3;
         } else if (status === 'ADMIN_UPLOADED') {
             return 4;
-        } else if (status === 'COMPLETED') {
+        } else if (status === 'COMPLETED' || status === 'ADMIN_SIGNED' || status === 'PAID_OPTION_EXERCISE_FEE') {
             return 5;
         }
     }
@@ -67,6 +67,8 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
                 case 'ADMIN_UPLOADED':
                     return 'orange';
                 case 'COMPLETED':
+                case 'ADMIN_SIGNED':
+                case 'PAID_OPTION_EXERCISE_FEE':
                     return 'green';
                 case 'SELLER_DID_NOT_RESPOND':
                 case 'BUYER_CANCELLED':
@@ -86,6 +88,8 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
                 case 'SELLER_UPLOADED':
                     return 'yellow';
                 case 'COMPLETED':
+                case 'ADMIN_SIGNED':
+                case 'PAID_OPTION_EXERCISE_FEE':
                     return 'green';
                 case 'SELLER_DID_NOT_RESPOND':
                 case 'BUYER_CANCELLED':
@@ -110,6 +114,7 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
                     return '⏳ Awaiting Buyer Response To Upload';
                 case 'ADMIN_UPLOADED':
                     return 'Admin Has Uploaded';
+                case 'ADMIN_SIGNED':
                 case 'COMPLETED':
                     return 'Completed';
                 case 'SELLER_DID_NOT_RESPOND':
@@ -118,8 +123,12 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
                     return 'Buyer Cancelled The Request';
                 case 'SELLER_CANCELLED':
                     return 'You Cancelled The Request';
+                case 'BUYER_REQUEST_REUPLOAD':
+                    return '⚠️ Pending Your Response To Reupload';
                 case 'ADMIN_REJECTED':
                     return 'Admin Rejected The Document';
+                case 'PAID_OPTION_EXERCISE_FEE':
+                    return 'Paid Option Exercise Fee';
                 default:
                     return status; // Default status text
             }
@@ -133,6 +142,7 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
                     return '⚠️ Pending Your Response To Upload';
                 case 'ADMIN_UPLOADED':
                     return 'Admin Uploaded OTP';
+                case 'ADMIN_SIGNED':
                 case 'COMPLETED':
                     return 'Confirmed';
                 case 'SELLER_DID_NOT_RESPOND':
@@ -141,8 +151,12 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
                     return 'You Cancelled The Request';
                 case 'SELLER_CANCELLED':
                     return 'Seller Cancelled The Request';
+                case 'BUYER_REQUEST_REUPLOAD':
+                    return 'Buyer Requested Reupload';
                 case 'ADMIN_REJECTED':
                     return 'Admin Rejected The Document';
+                case 'PAID_OPTION_EXERCISE_FEE':
+                    return 'Paid Option Exercise Fee';
                 default:
                     return status; // Default status text
             }
@@ -155,6 +169,9 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
             case 'BUYER_CANCELLED':
             case 'SELLER_CANCELLED':
             case 'ADMIN_REJECTED':
+            case 'ADMIN_SIGNED':
+            case 'COMPLETED':
+            case 'PAID_OPTION_EXERCISE_FEE':
                 return 'white';
             default:
                 return 'black'; // Default color
@@ -172,17 +189,29 @@ const TrackOrderCard = ({ optionFeeStatus, optionFee, transactionId, transaction
         hour12: true,
     });
 
+    const formatPrice = (price) => {
+        if (price !== null && !isNaN(price)) {
+          const formattedPrice = price.toFixed(2); // Format to 2 decimal places
+          return formattedPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        } else {
+          return 'N/A'; // Handle the case when price is null, undefined, or not a number
+        }
+      };
+
     return (
-        <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
+        <TouchableOpacity style={styles.card} onPress={() => console.log("pressed!")}>
             <View style={styles.propertyDetails}>
                 <View style={styles.orderTitleContainer}>
                     <Text style={styles.orderStatus}>Track Order</Text>
-                    {typeof optionFee === 'number' && (
+                    {/* {typeof onHoldBalance === 'number' && ( */}
                         <View style={styles.amountContainer}>
                             <Text style={styles.amountLabel}>Amt:</Text>
-                            <Text style={styles.amountValue}>${optionFee.toFixed(2)}</Text>
+                            <Text style={styles.amountValue}>${formatPrice(
+                                onHoldBalance === 0 ?
+                                    paymentAmount : onHoldBalance
+                            )}</Text>
                         </View>
-                    )}
+                    {/* )} */}
                 </View>
                 <Text style={styles.transactionId}>Transaction ID - {transactionId}</Text>
                 <Text style={styles.transactionDate}>{formattedDateString}</Text>

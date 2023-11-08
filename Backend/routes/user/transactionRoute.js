@@ -4,7 +4,7 @@ const { getTransactions, getTopTenTransactions, getTransactionValueByLastSixMont
     getTransactionPDFReport, getUserCountsByCountry, getTransactionByTransactionId, createTransaction, getUserTransactions,
     getAverageValues, getAverageTransactions, getTransactionInvoicePdf, createOptionFeeTransaction,
     sellerUploadedOTP, buyerUploadedOTP, updateTransaction, buyerCancelOTP, buyerRequestReupload,
-    sellerCancelledOTP
+    sellerCancelledOTP, buyerPaidOptionExerciseFee
 } = require("../../controllers/user/transactionController")
 
 
@@ -29,6 +29,7 @@ router.post("/transactions/buyerUploadedOTP/:transactionId", buyerUploadedOTP)
 router.post("/transactions/sellerCancelledOTP/:transactionId", sellerCancelledOTP)
 router.post("/transactions/buyerRequestReupload/:transactionId", buyerRequestReupload)
 router.post("/transactions/buyerCancelOTP/:transactionId", buyerCancelOTP)
+router.post("/transactions/buyerPaidOptionExerciseFee/:transactionId", buyerPaidOptionExerciseFee)
 router.post("/transactions/createOptionFeeTransaction", createOptionFeeTransaction)
 router.get("/transactions/data/average", getAverageValues)
 router.get("/transactions/data/count", getAverageTransactions)

@@ -59,16 +59,15 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
         if (isSeller) {
             switch (status) {
                 case 'REQUEST_PLACED':
-                    return 'yellow';
-                case 'BUYER_UPLOADED':
-                    return 'orange';
-                case 'SELLER_UPLOADED':
-                    return 'orange';
                 case 'BUYER_REQUEST_REUPLOAD':
                     return 'yellow';
+                case 'BUYER_UPLOADED':
+                case 'SELLER_UPLOADED':
                 case 'ADMIN_UPLOADED':
                     return 'orange';
                 case 'COMPLETED':
+                case 'ADMIN_SIGNED':
+                case 'PAID_OPTION_EXERCISE_FEE':
                     return 'green';
                 case 'SELLER_DID_NOT_RESPOND':
                 case 'BUYER_CANCELLED':
@@ -81,16 +80,15 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
         } else {
             switch (status) {
                 case 'REQUEST_PLACED':
-                    return 'orange';
                 case 'BUYER_UPLOADED':
+                case 'BUYER_REQUEST_REUPLOAD':
+                case 'ADMIN_UPLOADED':
                     return 'orange';
                 case 'SELLER_UPLOADED':
                     return 'yellow';
-                case 'BUYER_REQUEST_REUPLOAD':
-                    return 'orange';
-                case 'ADMIN_UPLOADED':
-                    return 'orange';
                 case 'COMPLETED':
+                case 'ADMIN_SIGNED':
+                case 'PAID_OPTION_EXERCISE_FEE':
                     return 'green';
                 case 'SELLER_DID_NOT_RESPOND':
                 case 'BUYER_CANCELLED':
@@ -110,11 +108,12 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
                 case 'REQUEST_PLACED':
                     return '⚠️ Pending Your Response To Upload';
                 case 'BUYER_UPLOADED':
-                    return 'Awaiting Admin Response To Upload';
+                    return '⏳ Awaiting Admin Response To Upload';
                 case 'SELLER_UPLOADED':
-                    return 'Awaiting Buyer Response To Upload';
+                    return '⏳ Awaiting Buyer Response To Upload';
                 case 'ADMIN_UPLOADED':
                     return 'Admin Has Uploaded';
+                case 'ADMIN_SIGNED':
                 case 'COMPLETED':
                     return 'Completed';
                 case 'SELLER_DID_NOT_RESPOND':
@@ -123,21 +122,26 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
                     return 'Buyer Cancelled The Request';
                 case 'SELLER_CANCELLED':
                     return 'You Cancelled The Request';
+                case 'BUYER_REQUEST_REUPLOAD':
+                    return '⚠️ Pending Your Response To Reupload';
                 case 'ADMIN_REJECTED':
                     return 'Admin Rejected The Document';
+                case 'PAID_OPTION_EXERCISE_FEE':
+                    return 'Paid Option Exercise Fee';
                 default:
                     return status; // Default status text
             }
         } else {
             switch (status) {
                 case 'REQUEST_PLACED':
-                    return 'Awaiting Seller Response To Upload';
+                    return '⏳ Awaiting Seller Response To Upload';
                 case 'BUYER_UPLOADED':
-                    return 'Awaiting Admin Response To Upload';
+                    return '⏳ Awaiting Admin Response To Upload';
                 case 'SELLER_UPLOADED':
                     return '⚠️ Pending Your Response To Upload';
                 case 'ADMIN_UPLOADED':
                     return 'Admin Uploaded OTP';
+                case 'ADMIN_SIGNED':
                 case 'COMPLETED':
                     return 'Confirmed';
                 case 'SELLER_DID_NOT_RESPOND':
@@ -146,8 +150,12 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
                     return 'You Cancelled The Request';
                 case 'SELLER_CANCELLED':
                     return 'Seller Cancelled The Request';
+                case 'BUYER_REQUEST_REUPLOAD':
+                    return 'Buyer Requested Reupload';
                 case 'ADMIN_REJECTED':
                     return 'Admin Rejected The Document';
+                case 'PAID_OPTION_EXERCISE_FEE':
+                    return 'Paid Option Exercise Fee';
                 default:
                     return status; // Default status text
             }
@@ -160,6 +168,9 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
             case 'BUYER_CANCELLED':
             case 'SELLER_CANCELLED':
             case 'ADMIN_REJECTED':
+            case 'ADMIN_SIGNED':
+            case 'COMPLETED':
+            case 'PAID_OPTION_EXERCISE_FEE':
                 return 'white';
             default:
                 return 'black'; // Default color

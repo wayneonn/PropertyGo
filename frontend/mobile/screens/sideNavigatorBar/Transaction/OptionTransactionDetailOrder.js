@@ -15,7 +15,7 @@ import {
 import StepIndicator from 'react-native-step-indicator';
 import { useFocusEffect } from '@react-navigation/native';
 import {
-    buyerCancelOTP,
+    buyerCancelOTP, buyerRequestReupload
 } from '../../../utils/transactionApi';
 
 const OrderDetailScreen = ({ route }) => {
@@ -24,6 +24,7 @@ const OrderDetailScreen = ({ route }) => {
     const [transaction, setTransaction] = useState(null);
     const [seller, setSeller] = useState(null);
     const { transactionId } = route.params;
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -34,7 +35,7 @@ const OrderDetailScreen = ({ route }) => {
 
     useEffect(() => {
         fetchTransaction(transactionId);
-    }, []);
+    }, [refreshKey]);
 
     const fetchTransaction = async (id) => {
         try {
@@ -100,7 +101,36 @@ const OrderDetailScreen = ({ route }) => {
             'Cancel Successful',
             'You have successfully cancelled the order.'
         );
-        navigation.navigate('Option Transaction Order Screen', { transactionId: transaction.transactionId });
+        setRefreshKey(prevKey => prevKey + 1);
+        // navigation.navigate('Option Transaction Order Screen', { transactionId: transaction.transactionId});
+    }
+
+    const handleRequestReupload = () => {
+        Alert.alert(
+            'Confirm Cancellation',
+            'Are you sure you want to request for a reupload for the OTP Document?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'Confirm', onPress: requestReupload },
+            ],
+            { cancelable: false }
+        );
+    }
+
+    const requestReupload = async () => {
+        await buyerRequestReupload(transaction.transactionId, {
+            optionToPurchaseDocumentId: transaction.optionToPurchaseDocumentId,
+        });
+        Alert.alert(
+            'Request Successful',
+            'You have successfully request for a reupload.'
+        );
+        setRefreshKey(prevKey => prevKey + 1);
+        // navigation.navigate('Option Transaction Order Screen', { transactionId: transaction.transactionId});
     }
 
     return (
@@ -128,8 +158,11 @@ const OrderDetailScreen = ({ route }) => {
                         }}
                     />
 
-                    <TrackOrderCard optionFeeStatus={transaction.optionFeeStatusEnum}
-                        optionFee={propertyListing.optionFee}
+                    <TrackOrderCard
+                        key={refreshKey}
+                        optionFeeStatus={transaction.optionFeeStatusEnum}
+                        paymentAmount={transaction.paymentAmount}
+                        onHoldBalance={transaction.onHoldBalance}
                         transactionId={transaction.transactionId}
                         transactionDate={transaction.createdAt}
                         transactionUserId={transaction.userId}
@@ -139,17 +172,48 @@ const OrderDetailScreen = ({ route }) => {
                 <Text>Loading...</Text>
             )}
 
-            {transaction && transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ? (
-                <TouchableOpacity style={styles.uploadButton}
-                    onPress={() => {
-                        navigation.navigate('Buyer Upload OTP', { property: propertyListing, transaction: transaction });
-                    }}>
-                    <Text style={styles.cancelButtonText}>Upload OTP</Text>
+            <View style={styles.bottomButtonsContainer}>
+                {transaction && transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ? (
+                    <TouchableOpacity style={styles.uploadButton}
+                        onPress={() => {
+                            navigation.navigate('Buyer Upload OTP', { property: propertyListing, transaction: transaction });
+                        }}>
+                        <Text style={styles.cancelButtonText}>Upload OTP</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <></>
+                )}
+
+                {transaction && transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ? (
+                    <TouchableOpacity style={styles.requestReuploadButton} onPress={handleRequestReupload}>
+                        <Text style={styles.cancelButtonText}>Request Reupload</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <></>
+                )}
+            </View>
+
+            {transaction && (transaction.optionFeeStatusEnum == "REQUEST_PLACED" || transaction.optionFeeStatusEnum == "SELLER_UPLOADED" || transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD") ? (
+                <TouchableOpacity style={styles.cancelButton} onPress={handleCancelOrder}>
+                    <Text style={styles.cancelButtonText}>Cancel Order</Text>
                 </TouchableOpacity>
             ) : (
-                <Text></Text>
+                <></>
             )}
 
+            {transaction && transaction.optionFeeStatusEnum == "ADMIN_SIGNED" ? (
+                <TouchableOpacity style={styles.uploadButton}
+                    onPress={() => {
+                        navigation.navigate('Exercise Option Checkout', { propertyListing, quantity: 1, transaction: transaction });
+                    }}>
+                    <Text style={styles.cancelButtonText}>Exercise Option</Text>
+                </TouchableOpacity>
+            ) : (
+                <></>
+            )}
+
+            <Text></Text>
+            <Text></Text>
         </ScrollView>
     );
 };
@@ -164,12 +228,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
         marginLeft: 120,
-        marginTop: 10,
+        marginTop: 40,
         paddingBottom: 20,
     },
     backButton: {
         position: 'absolute',
-        top: 20,
+        top: 50,
         left: 20,
         zIndex: 1,
     },
@@ -230,7 +294,7 @@ const styles = StyleSheet.create({
     cancelButton: {
         backgroundColor: '#d32f2f',
         padding: 15,
-        borderRadius: 20,
+        borderRadius: 10,
         margin: 20,
     },
     cancelButtonText: {
@@ -239,11 +303,27 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     uploadButton: {
+        flex: 1,
         backgroundColor: '#4CAF50',
         padding: 15,
-        borderRadius: 20,
-        margin: 20,
+        borderRadius: 10,
+        margin: 10,
         marginBottom: 1,
+    },
+    requestReuploadButton: {
+        flex: 2,
+        backgroundColor: 'orange',
+        padding: 15,
+        borderRadius: 10,
+        margin: 10,
+        marginBottom: 1,
+    },
+    bottomButtonsContainer: {
+        flexDirection: 'row',
+        borderTopWidth: 0.5,
+        borderTopColor: '#eee',
+        justifyContent: 'space-between', // Added for spacing between buttons
+        paddingHorizontal: 11, // Padding to give space from the screen edge
     },
 });
 

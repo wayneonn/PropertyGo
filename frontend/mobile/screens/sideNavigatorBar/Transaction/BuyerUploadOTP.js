@@ -168,26 +168,12 @@ export default function SellerReuploadOTP({ route }) {
         optionToPurchaseDocumentId: otpDocumentId,
       });
 
-      // const { success, data, message } = await editProperty(
-      //   propertyListingId,
-      //   {
-      //     optionExpiryDate: new Date(
-      //       optionExpiryDate.getFullYear(),
-      //       optionExpiryDate.getMonth(),
-      //       optionExpiryDate.getDate(),
-      //       16, // Set the time to 16:00:00 (4PM)
-      //       0,  // Minutes
-      //       0   // Seconds
-      //     ),
-      //   }
-      // );
-
       navigation.navigate('Purchase Option Fee', {propertyListing: property, quantity: 1, transaction});
 
-      Alert.alert(
-        'Document Uploaded',
-        'The OTP Document has been updated successfully.'
-      );
+      // Alert.alert(
+      //   'Document Uploaded',
+      //   'The OTP Document has been updated successfully.'
+      // );
 
     } catch (error) {
       console.log('Error uploading document:', error);
@@ -469,7 +455,7 @@ export default function SellerReuploadOTP({ route }) {
             </Text>
 
             <Text style={styles.description}>
-              6. Wait for the admin to sign as a Witness and obtain the completed OTP Document!
+              6. Wait for the Admin to sign as a Witness and obtain the completed OTP Document!
             </Text>
 
             {selectedDocuments.length > 0 ? (

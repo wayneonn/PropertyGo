@@ -61,6 +61,17 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
     }
   };
 
+  const getItem = (item) => {
+    switch (item) {
+        case 'OPTION_FEE':
+          return 'Option Fee';
+        case 'OPTION_EXERCISE_FEE':
+            return 'Exercise Fee';
+        default:
+            return item; // Default color
+    }
+};
+
   // Inside your PropertyCardRectangle component
   return (
     <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
@@ -79,9 +90,12 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
         <Text style={styles.soldBy}>Sold by: {seller.name}</Text>
         <Text></Text>
         <View style={styles.optionFeeContainer}>
-          <Text style={styles.optionFeeLabel}>Option Fee:</Text>
-          <Text>{'             '}</Text>
-          <Text style={styles.optionFeeAmount}>${formatPrice(property.optionFee)}</Text>
+          <Text style={styles.optionFeeLabel}>{getItem(transaction.transactionType)}: </Text>
+          {/* <Text>{'             '}</Text> */}
+          <Text style={styles.optionFeeAmount}>${formatPrice(
+            transaction.onHoldBalance === 0 ? 
+            transaction.paymentAmount : transaction.onHoldBalance
+            )}</Text>
         </View>
         <View style={styles.invoiceButtonContainer}>
           <View style={styles.invoiceButtonBorder}></View>
@@ -151,6 +165,7 @@ const styles = StyleSheet.create({
   optionFeeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: -10,
   },
   optionFeeLabel: {

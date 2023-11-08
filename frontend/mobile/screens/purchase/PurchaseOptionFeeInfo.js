@@ -65,10 +65,13 @@ const PurchaseOptionFeeInfo = ({ route }) => {
             <Text style={styles.description}>1. If the buyer decides to proceed with the purchase, they will pay the Option Exercise Fee as specified by the seller. Otherwise if it's past the OTP Deadline, the property listing's status will be changed from 'ON HOLD' to 'ACTIVE' again, where the property will be available for other potential buyers to purchase again.</Text>
             <Text style={styles.description}>2. Subsequently, the buyer and seller can continue the transaction process, including arranging the down payment and housing financing through the Platform's chat.</Text>
             <Text></Text>
+
             {/* Button to proceed to checkout */}
             <TouchableOpacity style={styles.checkoutButton} onPress={handleSubmit}>
-                <Text style={styles.checkoutButtonText}>Proceed To Request</Text>
-                </TouchableOpacity>
+                <Text style={styles.checkoutButtonText}>
+                    Proceed To Request
+                </Text>
+            </TouchableOpacity>
         </ScrollView>
     );
 };
@@ -123,7 +126,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 3,
         width: 300,
-        alignSelf  : 'center',
+        alignSelf: 'center',
         marginBottom: 50,
     },
     checkoutButtonText: {

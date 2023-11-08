@@ -71,7 +71,7 @@ const TransactionScreen = () => {
                             data={transactions}
                             keyExtractor={(item) => item.transactionId.toString()}
                             renderItem={({ item }) =>
-                                (item.transactionType === 'OPTION_FEE') ? (
+                                (item.transactionType === 'OPTION_FEE' || item.transactionType === 'OPTION_EXERCISE_FEE') ? (
                                     (item.userId === userId) ? (
                                         <OptionTransactionCard transaction={item} propertyId={item.propertyId} onPress={() => {
                                             navigation.navigate('Seller Option Transaction Order Screen', { transactionId: item.transactionId });

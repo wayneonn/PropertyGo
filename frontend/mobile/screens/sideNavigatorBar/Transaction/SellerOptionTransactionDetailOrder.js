@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +14,9 @@ import {
 } from '../../../utils/transactionApi';
 import StepIndicator from 'react-native-step-indicator';
 import { useFocusEffect } from '@react-navigation/native';
+import {
+    sellerCancelledOTP,
+} from '../../../utils/transactionApi';
 
 const OrderDetailScreen = ({ route }) => {
     const navigation = useNavigation();
@@ -21,6 +24,7 @@ const OrderDetailScreen = ({ route }) => {
     const [transaction, setTransaction] = useState(null);
     const [seller, setSeller] = useState(null);
     const { transactionId } = route.params;
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -31,7 +35,7 @@ const OrderDetailScreen = ({ route }) => {
 
     useEffect(() => {
         fetchTransaction(transactionId);
-    }, []);
+    }, [refreshKey]);
 
     const fetchTransaction = async (id) => {
         try {
@@ -73,6 +77,34 @@ const OrderDetailScreen = ({ route }) => {
         }
     };
 
+    const handleCancelOrder = () => {
+        Alert.alert(
+            'Confirm Cancellation',
+            'Are you sure you want to place a cancellation for this property?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'Confirm', onPress: cancelOrder },
+            ],
+            { cancelable: false }
+        );
+    }
+
+    const cancelOrder = async () => {
+        await sellerCancelledOTP(transaction.transactionId, {
+            optionToPurchaseDocumentId: transaction.optionToPurchaseDocumentId,
+        });
+        Alert.alert(
+            'Cancel Successful',
+            'You have successfully cancelled the order.'
+        );
+        setRefreshKey(prevKey => prevKey + 1);
+        // navigation.navigate('Option Transaction Order Screen', { transactionId: transaction.transactionId});
+    }
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.headerContainer}>
@@ -98,8 +130,11 @@ const OrderDetailScreen = ({ route }) => {
                         }}
                     />
 
-                    <TrackOrderCard optionFeeStatus={transaction.optionFeeStatusEnum}
-                        optionFee={propertyListing.optionFee}
+                    <TrackOrderCard
+                        key={refreshKey}
+                        optionFeeStatus={transaction.optionFeeStatusEnum}
+                        paymentAmount={transaction.paymentAmount}
+                        onHoldBalance={transaction.onHoldBalance}
                         transactionId={transaction.transactionId}
                         transactionDate={transaction.createdAt}
                         transactionUserId={transaction.userId}
@@ -111,29 +146,35 @@ const OrderDetailScreen = ({ route }) => {
 
             {transaction && transaction.optionFeeStatusEnum == "REQUEST_PLACED" ? (
                 <TouchableOpacity style={styles.uploadButton}
-                onPress={() => {
-                    navigation.navigate('Seller Upload OTP', { property : propertyListing, transaction : transaction});
-                  }}>
+                    onPress={() => {
+                        navigation.navigate('Seller Upload OTP', { property: propertyListing, transaction: transaction });
+                    }}>
                     <Text style={styles.cancelButtonText}>Upload OTP</Text>
                 </TouchableOpacity>
             ) : (
                 <></>
             )}
-            
-            {transaction && transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ? (
+
+            {transaction && transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD" ? (
                 <TouchableOpacity style={styles.uploadButton}
-                onPress={() => {
-                    navigation.navigate('Seller Reupload OTP', { property : propertyListing, transaction : transaction});
-                  }}>
+                    onPress={() => {
+                        navigation.navigate('Seller Reupload OTP', { property: propertyListing, transaction: transaction });
+                    }}>
                     <Text style={styles.cancelButtonText}>Reupload OTP</Text>
                 </TouchableOpacity>
             ) : (
                 <></>
             )}
 
-            <TouchableOpacity style={styles.cancelButton}>
-                <Text style={styles.cancelButtonText}>Cancel Order</Text>
-            </TouchableOpacity>
+            {transaction && (transaction.optionFeeStatusEnum == "REQUEST_PLACED" || transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ||  transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD") ? (
+                <TouchableOpacity style={styles.cancelButton} onPress={handleCancelOrder}>
+                    <Text style={styles.cancelButtonText}>Cancel Order</Text>
+                </TouchableOpacity>
+            ) : (
+                <></>
+            )}
+        <Text></Text>
+        <Text></Text>
         </ScrollView>
     );
 };
@@ -147,13 +188,13 @@ const styles = StyleSheet.create({
         fontSize: 32,
         fontWeight: 'bold',
         color: '#333',
-        marginLeft: 130,
+        marginLeft: 120,
         marginTop: 40,
         paddingBottom: 20,
     },
     backButton: {
         position: 'absolute',
-        top: 45,
+        top: 50,
         left: 20,
         zIndex: 1,
     },
@@ -214,7 +255,7 @@ const styles = StyleSheet.create({
     cancelButton: {
         backgroundColor: '#d32f2f',
         padding: 15,
-        borderRadius: 20,
+        borderRadius: 10,
         margin: 20,
     },
     cancelButtonText: {
@@ -225,9 +266,9 @@ const styles = StyleSheet.create({
     uploadButton: {
         backgroundColor: '#4CAF50',
         padding: 15,
-        borderRadius: 20,
+        borderRadius: 10,
         margin: 20,
-        marginBottom: 1,
+        marginBottom: 2,
     },
 });
 
