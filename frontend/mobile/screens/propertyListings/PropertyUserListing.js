@@ -257,38 +257,69 @@ const PropertyUserListingScreen = ({ route }) => {
     }
   };
 
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'PENDING':
-        return 'Awaiting Admin Approval';
-      case 'APPROVED':
-        return 'Approved';
-      case 'REJECTED':
-        return 'Rejected';
-      default:
-        return status; // Default status text
+  const getStatusText = (status, propertyStatus) => {
+    if (propertyStatus === 'ACTIVE') {
+      switch (status) {
+        case 'PENDING':
+          return 'Awaiting Admin Approval';
+        case 'APPROVED':
+          return 'Approved';
+        case 'REJECTED':
+          return 'Rejected';
+        default:
+          return status; // Default status text
+      }
+    } else {
+      switch (propertyStatus) {
+        case 'ON_HOLD':
+          return 'On Hold';
+        case 'COMPLETED':
+          return 'Sold';
+        default:
+          return status; // Default status text
+      }
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'PENDING':
-        return 'yellow';
-      case 'APPROVED':
-        return 'green';
-      case 'REJECTED':
-        return 'red';
-      default:
-        return 'blue'; // Default status text
+  const getStatusColor = (status, propertyStatus) => {
+    if (propertyStatus === 'ACTIVE') {
+      switch (status) {
+        case 'PENDING':
+          return 'yellow';
+        case 'APPROVED':
+          return 'green';
+        case 'REJECTED':
+          return 'red';
+        default:
+          return 'blue'; // Default status text
+      }
+    } else {
+      switch (propertyStatus) {
+        case 'ON_HOLD':
+          return 'yellow';
+        case 'COMPLETED':
+          return 'red';
+        default:
+          return status; // Default status text
+      }
     }
   };
 
-  const getStatusTextColor = (status) => {
-    switch (status) {
-      case 'PENDING':
-        return 'black';
-      default:
-        return 'white'; // Default color
+  const getStatusTextColor = (status, propertyStatus) => {
+    if (propertyStatus === 'ACTIVE') {
+      switch (status) {
+        case 'PENDING':
+          return 'black';
+        default:
+          return 'white'; // Default color
+      }
+    } else { 
+      switch (propertyStatus) {
+        case 'ON_HOLD':
+          return 'black';
+        default:
+          return 'white'; // Default color
+      }
     }
   };
 
@@ -333,8 +364,8 @@ const PropertyUserListingScreen = ({ route }) => {
         <View style={styles.propertyDetailsTop}>
           <View style={styles.propertyDetailsTopLeft}>
             <Text style={styles.forSaleText}>For Sales</Text>
-            <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(propertyListing.approvalStatus) }]}>
-              <Text style={[styles.statusText, { color: getStatusTextColor(propertyListing.approvalStatus) }]}>{getStatusText(propertyListing.approvalStatus)}</Text>
+            <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(propertyListing.approvalStatus, propertyListing.propertyStatus) }]}>
+              <Text style={[styles.statusText, { color: getStatusTextColor(propertyListing.approvalStatus, propertyListing.propertyStatus) }]}>{getStatusText(propertyListing.approvalStatus, propertyListing.propertyStatus)}</Text>
             </View>
             <Text style={styles.title}>{propertyListing.title}</Text>
             <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
@@ -400,11 +431,11 @@ const PropertyUserListingScreen = ({ route }) => {
             </>
           ) : (
             <>
-            <Text style={styles.descriptionHeader}>
-            <Ionicons name="clipboard-outline" size={20} color="#333" />
-              {" "}Admin Notes For Rejection:</Text>
-            <Text style={styles.descriptionAdminNotes}>{propertyListing.adminNotes}</Text>
-          </>
+              <Text style={styles.descriptionHeader}>
+                <Ionicons name="clipboard-outline" size={20} color="#333" />
+                {" "}Admin Notes For Rejection:</Text>
+              <Text style={styles.descriptionAdminNotes}>{propertyListing.adminNotes}</Text>
+            </>
           )}
         {/* Location Details */}
         <Text style={styles.locationTitle}>Location</Text>
@@ -545,7 +576,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
   },
-  descriptionAdminNotes : {
+  descriptionAdminNotes: {
     paddingLeft: 16,
     marginBottom: 20,
     color: 'red',
