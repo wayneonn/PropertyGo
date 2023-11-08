@@ -48,7 +48,11 @@ const getUserReceiverChat = async (req, res) => {
             order: [['updatedAt', 'DESC']],
             include: [{
                 model: User,
-                as: 'sender'
+                as: 'receiver',
+            },
+            {
+                model: User,
+                as: 'sender',
             },
             {
                 model: Property,
@@ -65,7 +69,7 @@ const getUserReceiverChat = async (req, res) => {
             {
                 model: Request,
                 as: 'request'
-            }]
+            }],
         });
 
         // console.log(receiverChats);
@@ -106,6 +110,10 @@ const getUserSenderChat = async (req, res) => {
             {
                 model: Message,
                 as: 'messages'
+            },
+            {
+                model: Request,
+                as: 'request'
             }],
         });
         // console.log(senderChats);

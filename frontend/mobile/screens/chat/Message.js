@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Button, TextInput, RefreshControl, Image, TouchableHighlight, FlatList, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Button, TextInput, RefreshControl, Image, TouchableHighlight, FlatList, useWindowDimensions, KeyboardAvoidingView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -95,7 +95,7 @@ const Message = ({ route, navigation }) => {
             </View>
             <View style={styles.propertyImageContainer}>
               {chat && chat.propertyListing.propertyImages.length !== 0 ? (
-                <Image source={{ uri: `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.propertyListing.propertyImages[0].data)}` }} style={styles.propertyImage} />
+                <Image source={{ uri: `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.propertyListing.propertyImages[0].image.data)}` }} style={styles.propertyImage} />
               ) : (
                 <View style={styles.propertyImagePlaceholder}>
                   <Ionicons name="home" size={24} color="white" />
@@ -130,23 +130,41 @@ const Message = ({ route, navigation }) => {
 
         )}
       />
-      <View style={styles.horizontalContainer}>
-        <TextInput
-          placeholder="Type your message here"
-          value={newMessage}
-          onChangeText={text => setNewMessage(text)}
-          style={styles.textInput}
-          multiline // Allow multiline text input
-        />
-        <TouchableHighlight style={styles.iconButton} onPress={handleSubmit} disabled={!newMessage} underlayColor="rgba(0, 0, 0, 0.1)">
-          <Ionicons name="send-outline" size={24} color="black" />
-        </TouchableHighlight>
-      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+      // style={styles.keyboardContainer}
+      >
+        <View style={styles.horizontalContainer}>
+          <TextInput
+            placeholder="Type your message here"
+            value={newMessage}
+            onChangeText={text => setNewMessage(text)}
+            style={styles.textInput}
+            multiline // Allow multiline text input
+          />
+          <TouchableHighlight style={styles.iconButton} onPress={handleSubmit} disabled={!newMessage} underlayColor="rgba(0, 0, 0, 0.1">
+            <Ionicons name="send-outline" size={24} color="black" />
+          </TouchableHighlight>
+        </View>
+      </KeyboardAvoidingView>
     </View>
+
   );
 };
 
 const styles = StyleSheet.create({
+  keyboardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'white', // Set background color
+    // padding: 10, // Add padding to the container
+    // borderRadius: 10, // Add border radius for rounded corners
+    // marginHorizontal: 10,
+    // borderWidth: 1,
+    // marginBottom: 15,
+  },
   PropertyItemContainer: {
     backgroundColor: 'white',
     // borderRadius: 5,
@@ -285,7 +303,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 6
   },
-  buttonText:{
+  buttonText: {
     fontWeight: 'bold',
   }
 });

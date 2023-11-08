@@ -1,14 +1,14 @@
 
-{
-  "BASE_URL": "http://localhost:3000"
-}
+// {
+//   "BASE_URL": "http://localhost:3000"
+// }
 // {
 //   "BASE_URL": "http://10.0.0.17:3000"
 // }
 
-// {
-//   "BASE_URL": "http://192.168.86.20:3000"
-// }
+{
+  "BASE_URL": "http://192.168.86.20:3000"
+}
 
 // {
 //   "BASE_URL": "http://172.25.105.196:3000"

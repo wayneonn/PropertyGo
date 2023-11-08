@@ -119,7 +119,7 @@ const SenderChat = ({ navigation }) => {
                         messageText={chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].messageText : ''}
                         replied={chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].userId === chat.receiverId : false}
                         profileImage={chat.receiver.profileImage ? `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.receiver.profileImage.data)}` : null}
-                        propertyImage={chat.propertyListing.propertyImages.length !== 0 ? `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.propertyListing.propertyImages[0].data)}` : null}
+                        propertyImage={chat.propertyListing.propertyImages.length !== 0 ? `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.propertyListing.propertyImages[0].image.data)}` : null}
                     />
                 )) : null}
             </ScrollView>

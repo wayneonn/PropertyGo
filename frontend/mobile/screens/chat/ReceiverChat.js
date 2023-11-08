@@ -1,97 +1,174 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import React, { useState, useContext, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { AuthContext } from '../../AuthContext';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, KeyboardAvoidingView, RefreshControl } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
+import SearchBar from '../../components/Forum/SearchBar';
+import ChatItem from '../../components/Chat/ChatItem';
+import { getUserReceiverChat } from '../../utils/chatApi';
+import ChatModal from '../../components/Chat/ChatModal';
+import base64 from 'react-native-base64';
 
 const ReceiverChat = ({ navigation }) => {
 
+    const { user } = useContext(AuthContext);
+    const [chats, setChats] = useState([]);
+    const [filteredChats, setFilteredChats] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [refreshing, setRefreshing] = useState(false);
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [filter, setFilter] = useState(null);
+
+    const useParentCallback = useCallback(() => {
+        const fetchData = async () => {
+            try {
+
+                const chatDatas = await getUserReceiverChat(user.user.userId);
+                // console.log(chatDatas);
+                setChats(chatDatas);
+                setFilteredChats(chatDatas);
+                setSearchQuery('');
+                setFilter(null);
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchData();
+    }, [])
+
+    useFocusEffect(useParentCallback);
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        useParentCallback();
+        setRefreshing(false);
+    };
+
+    const handleSearch = (text) => {
+        setFilter(null);
+        
+        // Filter the chats based on the search query
+        const filtered = chats.filter((chat) =>
+          chat.propertyListing.title.toLowerCase().includes(text.toLowerCase())
+        );
+        // // console.log("text :" + text)
+
+        if (text === "") {
+          setFilteredChats(chats);
+        } else {
+          setFilteredChats(filtered);
+        }
+
+        setSearchQuery(text);
+    };
+
+    const handleChatPress = (chatId) => {
+        setSearchQuery('');
+        navigation.navigate("Message", { chatId });
+    };
+
+    const toggleModal = () => {
+        setModalVisible(!isModalVisible);
+    };
+
+    const handleFilterPress = async (f) => {
+        // console.log(f)
+        setFilter(f)
+        if (f === "isReplied") {
+
+            setFilteredChats(chats.filter((chat) => chat.senderReplied === false));
+
+        } else if (f === "isPendingReply") {
+
+            setFilteredChats(chats.filter((chat) => chat.senderReplied === true));
+
+        } else {
+
+            setFilteredChats(chats);
+        }
+        setModalVisible(!isModalVisible);
+    };
+
     return (
-        <View>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={24} color="black" />
-            </TouchableOpacity>
-            <Text>ReceiverChat</Text>
-        </View>
+        <SafeAreaView style={styles.container}>
+            <ScrollView refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                    tintColor={'#FFD700'}
+                />
+            }>
+                <View style={styles.header}>
+                    <Text style={styles.title}>Chats</Text>
+                    <TouchableOpacity style={styles.filterButton} onPress={toggleModal}>
+                        {/* <Text style={styles.filter}>Filter</Text> */}
+                        <AntDesign name="filter" size={24} color="blue" />
+                    </TouchableOpacity>
+                </View>
+                <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
+                {/* <ChatItem onPress={null} /> */}
+                {!(filteredChats.length === 0) ? filteredChats.map((chat, index) => (
+                    <ChatItem
+                        key={chat.chatId}
+                        onPress={() => handleChatPress(chat.chatId)}
+                        updatedAt={chat.updatedAt}
+                        name={chat.sender.name}
+                        title={chat.propertyListing.title}
+                        messageText={chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].messageText : ''}
+                        replied={chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].userId === chat.senderId : false}
+                        profileImage={chat.sender.profileImage ? `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.sender.profileImage.data)}` : null}
+                        propertyImage={chat.propertyListing.propertyImages.length !== 0 ? `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.propertyListing.propertyImages[0].image.data)}` : null}
+                    />
+                )) : null}
+            </ScrollView>
+            <ChatModal isVisible={isModalVisible} onClose={toggleModal} onFilter={handleFilterPress} />
+        </SafeAreaView>
+
     );
 };
 
 const styles = StyleSheet.create({
-    screenTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginVertical: 16,
-    },
-    tokenAmountText: {
-        fontSize: 18,
-        textAlign: 'center',
-        marginBottom: 16,
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
+    container: {
+        flex: 1,
+        padding: 16,
+        // backgroundColor: 'transparent'
     },
     header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginLeft: 130,
-        marginTop: 15,
-    },
-    backButton: {
-        position: 'absolute',
-        top: 16, // Adjust the top position as needed
-        left: 16, // Adjust the left position as needed
-        zIndex: 1, // Place it above the swiper
-      },
-      helpIcon: {
-        position: 'absolute',
-        top: 16,
-        right: 16,
-        zIndex: 1,
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    
-    modal: {
-        backgroundColor: 'white',
-        width: '90%',
-        borderRadius: 10,
-        padding: 20,
-    },
-    
-    modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 10,
+        height: 30,
+        // borderWidth:1,
+        paddingEnd: 10,
+        marginVertical: 10,
     },
-    
-    modalHeaderText: {
-        fontSize: 20,
-        fontWeight: 'bold',
+    title: {
+        fontSize: 18,
+        marginHorizontal: 17,
+        fontWeight: 'bold', // Add fontWeight to make the title bold
     },
-    helpText: {
-        fontSize: 16,
-        marginBottom: 20,
+    filterButton: {
+        paddingHorizontal: 10,
     },
-    sectionDescription: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginHorizontal: 20,
-        marginBottom: 16,
+    addItem: {
+        alignItems: 'center',
+        // paddingEnd: 30,
+        marginLeft: 300,
+        marginRight: 10,
+        // flex:1,
+        // borderWidth:1,
+        // backgroundColor: "black"
     },
-    headerDescription: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginHorizontal: 20,
-        marginBottom: 16,
+    filter: {
+        fontSize: 18,
+        marginHorizontal: 5,
+        fontWeight: 'bold', // Add fontWeight to make the title bold
+        color: "blue"
     },
-    bold: {
-        fontWeight: 'bold',
+    filterButton: {
+        paddingHorizontal: 10,
     },
 });
 

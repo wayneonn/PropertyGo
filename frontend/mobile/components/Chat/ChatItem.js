@@ -28,9 +28,12 @@ const ChatItem = ({ onPress, updatedAt, name, title, messageText, replied, profi
                         <View style={styles.titleContainer}>
                             <Text style={styles.title}>{title}</Text>
                         </View>
-                        <Text style={[styles.message, replied ? { fontWeight: 'bold' } : null]}>
-                            {messageText}
-                        </Text>
+                        {messageText ?
+                            <Text style={[styles.message, replied ? { fontWeight: 'bold' } : null]}>
+                                {messageText.trim()}
+                            </Text>
+                            : null
+                        }
                     </View>
                     <View style={styles.propertyImageContainer}>
                         {propertyImage ? (
@@ -126,10 +129,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     message: {
-        fontSize: 13,
-        // borderWidth:1
+        fontSize: 14,
+        // borderWidth:1,
         // marginLeft: 15,
-        // alignContent:"center",
+        // align:"center",
         // justifyContent:"center"
     },
     updatedAt: {
