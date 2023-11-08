@@ -16,7 +16,7 @@ import Swiper from 'react-native-swiper';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import MapView, { Marker, Callout } from 'react-native-maps';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   editProperty, getPropertyListing, getImageUriById,
@@ -52,6 +52,7 @@ const EditPropertyListing = ({ route }) => {
     size: '',
     postalCode: '',
     address: '',
+    roomType: '',
     propertyType: '', // You should also initialize propertyType here if it's part of propertyData
   });
 
@@ -59,7 +60,7 @@ const EditPropertyListing = ({ route }) => {
   const formatPrice = (price) => {
     return `$${price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`;
   };
-  
+
 
   // Initialize formattedPrice and rawPrice with the initial price from propertyData
   const [formattedPrice, setFormattedPrice] = useState(
@@ -90,6 +91,17 @@ const EditPropertyListing = ({ route }) => {
     { label: 'Select Property Type', value: '' },
     { label: 'Resale', value: 'Resale' },
     { label: 'New Launch', value: 'New Launch' },
+  ]
+
+  const [roomTypeVisible, setRoomTypeVisible] = useState(false);
+  const roomTypes = [
+    { label: 'Select Room Type', value: '' },
+    { label: '1 Room', value: '1_ROOM' },
+    { label: '2 Room', value: '2_ROOM' },
+    { label: '3 Room', value: '3_ROOM' },
+    { label: '4 Room', value: '4_ROOM' },
+    { label: '5 Room', value: '5_ROOM' },
+    { label: 'Executive', value: 'EXECUTIVE' },
   ]
 
   // Function to remove dollar sign and commas and save raw price
@@ -123,24 +135,24 @@ const EditPropertyListing = ({ route }) => {
 
     if (!rawPrice) {
       price = propertyData.price;
-    } else if (!price|| price <= 0) {
+    } else if (!price || price <= 0) {
       Alert.alert('Invalid Price', 'Price must be a numeric value.');
       return;
-    } 
+    }
 
     if (!optionPrice) {
       optionPrice = propertyData.optionFee;
-    } else if (!optionPrice|| optionPrice <= 0) {
+    } else if (!optionPrice || optionPrice <= 0) {
       Alert.alert('Invalid Option Price', 'Option Price must be a numeric value.');
       return;
-    } 
+    }
 
     if (!optionExercisePrice) {
       optionExercisePrice = propertyData.optionExerciseFee;
-    } else if (!optionExercisePrice|| optionExercisePrice <= 0) {
+    } else if (!optionExercisePrice || optionExercisePrice <= 0) {
       Alert.alert('Invalid Option Exercise Price', 'Option Exercise Price must be a numeric value.');
       return;
-    } 
+    }
 
     if (!/^\d+$/.test(propertyData.size)) {
       Alert.alert('Invalid Size', 'Size must be a numeric value.');
@@ -192,6 +204,7 @@ const EditPropertyListing = ({ route }) => {
           optionFee: optionPrice,
           optionExerciseFee: optionExercisePrice,
           propertyType: propertyTypeUpperCase,
+          flatType: property.roomType,
         }
       );
 
@@ -313,6 +326,7 @@ const EditPropertyListing = ({ route }) => {
         address: data.address,
         unitNumber: data.unitNumber || '', // Update unitNumber (or provide a default value)
         propertyType: transformPropertyType(data.propertyType), // Transform propertyType label
+        roomType: data.flatType,
       });
 
       // Update formattedPrice with the fetched price
@@ -333,6 +347,11 @@ const EditPropertyListing = ({ route }) => {
     }
   };
 
+  const capitalizeWords = (str) => {
+    return str.toLowerCase().replace(/(?:^|\s)\w/g, function (match) {
+      return match.toUpperCase();
+    });
+  }
 
   // Function to transform property type label
   const transformPropertyType = (type) => {
@@ -663,9 +682,9 @@ const EditPropertyListing = ({ route }) => {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Bathrooms</Text>
           <TextInput
-           placeholder="Number of Bathrooms"
-           placeholderTextColor="gray"
-           keyboardType="numeric"
+            placeholder="Number of Bathrooms"
+            placeholderTextColor="gray"
+            keyboardType="numeric"
             value={propertyData.bathroom}
             onChangeText={(text) =>
               setPropertyData({ ...propertyData, bathroom: text }) // Fix the object reference to propertyData
@@ -786,6 +805,52 @@ const EditPropertyListing = ({ route }) => {
               <Button
                 title="OK"
                 onPress={() => setPropertyTypeVisible(false)}
+              />
+            </View>
+          </View>
+        </Modal>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Room Type</Text>
+          <TouchableOpacity
+            style={styles.propertyTypePickerButton}
+            onPress={() => setRoomTypeVisible(true)}
+          >
+            <Text style={styles.propertyTypePickerText}>
+              {propertyData.roomType
+                ? capitalizeWords(propertyData.roomType.toLowerCase().replace(/_/g, ' '))
+                : 'Select Room Type'}
+            </Text>
+            <Icon name="caret-down" size={20} color="black" />
+          </TouchableOpacity>
+        </View>
+
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={roomTypeVisible}
+          onRequestClose={() => setRoomTypeVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <Picker
+              selectedValue={propertyData.roomType}
+              onValueChange={(value) =>
+                setProperty({ ...property, roomType: value })
+              }
+              style={styles.picker}
+            >
+              {roomTypes.map((type, index) => (
+                <Picker.Item
+                  key={index}
+                  label={type.label}
+                  value={type.value}
+                />
+              ))}
+            </Picker>
+            <View style={styles.okButtonContainer}>
+              <Button
+                title="OK"
+                onPress={() => setRoomTypeVisible(false)}
               />
             </View>
           </View>

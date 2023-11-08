@@ -323,6 +323,11 @@ const PropertyUserListingScreen = ({ route }) => {
     }
   };
 
+  const capitalizeWords = (str) => {
+    return str.toLowerCase().replace(/(?:^|\s)\w/g, function (match) {
+      return match.toUpperCase();
+    });
+  }
 
   return (
     <View style={styles.mainContainer}>
@@ -411,6 +416,10 @@ const PropertyUserListingScreen = ({ route }) => {
               </View>
             )}
           </View>
+        </View>
+        <View style={styles.dateContainer}>
+          <FontAwesome name="building-o" size={18} color="#333" />
+          <Text style={styles.flatText}>{"Flat Type: "}{capitalizeWords(propertyListing.flatType.toLowerCase().replace(/_/g, ' '))}</Text>
         </View>
         <View style={styles.dateContainer}>
           <FontAwesome name="calendar" size={16} color="#333" />
@@ -846,6 +855,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
     padding: 2,
+  },
+  flatText: {
+    fontWeight: 'bold',
+    fontSize: 13,
+    marginLeft: 5,
+    color: '#333',
   },
 });
 

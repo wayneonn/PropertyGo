@@ -38,6 +38,15 @@ const propertyTypes = [
   { label: 'New Launch', value: 'New Launch' },
 ]
 
+const roomTypes = [
+  { label: 'Select Room Type', value: '' },
+  { label: '1 Room', value: '1_ROOM' },
+  { label: '2 Room', value: '2_ROOM' },
+  { label: '3 Room', value: '3_ROOM' },
+  { label: '4 Room', value: '4_ROOM' },
+  { label: '5 Room', value: '5_ROOM' },
+  { label: 'Executive', value: 'EXECUTIVE' },
+]
 
 export default function PropertyListing() {
   const { user } = useContext(AuthContext);
@@ -90,6 +99,7 @@ export default function PropertyListing() {
     region: '',
     longitude: '',
     latitude: '',
+    roomType: '',
 
     //Original
     // title: '',
@@ -109,9 +119,11 @@ export default function PropertyListing() {
     // region: '',
     // longitude: '',
     // latitude: '',
+    // roomType: '',
   });
 
   const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
+  const [roomTypeVisible, setRoomTypeVisible] = useState(false);
   const [formattedPrice, setFormattedPrice] = useState('');
   const [formattedOptionPrice, setFormattedOptionPrice] = useState('');
   const [formattedOptionExercisePrice, setFormattedOptionExercisePrice] = useState('');
@@ -448,6 +460,7 @@ export default function PropertyListing() {
           optionExerciseFee: optionExercisePrice,
           // offeredPrice: property.offeredPrice.replace(/\$/g, ''),
           propertyType: propertyTypeUpperCase,
+          flatType: property.roomType,
         },
         images
       );
@@ -522,46 +535,6 @@ export default function PropertyListing() {
     } catch (error) {
       console.log("Error upload:", error);
     }
-  
-
-    // try {
-    //   // Create a FormData object to send the document as a Blob
-    //   const documentData = new FormData();
-    //   const fileUri = selectedDocument.assets[0].uri;
-
-    //   // Use FileSystem to read the file and get a Blob representation
-    //   const blob = await FileSystem.readAsStringAsync(fileUri, {
-    //     encoding: FileSystem.EncodingType.Blob,
-    //   });
-
-    //   // Append the Blob to the FormData object
-    //   documentData.append("documents",
-    //     {
-    //       uri: fileUri,
-    //       name: selectedDocument.assets[0].name,
-    //       type: "application/pdf"
-    //     });
-
-    //   // Add other necessary data to the FormData object
-    //   documentData.append('propertyId', propertyListingId);
-    //   documentData.append('folderId', propertyFolderId);
-    //   documentData.append('userId', user.user.userId);
-
-    //   // Send the FormData object with the document to the server
-    //   const response = await fetch(`${BASE_URL}/user/documents/upload`, {
-    //     method: 'post',
-    //     body: documentData,
-    //   });
-
-    //   if (response.ok) {
-    //     const data = await response.json();
-    //     console.log('Document upload response:', data);
-    //   } else {
-    //     console.log('Document upload failed');
-    //   }
-    // } catch (error) {
-    //   console.log('Error uploading document:', error);
-    // }
   }
 
   const openPdf = async (filePath) => {
@@ -590,7 +563,11 @@ export default function PropertyListing() {
     }
   };
 
-
+  const capitalizeWords = (str) => {
+    return str.toLowerCase().replace(/(?:^|\s)\w/g, function (match) {
+      return match.toUpperCase();
+    });
+  }
 
   return (
     <View style={styles.container}>
@@ -928,6 +905,52 @@ export default function PropertyListing() {
               <Button
                 title="OK"
                 onPress={() => setPropertyTypeVisible(false)}
+              />
+            </View>
+          </View>
+        </Modal>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Room Type</Text>
+          <TouchableOpacity
+            style={styles.propertyTypePickerButton}
+            onPress={() => setRoomTypeVisible(true)}
+          >
+            <Text style={styles.propertyTypePickerText}>
+              {property.roomType
+                ? capitalizeWords(property.roomType.toLowerCase().replace(/_/g, ' '))
+                : 'Select Room Type'}
+            </Text>
+            <Icon name="caret-down" size={20} color="black" />
+          </TouchableOpacity>
+        </View>
+
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={roomTypeVisible}
+          onRequestClose={() => setRoomTypeVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <Picker
+              selectedValue={property.roomType}
+              onValueChange={(value) =>
+                setProperty({ ...property, roomType: value })
+              }
+              style={styles.picker}
+            >
+              {roomTypes.map((type, index) => (
+                <Picker.Item
+                  key={index}
+                  label={type.label}
+                  value={type.value}
+                />
+              ))}
+            </Picker>
+            <View style={styles.okButtonContainer}>
+              <Button
+                title="OK"
+                onPress={() => setRoomTypeVisible(false)}
               />
             </View>
           </View>
