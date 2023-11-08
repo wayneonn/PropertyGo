@@ -2,11 +2,15 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io"); // for the event-based notification
 const cors = require("cors");
+const cron = require('node-cron');
+const { Transaction, Property } = require("./models")
 const app = express();
 const globalEmitter = require("./globalEmitter");
 const WebSocket = require("ws");
 const { loggedInUsers } = require("./shared");
 require("dotenv").config();
+// const Transaction = require('./models/Transaction');
+// const Property = require('./models/Property');
 
 const server = http.createServer(app);
 // socket io
@@ -109,7 +113,7 @@ app.use("/admin/auth", authRouter);
 app.use("/admin/faqs", injectIo(io), faqRouter);
 app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", injectIo(io), contactUsAdminRouter);
-app.use("/admin/contactUs/:contactUsId/responses",injectIo(io) , responseRouter);
+app.use("/admin/contactUs/:contactUsId/responses", injectIo(io), responseRouter);
 app.use("/admin/forumTopics", injectIo(io), forumTopicAdminRouter);
 app.use("/admin/notifications", notificationAdminRouter);
 app.use("/admin/properties", propertyAdminRouter);
@@ -568,6 +572,52 @@ db.sequelize
     //     console.log("io server running on port 3000");
     //   })
     // })
+
+    async function checkAndUpdateTransactions() {
+      try {
+        // Find transactions that meet the criteria
+        const transactionsToUpdate = await Transaction.findAll({
+          where: {
+            transactionType: 'OPTION_FEE',
+            optionFeeStatusEnum: 'BUYER_UPLOADED',
+          }
+        });
+
+        console.log('Transactions to update:', transactionsToUpdate)
+
+        for (const transaction of transactionsToUpdate) {
+          const property = await Property.findByPk(transaction.propertyId);
+
+          if (property && isToday4PM(property.optionExpiryDate) && property.propertyStatus === "ON_HOLD") {
+            // Update the property and transaction
+            property.propertyStatus = 'ACTIVE';
+            property.optionExpiryDate = null;
+            transaction.optionFeeStatusEnum = 'SELLER_DID_NOT_RESPOND';
+
+            // Save the updated property and transaction
+            await property.save();
+            await transaction.save();
+          }
+        }
+      } catch (error) {
+        console.error('Error checking and updating transactions:', error);
+      }
+    }
+
+    // Helper function to check if the date is today at 4 PM
+    function isToday4PM(date) {
+      const now = new Date();
+      const today4PM = new Date();
+      today4PM.setHours(16, 0, 0, 0);
+      return date && date.getTime() === today4PM.getTime();
+    }
+
+    //min, hour, day, month, weekday fields - indicating that the task will run every day.
+    cron.schedule('0 16 * * *', () => {
+      // Implement your logic to check and update transactions here
+      checkAndUpdateTransactions();
+      console.log("Running OTP Deadline Checker to update Property and Transaction Status")
+    });
 
     server.listen(3000, () => {
       console.log("Server started on http://localhost:3000/");
