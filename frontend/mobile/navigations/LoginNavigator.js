@@ -22,6 +22,8 @@ import creditCardInfoScreen from "../screens/partnerApplication/CreditCardInfoSc
 import documentSubmissionScreen from "../screens/partnerApplication/DocumentSubmission";
 import Response from '../screens/sideNavigatorBar/Response';
 import ResponseTopNavBar from '../components/ContactUs/ResponseTopNavBar';
+import Message from '../screens/chat/Message';
+import MessageTopNavBar from '../components/Chat/MessageTopNavBar';
 
 import { AuthContext } from '../AuthContext';
 import * as Device from 'expo-device';
@@ -228,7 +230,12 @@ const LoginNavigator = () => {
                 <Stack.Screen
                     name={"Response"}
                     component={Response}
-                    options={{ header: () => <ResponseTopNavBar/> }}
+                    options={{ header: () => <ResponseTopNavBar /> }}
+                />
+                <Stack.Screen
+                    name={"Message"}
+                    component={Message}
+                    options={{ header: () => <MessageTopNavBar /> }}
                 />
 
 
