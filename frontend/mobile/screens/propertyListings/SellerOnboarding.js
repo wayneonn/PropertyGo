@@ -156,7 +156,7 @@ return (
                 </Modal>
 
                 <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Tenure</Text>
+                    <Text style={styles.label}>Bank Account Number</Text>
                     <TextInput
                         placeholder="123-456-789"
                         placeholderTextColor="gray"
