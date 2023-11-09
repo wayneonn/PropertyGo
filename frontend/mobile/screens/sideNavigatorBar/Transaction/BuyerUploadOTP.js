@@ -493,7 +493,7 @@ export default function SellerReuploadOTP({ route }) {
                   </View>
 
                 </TouchableOpacity>
-                <View style={{ flexDirection: 'row', marginBottom: 50, paddingHorizontal: 10, justifyContent: 'space-between', }}>
+                <View style={{ flexDirection: 'row', marginBottom: 40 }}>
                   <TouchableOpacity
                     style={styles.replaceDocumentButton}
                     onPress={handleSelectDocument}
@@ -627,7 +627,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '60%',
     justifyContent: 'center',
-    marginLeft: 80,
+    marginLeft: 70,
     marginTop: 20,
     marginBottom: -40,
   },
@@ -709,7 +709,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   viewDocumentButton: {
-    flex: 1,
     backgroundColor: 'green',
     borderRadius: 8,
     padding: 10,

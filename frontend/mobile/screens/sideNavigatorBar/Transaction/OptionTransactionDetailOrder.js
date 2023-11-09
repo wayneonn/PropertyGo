@@ -35,7 +35,7 @@ const OrderDetailScreen = ({ route }) => {
 
     useEffect(() => {
         fetchTransaction(transactionId);
-    }, [refreshKey]);
+    }, [refreshKey, transactionId]);
 
     const fetchTransaction = async (id) => {
         try {
@@ -207,6 +207,17 @@ const OrderDetailScreen = ({ route }) => {
                         navigation.navigate('Exercise Option Checkout', { propertyListing, quantity: 1, transaction: transaction });
                     }}>
                     <Text style={styles.cancelButtonText}>Exercise Option</Text>
+                </TouchableOpacity>
+            ) : (
+                <></>
+            )}
+
+            {transaction && transaction.optionFeeStatusEnum == "PENDING_COMMISSION" ? (
+                <TouchableOpacity style={styles.uploadButton}
+                    onPress={() => {
+                        navigation.navigate('Commission Checkout', { propertyListing, quantity: 1, transaction: transaction });
+                    }}>
+                    <Text style={styles.cancelButtonText}>Pay Commission</Text>
                 </TouchableOpacity>
             ) : (
                 <></>

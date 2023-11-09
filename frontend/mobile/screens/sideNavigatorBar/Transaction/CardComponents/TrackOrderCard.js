@@ -50,7 +50,7 @@ const TrackOrderCard = ({ optionFeeStatus, paymentAmount, onHoldBalance, transac
             return 3;
         } else if (status === 'ADMIN_UPLOADED') {
             return 4;
-        } else if (status === 'COMPLETED' || status === 'ADMIN_SIGNED' || status === 'PAID_OPTION_EXERCISE_FEE') {
+        } else if (status === 'COMPLETED' || status === 'ADMIN_SIGNED' || status === 'PAID_OPTION_EXERCISE_FEE' || status === 'PENDING_COMMISSION' || status === 'COMMISSION_PAID') {
             return 5;
         }
     }
@@ -86,10 +86,12 @@ const TrackOrderCard = ({ optionFeeStatus, paymentAmount, onHoldBalance, transac
                 case 'ADMIN_UPLOADED':
                     return 'orange';
                 case 'SELLER_UPLOADED':
+                case 'PENDING_COMMISSION':
                     return 'yellow';
                 case 'COMPLETED':
                 case 'ADMIN_SIGNED':
                 case 'PAID_OPTION_EXERCISE_FEE':
+                case 'COMMISSION_PAID':
                     return 'green';
                 case 'SELLER_DID_NOT_RESPOND':
                 case 'BUYER_CANCELLED':
@@ -157,6 +159,10 @@ const TrackOrderCard = ({ optionFeeStatus, paymentAmount, onHoldBalance, transac
                     return 'Admin Rejected The Document';
                 case 'PAID_OPTION_EXERCISE_FEE':
                     return 'Paid Option Exercise Fee';
+                case 'PENDING_COMMISSION':
+                    return '⚠️ Pending Your Payment';
+                case 'COMMISSION_PAID':
+                    return 'Paid Commission Fee';
                 default:
                     return status; // Default status text
             }
@@ -172,6 +178,7 @@ const TrackOrderCard = ({ optionFeeStatus, paymentAmount, onHoldBalance, transac
             case 'ADMIN_SIGNED':
             case 'COMPLETED':
             case 'PAID_OPTION_EXERCISE_FEE':
+            case 'COMMISSION_PAID':
                 return 'white';
             default:
                 return 'black'; // Default color

@@ -949,7 +949,7 @@ exports.buyerPaidOptionExerciseFee = async (req, res) => {
             return res.status(404).json({ message: 'Buyer not found' });
         }
 
-        const content = `${buyer.userName.charAt(0).toUpperCase() + buyer.userName.slice(1)} has paid the Option Exercise Fee for the property ${property.title}.`;
+        const content = `${buyer.userName.charAt(0).toUpperCase() + buyer.userName.slice(1)} has paid the Option Exercise Fee for the property ${property.title}. Please Procceed to pay the Commission Fee to support our platform!`;
 
         const notificationBody = {
             "isRecent": true,

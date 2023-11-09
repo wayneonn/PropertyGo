@@ -17,6 +17,7 @@ import SetSchedule from "../../screens/schedule/SetSchedule";
 import Schedule from "../../screens/schedule/Schedule";
 import PurchaseOptionFee from "../../screens/purchase/PurchaseOptionFeeCheckoutScreen";
 import ExerciseOptionCheckout from "../../screens/purchase/PurchaseExerciseOptionCheckoutScreen";
+import CommissionCheckout from "../../screens/purchase/CommissionCheckoutScreen";
 import PurchaseOptionFeeInfo from "../../screens/purchase/PurchaseOptionFeeInfo";
 
 import TransactionList from "../../screens/dashboard/transactionList"
@@ -46,6 +47,7 @@ const TransactionStackGroup = () => {
             <TransactionStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/>
             <TransactionStack.Screen name="Purchase Option Fee Info" component={PurchaseOptionFeeInfo}/>
             <TransactionStack.Screen name="Exercise Option Checkout" component={ExerciseOptionCheckout}/>
+            <TransactionStack.Screen name="Commission Checkout" component={CommissionCheckout}/>
         </TransactionStack.Navigator>
     );
 };

@@ -25,8 +25,8 @@ const PurchaseExerciseOptionCheckoutScreen = ({ route }) => {
     const [publishableKey, setPublishableKey] = useState('');
     const [custIdExists, setCustIdExists] = useState(false);
     const stripeCustomerId = user.user.stripeCustomerId;
-    const description = "Exercise Option Fee";
-    const amount = propertyListing.optionExerciseFee;
+    const description = "Commission Fee";
+    const amount = propertyListing.price * 0.005;
     const taxable = false;
 
     const initializePayment = async () => {
@@ -62,56 +62,21 @@ const PurchaseExerciseOptionCheckoutScreen = ({ route }) => {
                 const transactionType = "OPTION_EXERCISE_FEE"
                 const gst = false;
 
-                await editProperty(
-                    propertyListing.propertyListingId,
+                await updateTransaction(
+                    transaction.transactionId,
                     {
-                        propertyStatus: "COMPLETED",
+                        status: "PAID",
+                        paymentAmount: amount,
+                        stripePaymentResponse: paymentIntent,
+                        onHoldBalance: 0,
+                        optionFeeStatusEnum: "COMMISSION_PAID",
                     }
                 );
 
-                if (success) {
-                    console.log("Property updated successfully");
-                }
-
-                const otpDocumentId = transaction.optionToPurchaseDocumentId;
-
-                await buyerPaidOptionExerciseFee(transaction.transactionId, {
-                    optionToPurchaseDocumentId: otpDocumentId,
-                });
-
-                const { data, success, message } = await createOptionFeeTransaction({
-                    onHoldBalance: 0,
-                    transactionItem: description,
-                    paymentAmount: amount,
-                    quantity: 1,
-                    gst,
-                    buyerId: user.user.userId,
-                    userId: propertyListing.sellerId,
-                    propertyId: propertyListing.propertyListingId,
-                    status,
-                    transactionType,
-                    optionFeeStatusEnum: "PAID_OPTION_EXERCISE_FEE",
-                });
-
-                await createTransaction({
-                    onHoldBalance: propertyListing.price * 0.005,
-                    transactionItem: "Commision Fee",
-                    paymentAmount: 0,
-                    quantity: 1,
-                    gst,
-                    buyerId: propertyListing.sellerId,
-                    userId: user.user.userId,
-                    propertyId: propertyListing.propertyListingId,
-                    status: "PENDING",
-                    transactionType: "COMMISSION_FEE",
-                    optionFeeStatusEnum: "PENDING_COMMISSION",
-                });
-
                 // const transaction = await createTransactionRecord(propertyListing, user.user, status, transactionType, description, 1, paymentAmount, gst);
-                console.log("Transaction at exercise: ", data);
-                const optionExerciseFeeTransactionId = data.transactionId;
-                Alert.alert('Success', 'Your payment to Exercise the Property Option is confirmed!');
-                navigation.navigate('Option Transaction Order Screen', { transactionId: optionExerciseFeeTransactionId });
+
+                Alert.alert('Success', 'Your payment for Commission Fee is Successful! Thank You For Supporting Us!');
+                navigation.navigate('Option Transaction Order Screen', { transactionId: transaction.transactionId });
             }
         } catch (error) {
             console.error('Error opening payment sheet:', error);

@@ -85,10 +85,12 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
                 case 'ADMIN_UPLOADED':
                     return 'orange';
                 case 'SELLER_UPLOADED':
+                case 'PENDING_COMMISSION':
                     return 'yellow';
                 case 'COMPLETED':
                 case 'ADMIN_SIGNED':
                 case 'PAID_OPTION_EXERCISE_FEE':
+                case 'COMMISSION_PAID':
                     return 'green';
                 case 'SELLER_DID_NOT_RESPOND':
                 case 'BUYER_CANCELLED':
@@ -156,6 +158,10 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
                     return 'Admin Rejected The Document';
                 case 'PAID_OPTION_EXERCISE_FEE':
                     return 'Paid Option Exercise Fee';
+                case 'PENDING_COMMISSION':
+                    return '⚠️ Pending Your Payment';
+                case 'COMMISSION_PAID':
+                    return 'Paid Commission Fee';
                 default:
                     return status; // Default status text
             }
@@ -171,6 +177,7 @@ const OptionTransactionCard = ({ transaction, onPress, propertyId }) => {
             case 'ADMIN_SIGNED':
             case 'COMPLETED':
             case 'PAID_OPTION_EXERCISE_FEE':
+            case 'COMMISSION_PAID':
                 return 'white';
             default:
                 return 'black'; // Default color

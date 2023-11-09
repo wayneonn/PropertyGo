@@ -63,14 +63,16 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
 
   const getItem = (item) => {
     switch (item) {
-        case 'OPTION_FEE':
-          return 'Option Fee';
-        case 'OPTION_EXERCISE_FEE':
-            return 'Exercise Fee';
-        default:
-            return item; // Default color
+      case 'OPTION_FEE':
+        return 'Option Fee';
+      case 'OPTION_EXERCISE_FEE':
+        return 'Exercise Fee';
+      case 'COMMISSION_FEE':
+        return 'Commission Fee';
+      default:
+        return item; // Default color
     }
-};
+  };
 
   // Inside your PropertyCardRectangle component
   return (
@@ -93,9 +95,9 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
           <Text style={styles.optionFeeLabel}>{getItem(transaction.transactionType)}: </Text>
           {/* <Text>{'             '}</Text> */}
           <Text style={styles.optionFeeAmount}>${formatPrice(
-            transaction.onHoldBalance === 0 ? 
-            transaction.paymentAmount : transaction.onHoldBalance
-            )}</Text>
+            transaction.onHoldBalance === 0 ?
+              transaction.paymentAmount : transaction.onHoldBalance
+          )}</Text>
         </View>
         <View style={styles.invoiceButtonContainer}>
           <View style={styles.invoiceButtonBorder}></View>
@@ -205,7 +207,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: 130,
-    marginTop: 8, 
+    marginTop: 8,
   },
   chatButtonText: {
     color: 'white',
@@ -220,7 +222,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.3, // Add a bottom border to create the line on top of the button
     borderBottomColor: 'grey', // You can change the color to your preference
     marginTop: 8,
-    marginBottom: 2, 
+    marginBottom: 2,
   },
 });
 

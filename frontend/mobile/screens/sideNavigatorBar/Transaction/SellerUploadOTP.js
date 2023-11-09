@@ -477,7 +477,7 @@ export default function SellerUploadOTP({ route }) {
                     }
                   }}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap',  }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
                     <Ionicons name="document-text-outline" size={24} color="blue" />
                     <Text style={styles.selectedDocumentText}> Selected Document: </Text>
                     <Text style={styles.selectedDocumentName}>
@@ -614,6 +614,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: -40,
   },
+  viewCurrentDocumentButton: {
+    backgroundColor: '#9b59b6',
+    padding: 10,
+    borderRadius: 25,
+    alignItems: 'center',
+    width: '60%',
+    justifyContent: 'center',
+    marginLeft: 80,
+    marginTop: 60,
+    marginBottom: -80,
+  },
   selectDocumentButtonText: {
     color: 'white',
     fontSize: 16,
@@ -629,7 +640,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     width: '60%',
-    marginLeft: 70,
+    marginLeft: 80,
   },
   saveChangesButtonText: {
     fontSize: 18,
@@ -661,6 +672,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   replaceDocumentButton: {
+    flex: 1,
     backgroundColor: '#3498db',
     borderRadius: 8,
     padding: 10,
@@ -670,6 +682,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   removeDocumentButton: {
+    flex: 1,
     backgroundColor: 'red',
     borderRadius: 8,
     padding: 10,
@@ -708,7 +721,7 @@ const styles = StyleSheet.create({
   },
   selectedDocumentName: {
     fontSize: 16,
-    marginTop: 0,
+
   },
   imageGalleryContainer: {
     position: 'relative',
@@ -810,6 +823,22 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: -5,
   },
+  optionExpiryContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 16,
+    marginBottom: 12,
+    marginTop: 3,
+  },
+  optionExpiryText: {
+    fontSize: 18,
+    marginLeft: 5,
+  },
+  optionExpiryTextBold: {
+    fontSize: 18,
+    marginLeft: 5,
+    fontWeight: '600',
+  },
   dateText: {
     fontSize: 13,
     marginLeft: 5,
@@ -865,4 +894,6 @@ const styles = StyleSheet.create({
     width: '90%',
   },
 });
+
+
 

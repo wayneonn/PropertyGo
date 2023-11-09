@@ -35,7 +35,7 @@ const OrderDetailScreen = ({ route }) => {
 
     useEffect(() => {
         fetchTransaction(transactionId);
-    }, [refreshKey]);
+    }, [refreshKey, transactionId]);
 
     const fetchTransaction = async (id) => {
         try {
