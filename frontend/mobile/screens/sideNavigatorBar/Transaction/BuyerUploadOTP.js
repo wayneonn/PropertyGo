@@ -342,6 +342,10 @@ export default function SellerReuploadOTP({ route }) {
       }
     }
   };
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
+  useEffect(() => {
+    setCacheBuster(Date.now());
+  }, [propertyListing]);
 
   return (
     <View style={styles.container}>
@@ -627,7 +631,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '60%',
     justifyContent: 'center',
-    marginLeft: 70,
+    alignSelf: 'center',
+    // marginLeft: 70,
     marginTop: 20,
     marginBottom: -40,
   },
@@ -638,7 +643,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '60%',
     justifyContent: 'center',
-    marginLeft: 80,
+    alignSelf: 'center',
+    // marginLeft: 80,
     marginTop: 60,
     marginBottom: -80,
   },

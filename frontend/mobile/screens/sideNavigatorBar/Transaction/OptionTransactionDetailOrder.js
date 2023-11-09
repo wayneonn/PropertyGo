@@ -166,6 +166,7 @@ const OrderDetailScreen = ({ route }) => {
                         transactionId={transaction.transactionId}
                         transactionDate={transaction.createdAt}
                         transactionUserId={transaction.userId}
+                        taxable={transaction.gst}
                     />
                 </>
             ) : (

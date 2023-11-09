@@ -74,6 +74,8 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
     }
   };
 
+  const taxRate = (transaction.gst === true ? 1.08 : 1.00);
+
   // Inside your PropertyCardRectangle component
   return (
     <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
@@ -96,7 +98,7 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
           {/* <Text>{'             '}</Text> */}
           <Text style={styles.optionFeeAmount}>${formatPrice(
             transaction.onHoldBalance === 0 ?
-              transaction.paymentAmount : transaction.onHoldBalance
+              transaction.paymentAmount * taxRate : transaction.onHoldBalance * taxRate
           )}</Text>
         </View>
         <View style={styles.invoiceButtonContainer}>

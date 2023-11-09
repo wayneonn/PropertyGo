@@ -146,7 +146,7 @@ export default function SellerUploadOTP({ route }) {
 
       // Check if optionExpiryDate is not today or before today
 
-      console.log("optionExpiryDate: ", (optionExpiryDate && optionExpiryDate <= new Date()) )
+      console.log("optionExpiryDate: ", (optionExpiryDate && optionExpiryDate <= new Date()))
 
       if (selectedDocuments.length === 0 && !optionExpiryDate) {
         Alert.alert(
@@ -319,6 +319,11 @@ export default function SellerUploadOTP({ route }) {
     const min = String(date.getMinutes()).padStart(2, '0');
     return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
   };
+
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
+  useEffect(() => {
+    setCacheBuster(Date.now());
+  }, [propertyListing]);
 
   return (
     <View style={styles.container}>

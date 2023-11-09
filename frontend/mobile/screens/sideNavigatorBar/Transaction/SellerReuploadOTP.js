@@ -381,6 +381,11 @@ export default function SellerReuploadOTP({ route }) {
     }
 };
 
+const [cacheBuster, setCacheBuster] = useState(Date.now());
+useEffect(() => {
+  setCacheBuster(Date.now());
+}, [propertyListing]);
+
   return (
     <View style={styles.container}>
       <ScrollView

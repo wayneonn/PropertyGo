@@ -12,7 +12,7 @@ import { AuthContext } from '../../../../AuthContext';
 import DefaultImage from '../../../../assets/No-Image-Available-Small.jpg';
 import StepIndicator from 'react-native-step-indicator';
 
-const TrackOrderCard = ({ optionFeeStatus, paymentAmount, onHoldBalance, transactionId, transactionDate, transactionUserId }) => {
+const TrackOrderCard = ({ optionFeeStatus, paymentAmount, onHoldBalance, transactionId, transactionDate, transactionUserId, taxable }) => {
     const { user } = useContext(AuthContext);
     const isSeller = (user.user.userId === transactionUserId)
     const labels = ["Request Placed", "Seller Uploaded OTP", "Buyer Uploaded OTP", "Awaiting Admin To Sign As Witness", "Ready To Proceed To Exercise Purchase!"];
@@ -205,6 +205,8 @@ const TrackOrderCard = ({ optionFeeStatus, paymentAmount, onHoldBalance, transac
         }
       };
 
+    const taxRate = (taxable === true ? 1.08 : 1.00);
+
     return (
         <TouchableOpacity style={styles.card} onPress={() => console.log("pressed!")}>
             <View style={styles.propertyDetails}>
@@ -215,7 +217,7 @@ const TrackOrderCard = ({ optionFeeStatus, paymentAmount, onHoldBalance, transac
                             <Text style={styles.amountLabel}>Amt:</Text>
                             <Text style={styles.amountValue}>${formatPrice(
                                 onHoldBalance === 0 ?
-                                    paymentAmount : onHoldBalance
+                                    paymentAmount * taxRate  : onHoldBalance * taxRate
                             )}</Text>
                         </View>
                     {/* )} */}
