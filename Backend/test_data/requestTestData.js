@@ -8,7 +8,7 @@ module.exports = [
     lawyerId: 2,
     agentId: 4,
 
-    chatId: 1,
+    // chatId: 1,
   },
 
   {
@@ -20,6 +20,6 @@ module.exports = [
     lawyerId: 2,
     agentId: 4,
 
-    chatId: 2,
+    // chatId: 2,
   },
 ];
