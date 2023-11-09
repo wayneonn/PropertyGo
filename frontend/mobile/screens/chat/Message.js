@@ -10,6 +10,7 @@ import HTML from 'react-native-render-html';
 import { getChatById } from '../../utils/chatApi';
 import { addMessage } from '../../utils/messageApi'
 import base64 from 'react-native-base64';
+import MakeOfferModal from '../../components/Chat/MakeOfferModal';
 
 const Message = ({ route, navigation }) => {
 
@@ -20,10 +21,12 @@ const Message = ({ route, navigation }) => {
   const [newMessage, setNewMessage] = useState('');
   const windowWidth = useWindowDimensions().width;
 
+  const [isModalVisible, setModalVisible] = useState(false);
+
   const fetchData = async () => {
     try {
       const chatData = await getChatById(chatId);
-      console.log(chatData)
+      // console.log(chatData)
 
       setChat(chatData);
       setMessages(chatData.messages);
@@ -70,8 +73,25 @@ const Message = ({ route, navigation }) => {
     navigation.navigate('Property Listing', { propertyListingId })
   };
 
-  const handleMakeOffer = () => {
-    // navigation.navigate("Message", { chatId });
+  const handleMakeOffer = async (amount) => {
+
+    if (!amount) {
+      Alert.alert('Error', 'Missing input amount!');
+      return;
+    }
+
+    // try {
+    //   // const newTopic = { topicName }
+    //   // const forumTopic = await createForumTopic(user.user.userId, newTopic);
+    //   useParentCallback();
+    // } catch (error) {
+    //   console.error(error);
+    // }
+
+  };
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
   };
 
   return (
@@ -86,12 +106,17 @@ const Message = ({ route, navigation }) => {
               <Text style={styles.message}>
                 ${chat ? chat.propertyListing.price.toFixed(2) : "0.00"}
               </Text>
-              <TouchableOpacity
-                style={styles.makeOfferButton}
-                onPress={handleMakeOffer}
-              >
-                <Text style={styles.buttonText}>Make Offer!</Text>
-              </TouchableOpacity>
+
+              {chat && user.user.userId === chat.senderId && !chat.request ?
+                <TouchableOpacity
+                  style={styles.makeOfferButton}
+                  onPress={toggleModal}
+                >
+                  <Text style={styles.buttonText}>Make Offer!</Text>
+                </TouchableOpacity>
+                : null}
+
+
             </View>
             <View style={styles.propertyImageContainer}>
               {chat && chat.propertyListing.propertyImages.length !== 0 ? (
@@ -103,8 +128,6 @@ const Message = ({ route, navigation }) => {
               )}
             </View>
           </View>
-          {/* <Button style={styles.makeOfferButton} title="Make Offer!" onPress={ } /> */}
-
         </View>
       </TouchableOpacity>
       <FlatList
@@ -148,6 +171,8 @@ const Message = ({ route, navigation }) => {
           </TouchableHighlight>
         </View>
       </KeyboardAvoidingView>
+
+      <MakeOfferModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleMakeOffer}/>
     </View>
 
   );
