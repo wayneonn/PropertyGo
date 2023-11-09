@@ -430,6 +430,19 @@ const PropertyUserListingScreen = ({ route }) => {
           {" "}
           <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
         </Text>
+
+        <View style={styles.userInfoContainer}></View>
+        <Text style={styles.locationTitle}>Asking For {" "} <FontAwesome name="money" size={24} color="#333" /> </Text>
+        <Text style={styles.dateContainer}>
+          <Text style={styles.flatText}>{"1. Option Fee: "}</Text>
+          <Text style={styles.description}>${formatPriceWithCommas(propertyListing.optionFee)}</Text>
+        </Text>
+        <Text style={styles.dateContainer}>
+          <Text style={styles.flatText}>{"2. Option Exercise Fee: "}</Text>
+          <Text style={styles.description}>${formatPriceWithCommas(propertyListing.optionExerciseFee)}</Text>
+        </Text>
+        <Text></Text>            
+
         <Text style={styles.descriptionHeader}>Description:</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
         <Text style={styles.description}>{"\n"}</Text>

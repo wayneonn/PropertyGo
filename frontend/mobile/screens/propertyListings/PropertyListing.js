@@ -385,7 +385,20 @@ const PropertyListingScreen = ({ route }) => {
           {" "}
           <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
         </Text>
+
         {/* <Text >{"\n"}</Text> */}
+        <View style={styles.userInfoContainer}></View>
+        <Text style={styles.locationTitle}>Asking For {" "} <FontAwesome name="money" size={24} color="#333" /> </Text>
+        <Text style={styles.dateContainer}>
+          <Text style={styles.flatText}>{"1. Option Fee: "}</Text>
+          <Text style={styles.description}>${formatPriceWithCommas(propertyListing.optionFee)}</Text>
+        </Text>
+        <Text style={styles.dateContainer}>
+          <Text style={styles.flatText}>{"2. Option Exercise Fee: "}</Text>
+          <Text style={styles.description}>${formatPriceWithCommas(propertyListing.optionExerciseFee)}</Text>
+        </Text>
+        <Text></Text>
+
         <View style={styles.userInfoContainer}></View>
         <Text style={styles.locationTitle}>Description</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
@@ -495,7 +508,7 @@ const PropertyListingScreen = ({ route }) => {
               <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buyButton} onPress={() => {
-              navigation.navigate('Purchase Option Fee Info', { propertyListing});
+              navigation.navigate('Purchase Option Fee Info', { propertyListing });
             }}>
               <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>
