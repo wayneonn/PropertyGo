@@ -1001,6 +1001,9 @@ exports.getTransactionInvoicePdf = async (req, res) => {
             return res.status(404).json({ message: 'Transaction not found' });
         }
         const user = await User.findByPk(transaction.buyerId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
         const invoiceNumber = transaction.transactionId;
         const invoiceDate = transaction.createdAt;
@@ -1160,6 +1163,8 @@ exports.getTransactionInvoicePdf = async (req, res) => {
         </html>
         `;
 
+        // console.log("htmlContent: ", htmlContent)
+
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         
@@ -1172,6 +1177,7 @@ exports.getTransactionInvoicePdf = async (req, res) => {
             'Content-Type': 'application/pdf',
             'Content-Length': pdfBuffer.length,
         });
+        
         res.status(200).send(pdfBuffer);
     } catch (error) {
         res.status(500).json({ message: "Error creating invoice: ", error: error.message });
