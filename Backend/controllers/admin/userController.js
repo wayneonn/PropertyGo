@@ -48,6 +48,7 @@ const getAllUsers = async (req, res) => {
         "profileImage",
         "isActive",
         "userType",
+        "createdAt"
       ],
     });
 

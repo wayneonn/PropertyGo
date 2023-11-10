@@ -33,7 +33,7 @@ const SideBar = () => {
           />
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="*">
+          <Nav.Link className="a" href="/">
             <PiHouseLine style={{ marginRight: "1em" }}></PiHouseLine>
             Dashboard
           </Nav.Link>

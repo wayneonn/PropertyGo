@@ -1,0 +1,9 @@
+.dashboard {
+    background-color: #0000000D;
+    width: calc(100% - 180px);
+    top: 60px;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+    overflow-y: auto;
+  }
