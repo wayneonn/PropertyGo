@@ -49,6 +49,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       reimbursed: {
         type: DataTypes.BOOLEAN,
+        defaultValue: false,
         allowNull: true,
       },
       optionFeeStatusEnum: {

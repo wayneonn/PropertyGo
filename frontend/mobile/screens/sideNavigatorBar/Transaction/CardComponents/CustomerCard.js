@@ -6,8 +6,10 @@ import { getUserById, getRatingByUser } from '../../../../utils/api';
 import StarRating from 'react-native-star-rating';
 import { Ionicons } from '@expo/vector-icons';
 
-function CustomerCard({ sellerId, navigation }) {
+function CustomerCard({ sellerId, transaction }) {
   const userId = sellerId;
+  const { user } = useContext(AuthContext);
+  const isSeller = user.user.userId === transaction.userId;
   const [userDetails, setUser] = useState(null);
   const [rating, setRating] = useState(null);
 
@@ -76,60 +78,60 @@ function CustomerCard({ sellerId, navigation }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 16,
-      alignItems: 'center',
-      justifyContent: 'center',
+  container: {
+    flex: 1,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardContainer: {
+    backgroundColor: 'white', // Set the background color to white
+    borderRadius: 10,
+    margin: 16,
+    padding: 16,
+    elevation: 5, // Add elevation for shadow on Android
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    cardContainer: {
-      backgroundColor: 'white', // Set the background color to white
-      borderRadius: 10,
-      margin: 16,
-      padding: 16,
-      elevation: 5, // Add elevation for shadow on Android
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-    },
-    cardContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    profileImage: {
-      width: 80,
-      height: 80,
-      borderRadius: 50,
-    },
-    userInfo: {
-      marginLeft: 16,
-      marginTop: 8, // Add margin to move the name closer to the top
-    },
-    userName: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 8,
-    },
-    chatButton: {
-      backgroundColor: 'dodgerblue',
-      padding: 5,
-      borderRadius: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: 100,
-      marginTop: 16, // Add margin to move the chat button closer to the bottom
-    },
-    chatButtonText: {
-      color: 'white',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-  });
-  
-  
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  cardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 50,
+  },
+  userInfo: {
+    marginLeft: 16,
+    marginTop: 8, // Add margin to move the name closer to the top
+  },
+  userName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  chatButton: {
+    backgroundColor: 'dodgerblue',
+    padding: 5,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 100,
+    marginTop: 16, // Add margin to move the chat button closer to the bottom
+  },
+  chatButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+
+
 
 export default CustomerCard;

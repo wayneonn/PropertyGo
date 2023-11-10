@@ -119,7 +119,7 @@ const OrderDetailScreen = ({ route }) => {
 
             {transaction && propertyListing && seller ? (
                 <>
-                    <CustomerCard sellerId={transaction.buyerId} />
+                    <CustomerCard sellerId={transaction.buyerId} transaction={transaction} />
 
                     <PropertyCardRectangle
                         property={propertyListing}

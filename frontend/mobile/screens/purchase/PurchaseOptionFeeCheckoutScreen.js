@@ -67,6 +67,7 @@ const PurchaseOptionFee = ({ route }) => {
                     {
                         status,
                         paymentAmount,
+                        stripePaymentResponse: paymentIntent,
                         onHoldBalance: 0,
                         transactionType,
                     }

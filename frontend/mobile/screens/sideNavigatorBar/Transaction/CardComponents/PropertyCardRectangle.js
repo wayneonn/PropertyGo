@@ -18,6 +18,8 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
+  const isSeller = user.user.userId === transaction.userId;
+  const showReimbusement = transaction.transactionType === 'OPTION_FEE' && isSeller && (transaction.optionFeeStatusEnum === 'COMPLETED' || transaction.optionFeeStatusEnum === 'ADMIN_SIGNED')
 
   const formatPrice = (price) => {
     if (price !== null && !isNaN(price)) {
@@ -70,7 +72,34 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
       case 'COMMISSION_FEE':
         return 'Commission Fee';
       default:
-        return item; // Default color
+        return item;
+    }
+  };
+
+  const getStatusText = (status) => {
+    if (isSeller) {
+      if (status) {
+        return 'Reimbursed to Bank Account';
+      } else {
+        return 'Pending Reimbursement';
+      }
+    }
+  };
+
+  const getStatusColor = (status) => {
+    if (isSeller) {
+      if (status) {
+        return 'green';
+      } else {
+        return 'red';
+      }
+    }
+  };
+
+
+  const getStatusTextColor = (status) => {
+    if (isSeller) {
+      return 'white';
     }
   };
 
@@ -78,7 +107,7 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
 
   // Inside your PropertyCardRectangle component
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
+    <TouchableOpacity style={showReimbusement ? styles.cardReimburse : styles.card} onPress={() => onPress(property.propertyId)}>
       <View style={styles.imageContainer}>
         {propertyImageUri ? (
           <Image source={{ uri: `${propertyImageUri}?timestamp=${cacheBuster}` }} style={styles.propertyImage} />
@@ -112,6 +141,17 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
             <Text style={styles.chatButtonText}>View Invoice</Text>
           </TouchableOpacity>
         </View>
+        {showReimbusement ? (
+          <>
+            {/* <Text></Text> */}
+            <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(transaction.reimbursed) }]}>
+              <Text style={[styles.statusText, { color: getStatusTextColor(transaction.reimbursed) }]}>{getStatusText(transaction.reimbursed)}</Text>
+            </View>
+          </>
+        ) : (
+          <></>
+        )}
+
       </View>
       {/* Conditional rendering of favorite button */}
     </TouchableOpacity>
@@ -128,6 +168,25 @@ const styles = StyleSheet.create({
     padding: 10,
     width: '94%', // Adjust the width as needed
     aspectRatio: 2.5, // Adjust the aspect ratio to control the height
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  cardReimburse: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    margin: 10,
+    paddingBottom: 30,
+    padding: 10,
+    width: '94%', // Adjust the width as needed
+    aspectRatio: 2.2, // Adjust the aspect ratio to control the height
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -225,6 +284,23 @@ const styles = StyleSheet.create({
     borderBottomColor: 'grey', // You can change the color to your preference
     marginTop: 8,
     marginBottom: 2,
+  },
+  statusIndicator: {
+    position: 'absolute',
+    bottom: -30,
+    left: -125,
+    borderWidth: 0.18,
+    paddingVertical: 1,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+    backgroundColor: 'yellow', // Default color
+  },
+  statusText: {
+    fontSize: 9,
+    letterSpacing: 1,
+    fontWeight: 'bold',
+    color: '#000',
+    padding: 2,
   },
 });
 
