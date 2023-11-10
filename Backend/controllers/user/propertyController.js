@@ -220,6 +220,7 @@ async function getPropertiesByRegion(req, res) {
             ],
             where: {
                 approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+                propertyStatus: 'ACTIVE',
             },
         });
 
@@ -296,6 +297,7 @@ async function getPropertiesByFavoriteCount(req, res) {
             ],
             where: {
                 approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+                propertyStatus: 'ACTIVE',
             },
         });
 
@@ -370,6 +372,7 @@ async function getRecentlyAddedProperties(req, res) {
             ],
             where: {
                 approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+                propertyStatus: 'ACTIVE',
             },
             order: [['postedAt', 'DESC']],
         });

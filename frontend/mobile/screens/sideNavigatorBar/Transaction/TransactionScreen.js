@@ -66,7 +66,7 @@ const TransactionScreen = ({ route }) => {
                     <View style={styles.invoiceItem}>
                         <Text style={styles.info}>{transaction.quantity}{" Qty"}</Text>
                         <Text style={styles.info}>{transaction.transactionItem}</Text>
-                        <Text style={styles.info}>{formatCurrency(transaction.paymentAmount)}</Text>
+                        <Text style={styles.info}>{formatCurrency(transaction.paymentAmount === 0 ? transaction.onHoldBalance : transaction.paymentAmount)}</Text>
                     </View>
                 )}
 
@@ -99,7 +99,7 @@ const TransactionScreen = ({ route }) => {
                         <Text style={styles.info}></Text>
                         <Text style={(styles.label)}>GST (8%):</Text>
                         <Text style={styles.info}>
-                            {formatCurrency(transaction.paymentAmount * 0.08)}
+                            {formatCurrency(transaction.paymentAmount === 0 ? transaction.onHoldBalance * 0.08 : transaction.paymentAmount * 0.08)}
                         </Text>
                     </View>
                 )}
@@ -112,7 +112,10 @@ const TransactionScreen = ({ route }) => {
                             <Text style={styles.label}>Total Amount:</Text>
                             <Text style={styles.info}>
                                 {formatCurrency(
-                                    transaction.onHoldBalance
+                                    transaction.onHoldBalance +
+                                    (transaction.gst ?
+                                        (transaction.paymentAmount === 0 ? transaction.onHoldBalance * 0.08 : transaction.paymentAmount * 0.08)
+                                        : 0)
                                 )}
                             </Text>
                         </>
@@ -122,7 +125,9 @@ const TransactionScreen = ({ route }) => {
                             <Text style={styles.info}>
                                 {formatCurrency(
                                     transaction.paymentAmount +
-                                    (transaction.gst ? transaction.paymentAmount * 0.08 : 0)
+                                    (transaction.gst ?
+                                        (transaction.paymentAmount === 0 ? transaction.onHoldBalance * 0.08 : transaction.paymentAmount * 0.08)
+                                        : 0)
                                 )}
                             </Text>
                         </>

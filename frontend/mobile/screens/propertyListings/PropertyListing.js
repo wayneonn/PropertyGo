@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Swiper from 'react-native-swiper';
 import MapView, { Marker, Callout } from 'react-native-maps';
-import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons, FontAwesome, } from '@expo/vector-icons';
 import {
   getPropertyListing, getImageUriById, getUserById,
   addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites,
@@ -23,6 +23,7 @@ import DefaultImage from '../../assets/No-Image-Available.webp';
 import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FullScreenImage from './FullScreenImage';
+import { createChat } from '../../utils/chatApi';
 
 
 const PropertyListingScreen = ({ route }) => {
@@ -280,6 +281,26 @@ const PropertyListingScreen = ({ route }) => {
     }
   };
 
+  const capitalizeWords = (str) => {
+    return str.toLowerCase().replace(/(?:^|\s)\w/g, function (match) {
+      return match.toUpperCase();
+    });
+  }
+  const handleChatWithSeller = async () => {
+
+    chatData = {
+      propertyId: propertyListingId,
+      receiverId: propertyListing.sellerId
+    }
+
+    const data = await createChat(user.user.userId, chatData);
+
+    console.log(data.chatId)
+
+    navigation.navigate("Message", { chatId: data.chatId });
+
+  }
+
 
   return (
     <View style={styles.mainContainer}>
@@ -367,6 +388,10 @@ const PropertyListingScreen = ({ route }) => {
           </View>
         </View>
         <View style={styles.dateContainer}>
+          <FontAwesome name="building-o" size={18} color="#333" />
+          <Text style={styles.flatText}>{"Flat Type: "}{capitalizeWords(propertyListing.flatType.toLowerCase().replace(/_/g, ' '))}</Text>
+        </View>
+        <View style={styles.dateContainer}>
           <FontAwesome name="calendar" size={16} color="#333" />
           <Text style={styles.dateText}>{"Listed on: "}{formatDate(propertyListing.createdAt)}</Text>
         </View>
@@ -376,7 +401,20 @@ const PropertyListingScreen = ({ route }) => {
           {" "}
           <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
         </Text>
+
         {/* <Text >{"\n"}</Text> */}
+        <View style={styles.userInfoContainer}></View>
+        <Text style={styles.locationTitle}>Asking For {" "} <FontAwesome name="money" size={24} color="#333" /> </Text>
+        <Text style={styles.dateContainer}>
+          <Text style={styles.flatText}>{"1. Option Fee: "}</Text>
+          <Text style={styles.description}>${formatPriceWithCommas(propertyListing.optionFee)}</Text>
+        </Text>
+        <Text style={styles.dateContainer}>
+          <Text style={styles.flatText}>{"2. Option Exercise Fee: "}</Text>
+          <Text style={styles.description}>${formatPriceWithCommas(propertyListing.optionExerciseFee)}</Text>
+        </Text>
+        <Text></Text>
+
         <View style={styles.userInfoContainer}></View>
         <Text style={styles.locationTitle}>Description</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
@@ -477,7 +515,7 @@ const PropertyListingScreen = ({ route }) => {
             >
               <Ionicons name="calendar-outline" size={24} color="black" />
             </TouchableOpacity> */}
-            <TouchableOpacity style={styles.chatWithSellerButton}>
+            <TouchableOpacity style={styles.chatWithSellerButton} onPress={handleChatWithSeller}>
               <Text style={styles.buttonTextUser}>Chat With Seller</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.viewScheduleButton} onPress={() => {
@@ -486,7 +524,7 @@ const PropertyListingScreen = ({ route }) => {
               <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buyButton} onPress={() => {
-              navigation.navigate('Purchase Option Fee Info', { propertyListing});
+              navigation.navigate('Purchase Option Fee Info', { propertyListing });
             }}>
               <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>
@@ -757,6 +795,12 @@ const styles = StyleSheet.create({
     marginTop: -5
   },
   dateText: {
+    fontSize: 13,
+    marginLeft: 5,
+    color: '#333',
+  },
+  flatText: {
+    fontWeight: 'bold',
     fontSize: 13,
     marginLeft: 5,
     color: '#333',

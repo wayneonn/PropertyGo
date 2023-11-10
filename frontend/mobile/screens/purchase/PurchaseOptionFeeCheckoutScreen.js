@@ -1,15 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Alert, Linking, StyleSheet, TouchableOpacity } from 'react-native';
 import { useStripe, StripeProvider } from '@stripe/stripe-react-native';
-import { updateUserStripeCustomerId, initializePaymentSheet, createTransactionRecord, fetchUpdatedUserDetails, handleDeepLink } from '../../services/StripeServices';
-import { updateUserProfile } from '../../utils/api';
+import {
+    updateUserStripeCustomerId, initializePaymentSheet,
+    createTransactionRecord, fetchUpdatedUserDetails, handleDeepLink
+} from '../../services/StripeServices';
+import { edit } from '../../utils/transactionApi';
+import { updateTransaction } from '../../utils/transactionApi';
+import { editProperty } from '../../utils/api';
 import { AuthContext } from '../../AuthContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons'; // Import the desired icon library
 import { is } from 'date-fns/locale';
 
 const PurchaseOptionFee = ({ route }) => {
-    const { propertyListing, quantity } = route.params;
+    const { propertyListing, quantity, transaction } = route.params;
     const navigation = useNavigation();
     const { user, login } = useContext(AuthContext);
     const { initPaymentSheet, presentPaymentSheet, handleURLCallback } = useStripe();
@@ -31,7 +36,7 @@ const PurchaseOptionFee = ({ route }) => {
             stripeCustomerId,
             user.user,
             description,
-            amount, 
+            amount,
             setStripeCustomerId,
             setEphemeralKey,
             setPaymentIntent,
@@ -53,13 +58,34 @@ const PurchaseOptionFee = ({ route }) => {
                 if (custIdExists == false) {
                     updateUserStripeCustomerId(newStripeCustomerId, user.user, login);
                 }
-                const status = "PENDING"
+                const status = "PAID"
                 const transactionType = "OPTION_FEE"
-                const gst = false;
-                const paymentAmount = 0; //As payment is still processing
-                createTransactionRecord(propertyListing, user.user, paymentIntent, status, transactionType, description, 1, paymentAmount, gst);
+                const paymentAmount = amount; //As payment is still processing
+
+                await updateTransaction(
+                    transaction.transactionId,
+                    {
+                        status,
+                        paymentAmount,
+                        stripePaymentResponse: paymentIntent,
+                        onHoldBalance: 0,
+                        transactionType,
+                    }
+                );
+
+                const { success, data, message } = await editProperty(
+                    propertyListing.propertyListingId,
+                    {
+                        propertyStatus: "ON_HOLD",
+                    }
+                );
+
+                if (success) {
+                    console.log("Property updated successfully");
+                }
+
                 Alert.alert('Success', 'Your order is confirmed!');
-                navigation.navigate('Home Page');
+                navigation.navigate('Option Transaction Order Screen', { transactionId: transaction.transactionId });
             }
         } catch (error) {
             console.error('Error opening payment sheet:', error);
@@ -142,7 +168,7 @@ const PurchaseOptionFee = ({ route }) => {
 
                 <View style={styles.checkoutContainer}>
                     <View style={styles.totalAmountContainer}>
-                       
+
                     </View>
                     {/* Styled Checkout Button */}
                     <TouchableOpacity

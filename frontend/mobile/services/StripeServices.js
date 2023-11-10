@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { useStripe } from '@stripe/stripe-react-native';
 import { paymentSheet } from "../utils/stripeApi";
 import { updateUserProfile, loginUser } from "../utils/api";
-import { createTransaction } from "../utils/transactionApi";
+import { createTransaction, createOptionFeeTransaction } from "../utils/transactionApi";
 import { AuthContext } from '../AuthContext';
 
 export const initializePaymentSheet = async (
@@ -91,20 +91,23 @@ export const updateUserStripeCustomerId = async (stripeCustomerId, user, login) 
     fetchUpdatedUserDetails(user, login);
 };
 
-export const createTransactionRecord = async (propertyListing, user, paymentIntent, status, transactionType, transactionItem, quantity, paymentAmount, gst) => {
-    const { data, success, message } = await createTransaction({
+//Option Fee
+export const createTransactionRecord = async (propertyListing, user, status, transactionType, transactionItem, quantity, paymentAmount, gst) => {
+    const { data, success, message } = await createOptionFeeTransaction({
         onHoldBalance: propertyListing.optionFee,
         transactionItem: transactionItem,
         paymentAmount,
         quantity,
         gst,
         buyerId: user.userId,
+        userId: propertyListing.sellerId,
         propertyId: propertyListing.propertyListingId,
-        stripePaymentResponse: paymentIntent,
         status,
         transactionType,
+        optionFeeStatusEnum: "REQUEST_PLACED",
     });
   console.log("createTransactionRecord - success: ", success, " data: ", data, " message: ", message);
+  return data;
 };
 
 export const createTokenTransactionRecord = async (user, paymentIntent, status, transactionType, tokenName, tokens, tokenAmount, gst) => {

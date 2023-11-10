@@ -156,7 +156,7 @@ return (
                 </Modal>
 
                 <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Tenure</Text>
+                    <Text style={styles.label}>Bank Account Number</Text>
                     <TextInput
                         placeholder="123-456-789"
                         placeholderTextColor="gray"
@@ -172,7 +172,7 @@ return (
                     style={styles.button}
                     onPress={handleSubmit}
                 >
-                    <Text style={styles.buttonText}>Subscribe</Text>
+                    <Text style={styles.buttonText}>Submit</Text>
                 </TouchableOpacity>
             </ScrollView>
         </View>
@@ -210,12 +210,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#007BFF',
         width: '50%',
         alignSelf: 'center',
+        justifyContent: 'center',
         paddingHorizontal: 40,
         paddingVertical: 15,
         borderRadius: 8,
     },
     buttonText: {
         fontSize: 18,
+        alignSelf: 'center',
         fontWeight: 'bold',
         color: 'white',
     },
