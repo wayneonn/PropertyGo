@@ -124,7 +124,7 @@ export const ImageDisplayComponent = () => {
             onPress={() => handleImagePress(index)}
             style={styles.imageContainer}
         >
-            <Image source={{ uri: item }} style={styles.image} />
+            <Image source={{ uri: item }} style={styles.image} resizeMode={"cover"}/>
         </TouchableOpacity>
     );
 

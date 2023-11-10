@@ -23,6 +23,7 @@ import {ImageSwiper} from "../../components/ImageSwiper";
 import {BoostingAnimation} from "../../components/BoostingAnimation"
 import {RadioCheckBox} from "../../components/Partner/RadioCheckBox";
 import { CheckBox } from 'react-native-elements';
+import {createChat} from "../../utils/chatApi";
 
 
 
@@ -110,6 +111,28 @@ const ExploreServices = ({navigation, route}) => {
         } catch (error) {
             console.error(error)
         }
+    }
+
+    const handleChatWithLawyer = async () => {
+        const chatData = {
+            propertyId: 1,
+            receiverId: selectedLawyer?.userId
+        }
+        const data = await createChat(user.user.userId, chatData);
+        console.log(data.chatId)
+        setModalVisible(!modalVisible);
+        navigation.navigate("Message Partner", { chatId: data.chatId });
+    }
+
+    const handleChatWithContractor = async () => {
+        const chatData = {
+            propertyId: 1,
+            receiverId: selectedContractor?.userId
+        }
+        const data = await createChat(user.user.userId, chatData);
+        console.log(data.chatId)
+        setModalVisible(!modalVisible);
+        navigation.navigate("Message Partner", { chatId: data.chatId });
     }
 
     // Needs to have a more detailed and intricate sorting function.
@@ -263,7 +286,7 @@ const ExploreServices = ({navigation, route}) => {
                             <Text>&nbsp;</Text>
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonClose]}
-                                onPress={() => navigation.navigate("Chats")}
+                                onPress={handleChatWithLawyer}
                             >
                                 <Text style={styles.textStyle}>Chat With Lawyer</Text>
                             </TouchableOpacity>
@@ -372,7 +395,7 @@ const ExploreServices = ({navigation, route}) => {
                             <Text>&nbsp;</Text>
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonClose]}
-                                onPress={() => setModalVisible(false)}
+                                onPress={handleChatWithContractor}
                             >
                                 <Text style={styles.textStyle}>Chat With Contractor</Text>
                             </TouchableOpacity>

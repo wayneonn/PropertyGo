@@ -1,5 +1,21 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Button, TextInput, RefreshControl, Image, TouchableHighlight, FlatList, useWindowDimensions, KeyboardAvoidingView } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  SafeAreaView,
+  Button,
+  TextInput,
+  RefreshControl,
+  Image,
+  TouchableHighlight,
+  FlatList,
+  useWindowDimensions,
+  KeyboardAvoidingView,
+  Alert
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -10,25 +26,40 @@ import HTML from 'react-native-render-html';
 import { getChatById } from '../../utils/chatApi';
 import { addMessage } from '../../utils/messageApi'
 import base64 from 'react-native-base64';
-import MakeOfferModal from '../../components/Chat/MakeOfferModal';
 import MakeRequestModal from "../../components/Chat/MakeRequestModal";
+import {BASE_URL} from "../../utils/documentApi"
+import axios from 'axios'
+import {getTransactionByTransactionId} from "../../utils/transactionApi";
 
 const Message = ({ route, navigation }) => {
-
   const { user } = useContext(AuthContext);
   const [messages, setMessages] = useState([]);
   const [chat, setChat] = useState(null);
   const chatId = route.params.chatId;
   const [newMessage, setNewMessage] = useState('');
   const windowWidth = useWindowDimensions().width;
+  const [transaction, setTransaction] = useState(null);
 
   const [isModalVisible, setModalVisible] = useState(false);
 
   const fetchData = async () => {
     try {
       const chatData = await getChatById(chatId);
-      // console.log(chatData)
+      let request = chatData.request;
+      if (request !== null) {
+        let id = request.requestId;
+        const response = await axios.get(`${BASE_URL}/user/transactions/byRequestId/${id}`);
+        console.log("Transaction data: ", response.data);
 
+        // Check if the Axios response contains transactions data
+        if (response.data && response.data.transactions && response.data.transactions.length > 0) {
+          setTransaction(response.data);
+        }
+      }
+
+      // Returns PropertyListing (not needed), Sender and Receiver.
+      // Chat has a fixed Sender and Receiver.
+      console.log(chatData);
       setChat(chatData);
       setMessages(chatData.messages);
 
@@ -36,6 +67,7 @@ const Message = ({ route, navigation }) => {
       console.error(error);
     }
   }
+
 
   const useMessageCallback = useCallback(() => {
     fetchData();
@@ -54,7 +86,7 @@ const Message = ({ route, navigation }) => {
   const handleSubmit = async () => {
 
     try {
-      messageData = {
+      const messageData = {
         messageText: newMessage,
         userId: user.user.userId,
         chatId: chat.chatId
@@ -70,26 +102,126 @@ const Message = ({ route, navigation }) => {
 
   };
 
-  const handlePropertyPress = (propertyListingId) => {
+  async function sendMessage(message) {
+    // SHOULD BE A FUNCTION //
+    try {
+      const messageData = {
+        messageText: message,
+        userId: user.user.userId,
+        chatId: chat.chatId
+      }
+      await addMessage(messageData);
+      useMessageCallback();
+    } catch (error) {
+      console.error(error);
+    }
+    // SHOULD BE A FUNCTION //
+  }
+
+   const handlePropertyPress = (propertyListingId) => {
     navigation.navigate('Property Listing', { propertyListingId })
   };
 
-  const handleMakeOffer = async (amount) => {
-
-    if (!amount) {
-      Alert.alert('Error', 'Missing input amount!');
+  const handleMakeRequest = async (jobTitle, jobDescription, amount) => {
+    // Check for missing inputs
+    if (!amount || !jobDescription || !jobTitle) {
+      Alert.alert('Error', 'Missing input!');
       return;
     }
 
-    // try {
-    //   // const newTopic = { topicName }
-    //   // const forumTopic = await createForumTopic(user.user.userId, newTopic);
-    //   useParentCallback();
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      const requestBody = {
+        jobTitle,
+        jobDescription,
+        price: amount,
+        userId: user.user.userId,
+        chatId: chat.chatId
+      };
+      // Send a POST request to the server using Axios
+      const response = await axios.post(`${BASE_URL}/request`, requestBody);
+      Alert.alert('Success', 'Request created successfully');
 
+      const requestMessage = `Job Title: ${jobTitle} \n Job Description: ${jobDescription} \n Amount: ${amount}`
+      sendMessage(requestMessage)
+    } catch (error) {
+      const errorMessage = error.response ? error.response.data.error : error.message;
+      Alert.alert('Error', `Failed to create request: ${errorMessage}`);
+    }
   };
+
+  const handleAcceptRequest = () => {
+    Alert.alert(
+        "Accept Request",
+        `Do you want to accept the following request?\nService Title: ${chat.request.jobTitle}\nService Description: ${chat.request.jobDescription}\nAmount: ${chat.request.price}`, // Replace `chat.request.details` with the appropriate field from your chat.request object
+        [
+          {
+            text: "Yes",
+            onPress: acceptRequest
+          },
+          {
+            text: "No",
+            onPress: rejectRequest,
+            style: "cancel"
+          }
+        ],
+        { cancelable: false }
+    );
+  };
+
+  const acceptRequest = async () => {
+    console.log("Request accepted");
+    // Create a new PENDING transaction
+    // Then add a message to the chat that says it is pending.
+    // Prepare the transaction data
+    const transactionData = {
+      transactionItem: "SERVICE",
+      quantity: 1,
+      gst: 0,
+      onHoldBalance: chat.request.price,
+      paymentAmount: 0,
+      status: 'PENDING',
+      transactionType: "REQUEST",
+      requestId: chat.request.requestId,
+      buyerId: chat.sender.userId,
+      userId: chat.receiver.userId
+    };
+
+    try {
+      // Make a POST request to create a new transaction
+      const response = await axios.post(`${BASE_URL}/user/transactions/createTransaction`, transactionData);
+
+      const createdTransaction = response.data;
+      console.log('Transaction created:', createdTransaction);
+      setTransaction(createdTransaction);
+      // Send a message to the chat that the transaction is created
+      // Implement this based on your chat system
+      let transactionMessage = `Transaction with ID ${createdTransaction.transactionId} is created and pending payment in cheque.`;
+      sendMessage(transactionMessage)
+    } catch (error) {
+      // Handle any errors that occurred during the Axios request
+      console.error('Error creating transaction:', error.response ? error.response.data : error.message);
+    }
+  };
+
+  const rejectRequest = async () => {
+    try {
+      console.log("Request rejected and deleted.");
+      const response = await axios.delete(`${BASE_URL}/request/${chat.request.requestId}`);
+
+      if (response.status === 200) { // or the appropriate success status code
+        Alert.alert("The request has been rejected. Partner has to make a new request.");
+        // Update UI or state to reflect the deletion
+        sendMessage("Buyer has rejected Request. Please create a new request.")
+      } else {
+        // Handle unsuccessful deletion
+        console.error("Deletion was not successful:", response.status);
+      }
+    } catch (error) {
+      console.error("Error in deleting request:", error);
+      // Optionally show an error message to the user
+    }
+  }
+
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -97,34 +229,45 @@ const Message = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => handlePropertyPress(chat.propertyListing.propertyListingId)}>
+      <TouchableOpacity>
         <View style={styles.PropertyItemContainer}>
           <View style={styles.contentContainer}>
             <View style={styles.detailContainer}>
               <View style={styles.titleContainer}>
-                <Text style={styles.title}>{chat ? chat.propertyListing.title : "Loading"}</Text>
+                <Text style={styles.title}>{chat ? chat.receiver.name : "Loading"}</Text>
               </View>
               <Text style={styles.message}>
-                ${chat ? chat.propertyListing.price.toFixed(2) : "0.00"}
+                {chat ? chat.receiver.email : "No email address available."}
               </Text>
 
-              {chat && user.user.userId === chat.senderId && !chat.request ?
-                <TouchableOpacity
-                  style={styles.makeOfferButton}
-                  onPress={toggleModal}
-                >
-                  <Text style={styles.buttonText}>Make Offer!</Text>
-                </TouchableOpacity>
-                : null}
-
+              {chat && user.user.userId === chat.receiver.userId && !chat.request ?
+                  <TouchableOpacity
+                      style={styles.makeOfferButton}
+                      onPress={toggleModal}
+                  >
+                    <Text style={styles.buttonText}>Make Request!</Text>
+                  </TouchableOpacity>
+                  : chat && chat.request && transaction === null && user.user.userId === chat.senderId ?  // Check if request is not yet accepted
+                      <TouchableOpacity
+                          style={styles.makeOfferButton}
+                          onPress={handleAcceptRequest}
+                      >
+                        <Text style={styles.buttonText}>Accept Request</Text>
+                      </TouchableOpacity>
+                      : chat && chat.request && transaction !== null&& user.user.userId === chat.senderId ? // Check if request is already accepted and user is the sender
+                          <Text>Request Accepted</Text>
+                          : chat && chat.request && user.user.userId === chat.receiverId ? // Check if request is already accepted and user is the receiver
+                              <Text>Request Pending Acceptance</Text>
+                              : <Text>Waiting for Request to be made.</Text>
+              }
 
             </View>
             <View style={styles.propertyImageContainer}>
-              {chat && chat.propertyListing.propertyImages.length !== 0 ? (
+              {chat && chat.receiver.profileImage ? (
                 <Image source={{ uri: `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.propertyListing.propertyImages[0].image.data)}` }} style={styles.propertyImage} />
               ) : (
                 <View style={styles.propertyImagePlaceholder}>
-                  <Ionicons name="home" size={24} color="white" />
+                  <Ionicons name="profile" size={24} color="white" />
                 </View>
               )}
             </View>
@@ -173,7 +316,8 @@ const Message = ({ route, navigation }) => {
         </View>
       </KeyboardAvoidingView>
 
-      <MakeOfferModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleMakeOffer}/>
+      <MakeRequestModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleMakeRequest}/>
+
     </View>
 
   );

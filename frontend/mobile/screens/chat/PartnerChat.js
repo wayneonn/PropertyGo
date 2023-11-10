@@ -1,15 +1,15 @@
 import React, { useState, useContext, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, RefreshControl } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, KeyboardAvoidingView, RefreshControl } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import SearchBar from '../../components/Forum/SearchBar';
 import ChatItem from '../../components/Chat/ChatItem';
-import { getUserSenderChat } from '../../utils/chatApi';
+import { getUserReceiverChat } from '../../utils/chatApi';
 import ChatModal from '../../components/Chat/ChatModal';
 import base64 from 'react-native-base64';
 
-const SenderChat = ({ navigation }) => {
+const PartnerChat = ({ navigation }) => {
 
     const { user } = useContext(AuthContext);
     const [chats, setChats] = useState([]);
@@ -23,13 +23,10 @@ const SenderChat = ({ navigation }) => {
         const fetchData = async () => {
             try {
 
-                const chatDatas = await getUserSenderChat(user.user.userId);
+                const chatDatas = await getUserReceiverChat(user.user.userId);
                 // console.log(chatDatas);
-                const filtered = chatDatas.filter((chat) =>
-                    !["LAWYER", "CONTRACTOR"].includes(chat.receiver.userType)
-                );
-                setChats(filtered);
-                setFilteredChats(filtered);
+                setChats(chatDatas);
+                setFilteredChats(chatDatas);
                 setSearchQuery('');
                 setFilter(null);
 
@@ -69,7 +66,7 @@ const SenderChat = ({ navigation }) => {
 
     const handleChatPress = (chatId) => {
         setSearchQuery('');
-        navigation.navigate("Message", { chatId });
+        navigation.navigate("Message Partner", { chatId });
     };
 
     const toggleModal = () => {
@@ -81,11 +78,11 @@ const SenderChat = ({ navigation }) => {
         setFilter(f)
         if (f === "isReplied") {
 
-            setFilteredChats(chats.filter((chat) => chat.senderReplied === true));
+            setFilteredChats(chats.filter((chat) => chat.senderReplied === false));
 
         } else if (f === "isPendingReply") {
 
-            setFilteredChats(chats.filter((chat) => chat.senderReplied === false));
+            setFilteredChats(chats.filter((chat) => chat.senderReplied === true));
 
         } else {
 
@@ -117,11 +114,11 @@ const SenderChat = ({ navigation }) => {
                         key={chat.chatId}
                         onPress={() => handleChatPress(chat.chatId)}
                         updatedAt={chat.updatedAt}
-                        name={chat.receiver.name}
-                        title={chat.propertyListing.title}
+                        name={chat.sender.name}
+                        title={chat.receiver.companyName}
                         messageText={chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].messageText : ''}
-                        replied={chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].userId === chat.receiverId : false}
-                        profileImage={chat.receiver.profileImage ? `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.receiver.profileImage.data)}` : null}
+                        replied={chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].userId === chat.senderId : false}
+                        profileImage={chat.sender.profileImage ? `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.sender.profileImage.data)}` : null}
                         propertyImage={chat.propertyListing.propertyImages.length !== 0 ? `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.propertyListing.propertyImages[0].image.data)}` : null}
                     />
                 )) : null}
@@ -175,4 +172,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SenderChat;
+export default PartnerChat;

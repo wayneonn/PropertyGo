@@ -100,6 +100,7 @@ const viewingAvailabilityRoute = require("./routes/user/viewingAvailabilityRoute
 const stripeRoute = require("./routes/user/stripeRoute");
 const chatRoute = require("./routes/user/chatRoute");
 const messageRoute = require("./routes/user/messageRoute");
+const requestRoute = require("./routes/user/requestRoute")
 const e = require("express");
 
 app.use(cors());
@@ -189,6 +190,9 @@ app.use("/image", injectIo(io), imageRoute);
 app.use("/review", reviewRoute);
 
 app.use("/review", reviewRoute);
+
+app.use("/request", requestRoute)
+
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})

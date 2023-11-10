@@ -15,6 +15,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
+      // Adding two additional columns for Partners.
+      jobTitle: {
+        type: DataTypes.STRING,
+        allowNull: true, // Can be null
+      },
+      jobDescription: {
+        type: DataTypes.TEXT, // Use TEXT for potentially long descriptions
+        allowNull: true, // Can be null
+      },
     },
     {
       freezeTableName: true,

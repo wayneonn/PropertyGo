@@ -50,6 +50,19 @@ exports.getTransactionByTransactionId = async (req, res) => {
     }
 }
 
+exports.getTransactionByRequestId = async (req, res) => {
+    try {
+        const transactions = await Transaction.findAll({
+            where: { requestId: req.params.id },
+        });
+        res.json({ transactions });
+    } catch (error) {
+        res
+            .status(500)
+            .json({ message: "Error fetching transaction: ", error: error.message });
+    }
+}
+
 
 exports.getTopTenTransactions = async (req, res) => {
     try {
@@ -152,6 +165,10 @@ exports.getTransactionValueByBuyerId = async (req, res) => {
 
 exports.getTopTenTransactionsWithUsers = async (req, res) => {
     try {
+
+        // Nah, all this doesn't make sense now again.
+        // Cause we now added back buyerId and userId.
+
         // First, fetch all propertyId values associated with the sellerId
         const properties = await Property.findAll({
             where: { sellerId: req.params.id },

@@ -3,9 +3,8 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text } from 'react-native'; // Import Text and View from react-native
 import { useRoute } from '@react-navigation/native';
-import ReceiverChat from '../screens/chat/ReceiverChat';
+import PartnerChat from '../screens/chat/PartnerChat';
 import SenderChat from '../screens/chat/SenderChat';
-import PartnerSenderChat from "../screens/chat/PartnerSenderChat";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -16,7 +15,7 @@ const CustomTabLabel = ({ label, color, icon }) => (
     </View>
 );
 
-const ChatTabNavigator = () => {
+const ChatTabNavigatorPartner = () => {
 
     return (
         <Tab.Navigator
@@ -37,29 +36,11 @@ const ChatTabNavigator = () => {
             }}
         >
             <Tab.Screen
-                name="Sender Chat"
-                component={SenderChat}
-                options={{
-                    tabBarLabel: ({ color, focused }) => (
-                        <CustomTabLabel label="Buying" color={color} icon="inbox-arrow-up-outline" />
-                    ),
-                }}
-            />
-            <Tab.Screen
                 name="Receiver Chat"
-                component={ReceiverChat}
+                component={PartnerChat}
                 options={{
                     tabBarLabel: ({ color, focused }) => (
-                        <CustomTabLabel label="Selling" color={color} icon="inbox-arrow-down-outline" />
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name={"Partner Chat"}
-                component={PartnerSenderChat}
-                options={{
-                    tabBarLabel: ({ color, focused }) => (
-                        <CustomTabLabel label="Partner" color={color} icon="inbox-arrow-down-outline" />
+                        <CustomTabLabel label="Partner Request Information" color={color} icon="inbox-arrow-down-outline" />
                     ),
                 }}
             />
@@ -67,4 +48,4 @@ const ChatTabNavigator = () => {
     );
 };
 
-export default ChatTabNavigator;
+export default ChatTabNavigatorPartner;
