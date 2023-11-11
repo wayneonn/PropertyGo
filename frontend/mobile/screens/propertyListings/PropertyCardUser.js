@@ -149,38 +149,69 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
         return () => clearInterval(colorChangeTimer);
     }, [currentColor]);
 
-    const getStatusText = (status) => {
-        switch (status) {
+    const getStatusText = (status, propertyStatus) => {
+        if (propertyStatus === 'ACTIVE') {
+          switch (status) {
             case 'PENDING':
-                return 'Awaiting Admin Approval';
+              return 'Awaiting Admin Approval';
             case 'APPROVED':
-                return 'Approved';
+              return 'Approved';
             case 'REJECTED':
-                return 'Rejected';
+              return 'Rejected';
             default:
-                return status; // Default status text
+              return status; // Default status text
+          }
+        } else {
+          switch (propertyStatus) {
+            case 'ON_HOLD':
+              return 'On Hold';
+            case 'COMPLETED':
+              return 'Sold';
+            default:
+              return status; // Default status text
+          }
         }
-    };
-
-    const getStatusColor = (status) => {
-        switch (status) {
+      };
+    
+      const getStatusColor = (status, propertyStatus) => {
+        if (propertyStatus === 'ACTIVE') {
+          switch (status) {
             case 'PENDING':
-                return 'yellow';
+              return 'yellow';
             case 'APPROVED':
-                return 'green';
+              return 'green';
             case 'REJECTED':
-                return 'red';
+              return 'red';
             default:
-                return 'blue'; // Default status text
+              return 'blue'; // Default status text
+          }
+        } else {
+          switch (propertyStatus) {
+            case 'ON_HOLD':
+              return 'yellow';
+            case 'COMPLETED':
+              return 'red';
+            default:
+              return status; // Default status text
+          }
         }
-    };
-
-    const getStatusTextColor = (status) => {
-        switch (status) {
-          case 'PENDING':
-            return 'black';
-          default:
-            return 'white'; // Default color
+      };
+    
+      const getStatusTextColor = (status, propertyStatus) => {
+        if (propertyStatus === 'ACTIVE') {
+          switch (status) {
+            case 'PENDING':
+              return 'black';
+            default:
+              return 'white'; // Default color
+          }
+        } else { 
+          switch (propertyStatus) {
+            case 'ON_HOLD':
+              return 'black';
+            default:
+              return 'white'; // Default color
+          }
         }
       };
 
@@ -203,8 +234,8 @@ const PropertyCard = ({ property, onPress, reloadPropertyCard }) => {
                     {property.bathroom} <Ionicons name="water" size={16} color="#333" /> |
                     {property.size} sqm <Ionicons name="cube-outline" size={16} color="#333" />
                 </Text>
-                <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(property.approvalStatus) }]}>
-                    <Text style={[styles.statusText, { color: getStatusTextColor(property.approvalStatus) }]}>{getStatusText(property.approvalStatus)}</Text>
+                <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(property.approvalStatus, property.propertyStatus) }]}>
+                    <Text style={[styles.statusText, { color: getStatusTextColor(property.approvalStatus, property.propertyStatus) }]}>{getStatusText(property.approvalStatus, property.propertyStatus)}</Text>
                 </View>
                 <View style={styles.favoriteButton}>
                     {isBoostActive && (

@@ -10,31 +10,64 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DOUBLE,
             allowNull: true,
         },
-
+        senderReplied: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+        },
     }, {
         freezeTableName: true
     }
     )
 
     Chat.associate = (models) => {
-        Chat.belongsTo(models.User, { as: 'sender', foreignKey: 'senderId', }); // Many-to-one for sender
-        Chat.belongsTo(models.User, { as: 'receiver', foreignKey: 'receiverId', }); // Many-to-one for receiver
-        Chat.belongsTo(models.Property, { as: 'propertyListing', foreignKey: 'propertyId',});
+        
+        Chat.belongsTo(models.User, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: false,
+                name: 'senderId'
+            },
+            as: 'sender',
+        })
+
+        Chat.belongsTo(models.User, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: false,
+                name: 'receiverId'
+            },
+            as: 'receiver',
+        })
+
+        Chat.belongsTo(models.Property, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                allowNull: false,
+                name: 'propertyId'
+            },
+            as: 'propertyListing',
+        })
+
         Chat.hasMany(models.Message, {
             onDelete: "CASCADE",
             foreignKey: {
                 name: 'chatId',
                 allowNull: false
-            }
+            },
+            as: 'messages'
         });
-        Chat.hasMany(models.Request, {
-          onDelete: "CASCADE",
-          foreignKey: {
-            name: 'chatId',
-              allowNull: false
-          }
-       });
-      };
+
+        Chat.hasOne(models.Request, {
+            onDelete: "CASCADE",
+            foreignKey: {
+                name: 'chatId',
+                allowNull: true
+            },
+            as: 'request'
+        });
+
+    };
 
     return Chat;
 }

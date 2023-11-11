@@ -1,4 +1,5 @@
-const { Transaction, User, Property, Request } = require("../../models")
+const { Transaction, User, Property, Request, Notification } = require("../../models")
+const { loggedInUsers } = require('../../shared');
 const { Op, Sequelize } = require('sequelize');
 const puppeteer = require('puppeteer');
 const path = require('path');
@@ -597,10 +598,393 @@ exports.createTransaction = async (req, res) => {
     }
 }
 
+exports.createOptionFeeTransaction = async (req, res) => {
+    const transactionData = req.body;
+    try {
+        const createdTransaction = await Transaction.create(transactionData);
+
+        const property = await Property.findByPk(createdTransaction.propertyId);
+        // const propertyUser = await property.getUser();
+
+        const seller = await User.findByPk(property.sellerId);
+        if (!seller) {
+            return res.status(404).json({ message: 'Seller not found' });
+        }
+
+        const buyer = await User.findByPk(createdTransaction.buyerId);
+        if (!buyer) {
+            return res.status(404).json({ message: 'Buyer not found' });
+        }
+
+        const content = `${buyer.userName.charAt(0).toUpperCase() + buyer.userName.slice(1)} has made a request for the OTP Document on your property ${property.title}. Please upload the Option to Purchase (OTP) to proceed with the transaction.`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": createdTransaction.buyerId,
+            "userId" : seller.userId,
+            "content" : content,
+            "transactionId" : createdTransaction.transactionId,
+        };
+
+        await Notification.create(notificationBody);
+
+        // const transactionUser = await transaction.getSeller();
+
+        if (seller && loggedInUsers.has(seller.userId)){
+            // console.log("propertyUser :", propertyUser)
+            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+            console.log("Emitted userNewForumCommentNotification");
+        }
+
+        res.json(createdTransaction);
+    } catch (error) {
+        console.error("Error creating transaction:", error);
+        res.status(500).json({ error: "Error creating transaction" });
+    }
+}
+
+exports.sellerUploadedOTP = async (req, res) => {
+    const transactionData = req.body;
+    const { transactionId } = req.params; // Assuming you pass transactionId as a parameter
+    try {
+        const transaction = await Transaction.findByPk(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+
+        // Update the transaction with optionFeeStatusEnum "SELLER_UPLOADED"
+        transaction.optionFeeStatusEnum = "SELLER_UPLOADED";
+        transaction.optionToPurchaseDocumentId = transactionData.optionToPurchaseDocumentId;
+        await transaction.save();
+
+        const property = await Property.findByPk(transaction.propertyId);
+        const seller = await User.findByPk(property.sellerId);
+        const buyer = await User.findByPk(transaction.buyerId);
+        const buyerId = buyer.userId;
+        const sellerId = seller.userId;
+
+        if (!seller) {
+            return res.status(404).json({ message: 'Seller not found' });
+        }
+
+        if (!buyer) {
+            return res.status(404).json({ message: 'Buyer not found' });
+        }
+
+        const content = `${seller.userName.charAt(0).toUpperCase() + seller.userName.slice(1)} has uploaded the OTP Document for the property ${property.title}. Please upload the Option to Purchase (OTP) to complete the transaction.`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": sellerId,
+            "userId" : buyerId,
+            "content" : content,
+            "transactionId" : transaction.transactionId,
+        };
+
+        await Notification.create(notificationBody);
+
+        if (buyer && loggedInUsers.has(buyer.userId)){
+            req.io.emit("userNotification", {"pushToken": buyer.pushToken, "title": property.title, "body": content});
+            console.log("Emitted sellerUploadedOTP Notification");
+        }
+
+        res.json(transaction);
+    } catch (error) {
+        console.error("Error updating transaction:", error);
+        res.status(500).json({ error: "Error updating transaction" });
+    }
+}
+
+exports.sellerCancelledOTP = async (req, res) => {
+    const transactionData = req.body;
+    const { transactionId } = req.params; // Assuming you pass transactionId as a parameter
+    try {
+        const transaction = await Transaction.findByPk(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+
+        // Update the transaction with optionFeeStatusEnum "SELLER_UPLOADED"
+        transaction.optionFeeStatusEnum = "SELLER_CANCELLED";
+        transaction.optionToPurchaseDocumentId = transactionData.optionToPurchaseDocumentId;
+        await transaction.save();
+
+        const property = await Property.findByPk(transaction.propertyId);
+        const seller = await User.findByPk(property.sellerId);
+        const buyer = await User.findByPk(transaction.buyerId);
+        const buyerId = buyer.userId;
+        const sellerId = seller.userId;
+
+        if (!seller) {
+            return res.status(404).json({ message: 'Seller not found' });
+        }
+
+        if (!buyer) {
+            return res.status(404).json({ message: 'Buyer not found' });
+        }
+
+        const content = `${seller.userName.charAt(0).toUpperCase() + seller.userName.slice(1)} has decided to not proceed with the OTP Transaction for the property ${property.title}.`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": sellerId,
+            "userId" : buyerId,
+            "content" : content,
+            "transactionId" : transaction.transactionId,
+        };
+
+        await Notification.create(notificationBody);
+
+        if (buyer && loggedInUsers.has(buyer.userId)){
+            req.io.emit("userNotification", {"pushToken": buyer.pushToken, "title": property.title, "body": content});
+            console.log("Emitted sellerCancelledOTP Notification");
+        }
+
+        res.json(transaction);
+    } catch (error) {
+        console.error("Error updating transaction:", error);
+        res.status(500).json({ error: "Error updating transaction" });
+    }
+}
+
+exports.buyerUploadedOTP = async (req, res) => {
+    const transactionData = req.body;
+    const { transactionId } = req.params; // Assuming you pass transactionId as a parameter
+    try {
+        const transaction = await Transaction.findByPk(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+
+        // Update the transaction with optionFeeStatusEnum "SELLER_UPLOADED"
+        transaction.optionFeeStatusEnum = "BUYER_UPLOADED";
+        transaction.optionToPurchaseDocumentId = transactionData.optionToPurchaseDocumentId;
+        await transaction.save();
+
+        const property = await Property.findByPk(transaction.propertyId);
+        const seller = await User.findByPk(property.sellerId);
+        const buyer = await User.findByPk(transaction.buyerId);
+        const buyerId = buyer.userId;
+        const sellerId = seller.userId;
+
+        if (!seller) {
+            return res.status(404).json({ message: 'Seller not found' });
+        }
+
+        if (!buyer) {
+            return res.status(404).json({ message: 'Buyer not found' });
+        }
+
+        const content = `${buyer.userName.charAt(0).toUpperCase() + buyer.userName.slice(1)} has uploaded the OTP Document for the property ${property.title} and has payment for the Option Fee. Please await admin to sign the OTP to complete the transaction.`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": buyerId,
+            "userId" : sellerId,
+            "content" : content,
+            "transactionId" : transaction.transactionId,
+        };
+
+        await Notification.create(notificationBody);
+
+        if (seller && loggedInUsers.has(seller.userId)){
+            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+            console.log("Emitted buyerUploadedOTP Notification");
+        }
+
+        res.json(transaction);
+    } catch (error) {
+        console.error("Error updating transaction:", error);
+        res.status(500).json({ error: "Error updating transaction" });
+    }
+}
+
+exports.buyerRequestReupload = async (req, res) => {
+    const transactionData = req.body;
+    const { transactionId } = req.params; // Assuming you pass transactionId as a parameter
+    try {
+        const transaction = await Transaction.findByPk(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+
+        // Update the transaction with optionFeeStatusEnum "SELLER_UPLOADED"
+        transaction.optionFeeStatusEnum = "BUYER_REQUEST_REUPLOAD";
+        transaction.optionToPurchaseDocumentId = transactionData.optionToPurchaseDocumentId;
+        await transaction.save();
+
+        const property = await Property.findByPk(transaction.propertyId);
+        const seller = await User.findByPk(property.sellerId);
+        const buyer = await User.findByPk(transaction.buyerId);
+        const buyerId = buyer.userId;
+        const sellerId = seller.userId;
+
+        if (!seller) {
+            return res.status(404).json({ message: 'Seller not found' });
+        }
+
+        if (!buyer) {
+            return res.status(404).json({ message: 'Buyer not found' });
+        }
+
+        const content = `${buyer.userName.charAt(0).toUpperCase() + buyer.userName.slice(1)} has requested for you to reupload the OTP Document for the property ${property.title}. Please upload the OTP to proceed with the transaction.`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": buyerId,
+            "userId" : sellerId,
+            "content" : content,
+            "transactionId" : transaction.transactionId,
+        };
+
+        await Notification.create(notificationBody);
+
+        if (seller && loggedInUsers.has(seller.userId)){
+            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+            console.log("Emitted sellerUploadedOTP Notification");
+        }
+
+        res.json(transaction);
+    } catch (error) {
+        console.error("Error updating transaction:", error);
+        res.status(500).json({ error: "Error updating transaction" });
+    }
+}
+
+exports.buyerCancelOTP = async (req, res) => {
+    const transactionData = req.body;
+    const { transactionId } = req.params; // Assuming you pass transactionId as a parameter
+    try {
+        const transaction = await Transaction.findByPk(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+
+        // Update the transaction with optionFeeStatusEnum "SELLER_UPLOADED"
+        transaction.optionFeeStatusEnum = "BUYER_CANCELLED";
+        transaction.optionToPurchaseDocumentId = transactionData.optionToPurchaseDocumentId;
+        await transaction.save();
+
+        const property = await Property.findByPk(transaction.propertyId);
+        const seller = await User.findByPk(property.sellerId);
+        const buyer = await User.findByPk(transaction.buyerId);
+        const buyerId = buyer.userId;
+        const sellerId = seller.userId;
+
+        if (!seller) {
+            return res.status(404).json({ message: 'Seller not found' });
+        }
+
+        if (!buyer) {
+            return res.status(404).json({ message: 'Buyer not found' });
+        }
+
+        const content = `${buyer.userName.charAt(0).toUpperCase() + buyer.userName.slice(1)} has cancelled the request for the OTP Document for the property ${property.title}.`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": buyerId,
+            "userId" : sellerId,
+            "content" : content,
+            "transactionId" : transaction.transactionId,
+        };
+
+        await Notification.create(notificationBody);
+
+        if (seller && loggedInUsers.has(seller.userId)){
+            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+            console.log("Emitted sellerUploadedOTP Notification");
+        }
+
+        res.json(transaction);
+    } catch (error) {
+        console.error("Error updating transaction:", error);
+        res.status(500).json({ error: "Error updating transaction" });
+    }
+}
+
+exports.buyerPaidOptionExerciseFee = async (req, res) => {
+    const transactionData = req.body;
+    const { transactionId } = req.params; // Assuming you pass transactionId as a parameter
+    try {
+        const transaction = await Transaction.findByPk(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+
+        // Update the transaction with optionFeeStatusEnum "SELLER_UPLOADED"
+        transaction.optionFeeStatusEnum = "PAID_OPTION_EXERCISE_FEE";
+        transaction.optionToPurchaseDocumentId = transactionData.optionToPurchaseDocumentId;
+        await transaction.save();
+
+        const property = await Property.findByPk(transaction.propertyId);
+        const seller = await User.findByPk(property.sellerId);
+        const buyer = await User.findByPk(transaction.buyerId);
+        const buyerId = buyer.userId;
+        const sellerId = seller.userId;
+
+        if (!seller) {
+            return res.status(404).json({ message: 'Seller not found' });
+        }
+
+        if (!buyer) {
+            return res.status(404).json({ message: 'Buyer not found' });
+        }
+
+        const content = `${buyer.userName.charAt(0).toUpperCase() + buyer.userName.slice(1)} has paid the Option Exercise Fee for the property ${property.title}. Please Procceed to pay the Commission Fee to support our platform!`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": buyerId,
+            "userId" : sellerId,
+            "content" : content,
+            "transactionId" : transaction.transactionId,
+        };
+
+        await Notification.create(notificationBody);
+
+        if (seller && loggedInUsers.has(seller.userId)){
+            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+            console.log("Emitted buyerPaidOptionExerciseFee Notification");
+        }
+
+        res.json(transaction);
+    } catch (error) {
+        console.error("Error updating transaction:", error);
+        res.status(500).json({ error: "Error updating transaction" });
+    }
+}
+
 exports.getUserTransactions = async (req, res) => {
     try {
         const transactions = await Transaction.findAll({
-            where: { buyerId: req.params.id },
+            where: { 
+                [Op.or]: [
+                    { userId: req.params.id },
+                    { buyerId: req.params.id }
+                ]
+            },
             order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
         });
         res.json(transactions);
@@ -791,6 +1175,26 @@ exports.getTransactionInvoicePdf = async (req, res) => {
         res.status(200).send(pdfBuffer);
     } catch (error) {
         res.status(500).json({ message: "Error creating invoice: ", error: error.message });
+    }
+}
+
+exports.updateTransaction = async (req, res) => {
+    const transactionId = req.params.id;
+    const updatedTransactionData = req.body;
+
+    try {
+        const transaction = await Transaction.findByPk(transactionId);
+
+        if (!transaction) {
+            return res.status(404).json({ error: 'Transaction not found' });
+        }
+
+        await transaction.update(updatedTransactionData);
+
+        res.json(transaction);
+    } catch (error) {
+        console.error('Error updating transaction:', error);
+        res.status(500).json({ error: 'Error updating transaction' });
     }
 }
 

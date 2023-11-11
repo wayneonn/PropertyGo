@@ -15,6 +15,10 @@ import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFeeCheckoutScre
 import PurchaseOptionFeeInfo from "../screens/purchase/PurchaseOptionFeeInfo";
 import ViewAppointmentDetail from "../screens/sideNavigatorBar/Appointment/ViewAppointmentDetail";
 import Map from "../screens/propertyListings/map";
+import OptionTransactionDetailOrder from '../screens/sideNavigatorBar/Transaction/OptionTransactionDetailOrder';
+import SellerOptionTransactionDetailOrder from '../screens/sideNavigatorBar/Transaction/SellerOptionTransactionDetailOrder';
+import ChatTabNavigator from "./ChatTabNavigator";
+import Message from "../screens/chat/Message";
 
 const HomeListingsStack = createNativeStackNavigator();
 
@@ -39,6 +43,10 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="View Appointment Detail" component={ViewAppointmentDetail}/>
             <HomeListingsStack.Screen name="Purchase Option Fee" component={PurchaseOptionFee}/>
             <HomeListingsStack.Screen name="Purchase Option Fee Info" component={PurchaseOptionFeeInfo}/>
+            <HomeListingsStack.Screen name={"Option Transaction Order Screen"} component={OptionTransactionDetailOrder}/>
+            <HomeListingsStack.Screen name={"Seller Option Transaction Order Screen"} component={SellerOptionTransactionDetailOrder}/>
+            <HomeListingsStack.Screen name="Chat" component={ChatTabNavigator}/>
+            {/* <HomeListingsStack.Screen name="Message" component={Message}/> */}
         </HomeListingsStack.Navigator>
     );
 };
