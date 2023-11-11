@@ -97,6 +97,7 @@ const notificationRoute = require("./routes/user/notificationRoute");
 const responseRoute = require("./routes/user/responseRoute");
 const scheduleRoute = require("./routes/user/scheduleRoute");
 const viewingAvailabilityRoute = require("./routes/user/viewingAvailabilityRoute");
+const predictionRoute = require("./routes/user/predictionRoute");
 const stripeRoute = require("./routes/user/stripeRoute");
 const chatRoute = require("./routes/user/chatRoute");
 const messageRoute = require("./routes/user/messageRoute");
@@ -189,6 +190,8 @@ app.use("/image", injectIo(io), imageRoute);
 app.use("/review", reviewRoute);
 
 app.use("/review", reviewRoute);
+
+app.use("/prediction", predictionRoute);
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})
