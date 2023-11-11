@@ -100,6 +100,7 @@ const viewingAvailabilityRoute = require("./routes/user/viewingAvailabilityRoute
 const stripeRoute = require("./routes/user/stripeRoute");
 const chatRoute = require("./routes/user/chatRoute");
 const messageRoute = require("./routes/user/messageRoute");
+const requestRoute = require("./routes/user/requestRoute")
 const e = require("express");
 
 app.use(cors());
@@ -148,6 +149,7 @@ app.use(
   stripeRoute,
   chatRoute,
   messageRoute,
+  requestRoute,
 );
 
 io.on("connection", (socket) => {

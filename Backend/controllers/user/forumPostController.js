@@ -373,7 +373,7 @@ const updateForumPostFlaggedStatus = async (req, res) => {
 
         // Check if the user is already flagged for the Post
         const isFlagged = await forumPost.hasUsersFlagged(userId);
-        console.log("User ID: " + userId + " Forum Post ID: " + forumPostId)
+        // console.log("User ID: " + userId + " Forum Post ID: " + forumPostId)
         // console.log("is Flagged? " + isFlagged)
 
         const user = await User.findByPk(userId);

@@ -11,6 +11,10 @@ import { getChatById } from '../../utils/chatApi';
 import { addMessage } from '../../utils/messageApi'
 import base64 from 'react-native-base64';
 import MakeOfferModal from '../../components/Chat/MakeOfferModal';
+import EditOfferModal from '../../components/Chat/EditOfferModal';
+import { createRequest, updateRequest } from '../../utils/requestApi';
+import { editProperty } from '../../utils/api';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Message = ({ route, navigation }) => {
 
@@ -22,6 +26,7 @@ const Message = ({ route, navigation }) => {
   const windowWidth = useWindowDimensions().width;
 
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isEditModalVisible, setEditModalVisible] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -80,18 +85,75 @@ const Message = ({ route, navigation }) => {
       return;
     }
 
-    // try {
-    //   // const newTopic = { topicName }
-    //   // const forumTopic = await createForumTopic(user.user.userId, newTopic);
-    //   useParentCallback();
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      const requestData = {
+        price: amount,
+        chatId: chat.chatId
+      }
+      const request = await createRequest(user.user.userId, requestData);
+      useMessageCallback();
+    } catch (error) {
+      console.error(error);
+    }
+
+  };
+
+  const handleEditOffer = async (amount) => {
+
+    if (!amount) {
+      Alert.alert('Error', 'Missing input amount!');
+      return;
+    }
+
+    try {
+      const requestData = {
+        price: amount,
+        requestStatus: "PENDING",
+      }
+      await updateRequest(chat.request.requestId, requestData);
+
+      useMessageCallback();
+    } catch (error) {
+      console.error(error);
+    }
 
   };
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+  };
+
+  const toggleEditModal = () => {
+    setEditModalVisible(!isEditModalVisible);
+  };
+
+  const rejectOffer = async () => {
+    try {
+      const requestData = {
+        requestStatus: "REJECTED",
+      }
+      const request = await updateRequest(chat.request.requestId, requestData);
+      useMessageCallback();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const acceptOffer = async () => {
+    try {
+      const requestData = {
+        requestStatus: "ACCEPTED",
+      }
+      await updateRequest(chat.request.requestId, requestData);
+
+      const propertyData = {
+        offeredPrice: chat.request.price,
+      }
+      await editProperty(chat.propertyId, propertyData)
+      useMessageCallback();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -116,6 +178,72 @@ const Message = ({ route, navigation }) => {
                 </TouchableOpacity>
                 : null}
 
+              {chat && user.user.userId === chat.senderId && chat.request ?
+                <View>
+                  <View style={styles.editOfferContainer}>
+                    <Text style={styles.offerText}>
+                      ${chat ? chat.request.price.toFixed(2) : "0.00"}
+                    </Text>
+
+                    <TouchableOpacity
+                      style={[styles.editOfferButton, chat.request.requestStatus === "ACCEPTED" ? { backgroundColor: "#ccc" } : null]}
+                      onPress={toggleEditModal}
+                      disabled= {chat.request.requestStatus === "ACCEPTED"}
+                    >
+                      <Text style={styles.buttonText}>Edit Offer!</Text>
+                    </TouchableOpacity>
+
+                  </View>
+                  {chat.request.requestStatus === "ACCEPTED" ?
+                    <View style={styles.statusOfferContainer}>
+                      <Text style={styles.acceptedText}> OFFER ACCETPED!! </Text>
+                      <MaterialCommunityIcons name="sticker-check" size={24} color="green" />
+                    </View>
+                    : chat.request.requestStatus === "REJECTED" ?
+                    <View style={styles.statusOfferContainer}>
+                      <Text style={styles.rejectedText}> OFFER REJECTED!! </Text>
+                      <MaterialCommunityIcons name="sticker-alert" size={24} color="red" />
+                    </View>
+                    : null
+                  }
+                </View>
+                : null}
+
+              {chat && user.user.userId === chat.receiverId && chat.request ?
+                <View>
+                  <Text style={styles.sellerOfferText}>
+                    Offer Price : ${chat ? chat.request.price.toFixed(2) : "0.00"}
+                  </Text>
+                  {chat.request.requestStatus === "PENDING" ?
+                    <View style={styles.sellerOfferContainer}>
+
+                      <TouchableOpacity
+                        style={styles.rejectOfferButton}
+                        onPress={rejectOffer}
+                      >
+                        <Text style={styles.buttonText}>Reject Offer</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.acceptOfferButton}
+                        onPress={acceptOffer}
+                      >
+                        <Text style={styles.buttonText}>Accept Offer</Text>
+                      </TouchableOpacity>
+                    </View>
+                    : chat.request.requestStatus === "ACCEPTED" ?
+                      <View style={styles.statusOfferContainer}>
+                        <Text style={styles.acceptedText}> OFFER ACCETPED!! </Text>
+                        <MaterialCommunityIcons name="sticker-check" size={24} color="green" />
+                      </View>
+                      :
+                      <View style={styles.statusOfferContainer}>
+                        <Text style={styles.rejectedText}> OFFER REJECTED!! </Text>
+                        <MaterialCommunityIcons name="sticker-alert" size={24} color="red" />
+                      </View>
+                  }
+                </View>
+                : null}
 
             </View>
             <View style={styles.propertyImageContainer}>
@@ -172,7 +300,8 @@ const Message = ({ route, navigation }) => {
         </View>
       </KeyboardAvoidingView>
 
-      <MakeOfferModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleMakeOffer}/>
+      <MakeOfferModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleMakeOffer} />
+      <EditOfferModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEditOffer} />
     </View>
 
   );
@@ -214,6 +343,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 5,
   },
+  editOfferContainer: {
+    flexDirection: 'row',
+    justifyContent: "flex-start",
+    alignItems: 'center',
+    // marginRight: 5,
+    // borderWidth:1
+  },
+  sellerOfferContainer: {
+    flexDirection: 'row',
+    justifyContent: "flex-start",
+    alignItems: 'center',
+    marginTop: 5,
+    // borderWidth:1
+  },
+  statusOfferContainer: {
+    flexDirection: 'row',
+    justifyContent: "flex-start",
+    alignItems: 'center',
+    // marginTop: 5,
+    // borderWidth:1
+  },
   title: {
     fontSize: 16,
     // marginLeft: 15,
@@ -226,6 +376,18 @@ const styles = StyleSheet.create({
     // marginLeft: 15,
     // alignContent:"center",
     // justifyContent:"center"
+  },
+  offerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: "red",
+    width: "60%",
+  },
+  sellerOfferText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: "blue",
+    width: "90%",
   },
   propertyImage: {
     width: 60, // Make the property image take up the full width of its container
@@ -328,8 +490,45 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 6
   },
+  editOfferButton: {
+    backgroundColor: "#FFD700",
+    borderWidth: 1,
+    width: '35%',
+    paddingVertical: 5,
+    alignItems: "center",
+    borderRadius: 6,
+    marginHorizontal: 5,
+  },
+  rejectOfferButton: {
+    backgroundColor: "red",
+    borderWidth: 1,
+    width: '35%',
+    paddingVertical: 5,
+    alignItems: "center",
+    borderRadius: 6,
+    // marginHorizontal: 5,
+  },
+  acceptOfferButton: {
+    backgroundColor: "#FFD700",
+    borderWidth: 1,
+    width: '35%',
+    paddingVertical: 5,
+    alignItems: "center",
+    borderRadius: 6,
+    marginHorizontal: 5,
+  },
   buttonText: {
     fontWeight: 'bold',
+  },
+  acceptedText: {
+    fontWeight: 'bold',
+    color: "green",
+    fontSize: 14,
+  },
+  rejectedText: {
+    fontWeight: 'bold',
+    color: "red",
+    fontSize: 14,
   }
 });
 
