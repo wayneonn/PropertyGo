@@ -418,14 +418,14 @@ const PropertyListingScreen = ({ route }) => {
         <View style={styles.userInfoContainer}></View>
         <Text style={styles.locationTitle}>Description</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
-        <Text style={styles.description}>{"\n"}</Text>
+        {/* <Text style={styles.description}>{"\n"}</Text> */}
         
         <PredictionPriceCard
           flatType = {propertyListing.flatType} 
           town = {propertyListing.area}
           floorArea = {propertyListing.size} 
           // leaseCommenceDate = {propertyListing.lease_commence_date}
-          leaseCommenceDate = {1970}
+          leaseCommenceDate = {propertyListing.lease_commence_date}
         />
 
         {/* Location Details */}

@@ -73,7 +73,8 @@ async function predictPropertyPrices(req, res) {
         const input = [
             flatTypes.indexOf(flatType),
             towns.indexOf(town),
-            (parseFloat(floor_area_sqm) - minFloorArea) / (maxFloorArea - minFloorArea),
+            // (parseFloat(floor_area_sqm) - minFloorArea) / (maxFloorArea - minFloorArea),
+            parseFloat(floor_area_sqm),
             parseInt(year),
             parseInt(month),
             parseInt(lease_commence_date)
@@ -83,9 +84,12 @@ async function predictPropertyPrices(req, res) {
         // Load the pre-trained model
         const model = await loadModel();
 
+        let newInput = normalize(tf.tensor2d([input]), FEATURE_RESULTS.MIN_VALUES, FEATURE_RESULTS.MAX_VALUES);
+        let predictedPrice = model.predict(newInput.NORMALIZED_VALUES).dataSync()[0];
+
         // Make predictions using the trained model
-        const inputTensor = tf.tensor([input]);
-        const predictedPrice = model.predict(inputTensor).dataSync()[0];
+        // const inputTensor = tf.tensor([input]);
+        // const predictedPrice = model.predict(inputTensor).dataSync()[0];
 
         res.json({ predictedPrice });
     } catch (error) {
@@ -259,19 +263,7 @@ fs.createReadStream(csvFilePath)
 
         model.summary();
 
-        train();
-
-        const modelSavePath = path.join(__dirname, 'trained_model');
-        if (true) {
-            model.save(`file://${modelSavePath}`)
-                .then(() => {
-                    console.log('Model saved locally.');
-                    modelCreated = true;
-                })
-                .catch((err) => {
-                    console.error('Error saving the model:', err);
-                });
-        }
+        // train();
     });
 
 function normalize(tensor, min, max) {
@@ -303,6 +295,7 @@ async function train() {
 
     // Compile the model with the defined learning rate and specify a loss function to use.
     model.compile({
+        // optimizer: tf.train.sgd(LEARNING_RATE),
         optimizer: 'adam',
         loss: 'meanSquaredError'
     });
@@ -310,7 +303,7 @@ async function train() {
     let results = await model.fit(FEATURE_RESULTS.NORMALIZED_VALUES, OUTPUTS_TENSOR, {
         validationSplit: 0.15,
         shuffle: true,
-        batchSize: 64,
+        batchSize: 32,
         epochs: 200,
     });
 
@@ -329,6 +322,18 @@ async function train() {
             console.log('Loss history saved to loss_history.json');
         }
     });
+
+    const modelSavePath = path.join(__dirname, 'trained_model');
+    if (true) {
+        model.save(`file://${modelSavePath}`)
+            .then(() => {
+                console.log('Model saved locally.');
+                modelCreated = true;
+            })
+            .catch((err) => {
+                console.error('Error saving the model:', err);
+            });
+    }
 
     console.log("Average error loss: " + Math.sqrt(results.history.loss[results.history.loss.length - 1]));
     console.log("Average validation error loss: " +

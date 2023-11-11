@@ -123,7 +123,11 @@ const EditPropertyListing = ({ route }) => {
     setFormattedPrice(formatPrice(raw));
   };
 
-
+  const capitalizeWords = (str) => {
+    return str.toLowerCase().replace(/(?:^|\s)\w/g, function (match) {
+      return match.toUpperCase();
+    });
+  }
 
   const handleSubmit = async () => {
     // Validation checks
