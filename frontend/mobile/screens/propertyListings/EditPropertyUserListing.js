@@ -49,7 +49,7 @@ const EditPropertyListing = ({ route }) => {
     bed: '',
     bathroom: '',
     size: '',
-    tenure: '',
+    lease_commence_date: '',
     postalCode: '',
     address: '',
     propertyType: '', // You should also initialize propertyType here if it's part of propertyData
@@ -99,6 +99,18 @@ const EditPropertyListing = ({ route }) => {
     { label: 'New Launch', value: 'New Launch' },
   ]
 
+  const [roomTypeVisible, setRoomTypeVisible] = useState(false);
+  const roomTypes = [
+    { label: 'Select Room Type', value: '' },
+    { label: '1 Room', value: '1_ROOM' },
+    { label: '2 Room', value: '2_ROOM' },
+    { label: '3 Room', value: '3_ROOM' },
+    { label: '4 Room', value: '4_ROOM' },
+    { label: '5 Room', value: '5_ROOM' },
+    { label: 'Executive', value: 'EXECUTIVE' },
+    { label: 'Multi-Generation', value: 'MULTI_GENERATION' },
+  ]
+
   // Function to remove dollar sign and commas and save raw price
   const handlePriceChange = (text) => {
     // Remove dollar sign and commas
@@ -130,24 +142,24 @@ const EditPropertyListing = ({ route }) => {
 
     if (!rawPrice) {
       price = propertyData.price;
-    } else if (!price|| price <= 0) {
+    } else if (!price || price <= 0) {
       Alert.alert('Invalid Price', 'Price must be a numeric value.');
       return;
-    } 
+    }
 
     if (!optionPrice) {
       optionPrice = propertyData.optionFee;
-    } else if (!optionPrice|| optionPrice <= 0) {
+    } else if (!optionPrice || optionPrice <= 0) {
       Alert.alert('Invalid Option Price', 'Option Price must be a numeric value.');
       return;
-    } 
+    }
 
     if (!optionExercisePrice) {
       optionExercisePrice = propertyData.optionExerciseFee;
-    } else if (!optionExercisePrice|| optionExercisePrice <= 0) {
+    } else if (!optionExercisePrice || optionExercisePrice <= 0) {
       Alert.alert('Invalid Option Exercise Price', 'Option Exercise Price must be a numeric value.');
       return;
-    } 
+    }
 
     if (!/^\d+$/.test(propertyData.size)) {
       Alert.alert('Invalid Size', 'Size must be a numeric value.');
@@ -312,7 +324,7 @@ const EditPropertyListing = ({ route }) => {
         price: data.price.toString(),
         optionFee: data.optionFee.toString(),
         optionExerciseFee: data.optionExerciseFee.toString(),
-        tenure: data.tenure.toString(),
+        lease_commence_date: data.lease_commence_date.toString(),
         bed: data.bed.toString(),
         bathroom: data.bathroom.toString(),
         size: data.size.toString(),
@@ -320,6 +332,7 @@ const EditPropertyListing = ({ route }) => {
         address: data.address,
         unitNumber: data.unitNumber || '', // Update unitNumber (or provide a default value)
         propertyType: transformPropertyType(data.propertyType), // Transform propertyType label
+        roomType: data.flatType,
       });
 
       // Update formattedPrice with the fetched price
@@ -660,9 +673,9 @@ const EditPropertyListing = ({ route }) => {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Bathrooms</Text>
           <TextInput
-           placeholder="Number of Bathrooms"
-           placeholderTextColor="gray"
-           keyboardType="numeric"
+            placeholder="Number of Bathrooms"
+            placeholderTextColor="gray"
+            keyboardType="numeric"
             value={propertyData.bathroom}
             onChangeText={(text) =>
               setPropertyData({ ...propertyData, bathroom: text }) // Fix the object reference to propertyData
@@ -700,14 +713,14 @@ const EditPropertyListing = ({ route }) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Tenure</Text>
+          <Text style={styles.label}>Lease Commencement Year</Text>
           <TextInput
-            placeholder="Tenure (e.g. 99 years)"
+            placeholder="Lease Commence Year (e.g. 1976)"
             placeholderTextColor="gray"
-            maxLength={3} // Restrict input to 6 characters
+            maxLength={4} // Restrict input to 6 characters
             keyboardType="numeric" // Show numeric keyboard
-            value={propertyData.tenure}
-            onChangeText={(text) => setPropertyData({ ...propertyData, tenure: text })}
+            value={propertyData.lease_commence_date}
+            onChangeText={(text) => setPropertyData({ ...propertyData, lease_commence_date: text })}
             style={styles.input}
           />
         </View>
@@ -782,6 +795,52 @@ const EditPropertyListing = ({ route }) => {
               <Button
                 title="OK"
                 onPress={() => setPropertyTypeVisible(false)}
+              />
+            </View>
+          </View>
+        </Modal>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Room Type</Text>
+          <TouchableOpacity
+            style={styles.propertyTypePickerButton}
+            onPress={() => setRoomTypeVisible(true)}
+          >
+            <Text style={styles.propertyTypePickerText}>
+              {propertyData.roomType
+                ? capitalizeWords(propertyData.roomType.toLowerCase().replace(/_/g, ' '))
+                : 'Select Room Type'}
+            </Text>
+            <Icon name="caret-down" size={20} color="black" />
+          </TouchableOpacity>
+        </View>
+
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={roomTypeVisible}
+          onRequestClose={() => setRoomTypeVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <Picker
+              selectedValue={propertyData.roomType}
+              onValueChange={(value) =>
+                setProperty({ ...property, roomType: value })
+              }
+              style={styles.picker}
+            >
+              {roomTypes.map((type, index) => (
+                <Picker.Item
+                  key={index}
+                  label={type.label}
+                  value={type.value}
+                />
+              ))}
+            </Picker>
+            <View style={styles.okButtonContainer}>
+              <Button
+                title="OK"
+                onPress={() => setRoomTypeVisible(false)}
               />
             </View>
           </View>

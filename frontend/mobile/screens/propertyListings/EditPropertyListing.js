@@ -48,7 +48,7 @@ const EditPropertyListing = ({ route }) => {
     optionExerciseFee: '',
     bed: '',
     bathroom: '',
-    tenure: '',
+    lease_commence_date: '',
     size: '',
     postalCode: '',
     address: '',
@@ -102,6 +102,7 @@ const EditPropertyListing = ({ route }) => {
     { label: '4 Room', value: '4_ROOM' },
     { label: '5 Room', value: '5_ROOM' },
     { label: 'Executive', value: 'EXECUTIVE' },
+    { label: 'Multi-Generation', value: 'MULTI_GENERATION' },
   ]
 
   // Function to remove dollar sign and commas and save raw price
@@ -318,7 +319,7 @@ const EditPropertyListing = ({ route }) => {
         price: data.price.toString(),
         optionFee: data.optionFee.toString(),
         optionExerciseFee: data.optionExerciseFee.toString(),
-        tenure: data.tenure.toString(),
+        lease_commence_date: data.lease_commence_date.toString(),
         bed: data.bed.toString(),
         bathroom: data.bathroom.toString(),
         size: data.size.toString(),
@@ -722,14 +723,14 @@ const EditPropertyListing = ({ route }) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Tenure</Text>
+        <Text style={styles.label}>Lease Commence Year</Text>
           <TextInput
-            placeholder="Tenure (e.g. 99 years)"
+            placeholder="Lease Commence Year (e.g. 1976)"
             placeholderTextColor="gray"
-            maxLength={3} // Restrict input to 6 characters
+            maxLength={4} // Restrict input to 6 characters
             keyboardType="numeric" // Show numeric keyboard
-            value={propertyData.tenure}
-            onChangeText={(text) => setPropertyData({ ...propertyData, tenure: text })}
+            value={propertyData.lease_commence_date}
+            onChangeText={(text) => setPropertyData({ ...propertyData, lease_commence_date: text })}
             style={styles.input}
           />
         </View>

@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
-      tenure: {
+      lease_commence_date: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
