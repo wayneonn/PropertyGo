@@ -3,8 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Bar } from 'react-chartjs-2';
 import API from "../services/API";
 
-const BarChart = () => {
-  const userData = [
+const BarChartPartnerApplicationsOnboard = () => {
+  const userData = [ // TODO: need to change the data
     {
       userId: 1,
       userName: "User1",
@@ -108,6 +108,7 @@ const BarChart = () => {
       createdAt: "2023-04-03T00:00:00.000Z",
     },
   ];
+  
   const [selectedTimePeriod, setSelectedTimePeriod] = useState(3); 
 
   const monthOrder = {
@@ -231,7 +232,7 @@ const BarChart = () => {
           <div className="card-header">
             <h3 className="card-title" style={{ textAlign: "center" }}>
               <i className="fas fa-bar-chart mr-1" />
-              Onboarding of Users
+              Onboarding of Partner Applications
             </h3>
           </div>
           <div className="card-body">
@@ -259,14 +260,12 @@ const BarChart = () => {
                           display: false
                         }
                       },
-                      maintainAspectRatio: false,
                       scales: {
                         y: {
                           ticks: {
-                            callback: function (value) {
-                              return Math.round(value); // Display only whole numbers on the y-axis
-                            },
+                            precision: 0
                           },
+                          beginAtZero: true
                         },
                       },
                     }}
@@ -283,4 +282,4 @@ const BarChart = () => {
   );
 };
 
-export default BarChart;
+export default BarChartPartnerApplicationsOnboard;
