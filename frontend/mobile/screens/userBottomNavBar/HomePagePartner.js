@@ -1,30 +1,20 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {
-    ActivityIndicator,
-    Dimensions,
-    Image, Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import {Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
 import {searchProperties} from '../../utils/api';
 import {AuthContext} from '../../AuthContext';
 import {useFocusEffect} from '@react-navigation/native';
 import {Ionicons} from '@expo/vector-icons';
 import {
-    fetchAverageCountryCount, fetchAverageTransactionCount,
+    fetchAverageCountryCount,
+    fetchAverageTransactionCount,
     fetchBuyerIdTransactions,
     fetchMonthlyTransactions,
-    fetchTopTransactions,
     fetchTopTransactionsWithUsers,
     fetchTransactionCountryCount
 } from "../../utils/transactionApi";
 import {TransactionCard} from "../partnerApplication/TransactionCardSmall"
+import TransactionItemSmall from "../../components/Partner/TransactionItemSmall"
 import {Divider} from '@rneui/themed';
-import base64 from 'react-native-base64';
 import {ImageSwiper} from "../../components/ImageSwiper";
 import {BoostingAnimation} from "../../components/BoostingAnimation";
 import {MyLineChart} from "../../components/Partner/LineChart";
@@ -33,7 +23,6 @@ import {MyPieChart} from "../../components/Partner/PieChart";
 import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
 import {fetchImages} from "../../utils/partnerApi";
-import socketIOClient from 'socket.io-client';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -76,7 +65,7 @@ const HomePagePartner = ({navigation}) => {
         loadAverageTransactionCount()
         loadProfileImages(userId)
     }, []);
-    
+
     useFocusEffect(
         React.useCallback(() => {
             console.log('Home page gained focus');
@@ -123,7 +112,7 @@ const HomePagePartner = ({navigation}) => {
         }
     }
 
-    const loadBuyerIdTransactions = async() => {
+    const loadBuyerIdTransactions = async () => {
         try {
             const buyerTransactions = await fetchBuyerIdTransactions(userId);
             setBuyerIdTransactions(buyerTransactions.transactions)
@@ -133,7 +122,7 @@ const HomePagePartner = ({navigation}) => {
         }
     }
 
-    const loadTransactionCountryCount = async() => {
+    const loadTransactionCountryCount = async () => {
         try {
             const buyerTransactions = await fetchTransactionCountryCount(userId);
             setTransactionCountryCount(buyerTransactions.buyer)
@@ -143,7 +132,7 @@ const HomePagePartner = ({navigation}) => {
         }
     }
 
-    const loadAverageTransactionValue = async() => {
+    const loadAverageTransactionValue = async () => {
         try {
             const average = await fetchAverageCountryCount()
             setAverageTransactions(average.data)
@@ -153,7 +142,7 @@ const HomePagePartner = ({navigation}) => {
         }
     }
 
-    const loadAverageTransactionCount = async() => {
+    const loadAverageTransactionCount = async () => {
         try {
             const count = await fetchAverageTransactionCount()
             setCountTransactions(count.data)
@@ -163,7 +152,7 @@ const HomePagePartner = ({navigation}) => {
         }
     }
 
-    const loadProfileImages = async(USER_ID) => {
+    const loadProfileImages = async (USER_ID) => {
         try {
             const fetchedImages = await fetchImages(USER_ID);
             setModalImage(fetchedImages);
@@ -171,25 +160,6 @@ const HomePagePartner = ({navigation}) => {
             console.log("Cannot fetch profile listings. ", error)
         }
     }
-
-    const dateFormatter = (dateString) => {
-        const dateObj = new Date(dateString);
-        const formattedDate = dateObj.toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZoneName: 'short'
-        });
-        return formattedDate;
-    }
-
-    const handleTitlePress = (title, properties) => {
-        navigation.navigate('Properties List', {title: title, properties: properties, navigation: navigation});
-    };
-
 
     const handleSearch = async () => {
         if (searchQuery.trim() === '') {
@@ -235,14 +205,15 @@ const HomePagePartner = ({navigation}) => {
         }
     };
 
-    function convertImage(profileImage) {
-        console.log("This is the data array sent in for photos: ", profileImage)
-        return base64.encodeFromByteArray(profileImage);
-    }
-
     return (
         <ScrollView style={styles.container}>
-            <View style={{paddingHorizontal: 10, paddingTop: 10, flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
+            <View style={{
+                paddingHorizontal: 10,
+                paddingTop: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center"
+            }}>
                 <Text style={styles.sectionTitle}> {companyName} </Text>
                 {new Date(user.user.boostListingEndDate) >= new Date() && (
                     <>
@@ -297,7 +268,7 @@ const HomePagePartner = ({navigation}) => {
 
             <ImageSwiper images_new={modalImage}/>
             <TouchableOpacity style={styles.saveChangesButton} onPress={() => navigation.navigate("Upload Photos")}>
-                <Ionicons name="save-outline" size={18} color="white" />
+                <Ionicons name="save-outline" size={18} color="white"/>
                 <Text style={styles.saveChangesButtonText}>Upload Photos</Text>
             </TouchableOpacity>
 
@@ -314,7 +285,8 @@ const HomePagePartner = ({navigation}) => {
                                     {' '}Total Earnings </Text>
                             </View>
                         </TouchableOpacity>
-                        <MyLineChart averageTransactions={averageTransactions} monthTransactions={monthTransactions} screenHeight={screenHeight} screenWidth={screenWidth} navigation={navigation}/>
+                        <MyLineChart averageTransactions={averageTransactions} monthTransactions={monthTransactions}
+                                     screenHeight={screenHeight} screenWidth={screenWidth} navigation={navigation}/>
                     </View>
 
                     {/* Customer/Request Section */}
@@ -340,49 +312,29 @@ const HomePagePartner = ({navigation}) => {
                                     {' '}Total Request </Text>
                             </View>
                         </TouchableOpacity>
-                        <TransactionChart monthTransactions={monthTransactions} averageCount={countTransactions} navigation={navigation}/>
+                        <TransactionChart monthTransactions={monthTransactions} averageCount={countTransactions}
+                                          navigation={navigation}/>
                     </View>
 
                     {/*Recent Transactions Section */}
                     <View style={styles.sectionContainer}>
                         <TouchableOpacity
                             onPress={() => handleTitlePress('Top Transactions', topTransactions)}>
-                        <Text style={styles.sectionTitle}> {' '}<Ionicons name="navigate-circle-outline" size={24}
-                                                                          style={styles.titleIcon}/>
-                            {' '}Recent Request </Text>
+                            <Text style={styles.sectionTitle}> {' '}<Ionicons name="navigate-circle-outline" size={24}
+                                                                              style={styles.titleIcon}/>
+                                {' '}Recent Request </Text>
                         </TouchableOpacity>
                         <Divider/>
-                        {topTenUserProfile.length !== 0 ?  topTenUserProfile.map((item) => (
-                            <TouchableOpacity
-                                style={[styles.card, {width: cardSize * 0.92, height: cardSize * 0.25}]}
-                                onPress={() => {
-                                    setSelectedTransaction(item);
-                                    setModalVisible(true);
-                                }}
-                            >
-                                <View style={styles.profileHeader}>
-                                    {item.userDetails.profileImage !== null ? (
-                                        <Image
-                                            source={{uri: `data:image/jpeg;base64,${convertImage(item.userDetails.profileImage.data)}`}}
-                                            style={styles.profileImage}
-                                        />
-                                    ) : (
-                                        <Image
-                                            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                            style={{width: 50, height: 50, borderRadius: 120}}
-                                        />
-                                    )}
-                                </View>
-                                <View style={styles.propertyDetails}>
-                                    <Text style={[styles.propertyTitle, {color: item.transaction.status === "PAID" ? "green" : "red"}]}>{item.transaction.status}</Text>
-                                    <Text style={[styles.propertyPrice, {color: "#353531"}]}>{item.transaction.onHoldBalance}</Text>
-                                    <Text style={styles.propertyPrice}>{item.userDetails.userName}</Text>
-                                    <Text style={styles.propertyDetails}>{dateFormatter(item.transaction.createdAt)}</Text>
-                                </View>
-                            </TouchableOpacity>
-                        )) : <LoadingIndicator/> }
+                        {topTenUserProfile.length !== 0 ? topTenUserProfile.map((item) => (
+                            <TransactionItemSmall onPress={() => {
+                                setSelectedTransaction(item);
+                                setModalVisible(true);
+                            }} item={item}/>
+                        )) : <LoadingIndicator/>}
                     </View>
-                    <PartnerCardModal navigation={navigation} modalVisible={modalVisible} setModalVisible={setModalVisible} dateFormatter={dateFormatter} selectedItem={selectedTransaction}/>
+                    <PartnerCardModal navigation={navigation} modalVisible={modalVisible}
+                                      setModalVisible={setModalVisible}
+                                      selectedItem={selectedTransaction}/>
                 </>
             )}
         </ScrollView>

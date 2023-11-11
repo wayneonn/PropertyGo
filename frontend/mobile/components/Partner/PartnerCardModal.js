@@ -1,58 +1,124 @@
-import {Image, Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import React from "react";
+import {Alert, Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import React, {useState, useEffect} from "react";
+import ProfileImage from "../Partner/ProfileImage"
 import {RatingComponent} from "../RatingStars";
-import {convertImage} from "../../services/commonFunctions";
+import {dateFormatter} from "../../services/commonFunctions"
+import axios from "axios";
+import {BASE_URL} from "../../utils/documentApi";
 
-export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, dateFormatter, navigation}) => {
+export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, navigation}) => {
+    const [status, setStatus] = useState(selectedItem?.transaction.status)
+    useEffect(() => {
+        console.log("Status updated.")
+    }, [status]);
+    const handleRequestPaid = async() => {
+        try {
+            const updatedTransactionData = { status: 'PAID' }; // New status
+            const response = await axios.put(`${BASE_URL}/user/transactions/${selectedItem?.transaction.transactionId}`, updatedTransactionData);
+            console.log('Transaction updated:', response.data);
+            Alert.alert("Transaction changed from pending to paid.")
+            setStatus("PAID")
+        } catch (error) {
+            console.error('Error updating transaction:', error);
+            // Handle error (e.g., show an error message to the user)
+            Alert.alert("Transaction error occurred.", error)
+        }
+    }
     return (
         <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-            setModalVisible(false);
-        }}
-    >
-        <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-                {/* Render more details about the selectedTransaction */}
-                <Text style={styles.propertyTitle}>{selectedItem?.transaction.status}</Text>
-                <Text style={styles.propertyPrice}>{selectedItem?.transaction.onHoldBalance}</Text>
-                <TouchableOpacity onPress={() => {
-                    navigation.navigate('View Profile', { userId: selectedItem?.userDetails.userId })
-                    setModalVisible(!modalVisible)
-                }}>
-                    {
-                        (selectedItem?.userDetails.profileImage !== null && selectedItem !== null) ? (
-                            <Image
-                                source={{uri: `data:image/jpeg;base64,${convertImage(selectedItem.userDetails.profileImage.data)}`}}
-                                style={styles.profileImage}
-                            />
-                        ) : (
-                            <Image
-                                source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                style={styles.profileImage}
-                            />
-                        )
-                    }
-                </TouchableOpacity>
-                <Text style={styles.propertyPrice}>{selectedItem?.userDetails.userName}</Text>
-                <RatingComponent rating={selectedItem?.userDetails.rating}/>
-                <Text style={styles.propertyDetails}>Invoice ID: {selectedItem?.transaction.invoiceId}</Text>
-                <Text style={styles.propertyDetails}>{dateFormatter(selectedItem?.transaction.createdAt)}</Text>
-                <Text>&nbsp;</Text>
-                <TouchableOpacity
-                    style={[styles.button, styles.buttonClose]}
-                    onPress={() => setModalVisible(!modalVisible)}
-                >
-                    <Text style={styles.textStyle}>Hide</Text>
-                </TouchableOpacity>
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+                setModalVisible(false);
+            }}
+        >
+            <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                    <Text style={styles.propertyTitle}>{status}</Text>
+                    <Text style={styles.propertyPrice}>{selectedItem?.transaction.onHoldBalance}</Text>
+                    <Text style={styles.propertyPrice}>{selectedItem?.transaction.transactionItem}</Text>
+                    <ProfileImage userDetails={selectedItem?.userDetails} navigation={navigation}
+                                  setModalVisible={setModalVisible} modalVisible={modalVisible}/>
+                    <Text style={styles.propertyPrice}>{selectedItem?.userDetails.userName}</Text>
+                    <RatingComponent rating={selectedItem?.userDetails.rating}/>
+                    <Text style={styles.propertyDetails}>Request ID: {selectedItem?.transaction.requestId}</Text>
+                    <Text style={styles.propertyDetails}>{dateFormatter(selectedItem?.transaction.createdAt)}</Text>
+                    {selectedItem?.transaction.status === "PENDING" ? <TouchableOpacity
+                        style={[styles.button, styles.buttonAccept]}
+                        onPress={handleRequestPaid}
+                    >
+                        <Text style={styles.textStyle}>Mark Request as Done</Text>
+                    </TouchableOpacity> : null}
+                    <TouchableOpacity
+                        style={[styles.button, styles.buttonClose]}
+                        onPress={() => setModalVisible(!modalVisible)}
+                    >
+                        <Text style={styles.textStyle}>Hide</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
-    </Modal>);
+        </Modal>);
 }
 
 const styles = StyleSheet.create({
+    // Modal and Container Styles
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background for modal overlay
+    },
+    modalView: {
+        width: '85%', // Set a relative width for the modal
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 25, // Increase padding for better spacing
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+
+    // Text and Typography Styles
+    propertyTitle: {
+        fontSize: 18, // Increase font size for better visibility
+        fontWeight: 'bold',
+        marginBottom: 10, // Add bottom margin for spacing
+    },
+    propertyDetails: {
+        fontSize: 14, // Standardize font size
+        fontStyle: "italic",
+        color: '#555', // Slightly darker color for better readability
+        marginBottom: 8, // Consistent spacing
+    },
+    propertyPrice: {
+        fontSize: 16,
+        color: '#333', // Slightly darker for emphasis
+        marginBottom: 8,
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center",
+    },
+
+    // Button Styles
+    button: {
+        borderRadius: 20,
+        paddingVertical: 10, // Increase vertical padding
+        paddingHorizontal: 20, // Increase horizontal padding for a wider button
+        elevation: 2,
+        marginTop: 15, // Add top margin for spacing from the last text element
+    },
+    buttonClose: {
+        backgroundColor: "#2196F3",
+    },
+    buttonAccept: {
+        backgroundColor: "#519872",
+    },
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
@@ -91,28 +157,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    searchBar: {
-        flexDirection: 'row',
-        margin: 10,
-        padding: 10,
-        borderRadius: 10,
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: 'grey',
-    },
-    searchInput: {
-        flex: 1,
-        fontSize: 16,
-    },
-    searchIconContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 40,
-    },
-    searchIcon: {
-        width: 20,
-        height: 20,
-    },
     mainContentImage: {
         alignSelf: 'center',
         width: '90%',
@@ -129,10 +173,6 @@ const styles = StyleSheet.create({
         alignSelf: "center"
     },
 
-    propertyTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
 
     propertyListing: {
         flexDirection: 'row',
@@ -146,25 +186,12 @@ const styles = StyleSheet.create({
         height: 100,
         marginRight: 10,
     },
-    propertyDetails: {
-        fontStyle: "italic",
-    },
+
     propertyDescription: {
         fontSize: 16,
         fontWeight: 'bold',
     },
-    propertyPrice: {
-        fontSize: 14,
-        color: '#888',
-    },
-    propertyArea: {
-        fontSize: 14,
-        color: '#888',
-    },
-    propertyRoomFeatures: {
-        fontSize: 14,
-        color: '#888',
-    },
+
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -183,112 +210,4 @@ const styles = StyleSheet.create({
         marginRight: 15, // Add right padding
         alignSelf: 'center', // Center horizontally
     },
-    suggestionsContainer: {
-        width: '80%', // Take up 80% width
-        backgroundColor: 'white',
-        borderRadius: 10,
-        marginTop: 5,
-        marginBottom: 10,
-        alignSelf: 'center',
-        elevation: 5, // Add elevation for shadow effect (Android)
-        shadowColor: 'rgba(0, 0, 0, 0.2)', // Add shadow (iOS)
-        shadowOffset: {width: 0, height: 2}, // Add shadow (iOS)
-        shadowOpacity: 0.8, // Add shadow (iOS)
-        shadowRadius: 2, // Add shadow (iOS)
-    },
-    suggestionBorder: {
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        backgroundColor: 'white', // Match background color
-        height: 10,
-    },
-    suggestionItem: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
-    },
-    suggestionItemLast: {
-        borderBottomWidth: 0, // Remove border for the last item
-    },
-    suggestionText: {
-        fontSize: 14, // Make text smaller
-    },
-    suggestionsOverlay: {
-        position: 'absolute',
-        top: 50, // Adjust the top position as needed
-        left: 8,
-        right: 0,
-        zIndex: 1,
-        width: '95%', // Take up 80% width
-        backgroundColor: 'white',
-        borderRadius: 10,
-        marginTop: 5,
-        marginBottom: 10,
-        alignSelf: 'center',
-        elevation: 5, // Add elevation for shadow effect (Android)
-        shadowColor: 'rgba(0, 0, 0, 0.2)', // Add shadow (iOS)
-        shadowOffset: {width: 0, height: 2}, // Add shadow (iOS)
-        shadowOpacity: 0.8, // Add shadow (iOS)
-        shadowRadius: 2, // Add shadow (iOS)
-    },
-    noResultsContainer: {
-        alignItems: 'center',
-        position: 'absolute',
-        top: 50, // Adjust the top position as needed
-        left: 8,
-        right: 0,
-        zIndex: 1,
-        width: '95%', // Take up 80% width
-        backgroundColor: 'white',
-        borderRadius: 10,
-        marginTop: 5,
-        marginBottom: 10,
-        alignSelf: 'center',
-        elevation: 5, // Add elevation for shadow effect (Android)
-        shadowColor: 'rgba(0, 0, 0, 0.2)', // Add shadow (iOS)
-        shadowOffset: {width: 0, height: 2}, // Add shadow (iOS)
-        shadowOpacity: 0.8, // Add shadow (iOS)
-        shadowRadius: 2, // Add shadow (iOS)
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2
-    },
-    buttonClose: {
-        backgroundColor: "#2196F3",
-    },
-    textStyle: {
-        color: "white",
-        fontWeight: "bold",
-        textAlign: "center"
-    },
-    noResultsText: {
-        marginTop: 10,
-        marginBottom: 10,
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-
 });

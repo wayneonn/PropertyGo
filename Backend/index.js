@@ -56,6 +56,7 @@ const messageTestData = require("./test_data/messageTestData");
 const {
   createFakeTransactions,
   generateFakeProperties,
+    createFakeRequests
 } = require("./test_data/fakerDataGenerator");
 
 // admin routes
@@ -390,6 +391,7 @@ db.sequelize
         for (const requestData of requestTestData) {
           await db.Request.create(requestData);
         }
+        const genRequest = await createFakeRequests(1000)
         console.log("Request test data inserted successfully.");
       } catch (error) {
         console.log("Error inserting Request test data:", error);

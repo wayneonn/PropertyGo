@@ -2,7 +2,8 @@
 // I am using this when I need to piss fake values into the DB.
 
 const { faker }  = require('@faker-js/faker');
-const {Transaction, Property, Request, Invoice} = require("../models")
+const {Transaction, Property, Request, Invoice, User, Chat} = require("../models")
+const { Op, Sequelize } = require('sequelize');
 
 const getRandomPropertyId = async (USER_ID) => {
     const properties = await Property.findAll({ attributes: ['propertyListingId'] });
@@ -20,6 +21,46 @@ const getRandomRequestId = async (USER_ID) => {
     const requests = await Request.findAll({ attributes: ['requestId'] });
     const requestId = requests.map(p => p.requestId);
     return faker.helpers.arrayElement(requestId);
+};
+
+exports.createFakeRequests = async (numOfRecords, User, Chat) => {
+    const requests = [];
+    const transactions = [];
+    for (let i = 0; i < numOfRecords; i++) {
+        // Assuming User and Chat models have some records to associate with
+        // const randomUser = await User.findOne({ order: Sequelize.random(), attributes: ['id'] });
+        // const randomChat = await Chat.findOne({ order: Sequelize.random(), attributes: ['id'] });
+
+        const fakeRequest = {
+            price: faker.finance.amount(50, 5000, 2),
+            createdAt: faker.date.between({from:'2023-01-01', to:'2023-09-30'}),
+            jobTitle: faker.person.jobTitle(),
+            jobDescription: faker.lorem.paragraph(),
+            userId: faker.helpers.arrayElement([2,3,4,7,8,9]), // Assuming User model is available and has some records
+            chatId: null // Optional, based on available Chat records
+        };
+        requests.push(fakeRequest);
+
+        // Then we push the transactions in?
+        const fakeTransaction = {
+            onHoldBalance: faker.finance.amount(300, 1000, 2),
+            status: faker.helpers.arrayElement(['PENDING', 'PAID']),
+            buyerId: faker.number.int({min: 3, max:6}),
+            requestId: i + 2,
+            transactionItem: "SERVICE",
+            invoiceId: faker.number.int({min:1, max:6}),
+            createdAt: faker.date.between({from:'2023-01-01', to:'2023-09-30'}),
+            quantity: 1
+        };
+        transactions.push(fakeTransaction);
+    }
+    try {
+        await Request.bulkCreate(requests);
+        await Transaction.bulkCreate(transactions)
+        console.log('Fake requests + transactions created successfully.');
+    } catch (error) {
+        console.error('Error creating fake requests:', error);
+    }
 };
 
 exports.createFakeTransactions = async (numOfRecords) => {
@@ -51,8 +92,7 @@ exports.createFakeTransactions = async (numOfRecords) => {
 };
 
 exports.generateFakeProperties = async(numOfRecords) => {
-    const properties = [];
-
+    const properties = []
     for (let i = 0; i < numOfRecords; i++) {
         const fakeProperty = {
             propertyListingId: null,  // Auto-incremented by database
