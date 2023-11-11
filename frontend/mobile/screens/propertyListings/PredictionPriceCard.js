@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions,  ActivityIndicator, } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ActivityIndicator, } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 
 const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate }) => {
@@ -23,50 +23,61 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate }) =
         formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         formattedPrice = parseFloat(formattedPrice).toFixed(1);
         return formattedPrice;
-      };
+    };
+
+    function getMonthNameFromNumber(monthNumber) {
+        const monthNames = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ];
+    
+        if (monthNumber >= 1 && monthNumber <= 12) {
+            return monthNames[monthNumber - 1];
+        } else {
+            return 'Invalid Month';
+        }
+    }
 
     useEffect(() => {
         const { year, month } = getCurrentYearAndMonth();
-        console.log('month: ', month);
         const dataFetchPromises = [];
         const startYear = year - 1; // Starting 3 years back
         const endYear = year + 3; // Going to 2 years forward
-
-        for (let y = startYear; y <= endYear; y++) {
-            
-            dataFetchPromises.push(fetchData({ year: y, month: 10 }));
+        let currentMonth = month;
+    
+        for (let i = 0; i < 8; i++) { // Fetch data for 8 data points (4 years, every 6 months)
+            let currentYear = startYear + Math.floor((currentMonth + i * 6 - 1) / 12); // Calculate the current year
+            currentMonth = (currentMonth + i * 6 - 1) % 12 + 1; // Calculate the current month
+    
+            dataFetchPromises.push(fetchData({ year: currentYear, month: currentMonth }));
         }
-
-        const xLabelComponent = () => (
-            <Text style={styles.yearText}>S$ {price}k</Text>
-        );
-
+    
         Promise.all(dataFetchPromises).then(fetchedPrices => {
             const chartData = fetchedPrices.map((price, index) => {
-                // Add a label component only for the full years
-                const xLabelComponent = () => (
-                    <Text style={styles.yearText}>S$ {price}k</Text>
-                );
+                const labelMonth = (currentMonth + index * 6) % 12; // Calculate the month for the label
+                const labelYear = startYear + Math.floor((currentMonth + index * 6) / 12); // Calculate the year for the label
+                const formattedDate = `${getMonthNameFromNumber(labelMonth)} ${labelYear.toString().slice(-2)}`;
                 return {
                     value: price / 1000,
-                    year: startYear + index,
-                    labelComponent: (startYear + index) % 1 === 0
-                        ? () => <Text styles={styles.yearText}>{"      "}{startYear + index}</Text>
-                        : null,
-                    // customDataPoint: (startYear + index) % 1 === 0
-                    // ? dPoint
-                    // : null,
+                    year: formattedDate,
+                    labelComponent: () => (
+                        <Text style={styles.yearText}>
+                            {"     "}{getMonthNameFromNumber(labelMonth)} {labelYear.toString().slice(-2)}
+                        </Text>
+                    ),
                 };
             });
             setTimeout(() => {
                 setPrices(chartData); // Set prices after a delay
                 setIsLoading(false); // Update isLoading state to false
             }, 3000); // Delay for 3 seconds
-            console.log('chartData: ', chartData);
         }).catch(error => {
             console.error('Error fetching prediction data:', error);
         });
     }, [flatType, town, floorArea, leaseCommenceDate]);
+    
+    
+    
 
     const dPoint = () => {
         return (
@@ -95,7 +106,8 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate }) =
                     animateOnDataChange
                     // hideDataPoints
                     rotateLabel
-                    yAxisTextStyle={{color: 'gray'}}
+                    yAxisTextStyle={{ color: 'gray' }}
+                    yAxisSide='right'
                     animationDuration={1000}
                     onDataChangeAnimationDuration={500}
                     areaChart
@@ -144,7 +156,7 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate }) =
                     endFillColor={'rgb(84,219,234)'}
                     startOpacity={0.4}
                     endOpacity={0.1}
-                    stepValue={100}
+                    // stepValue={100}
                     spacing={58}
                     backgroundColor="white"
                     rulesColor="gray"
@@ -169,7 +181,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         paddingVertical: 20,
         margin: 20,
-        paddingTop: 20, 
+        paddingTop: 20,
         marginBottom: 30,
         paddingBottom: 50,
         shadowColor: '#000',
@@ -190,7 +202,7 @@ const styles = StyleSheet.create({
         paddingLeft: 12,
     },
     yearText: {
-        // fontSize: 12,
+        fontSize: 11,
         // color: 'white',
     },
     loadingText: {
