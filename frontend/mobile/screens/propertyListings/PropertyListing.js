@@ -426,6 +426,7 @@ const PropertyListingScreen = ({ route }) => {
           floorArea = {propertyListing.size} 
           // leaseCommenceDate = {propertyListing.lease_commence_date}
           leaseCommenceDate = {propertyListing.lease_commence_date}
+          property={propertyListing}
         />
 
         {/* Location Details */}

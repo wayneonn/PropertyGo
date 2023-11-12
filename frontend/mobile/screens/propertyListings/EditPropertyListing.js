@@ -812,14 +812,14 @@ const EditPropertyListing = ({ route }) => {
         </Modal>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Room Type</Text>
+          <Text style={styles.label}>Flat Type</Text>
           <TouchableOpacity
             style={styles.propertyTypePickerButton}
             onPress={() => setRoomTypeVisible(true)}
           >
             <Text style={styles.propertyTypePickerText}>
-              {propertyData.roomType
-                ? capitalizeWords(propertyData.roomType.toLowerCase().replace(/_/g, ' '))
+              {propertyData.flatType
+                ? capitalizeWords(propertyData.flatType.toLowerCase().replace(/_/g, ' '))
                 : 'Select Room Type'}
             </Text>
             <Icon name="caret-down" size={20} color="black" />
