@@ -99,7 +99,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
         )}
         <Text style={styles.heading}>Profile Picture</Text>
       </View>
-      {rating !== null ? (
+      {userDetails !== null ? (
         <View style={styles.profileInfo}>
           <View style={styles.row}>
             <Text style={styles.label}>Name:</Text>
@@ -110,8 +110,8 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
             <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Phone Number:</Text>
-            <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
+            <Text style={styles.label}>Email:</Text>
+            <Text style={styles.value}>{userDetails.email}</Text>
           </View>
           {/* <View style={styles.row}>
             <Text style={styles.label}>Rating:</Text>
