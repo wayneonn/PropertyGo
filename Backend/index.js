@@ -2,8 +2,8 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io"); // for the event-based notification
 const cors = require("cors");
-const cron = require('node-cron');
-const { Transaction, Property } = require("./models")
+const cron = require("node-cron");
+const { Transaction, Property } = require("./models");
 const app = express();
 const globalEmitter = require("./globalEmitter");
 const WebSocket = require("ws");
@@ -117,7 +117,11 @@ app.use("/admin/auth", authRouter);
 app.use("/admin/faqs", injectIo(io), faqRouter);
 app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", injectIo(io), contactUsAdminRouter);
-app.use("/admin/contactUs/:contactUsId/responses", injectIo(io), responseRouter);
+app.use(
+  "/admin/contactUs/:contactUsId/responses",
+  injectIo(io),
+  responseRouter
+);
 app.use("/admin/forumTopics", injectIo(io), forumTopicAdminRouter);
 app.use("/admin/notifications", notificationAdminRouter);
 app.use("/admin/properties", propertyAdminRouter);
@@ -147,7 +151,7 @@ app.use(
   responseRoute,
   stripeRoute,
   chatRoute,
-  messageRoute,
+  messageRoute
 );
 
 io.on("connection", (socket) => {
@@ -176,11 +180,7 @@ io.on("connection", (socket) => {
 
 app.use("/property", propertyRoute);
 
-app.use(
-  "/schedule",
-  injectIo(io),
-  scheduleRoute,
-);
+app.use("/schedule", injectIo(io), scheduleRoute);
 
 app.use("/viewingAvailability", viewingAvailabilityRoute);
 
@@ -221,7 +221,8 @@ db.sequelize
     const existingFaqRecordsCount = await db.FAQ.count();
     const existingTransactionRecordsCount = await db.Transaction.count();
     const existingScheduleRecordsCount = await db.Schedule.count();
-    const existingViewingAvailabilityCount = await db.ViewingAvailability.count();
+    const existingViewingAvailabilityCount =
+      await db.ViewingAvailability.count();
     // const existingInvoiceRecordsCount = await db.Invoice.count();
     const existingPropertyRecordsCount = await db.Property.count();
     const existingImageRecordsCount = await db.Image.count();
@@ -349,7 +350,9 @@ db.sequelize
         console.error("Error inserting Viewing Availability test data:", error);
       }
     } else {
-      console.log("Viewing Availability test data already exists in the database.");
+      console.log(
+        "Viewing Availability test data already exists in the database."
+      );
     }
 
     // Images
@@ -600,21 +603,25 @@ db.sequelize
         // Find transactions that meet the criteria
         const transactionsToUpdate = await Transaction.findAll({
           where: {
-            transactionType: 'OPTION_FEE',
-            optionFeeStatusEnum: 'BUYER_UPLOADED',
-          }
+            transactionType: "OPTION_FEE",
+            optionFeeStatusEnum: "BUYER_UPLOADED",
+          },
         });
 
-        console.log('Transactions to update:', transactionsToUpdate)
+        console.log("Transactions to update:", transactionsToUpdate);
 
         for (const transaction of transactionsToUpdate) {
           const property = await Property.findByPk(transaction.propertyId);
 
-          if (property && isToday4PM(property.optionExpiryDate) && property.propertyStatus === "ON_HOLD") {
+          if (
+            property &&
+            isToday4PM(property.optionExpiryDate) &&
+            property.propertyStatus === "ON_HOLD"
+          ) {
             // Update the property and transaction
-            property.propertyStatus = 'ACTIVE';
+            property.propertyStatus = "ACTIVE";
             property.optionExpiryDate = null;
-            transaction.optionFeeStatusEnum = 'SELLER_DID_NOT_RESPOND';
+            transaction.optionFeeStatusEnum = "SELLER_DID_NOT_RESPOND";
 
             // Save the updated property and transaction
             await property.save();
@@ -622,7 +629,7 @@ db.sequelize
           }
         }
       } catch (error) {
-        console.error('Error checking and updating transactions:', error);
+        console.error("Error checking and updating transactions:", error);
       }
     }
 
@@ -635,10 +642,12 @@ db.sequelize
     }
 
     //min, hour, day, month, weekday fields - indicating that the task will run every day.
-    cron.schedule('0 16 * * *', () => {
+    cron.schedule("0 16 * * *", () => {
       // Implement your logic to check and update transactions here
       checkAndUpdateTransactions();
-      console.log("Running OTP Deadline Checker to update Property and Transaction Status")
+      console.log(
+        "Running OTP Deadline Checker to update Property and Transaction Status"
+      );
     });
 
     server.listen(3000, () => {
