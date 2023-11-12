@@ -47,8 +47,8 @@
 
   outline: none;
   color: black;
-  background: #FFD700;
-  /* font-variant: all-petite-caps; */
+  /* background: #FFD700; */
+  background: #E9EAEB;
 }
 
 .searchbar-user img {
@@ -57,9 +57,4 @@
   padding: 2px;
   margin: 10px 5px 5px 0px;
   cursor: pointer;
-}
-
-
-@media screen and (min-width: 1440px) {
-
 }

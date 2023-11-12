@@ -69,8 +69,9 @@ exports.uploadDocuments = async (req, res) => {
       const user = await User.findByPk(userId);
 
       req.body = {
-        content: `A new Partner Application has been created by ${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)
-          }`,
+        content: `A new Partner Application has been created by ${
+          user.userName.charAt(0).toUpperCase() + user.userName.slice(1)
+        }`,
         isRecent: false,
         isPending: true,
         isCompleted: false,
@@ -162,7 +163,10 @@ exports.updateDocument = async (req, res) => {
     // Save the updated document
     await documentToUpdate.save();
 
-    res.json({ message: "Document updated successfully", documentId: documentToUpdate.documentId });
+    res.json({
+      message: "Document updated successfully",
+      documentId: documentToUpdate.documentId,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to update document" });

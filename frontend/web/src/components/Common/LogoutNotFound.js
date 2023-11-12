@@ -10,7 +10,7 @@ const LogoutNotFound = () => {
     <div className="logout-not-found">
       <div style={{ marginBottom: "40px" }}>
         <Image
-          src={imageBasePath + "Logo.png"}
+          src={imageBasePath + "PropertyGo-HighRes-Logo.png"}
           alt=".."
           style={{
             width: "150px",

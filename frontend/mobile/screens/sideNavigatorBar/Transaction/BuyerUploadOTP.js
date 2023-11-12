@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,42 +11,47 @@ import {
   Alert,
   Modal,
   FlatList,
-  Linking
-} from 'react-native';
-import Swiper from 'react-native-swiper';
-import MapView, { Marker, Callout } from 'react-native-maps';
-import { Picker } from '@react-native-picker/picker';
-import * as ImagePicker from 'expo-image-picker';
-import Icon from 'react-native-vector-icons/FontAwesome';
+  Linking,
+} from "react-native";
+import Swiper from "react-native-swiper";
+import MapView, { Marker, Callout } from "react-native-maps";
+import { Picker } from "@react-native-picker/picker";
+import * as ImagePicker from "expo-image-picker";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { getImageUriById, editProperty } from "../../../utils/api";
+import { buyerUploadedOTP } from "../../../utils/transactionApi";
+import DateTimePicker from "react-native-modal-datetime-picker";
 import {
-  getImageUriById, editProperty
-} from '../../../utils/api';
+  MaterialCommunityIcons,
+  Ionicons,
+  FontAwesome,
+} from "@expo/vector-icons"; // Import Ionicons from the correct library
+import { AuthContext } from "../../../AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { getAreaAndRegion } from "../../../services/GetAreaAndRegion";
+import { DocumentSelector } from "../../../components/PropertyDocumentSelector";
+import * as DocumentPicker from "expo-document-picker";
 import {
-  buyerUploadedOTP,
-} from '../../../utils/transactionApi';
-import DateTimePicker from 'react-native-modal-datetime-picker';
-import { MaterialCommunityIcons, Ionicons, FontAwesome } from '@expo/vector-icons'; // Import Ionicons from the correct library
-import { AuthContext } from '../../../AuthContext';
-import { useNavigation } from '@react-navigation/native';
-import { getAreaAndRegion } from '../../../services/GetAreaAndRegion';
-import { DocumentSelector } from '../../../components/PropertyDocumentSelector';
-import * as DocumentPicker from 'expo-document-picker';
-import { BASE_URL, fetchFolders, createFolder, fetchTransactions, updateDocument } from "../../../utils/documentApi";
-import * as FileSystem from 'expo-file-system'; // Import FileSystem from expo-file-system
-import * as Permissions from 'expo-permissions';
-import * as IntentLauncher from 'expo-intent-launcher';
-import * as Sharing from 'expo-sharing';
-import FullScreenImage from '../../propertyListings/FullScreenImage';
-import DefaultImage from '../../../assets/No-Image-Available.webp';
-import { useFocusEffect } from '@react-navigation/native';
-import { tr } from 'date-fns/locale';
+  BASE_URL,
+  fetchFolders,
+  createFolder,
+  fetchTransactions,
+  updateDocument,
+} from "../../../utils/documentApi";
+import * as FileSystem from "expo-file-system"; // Import FileSystem from expo-file-system
+import * as Permissions from "expo-permissions";
+import * as IntentLauncher from "expo-intent-launcher";
+import * as Sharing from "expo-sharing";
+import FullScreenImage from "../../propertyListings/FullScreenImage";
+import DefaultImage from "../../../assets/No-Image-Available.webp";
+import { useFocusEffect } from "@react-navigation/native";
+import { tr } from "date-fns/locale";
 
 const propertyTypes = [
-  { label: 'Select Property Type', value: '' },
-  { label: 'Resale', value: 'Resale' },
-  { label: 'New Launch', value: 'New Launch' },
-]
-
+  { label: "Select Property Type", value: "" },
+  { label: "Resale", value: "Resale" },
+  { label: "New Launch", value: "New Launch" },
+];
 
 export default function SellerReuploadOTP({ route }) {
   const { property, transaction } = route.params;
@@ -75,10 +80,13 @@ export default function SellerReuploadOTP({ route }) {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const openHDBLink = () => {
-    const url = 'https://services2.hdb.gov.sg/webapp/BB24OTPDlWeb/BB24POptionToPurchase.jsp';
+    const url =
+      "https://services2.hdb.gov.sg/webapp/BB24OTPDlWeb/BB24POptionToPurchase.jsp";
 
     // Use the Linking.openURL method to open the URL in Safari
-    Linking.openURL(url).catch((err) => console.error('An error occurred: ', err));
+    Linking.openURL(url).catch((err) =>
+      console.error("An error occurred: ", err)
+    );
   };
 
   useEffect(() => {
@@ -88,7 +96,9 @@ export default function SellerReuploadOTP({ route }) {
   const fetchFolderData = async () => {
     try {
       // const documents = await fetchDocuments(USER_ID);
-      const { success, data, message } = await createFolder(userId, { folderTitle: 'Property' });
+      const { success, data, message } = await createFolder(userId, {
+        folderTitle: "Property",
+      });
       if (success) {
         setFolderId(data.folderId);
       } else {
@@ -97,28 +107,28 @@ export default function SellerReuploadOTP({ route }) {
 
       // console.log(user);
     } catch (error) {
-      console.error('Error fetching Folder data:', error);
+      console.error("Error fetching Folder data:", error);
     }
   };
 
   const handleSelectDocument = async () => {
     try {
       const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-      console.log('Media library permission status:', status);
+      console.log("Media library permission status:", status);
 
-      if (status === 'granted') {
+      if (status === "granted") {
         const results = await DocumentPicker.getDocumentAsync({
           multiple: true,
-          type: 'application/pdf', // Set the desired document type
+          type: "application/pdf", // Set the desired document type
         });
 
-        console.log('Result from DocumentPicker:', results);
+        console.log("Result from DocumentPicker:", results);
 
         if (!results.cancelled) {
           // The user selected a document, you can now proceed with the upload logic
           const newSelectedDocuments = results.assets;
           setSelectedDocuments([...newSelectedDocuments]);
-          console.log('Selected document:', results.assets[0].uri);
+          console.log("Selected document:", results.assets[0].uri);
 
           // Check if the file exists
           const fileInfo = await FileSystem.getInfoAsync(results.assets[0].uri);
@@ -128,33 +138,29 @@ export default function SellerReuploadOTP({ route }) {
             // setSelectedDocuments(results);
             setIsDocumentUploaded(false);
           } else {
-            console.warn('Selected document file does not exist.');
+            console.warn("Selected document file does not exist.");
           }
         } else {
-          console.log('Document selection canceled or failed.');
+          console.log("Document selection canceled or failed.");
         }
       } else {
-        console.warn('Media library permission denied.');
+        console.warn("Media library permission denied.");
       }
     } catch (error) {
-      console.error('Error selecting document:', error);
+      console.error("Error selecting document:", error);
     }
   };
 
   const handleSubmit = async () => {
     try {
-
       if (selectedDocuments.length === 0) {
-        Alert.alert(
-          'Missing Document',
-          'Please select a document to upload.'
-        );
+        Alert.alert("Missing Document", "Please select a document to upload.");
         return;
-      } 
+      }
 
       const propertyListingId = property.propertyListingId;
       const title = property.title;
-      console.log('Property Id:', propertyListingId);
+      console.log("Property Id:", propertyListingId);
 
       // await fetchFolderData();
 
@@ -162,28 +168,27 @@ export default function SellerReuploadOTP({ route }) {
 
       const otpDocumentId = transaction.optionToPurchaseDocumentId;
 
-      console.log("otpDocumentId: ", otpDocumentId)
+      console.log("otpDocumentId: ", otpDocumentId);
 
       await buyerUploadedOTP(transaction.transactionId, {
         optionToPurchaseDocumentId: otpDocumentId,
       });
 
-      navigation.navigate('Purchase Option Fee', {propertyListing: property, quantity: 1, transaction});
+      navigation.navigate("Purchase Option Fee", {
+        propertyListing: property,
+        quantity: 1,
+        transaction,
+      });
 
       // Alert.alert(
       //   'Document Uploaded',
       //   'The OTP Document has been updated successfully.'
       // );
-
     } catch (error) {
-      console.log('Error uploading document:', error);
-      Alert.alert(
-        'Error',
-        'An error occurred while updating the document.'
-      );
+      console.log("Error uploading document:", error);
+      Alert.alert("Error", "An error occurred while updating the document.");
     }
   };
-
 
   const createDocument = async (propertyListingId, title) => {
     console.log("createDocument", selectedDocuments);
@@ -212,11 +217,17 @@ export default function SellerReuploadOTP({ route }) {
       });
 
       console.log("fileData: ", fileData);
-      console.log("optionToPurchaseDocumentId at createdocument: ", transaction.optionToPurchaseDocumentId);
-      const response = await fetch(`${BASE_URL}/user/documents/${transaction.optionToPurchaseDocumentId}/update`, {
-        method: "put",
-        body: fileData,
-      });
+      console.log(
+        "optionToPurchaseDocumentId at createdocument: ",
+        transaction.optionToPurchaseDocumentId
+      );
+      const response = await fetch(
+        `${BASE_URL}/user/documents/${transaction.optionToPurchaseDocumentId}/update`,
+        {
+          method: "put",
+          body: fileData,
+        }
+      );
 
       // Check the response status and log the result
       if (response.ok) {
@@ -235,12 +246,11 @@ export default function SellerReuploadOTP({ route }) {
     }
   };
 
-
   const openPdf = async (filePath) => {
     try {
-      // Define a target URI for the file. This can be a directory in the app's 
+      // Define a target URI for the file. This can be a directory in the app's
       // document directory or any other appropriate location.
-      const fileName = filePath.split('/').pop();
+      const fileName = filePath.split("/").pop();
       const targetUri = `${FileSystem.documentDirectory}${fileName}`;
 
       // Copy the file from the source location to the target location.
@@ -256,32 +266,38 @@ export default function SellerReuploadOTP({ route }) {
 
       // Share the file with the user
       await Sharing.shareAsync(targetUri);
-      console.log('File saved to:', targetUri);
+      console.log("File saved to:", targetUri);
     } catch (error) {
-      console.error('Error while downloading the file:', error);
+      console.error("Error while downloading the file:", error);
     }
   };
 
   const formatPriceWithCommas = (price) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   const formatPricePerSqm = (price, size) => {
-    if (price !== null && size !== null && !isNaN(price) && !isNaN(size) && size !== 0) {
+    if (
+      price !== null &&
+      size !== null &&
+      !isNaN(price) &&
+      !isNaN(size) &&
+      size !== 0
+    ) {
       const pricePerSqm = (price / size).toFixed(2); // Format to 2 decimal places
       return pricePerSqm;
     } else {
-      return 'N/A'; // Handle the case when price or size is null, undefined, or 0
+      return "N/A"; // Handle the case when price or size is null, undefined, or 0
     }
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const dd = String(date.getDate()).padStart(2, '0');
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
     const yyyy = date.getFullYear();
-    const hh = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, "0");
+    const min = String(date.getMinutes()).padStart(2, "0");
     return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
   };
 
@@ -289,9 +305,9 @@ export default function SellerReuploadOTP({ route }) {
     const response = await fetch(
       `${BASE_URL}/user/documents/${transaction.optionToPurchaseDocumentId}/data`
     );
-    console.log(response)
+    console.log(response);
     const result = await response.json();
-    console.log(result)
+    console.log(result);
     // The web version is kinda not needed.
     if (Platform.OS === "web") {
       const byteCharacters = atob(result.document); // Decode the Base64 string
@@ -315,14 +331,15 @@ export default function SellerReuploadOTP({ route }) {
         // Slight issue opening certain PDF files.
         // Native FileSystem logic
 
-        const fileName = (FileSystem.documentDirectory + result.title).replace(/\s/g, '_');
-        console.log('Filename:', fileName);
-
-        await FileSystem.writeAsStringAsync(
-          fileName,
-          result.document,
-          { encoding: FileSystem.EncodingType.Base64 }
+        const fileName = (FileSystem.documentDirectory + result.title).replace(
+          /\s/g,
+          "_"
         );
+        console.log("Filename:", fileName);
+
+        await FileSystem.writeAsStringAsync(fileName, result.document, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
 
         const isAvailable = await Sharing.isAvailableAsync();
         if (!isAvailable) {
@@ -354,13 +371,21 @@ export default function SellerReuploadOTP({ route }) {
         contentContainerStyle={styles.scrollViewContent}
         keyboardShouldPersistTaps="handled" // Add this prop
       >
-
         <View style={styles.imageGalleryContainer}>
           {/* Back button */}
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
             <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
-          <Swiper style={styles.wrapper} showsButtons={false} loop={false} autoplay={true} autoplayTimeout={5}>
+          <Swiper
+            style={styles.wrapper}
+            showsButtons={false}
+            loop={false}
+            autoplay={true}
+            autoplayTimeout={5}
+          >
             {propertyListing.images.length > 0 ? (
               propertyListing.images.map((imageId, index) => {
                 const imageUri = getImageUriById(imageId);
@@ -370,7 +395,10 @@ export default function SellerReuploadOTP({ route }) {
                     onPress={() => setFullScreenImage(imageUri)} // Set the fullScreenImage state when tapped
                     style={styles.slide} // Apply styles to TouchableOpacity
                   >
-                    <Image source={{ uri: `${imageUri}?timestamp=${cacheBuster}` }} style={styles.image} />
+                    <Image
+                      source={{ uri: `${imageUri}?timestamp=${cacheBuster}` }}
+                      style={styles.image}
+                    />
                   </TouchableOpacity>
                 );
               })
@@ -393,27 +421,40 @@ export default function SellerReuploadOTP({ route }) {
             <View style={styles.propertyDetailsTopLeft}>
               <Text style={styles.forSaleText}>For Sales</Text>
               <Text style={styles.title}>{propertyListing.title}</Text>
-              <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
+              <Text style={styles.priceLabel}>
+                ${formatPriceWithCommas(propertyListing.price)}
+              </Text>
               <Text style={styles.pricePerSqm}>
-                ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
+                $
+                {formatPricePerSqm(propertyListing.price, propertyListing.size)}{" "}
+                psm{" "}
               </Text>
               <Text style={styles.roomsAndSize}>
-                {propertyListing.bed} <Ionicons name="bed" size={16} color="#333" />  |
-                {'  '}{propertyListing.bathroom} <Ionicons name="water" size={16} color="#333" />  |
-                {'  '}{propertyListing.size} sqm  <Ionicons name="cube-outline" size={16} color="#333" /> {/* Added cube icon */}
+                {propertyListing.bed}{" "}
+                <Ionicons name="bed" size={16} color="#333" /> |{"  "}
+                {propertyListing.bathroom}{" "}
+                <Ionicons name="water" size={16} color="#333" /> |{"  "}
+                {propertyListing.size} sqm{" "}
+                <Ionicons name="cube-outline" size={16} color="#333" />{" "}
+                {/* Added cube icon */}
               </Text>
             </View>
           </View>
 
           <View style={styles.dateContainer}>
             <FontAwesome name="calendar" size={16} color="#333" />
-            <Text style={styles.dateText}>{"Listed on: "}{formatDate(propertyListing.createdAt)}</Text>
+            <Text style={styles.dateText}>
+              {"Listed on: "}
+              {formatDate(propertyListing.createdAt)}
+            </Text>
           </View>
 
           <Text style={styles.dateContainer}>
-            <Ionicons name="time-outline" size={17} color="#333" />
-            {" "}
-            <Text style={styles.dateText}>{"Lease Commence Year: "}{propertyListing.lease_commence_date}</Text>
+            <Ionicons name="time-outline" size={17} color="#333" />{" "}
+            <Text style={styles.dateText}>
+              {"Lease Commence Year: "}
+              {propertyListing.lease_commence_date}
+            </Text>
           </Text>
 
           <Text style={styles.locationTitle}>Description</Text>
@@ -425,21 +466,29 @@ export default function SellerReuploadOTP({ route }) {
             <Text style={styles.locationTitle}>Upload OTP Document</Text>
 
             <Text style={styles.optionExpiryContainer}>
-              <Ionicons name="time-outline" size={20} color="black" />
-              {" "}
-              <Text style={styles.optionExpiryTextBold}>{"Option Expiry Date: "}{formatDate(propertyListing.optionExpiryDate)}</Text>
-             
+              <Ionicons name="time-outline" size={20} color="black" />{" "}
+              <Text style={styles.optionExpiryTextBold}>
+                {"Option Expiry Date: "}
+                {formatDate(propertyListing.optionExpiryDate)}
+              </Text>
             </Text>
 
             <Text style={styles.optionExpiryContainer}>
-            <Text style={styles.optionExpiryText}>{"You have "}</Text>
-            <Text style={styles.optionExpiryTextBold}>{Math.ceil((new Date(propertyListing.optionExpiryDate) - new Date())/ (1000 * 60 * 60 * 24))}{" days"}</Text>
-            <Text style={styles.optionExpiryText}>{" left to respond."}</Text>
+              <Text style={styles.optionExpiryText}>{"You have "}</Text>
+              <Text style={styles.optionExpiryTextBold}>
+                {Math.ceil(
+                  (new Date(propertyListing.optionExpiryDate) - new Date()) /
+                    (1000 * 60 * 60 * 24)
+                )}
+                {" days"}
+              </Text>
+              <Text style={styles.optionExpiryText}>{" left to respond."}</Text>
             </Text>
 
             {/* Instruction 2: Provide instructions for downloading and filling the PDF */}
             <Text style={styles.description}>
-              1. Download the PDF document by pressing on the Purple Button and save it to your device.
+              1. Download the PDF document by pressing on the Purple Button and
+              save it to your device.
             </Text>
 
             <Text style={styles.description}>
@@ -459,7 +508,8 @@ export default function SellerReuploadOTP({ route }) {
             </Text>
 
             <Text style={styles.description}>
-              6. Wait for the Admin to sign as a Witness and obtain the completed OTP Document!
+              6. Wait for the Admin to sign as a Witness and obtain the
+              completed OTP Document!
             </Text>
 
             {selectedDocuments.length > 0 ? (
@@ -468,43 +518,61 @@ export default function SellerReuploadOTP({ route }) {
                   style={styles.selectedDocumentContainer}
                   onPress={async () => {
                     if (selectedDocuments && selectedDocuments[0].uri) {
-
                       const filePath = selectedDocuments[0].uri;
-                      console.log('Opening document:', filePath);
+                      console.log("Opening document:", filePath);
 
                       // Check if the file exists
                       const fileInfo = await FileSystem.getInfoAsync(filePath);
                       // console.log('File exists:', fileInfo)
                       if (fileInfo.exists) {
                         // Request permission to access the file
-                        console.log('File exists:', filePath)
-                        const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+                        console.log("File exists:", filePath);
+                        const { status } = await Permissions.askAsync(
+                          Permissions.MEDIA_LIBRARY
+                        );
                         openPdf(filePath);
                       } else {
-                        console.warn('Selected document file does not exist.');
+                        console.warn("Selected document file does not exist.");
                       }
                     } else {
-                      console.warn('Selected document URI is not valid.');
+                      console.warn("Selected document URI is not valid.");
                     }
                   }}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <Ionicons name="document-text-outline" size={24} color="blue" />
-                    <Text style={styles.selectedDocumentText}> Selected Document: </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <Ionicons
+                      name="document-text-outline"
+                      size={24}
+                      color="blue"
+                    />
+                    <Text style={styles.selectedDocumentText}>
+                      {" "}
+                      Selected Document:{" "}
+                    </Text>
                     <Text style={styles.selectedDocumentName}>
                       {selectedDocuments[0].name}
                     </Text>
                   </View>
-
                 </TouchableOpacity>
-                <View style={{ flexDirection: 'row', marginBottom: 40 }}>
+                <View style={{ flexDirection: "row", marginBottom: 40 }}>
                   <TouchableOpacity
                     style={styles.replaceDocumentButton}
                     onPress={handleSelectDocument}
                   >
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
                       <Ionicons name="repeat-outline" size={24} color="white" />
-                      <Text style={styles.removeDocumentButtonText}> Replace</Text>
+                      <Text style={styles.removeDocumentButtonText}>
+                        {" "}
+                        Replace
+                      </Text>
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -515,9 +583,18 @@ export default function SellerReuploadOTP({ route }) {
                       setIsDocumentUploaded(false);
                     }}
                   >
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Ionicons name="trash-bin-outline" size={24} color="white" />
-                      <Text style={styles.removeDocumentButtonText}> Remove</Text>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <Ionicons
+                        name="trash-bin-outline"
+                        size={24}
+                        color="white"
+                      />
+                      <Text style={styles.removeDocumentButtonText}>
+                        {" "}
+                        Remove
+                      </Text>
                     </View>
                   </TouchableOpacity>
 
@@ -525,32 +602,41 @@ export default function SellerReuploadOTP({ route }) {
                     style={styles.viewDocumentButton}
                     onPress={async () => {
                       if (selectedDocuments && selectedDocuments[0].uri) {
-
                         const filePath = selectedDocuments[0].uri;
-                        console.log('Opening document:', filePath);
+                        console.log("Opening document:", filePath);
 
                         // Check if the file exists
-                        const fileInfo = await FileSystem.getInfoAsync(filePath);
+                        const fileInfo = await FileSystem.getInfoAsync(
+                          filePath
+                        );
                         // console.log('File exists:', fileInfo)
                         if (fileInfo.exists) {
                           // Request permission to access the file
-                          console.log('File exists:', filePath)
-                          const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+                          console.log("File exists:", filePath);
+                          const { status } = await Permissions.askAsync(
+                            Permissions.MEDIA_LIBRARY
+                          );
                           openPdf(filePath);
                         } else {
-                          console.warn('Selected document file does not exist.');
+                          console.warn(
+                            "Selected document file does not exist."
+                          );
                         }
                       } else {
-                        console.warn('Selected document URI is not valid.');
+                        console.warn("Selected document URI is not valid.");
                       }
                     }}
                   >
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
                       <Ionicons name="eye-outline" size={24} color="white" />
-                      <Text style={styles.removeDocumentButtonText}>   View    </Text>
+                      <Text style={styles.removeDocumentButtonText}>
+                        {" "}
+                        View{" "}
+                      </Text>
                     </View>
                   </TouchableOpacity>
-
                 </View>
               </View>
             ) : (
@@ -558,9 +644,11 @@ export default function SellerReuploadOTP({ route }) {
                 style={styles.selectDocumentButton}
                 onPress={handleSelectDocument}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Ionicons name="add-outline" size={24} color="white" />
-                  <Text style={styles.selectDocumentButtonText}>Select OTP Document</Text>
+                  <Text style={styles.selectDocumentButtonText}>
+                    Select OTP Document
+                  </Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -570,12 +658,13 @@ export default function SellerReuploadOTP({ route }) {
             style={styles.viewCurrentDocumentButton}
             onPress={downloadPDF}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Ionicons name="cloud-download-outline" size={24} color="white" />
-              <Text style={styles.selectDocumentButtonText}>{"  "}View OTP Document</Text>
+              <Text style={styles.selectDocumentButtonText}>
+                {"  "}View OTP Document
+              </Text>
             </View>
           </TouchableOpacity>
-
         </View>
       </ScrollView>
       <View style={styles.invoiceButtonBorder}></View>
@@ -583,7 +672,6 @@ export default function SellerReuploadOTP({ route }) {
         <Ionicons name="save-outline" size={18} color="white" />
         <Text style={styles.saveChangesButtonText}>Upload & Pay</Text>
       </TouchableOpacity>
-
     </View>
   );
 }
@@ -591,7 +679,7 @@ export default function SellerReuploadOTP({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   scrollView: {
     flex: 1,
@@ -604,14 +692,14 @@ const styles = StyleSheet.create({
   documentContainer: {
     marginBottom: -80,
     paddingHorizontal: 2,
-    alignItems: 'center',
+    alignItems: "center",
   },
   label: {
     marginBottom: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   input: {
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginBottom: 10,
     padding: 8,
@@ -625,131 +713,130 @@ const styles = StyleSheet.create({
     height: 60,
   },
   selectDocumentButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: "#3498db",
     padding: 10,
     borderRadius: 25,
-    alignItems: 'center',
-    width: '60%',
-    justifyContent: 'center',
-    alignSelf: 'center',
+    alignItems: "center",
+    width: "60%",
+    justifyContent: "center",
+    alignSelf: "center",
     // marginLeft: 70,
     marginTop: 20,
     marginBottom: -40,
   },
   viewCurrentDocumentButton: {
-    backgroundColor: '#9b59b6',
+    backgroundColor: "#9b59b6",
     padding: 10,
     borderRadius: 25,
-    alignItems: 'center',
-    width: '60%',
-    justifyContent: 'center',
-    alignSelf: 'center',
+    alignItems: "center",
+    width: "60%",
+    justifyContent: "center",
+    alignSelf: "center",
     // marginLeft: 80,
     marginTop: 60,
     marginBottom: -80,
   },
   selectDocumentButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   saveChangesButton: {
-    backgroundColor: 'green',
+    backgroundColor: "green",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     marginBottom: 20,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    width: '60%',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "60%",
     marginLeft: 80,
   },
   saveChangesButtonText: {
     fontSize: 18,
-    color: 'white',
+    color: "white",
     marginLeft: 10,
   },
   headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
   header: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 90,
   },
   uploadDocumentButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: "#3498db",
     borderRadius: 8,
     padding: 10,
-    alignItems: 'center',
-    width: '60%',
+    alignItems: "center",
+    width: "60%",
     marginTop: 10,
     marginRight: 10,
   },
   uploadDocumentButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     fontSize: 16,
   },
   replaceDocumentButton: {
     flex: 1,
-    backgroundColor: '#3498db',
+    backgroundColor: "#3498db",
     borderRadius: 8,
     padding: 10,
     paddingHorizontal: 17,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
     marginRight: 10,
   },
   removeDocumentButton: {
     flex: 1,
-    backgroundColor: 'red',
+    backgroundColor: "red",
     borderRadius: 8,
     padding: 10,
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: 17,
     marginTop: 10,
     marginRight: 10,
   },
   viewDocumentButton: {
-    backgroundColor: 'green',
+    backgroundColor: "green",
     borderRadius: 8,
     padding: 10,
     paddingLeft: 20,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
     marginRight: 10,
   },
   removeDocumentButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     fontSize: 16,
   },
   selectedDocumentContainer: {
     borderWidth: 1,
-    borderColor: 'lightgray',
+    borderColor: "lightgray",
     borderRadius: 8,
     padding: 10,
-    width: '93%',
-    alignItems: 'center',
+    width: "93%",
+    alignItems: "center",
     marginRight: 10,
     marginTop: 10,
   },
   selectedDocumentText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   selectedDocumentName: {
     fontSize: 16,
-
   },
   imageGalleryContainer: {
-    position: 'relative',
+    position: "relative",
     height: 300,
-    width: '100%',
+    width: "100%",
   },
   imageGallery: {
     height: 300,
@@ -757,24 +844,24 @@ const styles = StyleSheet.create({
   wrapper: {},
   slide: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   image: {
     flex: 1,
-    width: '100%',
-    resizeMode: 'cover',
+    width: "100%",
+    resizeMode: "cover",
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 16,
     left: 16,
     zIndex: 1,
   },
   propertyDetailsTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
   },
   propertyDetailsTopLeft: {
@@ -782,45 +869,45 @@ const styles = StyleSheet.create({
   },
   forSaleText: {
     fontSize: 20,
-    color: '#333',
+    color: "#333",
     letterSpacing: 2,
     marginBottom: 5,
   },
   title: {
     fontSize: 18,
-    color: '#333',
+    color: "#333",
     letterSpacing: 2,
     marginBottom: 5,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   priceLabel: {
     fontSize: 25,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     letterSpacing: 2,
   },
   selectDocumentButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   scrollViewContent: {
     paddingBottom: 100,
   },
   imagePicker: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ddd',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#ddd",
     width: 100,
     height: 100,
     marginRight: 10,
   },
   imageContainer: {
-    position: 'relative',
+    position: "relative",
     marginRight: 10,
   },
   imageRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 10,
     paddingVertical: 10,
   },
@@ -829,26 +916,26 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     paddingBottom: 20,
   },
   picker: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   okButtonContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   dateContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingLeft: 16,
     marginBottom: 10,
     marginTop: -5,
   },
   optionExpiryContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingLeft: 16,
     marginBottom: 12,
     marginTop: 3,
@@ -860,16 +947,16 @@ const styles = StyleSheet.create({
   optionExpiryTextBold: {
     fontSize: 18,
     marginLeft: 5,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   dateText: {
     fontSize: 13,
     marginLeft: 5,
-    color: '#333',
+    color: "#333",
   },
   locationTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
     paddingLeft: 16,
   },
@@ -878,9 +965,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   invoiceButtonBorder: {
-    width: '100%',
+    width: "100%",
     borderBottomWidth: 0.4, // Add a bottom border to create the line on top of the button
-    borderBottomColor: 'grey', // You can change the color to your preference
+    borderBottomColor: "grey", // You can change the color to your preference
     marginTop: 8,
     marginBottom: 2,
   },
@@ -888,33 +975,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    borderColor: 'gray',
+    borderColor: "gray",
     fontSize: 14,
     padding: 8,
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   modalView: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   pickerText: {
     fontSize: 14,
-    color: 'black',
+    color: "black",
   },
   icon: {
     marginLeft: 10,
   },
   inputRow: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
+    flexDirection: "column",
+    alignItems: "flex-start",
     marginLeft: 20,
     marginTop: 10,
     marginBottom: 10,
-    width: '90%',
+    width: "90%",
   },
 });
-
