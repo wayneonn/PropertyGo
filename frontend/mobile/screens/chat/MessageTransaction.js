@@ -14,6 +14,7 @@ import MakeOfferModal from '../../components/Chat/MakeOfferModal';
 import EditOfferModal from '../../components/Chat/EditOfferModal';
 import { createRequest, updateRequest } from '../../utils/requestApi';
 import { editProperty } from '../../utils/api';
+import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import DefaultImage from '../../assets/No-Image-Available.webp';
 
@@ -168,6 +169,9 @@ const Message = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back" size={24} color="black" />
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => handlePropertyPress(chat.propertyListing.propertyListingId)}>
         <View style={styles.PropertyItemContainer}>
           <View style={styles.contentContainer}>
@@ -197,10 +201,11 @@ const Message = ({ route, navigation }) => {
 
                     {chat.request.requestStatus === "ACCEPTED" ? (
                       <TouchableOpacity
-                        style={[styles.purchaseButton]}
+                        style={[styles.purchaseButton, chat.propertyListing.propertyStatus === "ON_HOLD" || chat.propertyListing.propertyStatus === "COMPLETED" ? { backgroundColor: "#ccc" } : null]}
                         onPress={() => {
-                          navigation.navigate('Purchase Option Fee Info', { propertyListing : chat.propertyListing, isOfferedPrice: true });
+                          navigation.navigate('Purchase Option Fee Info', { propertyListing: chat.propertyListing, isOfferedPrice: true });
                         }}
+                        disabled={chat.propertyListing.propertyStatus === "ON_HOLD" || chat.propertyListing.propertyStatus === "COMPLETED"}
                       >
                         <FontAwesome name="shopping-cart" size={16} color="white" />
                         <Text style={styles.purchaseText}>{"  "}Purchase</Text>
@@ -392,6 +397,7 @@ const styles = StyleSheet.create({
     // borderWidth:1
   },
   title: {
+    marginTop: 40,
     fontSize: 16,
     // marginLeft: 15,
     marginRight: 5,
@@ -587,6 +593,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10
+  },
+  backButton: {
+    position: 'absolute',
+    top: 16, // Adjust the top position as needed
+    left: 16, // Adjust the left position as needed
+    zIndex: 1, // Place it above the swiper
   },
 });
 

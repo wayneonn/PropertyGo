@@ -260,7 +260,7 @@ const PropertyListingScreen = ({ route }) => {
   };
 
   if (!propertyListing) {
-    return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5"/>;
+    return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5" />;
   }
 
   let profileImageBase64;
@@ -286,6 +286,7 @@ const PropertyListingScreen = ({ route }) => {
       return match.toUpperCase();
     });
   }
+
   const handleChatWithSeller = async () => {
 
     chatData = {
@@ -343,7 +344,17 @@ const PropertyListingScreen = ({ route }) => {
           <View style={styles.propertyDetailsTopLeft}>
             <Text style={styles.forSaleText}>For Sales</Text>
             <Text style={styles.title}>{propertyListing.title}</Text>
-            <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
+            <Text style={styles.priceLabel}>
+              {propertyListing.offeredPrice ? (
+                <>
+                  ${formatPriceWithCommas(propertyListing.offeredPrice)}
+                </>
+              ) : (
+                <>
+                  ${formatPriceWithCommas(propertyListing.price)}
+                </>
+              )}
+            </Text>
             <Text style={styles.pricePerSqm}>
               ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
             </Text>
@@ -366,7 +377,7 @@ const PropertyListingScreen = ({ route }) => {
                 <TouchableOpacity
                   onPress={() => {
                     if (userDetails) {
-                      navigation.navigate('View Profile', { userId: userDetails.userId }); // Pass the userId parameter
+                      navigation.navigate('View Profile', { userId: userDetails.userId, property: propertyListing }); // Pass the userId parameter
                     }
                   }}
                 >
@@ -419,13 +430,13 @@ const PropertyListingScreen = ({ route }) => {
         <Text style={styles.locationTitle}>Description</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
         {/* <Text style={styles.description}>{"\n"}</Text> */}
-        
+
         <PredictionPriceCard
-          flatType = {propertyListing.flatType} 
-          town = {propertyListing.area}
-          floorArea = {propertyListing.size} 
+          flatType={propertyListing.flatType}
+          town={propertyListing.area}
+          floorArea={propertyListing.size}
           // leaseCommenceDate = {propertyListing.lease_commence_date}
-          leaseCommenceDate = {propertyListing.lease_commence_date}
+          leaseCommenceDate={propertyListing.lease_commence_date}
           property={propertyListing}
         />
 
@@ -531,9 +542,12 @@ const PropertyListingScreen = ({ route }) => {
             }}>
               <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buyButton} onPress={() => {
-              navigation.navigate('Purchase Option Fee Info', { propertyListing });
-            }}>
+            <TouchableOpacity style={[styles.buyButton, propertyListing.propertyStatus === "ON_HOLD" || propertyListing.propertyStatus === "COMPLETED" ? { backgroundColor: "#ccc" } : null]} 
+            onPress={() => {
+              navigation.navigate('Purchase Option Fee Info', { propertyListing, isOfferedPrice: false });
+            }}
+              disabled={propertyListing.propertyStatus === "ON_HOLD" || propertyListing.propertyStatus === "COMPLETED"}
+            >
               <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>
           </>

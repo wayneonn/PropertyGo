@@ -374,7 +374,17 @@ const PropertyUserListingScreen = ({ route }) => {
               <Text style={[styles.statusText, { color: getStatusTextColor(propertyListing.approvalStatus, propertyListing.propertyStatus) }]}>{getStatusText(propertyListing.approvalStatus, propertyListing.propertyStatus)}</Text>
             </View>
             <Text style={styles.title}>{propertyListing.title}</Text>
-            <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
+            <Text style={styles.priceLabel}>
+              {propertyListing.offeredPrice ? (
+                <>
+                  ${formatPriceWithCommas(propertyListing.offeredPrice)}
+                </>
+              ) : (
+                <>
+                  ${formatPriceWithCommas(propertyListing.price)}
+                </>
+              )}
+            </Text>
             <Text style={styles.pricePerSqm}>
               ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
             </Text>
@@ -397,7 +407,7 @@ const PropertyUserListingScreen = ({ route }) => {
                 <TouchableOpacity
                   onPress={() => {
                     if (userDetails) {
-                      navigation.navigate('View Profile', { userId: userDetails.userId }); // Pass the userId parameter
+                      navigation.navigate('View Profile', { userId: userDetails.userId, property: propertyListing }); // Pass the userId parameter
                     }
                   }}
                 >
@@ -563,7 +573,12 @@ const PropertyUserListingScreen = ({ route }) => {
             }}>
               <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buyButton}>
+            <TouchableOpacity style={[styles.buyButton, propertyListing.propertyStatus === "ON_HOLD" || propertyListing.propertyStatus === "COMPLETED" ? { backgroundColor: "#ccc" } : null]} 
+            onPress={() => {
+              navigation.navigate('Purchase Option Fee Info', { propertyListing, isOfferedPrice: false });
+            }}
+              disabled={propertyListing.propertyStatus === "ON_HOLD" || propertyListing.propertyStatus === "COMPLETED"}
+            >
               <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>
           </>

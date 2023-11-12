@@ -6,9 +6,10 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome 
 import { getUserById, getRatingByUser } from '../../utils/api';
 import StarRating from 'react-native-star-rating';
 import { Ionicons } from '@expo/vector-icons';
+import { createChat } from '../../utils/chatApi';
 
 function ViewUserProfile({ route, navigation }) { // Add navigation parameter
-  const { userId } = route.params;
+  const { userId, property } = route.params;
   // const { user, logout } = useContext(AuthContext);
   // console.log('loggedInUser:', user);
   const [userDetails, setUser] = useState(null);
@@ -76,6 +77,17 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
     );
   }
 
+  const handleChatWithSeller = async () => {
+    chatData = {
+      propertyId: property.propertyListingId,
+      receiverId: property.sellerId
+    }
+
+    const data = await createChat(userId, chatData);
+    // console.log(data.chatId)
+    navigation.navigate("Message", { chatId: data.chatId });
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -137,9 +149,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
       )}
       <TouchableOpacity
         style={styles.editProfileButton}
-        onPress={() => {
-          // navigation.navigate('EditProfile'); // Change this to the correct screen name
-        }}
+        onPress={handleChatWithSeller}
       >
         <Icon
           name="edit"
@@ -215,7 +225,7 @@ const styles = StyleSheet.create({
   editProfileButton: {
     backgroundColor: 'dodgerblue',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 20,
     marginTop: 20,
     alignItems: 'center', // Center horizontally
     flexDirection: 'row',
@@ -227,6 +237,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   editProfileButtonText: {
+    fontWeight  : '600',
     color: 'white',
     textAlign: 'center',
   },

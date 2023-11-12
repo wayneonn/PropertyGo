@@ -17,6 +17,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import {
     sellerCancelledOTP,
 } from '../../../utils/transactionApi';
+import {
+    editProperty
+} from '../../../utils/api';
 
 const OrderDetailScreen = ({ route }) => {
     const navigation = useNavigation();
@@ -97,6 +100,13 @@ const OrderDetailScreen = ({ route }) => {
         await sellerCancelledOTP(transaction.transactionId, {
             optionToPurchaseDocumentId: transaction.optionToPurchaseDocumentId,
         });
+        await editProperty(
+            propertyListing.propertyListingId,
+            {
+                optionExpiryDate: null,
+                offeredPrice: null,
+            }
+        );
         Alert.alert(
             'Cancel Successful',
             'You have successfully cancelled the order.'
@@ -119,7 +129,10 @@ const OrderDetailScreen = ({ route }) => {
 
             {transaction && propertyListing && seller ? (
                 <>
-                    <CustomerCard sellerId={transaction.buyerId} transaction={transaction} />
+                    <CustomerCard sellerId={transaction.buyerId}
+                        transaction={transaction}
+                        property={propertyListing}
+                    />
 
                     <PropertyCardRectangle
                         property={propertyListing}
@@ -167,15 +180,15 @@ const OrderDetailScreen = ({ route }) => {
                 <></>
             )}
 
-            {transaction && (transaction.optionFeeStatusEnum == "REQUEST_PLACED" || transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ||  transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD") ? (
+            {transaction && (transaction.optionFeeStatusEnum == "REQUEST_PLACED" || transaction.optionFeeStatusEnum == "SELLER_UPLOADED" || transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD") ? (
                 <TouchableOpacity style={styles.cancelButton} onPress={handleCancelOrder}>
                     <Text style={styles.cancelButtonText}>Cancel Order</Text>
                 </TouchableOpacity>
             ) : (
                 <></>
             )}
-        <Text></Text>
-        <Text></Text>
+            <Text></Text>
+            <Text></Text>
         </ScrollView>
     );
 };

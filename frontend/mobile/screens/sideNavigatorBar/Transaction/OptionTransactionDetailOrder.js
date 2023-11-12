@@ -17,6 +17,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import {
     buyerCancelOTP, buyerRequestReupload
 } from '../../../utils/transactionApi';
+import {
+    editProperty
+} from '../../../utils/api';
 
 const OrderDetailScreen = ({ route }) => {
     const navigation = useNavigation();
@@ -97,6 +100,13 @@ const OrderDetailScreen = ({ route }) => {
         await buyerCancelOTP(transaction.transactionId, {
             optionToPurchaseDocumentId: transaction.optionToPurchaseDocumentId,
         });
+        await editProperty(
+            propertyListing.propertyListingId,
+            {
+                optionExpiryDate: null,
+                offeredPrice: null,
+            }
+        );
         Alert.alert(
             'Cancel Successful',
             'You have successfully cancelled the order.'
@@ -147,7 +157,7 @@ const OrderDetailScreen = ({ route }) => {
 
             {propertyListing && seller ? (
                 <>
-                    <CustomerCard sellerId={transaction.userId} transaction={transaction}/>
+                    <CustomerCard sellerId={transaction.userId} transaction={transaction} property={propertyListing}/>
 
                     <PropertyCardRectangle
                         property={propertyListing}

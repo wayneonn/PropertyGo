@@ -18,6 +18,7 @@ import Map from "../screens/propertyListings/map";
 import OptionTransactionDetailOrder from '../screens/sideNavigatorBar/Transaction/OptionTransactionDetailOrder';
 import SellerOptionTransactionDetailOrder from '../screens/sideNavigatorBar/Transaction/SellerOptionTransactionDetailOrder';
 import ChatTabNavigator from "./ChatTabNavigator";
+import BuyerUploadOTP from '../screens/sideNavigatorBar/Transaction/BuyerUploadOTP';
 import Message from "../screens/chat/Message";
 
 const HomeListingsStack = createNativeStackNavigator();
@@ -46,6 +47,7 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name={"Option Transaction Order Screen"} component={OptionTransactionDetailOrder}/>
             <HomeListingsStack.Screen name={"Seller Option Transaction Order Screen"} component={SellerOptionTransactionDetailOrder}/>
             <HomeListingsStack.Screen name="Chat" component={ChatTabNavigator}/>
+            <HomeListingsStack.Screen name={"Buyer Upload OTP"} component={BuyerUploadOTP}/>
             {/* <HomeListingsStack.Screen name="Message" component={Message}/> */}
         </HomeListingsStack.Navigator>
     );

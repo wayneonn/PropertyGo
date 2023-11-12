@@ -5,10 +5,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { getUserById, getRatingByUser } from '../../../../utils/api';
 import StarRating from 'react-native-star-rating';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { createChat } from '../../../../utils/chatApi';
 
-function CustomerCard({ sellerId, transaction }) {
+function CustomerCard({ sellerId, transaction, property }) {
   const userId = sellerId;
   const { user } = useContext(AuthContext);
+  const navigation = useNavigation();
   const isSeller = user.user.userId === transaction.userId;
   const [userDetails, setUser] = useState(null);
   const [rating, setRating] = useState(null);
@@ -50,6 +53,22 @@ function CustomerCard({ sellerId, transaction }) {
     );
   }
 
+  const handleChatWithSeller = async () => {
+    chatData = {
+      propertyId: property.propertyListingId,
+      receiverId: property.sellerId
+    }
+    let userId;
+    if (isSeller) {
+      userId = sellerId;
+    } else {
+      userId = user.user.userId;
+    }
+    const data = await createChat(userId, chatData);
+    // console.log(data.chatId)
+    navigation.navigate("Message", { chatId: data.chatId });
+  }
+
   return (
     <View style={styles.cardContainer}>
       <View style={styles.cardContent}>
@@ -65,9 +84,7 @@ function CustomerCard({ sellerId, transaction }) {
           <Text style={styles.userName}>{userDetails.name}</Text>
           <TouchableOpacity
             style={styles.chatButton}
-            onPress={() => {
-              // Handle chat button press
-            }}
+            onPress={handleChatWithSeller}
           >
             <Text style={styles.chatButtonText}>Chat</Text>
           </TouchableOpacity>
