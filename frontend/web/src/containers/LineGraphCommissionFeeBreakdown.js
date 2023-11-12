@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai";
 
 import { Line } from 'react-chartjs-2';
 
-const LineGraphCommissionFee = () => {
+const LineGraphCommissionFeeBreakdown = () => {
     const tokenData = [
         {
             transactionId: 1,
@@ -528,9 +529,430 @@ const LineGraphCommissionFee = () => {
             transactionType: "OPTION_FEE",
             paymentAmount: 0,
         },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 10,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 2,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 140,
+            createdAt: "2023-11-01 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 3,
+            transactionItem: "Option Fee",
+            quantity: 1,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 3,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 1040,
+            createdAt: "2023-11-01 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 4,
+            // sellerId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 50,
+            gst: false,
+            // invoiceId: 4,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 500,
+            createdAt: "2023-11-01 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 10,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 2,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 10,
+            createdAt: "2023-11-02 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 3,
+            transactionItem: "Option Fee",
+            quantity: 1,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 3,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 1000,
+            createdAt: "2023-11-02 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 4,
+            // sellerId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 50,
+            gst: false,
+            // invoiceId: 4,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 50,
+            createdAt: "2023-11-02 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 10,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 2,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 500,
+            createdAt: "2023-11-03 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 3,
+            transactionItem: "Option Fee",
+            quantity: 1,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 3,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 1500,
+            createdAt: "2023-11-03 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 4,
+            // sellerId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 50,
+            gst: false,
+            // invoiceId: 4,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 550,
+            createdAt: "2023-11-03 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 10,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 2,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 160,
+            createdAt: "2023-11-04 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 3,
+            transactionItem: "Option Fee",
+            quantity: 1,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 3,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 10500,
+            createdAt: "2023-11-04 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 4,
+            // sellerId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 50,
+            gst: false,
+            // invoiceId: 4,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 540,
+            createdAt: "2023-11-04 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 10,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 2,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 180,
+            createdAt: "2023-11-05 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 3,
+            transactionItem: "Option Fee",
+            quantity: 1,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 3,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 2000,
+            createdAt: "2023-11-05 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 4,
+            // sellerId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 50,
+            gst: false,
+            // invoiceId: 4,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 5440,
+            createdAt: "2023-11-05 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 10,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 2,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 180,
+            createdAt: "2023-11-06 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 3,
+            transactionItem: "Option Fee",
+            quantity: 1,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 3,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 2000,
+            createdAt: "2023-11-06 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 4,
+            // sellerId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 50,
+            gst: false,
+            // invoiceId: 4,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 570,
+            createdAt: "2023-11-06 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 10,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 2,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 123,
+            createdAt: "2023-11-07 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 3,
+            transactionItem: "Option Fee",
+            quantity: 1,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 3,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 321,
+            createdAt: "2023-11-07 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 4,
+            // sellerId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 50,
+            gst: false,
+            // invoiceId: 4,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 521,
+            createdAt: "2023-11-07 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 10,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 2,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 10,
+            createdAt: "2023-11-08 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 3,
+            transactionItem: "Option Fee",
+            quantity: 1,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 3,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 9000,
+            createdAt: "2023-11-08 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 4,
+            // sellerId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 50,
+            gst: false,
+            // invoiceId: 4,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 580,
+            createdAt: "2023-11-08 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 10,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 2,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 140,
+            createdAt: "2023-11-09 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 3,
+            transactionItem: "Option Fee",
+            quantity: 1,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 3,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 4000,
+            createdAt: "2023-11-09 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 4,
+            // sellerId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 50,
+            gst: false,
+            // invoiceId: 4,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 760,
+            createdAt: "2023-11-09 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 10,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 2,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 300,
+            createdAt: "2023-11-10 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 3,
+            transactionItem: "Option Fee",
+            quantity: 1,
+            gst: false,
+            // sellerId: 2,
+            // invoiceId: 3,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 2000,
+            createdAt: "2023-11-10 14:01:38"
+        },
+        {
+            onHoldBalance: 0,
+            buyerId: 1,
+            propertyId: 4,
+            // sellerId: 2,
+            transactionItem: "Token Purchase",
+            quantity: 50,
+            gst: false,
+            // invoiceId: 4,
+            status: "PAID",
+            transactionType: "COMMISSION_FEE",
+            paymentAmount: 1000,
+            createdAt: "2023-11-10 14:01:38"
+        },
     ];
 
     const [chartData, setChartData] = useState({});
+    const [overall, setOverall] = useState(null);
 
     const monthOrder = {
         January: 0,
@@ -547,48 +969,51 @@ const LineGraphCommissionFee = () => {
         December: 11
     };
 
-    const filterDataForLastXMonths = (month) => {
+    const filterDataForCurrentMonth = () => {
         const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
 
-        const lastXMonths = new Date(today);
-        lastXMonths.setMonth(today.getMonth());
+        // Create a date representing the start of the current month
+        const startDate = new Date(currentYear, currentMonth, 1);
 
-        const threeMonthsAgo = new Date();
-        threeMonthsAgo.setMonth(today.getMonth() - month);
+        // Create a date representing the start of the next month
+        const nextMonth = currentMonth + 1;
+        const endDate = new Date(currentYear, nextMonth, 1);
 
         const filteredTokenData = tokenData.filter((item) => item.transactionType === "COMMISSION_FEE").filter((item) => {
-            return new Date(item.createdAt) >= threeMonthsAgo && new Date(item.createdAt) <= lastXMonths;
+            const itemDate = new Date(item.createdAt);
+            return itemDate >= startDate && itemDate < endDate;
         });
 
         return filteredTokenData;
     };
 
+
     const groupUsersByCreatedAtMonth = (users) => {
         const groupedUsers = {};
-        const monthNames = {
-            0: 'January',
-            1: 'February',
-            2: 'March',
-            3: 'April',
-            4: 'May',
-            5: 'June',
-            6: 'July',
-            7: 'August',
-            8: 'September',
-            9: 'October',
-            10: 'November',
-            11: 'December',
-        };
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth();
 
         for (const user of users) {
-            const createdAtMonth = new Date(user.createdAt).getMonth();
-            const monthName = monthNames[createdAtMonth];
+            const userCreatedAt = new Date(user.createdAt);
 
-            if (!groupedUsers[monthName]) {
-                groupedUsers[monthName] = 0;
+            // Check if the user's createdAt date is in the current month and year
+            if (
+                userCreatedAt.getFullYear() === currentYear &&
+                userCreatedAt.getMonth() === currentMonth
+            ) {
+                // Get the day of the month (e.g., 1 for the 1st day of the month)
+                const dayOfMonth = userCreatedAt.getDate();
+
+                // Initialize the day as a key in the groupedUsers object
+                if (!groupedUsers[dayOfMonth]) {
+                    groupedUsers[dayOfMonth] = 0;
+                }
+
+                // Update the value for the day with the desired user data (e.g., user.onHoldBalance or user.paymentAmount)
+                groupedUsers[dayOfMonth] += user.onHoldBalance === 0 ? user.paymentAmount : user.onHoldBalance;
             }
-
-            groupedUsers[monthName] += user.onHoldBalance == 0 ? user.paymentAmount : user.onHoldBalance;
         }
 
         return groupedUsers;
@@ -598,8 +1023,7 @@ const LineGraphCommissionFee = () => {
 
         let filteredData = "";
 
-
-        filteredData = filterDataForLastXMonths(12);
+        filteredData = filterDataForCurrentMonth();
 
         const groupedUsers = groupUsersByCreatedAtMonth(filteredData);
 
@@ -609,13 +1033,18 @@ const LineGraphCommissionFee = () => {
 
         const dataSortedByMonth = jsonArray.sort((a, b) => monthOrder[a.name] - monthOrder[b.name]);
 
+        const difference = dataSortedByMonth[dataSortedByMonth.length - 1].count - dataSortedByMonth[0].count;
+        const overall = Math.round(difference / dataSortedByMonth[0].count * 100) / 100;
+
+        setOverall(overall);
+
         const data = {
             labels: dataSortedByMonth.map((data) => data.name),
             datasets: [
                 {
-                    data: dataSortedByMonth.map((data) => data.count), 
+                    data: dataSortedByMonth.map((data) => data.count),
                     borderColor: 'rgb(244, 194, 194)',
-                    backgroundColor: 'rgba(244, 194, 194, 0.5)',
+                    backgroundColor: 'rgba(244, 194, 194)',
                 },
             ],
         };
@@ -632,11 +1061,20 @@ const LineGraphCommissionFee = () => {
                     <div className="card-header">
                         <h3 className="card-title" style={{ textAlign: "center" }}>
                             <i className="fas fa-bar-chart mr-1" />
-                            Commission Fee
+                            Commission Fee as of {new Date().toDateString()}
                         </h3>
                     </div>
                     <div className="card-body">
                         <div className="tab-content p-0">
+                            <div style={{ textAlign: "right", marginRight: "0" }}>
+                                <h5 htmlFor="timePeriodSelect" style={{ marginRight: "1em", color: `${overall > 0 ? `green` : `red`}` }}>
+                                    {chartData.length === 0 ? "" : (
+                                        <span style={{ backgroundColor: "lightgray", padding: "0 5px" }}>
+                                            Overall {overall > 0 ? <AiOutlineArrowUp /> : <AiOutlineArrowDown />}{Math.abs(overall)}%
+                                        </span>
+                                    )}
+                                </h5>
+                            </div>
                             {chartData.labels && chartData.labels.length > 0 ? (
                                 <div>
                                     <Line
@@ -664,10 +1102,24 @@ const LineGraphCommissionFee = () => {
                             )}
                         </div>
                     </div>
+                    {/* <section className="col-lg-4 connectedSortable">
+                <div className="card">
+                    <div className="card-header">
+                        <h3 className="card-title" style={{ textAlign: "center" }}>
+                            Current Month Gain/Loss
+                        </h3>
+                    </div>
+                    <div className="card-body">
+                        <p style={{ fontSize: "24px", fontWeight: "bold" }}>
+                            {currentMonthTotal !== null ? `$${currentMonthTotal.toFixed(2)}` : "N/A"}
+                        </p>
+                    </div>
+                </div>
+            </section> */}
                 </div>
             </section>
         </div>
     );
 };
 
-export default LineGraphCommissionFee;
+export default LineGraphCommissionFeeBreakdown;

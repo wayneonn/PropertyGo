@@ -5,7 +5,6 @@ import BreadCrumb from "../components/Common/BreadCrumb.js";
 import BarChartUsersOnboard from "./BarChartUsersOnboard";
 import BarChartPartnerApplicationsOnboard from "./BarChartPartnerApplicationsOnboard";
 import PieChartToken from "./PieChartToken";
-import LineGraphToken from "./LineGraphToken";
 
 import Chart from "chart.js/auto";
 import { CategoryScale, ArcElement, Tooltip, Legend } from "chart.js";
@@ -13,6 +12,7 @@ import { CategoryScale, ArcElement, Tooltip, Legend } from "chart.js";
 import API from "../services/API";
 import LineGraphCommissionFee from "./LineGraphCommissionFee";
 import LineGraphCumulativeCommissionFee from "./LineGraphCumulativeCommissionFee";
+import LineGraphCommissionFeeBreakdown from "./LineGraphCommissionFeeBreakdown";
 
 const Dashboard = () => {
 
@@ -42,6 +42,9 @@ const Dashboard = () => {
             <div style={{ display: "flex", marginTop: "10px", width: "98%" }}>
                 <LineGraphCommissionFee />
                 <LineGraphCumulativeCommissionFee />
+            </div>
+            <div style={{ display: "flex", marginTop: "10px", width: "98%" }}>
+                <LineGraphCommissionFeeBreakdown />
             </div>
             <br/>
         </div>

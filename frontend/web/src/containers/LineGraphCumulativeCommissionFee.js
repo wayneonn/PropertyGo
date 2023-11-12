@@ -619,8 +619,8 @@ const LineGraphCumulativeCommissionFee = () => {
             datasets: [
                 {
                     data: dataSortedByMonthWithCumulativeSum.map((data) => data.count),
-                    borderColor: 'rgb(160, 52, 114)',
-                    backgroundColor: 'rgba(160, 52, 114, 0.5)',
+                    borderColor: 'rgb(244, 194, 194)',
+                    backgroundColor: 'rgba(244, 194, 194)',
                 },
             ],
         };
@@ -637,7 +637,7 @@ const LineGraphCumulativeCommissionFee = () => {
                     <div className="card-header">
                         <h3 className="card-title" style={{ textAlign: "center" }}>
                             <i className="fas fa-bar-chart mr-1" />
-                            Total Commission Fee as of {new Date().getFullYear()}
+                            Total Commission Fee
                         </h3>
                     </div>
                     <div className="card-body">
