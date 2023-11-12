@@ -11,7 +11,7 @@ const TopBar = () => {
                 <AntDesign name="menu-unfold" size={26} color="black"/>
             </TouchableOpacity>
             <View style={styles.logoContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.logo}>
+                <TouchableOpacity onPress={() => navigation.navigate('Home Page')} style={styles.logo}>
                     <Image
                         source={require('../../assets/PropertyGo-Logo.png')}
                         style={styles.logoImage}
@@ -29,7 +29,7 @@ const TopBar = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => {
-                        // Handle your action here
+                        navigation.navigate("Chat")
                     }}
                     style={styles.icon}
                 >

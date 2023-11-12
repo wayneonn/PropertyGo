@@ -21,7 +21,7 @@ export const ImageSwiper = ({images_new}) => {
                     </View>
                 )) : images_new.map((image, index) => (
                     <View key={index}>
-                        <Image source={image} style={styles.swiperImage}/>
+                        <Image source={typeof image === "string" ? {uri : image} : image} style={styles.swiperImage}/>
                     </View>
                 ))}
             </Swiper>

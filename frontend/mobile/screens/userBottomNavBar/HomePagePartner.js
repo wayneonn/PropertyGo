@@ -15,6 +15,7 @@ import {AuthContext} from '../../AuthContext';
 import {useFocusEffect} from '@react-navigation/native';
 import {Ionicons} from '@expo/vector-icons';
 import {
+    fetchAverageCountryCount, fetchAverageTransactionCount,
     fetchBuyerIdTransactions,
     fetchMonthlyTransactions,
     fetchTopTransactions,
@@ -23,15 +24,16 @@ import {
 } from "../../utils/transactionApi";
 import {TransactionCard} from "../partnerApplication/TransactionCardSmall"
 import {Divider} from '@rneui/themed';
-import {BASE_URL} from "../../utils/documentApi";
 import base64 from 'react-native-base64';
 import {ImageSwiper} from "../../components/ImageSwiper";
 import {BoostingAnimation} from "../../components/BoostingAnimation";
 import {MyLineChart} from "../../components/Partner/LineChart";
-import {MyBarChart} from "../../components/Partner/BarChart";
+import {TransactionChart} from "../../components/Partner/TransactionChart";
 import {MyPieChart} from "../../components/Partner/PieChart";
 import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
+import {fetchImages} from "../../utils/partnerApi";
+import socketIOClient from 'socket.io-client';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -39,25 +41,25 @@ const screenHeight = Dimensions.get('window').height;
 
 // Time to start fucking around with this.
 const HomePagePartner = ({navigation}) => {
-    const [popularProperties, setPopularProperties] = useState([]);
     const [recentlyAddedProperties, setRecentlyAddedProperties] = useState([]);
     const [topTransactions, setTopTransactions] = useState([]);
     const [monthTransactions, setMonthTransactions] = useState([]);
     const [buyerIdTransactions, setBuyerIdTransactions] = useState([]);
-    const [buyerUserProfile, setBuyerUserProfile] = useState([]);
+    const [averageTransactions, setAverageTransactions] = useState([]);
+    const [countTransactions, setCountTransactions] = useState([]);
     const [transactionCountryCount, setTransactionCountryCount] = useState([])
     const [topTenUserProfile, setTopTenUserProfile] = useState([])
     const [isLoading, setIsLoading] = useState(false); // Add loading state
     const {user} = useContext(AuthContext);
     const userId = user.user.userId;
     const companyName = user.user.companyName
-    const [canRunEffect, setCanRunEffect] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [searchTimeout, setSearchTimeout] = useState(null);
     const cardSize = Dimensions.get('window').width;
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [modalImage, setModalImage] = useState([])
 
     const handlePropertyPress = (propertyListingId) => {
         // Navigate to the Property Listing screen with the given propertyListingId
@@ -70,12 +72,9 @@ const HomePagePartner = ({navigation}) => {
         loadMonthTransactions().then(r => console.log("Finished fetching monthly transaction value data."))
         loadBuyerIdTransactions().then(r => console.log("Finished fetching Buyer ID transaction value data."))
         loadTransactionCountryCount()
-    }, []);
-
-    useEffect( async () => {
-        await fetchData(); // Initial fetch
-        const intervalId = setInterval(fetchData, 5000); // Set interval for repeated fetches
-        return () => clearInterval(intervalId); // Cleanup function to clear the interval
+        loadAverageTransactionValue()
+        loadAverageTransactionCount()
+        loadProfileImages(userId)
     }, []);
     
     useFocusEffect(
@@ -85,25 +84,30 @@ const HomePagePartner = ({navigation}) => {
             loadMonthTransactions().then(r => console.log("Finished fetching monthly transaction value data."))
             loadBuyerIdTransactions().then(r => console.log("Finished fetching Buyer ID transaction value data."))
             loadTransactionCountryCount()
+            loadAverageTransactionValue()
+            loadAverageTransactionCount()
+            loadProfileImages(userId)
             setSearchQuery('');
         }, [])
     );
 
     const fetchData = async () => {
         const recentAddedTransactions = await loadRecentlyAddedTransactions();
-        console.log("Finished fetching top transactions.", topTransactions);
+        // console.log("Finished fetching top transactions.", topTransactions);
         const loadMonth = await loadMonthTransactions();
-        console.log("Finished fetching monthly transaction value data.", monthTransactions);
+        // console.log("Finished fetching monthly transaction value data.", monthTransactions);
         const buyerId = await loadBuyerIdTransactions();
-        console.log("Finished fetching Buyer ID transaction value data.", buyerIdTransactions);
+        // console.log("Finished fetching Buyer ID transaction value data.", buyerIdTransactions);
         const count = await loadTransactionCountryCount();
+        const avg = await loadAverageTransactionValue();
+        const count_transaction = await loadAverageTransactionCount();
     };
 
     const loadRecentlyAddedTransactions = async () => {
         try {
             const topTransactionsRecv = await fetchTopTransactionsWithUsers(userId)
             setTopTenUserProfile(topTransactionsRecv.mergedData);
-            console.log("Here are the ten user profiles: ", topTenUserProfile)
+            // console.log("Here are the ten user profiles: ", topTenUserProfile)
         } catch (error) {
             console.error("Error fetching top ten transactions: ", error)
         }
@@ -113,7 +117,7 @@ const HomePagePartner = ({navigation}) => {
         try {
             const monthTransaction = await fetchMonthlyTransactions(userId);
             setMonthTransactions(monthTransaction.transactions)
-            console.log("Here are the monthly values: ", monthTransactions)
+            // console.log("Here are the monthly values: ", monthTransactions)
         } catch (error) {
             console.error("Error fetching monthly transactions: ", error);
         }
@@ -123,7 +127,7 @@ const HomePagePartner = ({navigation}) => {
         try {
             const buyerTransactions = await fetchBuyerIdTransactions(userId);
             setBuyerIdTransactions(buyerTransactions.transactions)
-            console.log("Here are the buyerId values: ", buyerIdTransactions)
+            // console.log("Here are the buyerId values: ", buyerIdTransactions)
         } catch (error) {
             console.error("Error fetching buyerId transactions: ", error);
         }
@@ -133,9 +137,38 @@ const HomePagePartner = ({navigation}) => {
         try {
             const buyerTransactions = await fetchTransactionCountryCount(userId);
             setTransactionCountryCount(buyerTransactions.buyer)
-            console.log("Here are the transaction counts: ", transactionCountryCount)
+            // console.log("Here are the transaction counts: ", transactionCountryCount)
         } catch (error) {
             console.error("Error fetching transaction counts: ", error);
+        }
+    }
+
+    const loadAverageTransactionValue = async() => {
+        try {
+            const average = await fetchAverageCountryCount()
+            setAverageTransactions(average.data)
+            console.log("Here are the avg. counts: ", averageTransactions)
+        } catch (error) {
+            console.error("Error fetching avg. transaction counts: ", error);
+        }
+    }
+
+    const loadAverageTransactionCount = async() => {
+        try {
+            const count = await fetchAverageTransactionCount()
+            setCountTransactions(count.data)
+            console.log("Here are the avg. counts: ", averageTransactions)
+        } catch (error) {
+            console.error("Error fetching avg. transaction counts: ", error);
+        }
+    }
+
+    const loadProfileImages = async(USER_ID) => {
+        try {
+            const fetchedImages = await fetchImages(USER_ID);
+            setModalImage(fetchedImages);
+        } catch (error) {
+            console.log("Cannot fetch profile listings. ", error)
         }
     }
 
@@ -214,7 +247,6 @@ const HomePagePartner = ({navigation}) => {
                 {new Date(user.user.boostListingEndDate) >= new Date() && (
                     <>
                         <BoostingAnimation/>
-                        <Text style={styles.sectionTitle}> Boosted. </Text>
                     </>
                 )}
                 <Divider/>
@@ -263,7 +295,7 @@ const HomePagePartner = ({navigation}) => {
                 )
             ) : null}
 
-            <ImageSwiper/>
+            <ImageSwiper images_new={modalImage}/>
             <TouchableOpacity style={styles.saveChangesButton} onPress={() => navigation.navigate("Upload Photos")}>
                 <Ionicons name="save-outline" size={18} color="white" />
                 <Text style={styles.saveChangesButtonText}>Upload Photos</Text>
@@ -282,7 +314,7 @@ const HomePagePartner = ({navigation}) => {
                                     {' '}Total Earnings </Text>
                             </View>
                         </TouchableOpacity>
-                        <MyLineChart monthTransactions={monthTransactions} screenHeight={screenHeight} screenWidth={screenWidth} navigation={navigation}/>
+                        <MyLineChart averageTransactions={averageTransactions} monthTransactions={monthTransactions} screenHeight={screenHeight} screenWidth={screenWidth} navigation={navigation}/>
                     </View>
 
                     {/* Customer/Request Section */}
@@ -305,10 +337,10 @@ const HomePagePartner = ({navigation}) => {
                             <View style={styles.titleContainer}>
                                 <Text style={styles.sectionTitle}> {' '}<Ionicons name="time-outline" size={24}
                                                                                   style={styles.titleIcon}/>
-                                    {' '}Total Transactions </Text>
+                                    {' '}Total Request </Text>
                             </View>
                         </TouchableOpacity>
-                        <MyBarChart monthTransactions={monthTransactions} navigation={navigation}/>
+                        <TransactionChart monthTransactions={monthTransactions} averageCount={countTransactions} navigation={navigation}/>
                     </View>
 
                     {/*Recent Transactions Section */}
@@ -317,7 +349,7 @@ const HomePagePartner = ({navigation}) => {
                             onPress={() => handleTitlePress('Top Transactions', topTransactions)}>
                         <Text style={styles.sectionTitle}> {' '}<Ionicons name="navigate-circle-outline" size={24}
                                                                           style={styles.titleIcon}/>
-                            {' '}Recent Transactions </Text>
+                            {' '}Recent Request </Text>
                         </TouchableOpacity>
                         <Divider/>
                         {topTenUserProfile.length !== 0 ?  topTenUserProfile.map((item) => (
@@ -342,8 +374,8 @@ const HomePagePartner = ({navigation}) => {
                                     )}
                                 </View>
                                 <View style={styles.propertyDetails}>
-                                    <Text style={styles.propertyTitle}>{item.transaction.status}</Text>
-                                    <Text style={styles.propertyPrice}>{item.transaction.onHoldBalance}</Text>
+                                    <Text style={[styles.propertyTitle, {color: item.transaction.status === "PAID" ? "green" : "red"}]}>{item.transaction.status}</Text>
+                                    <Text style={[styles.propertyPrice, {color: "#353531"}]}>{item.transaction.onHoldBalance}</Text>
                                     <Text style={styles.propertyPrice}>{item.userDetails.userName}</Text>
                                     <Text style={styles.propertyDetails}>{dateFormatter(item.transaction.createdAt)}</Text>
                                 </View>
@@ -429,6 +461,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
 
+    profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 120,
+        alignSelf: "center"
+    },
+
     propertyTitle: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -512,7 +551,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0, // Remove border for the last item
     },
     saveChangesButton: {
-        backgroundColor: 'blue',
+        backgroundColor: '#3498db',
         padding: 10,
         borderRadius: 5,
         marginTop: 10,

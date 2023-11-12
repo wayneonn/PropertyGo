@@ -67,6 +67,12 @@ const ContactUsStatus = ({ navigation }) => {
           .filter((item) => item.status === 'REPLIED')
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       );
+      setClosedData(
+        contactUsData
+          .filter((item) => item.status === 'CLOSED')
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.timeStamp))
+      );
+
     } catch (error) {
       console.error(error);
     }
@@ -109,12 +115,12 @@ const ContactUsStatus = ({ navigation }) => {
           ))
         )}
 
-        <Text style={{ ...styles.statusHeader, color: 'green' }}>Closed</Text>
+        <Text style={{ ...styles.statusHeader, color: 'grey' }}>Closed</Text>
         {closedData.length === 0 ? (
           renderEmptyListComponent()
         ) : (
           closedData.map((item) => (
-            <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Closed" onPress={() => handleTopicPress(item)}/>
+            <BoxItem key={item.contactUsId} {...item} parentTitleStatus="Closed"/>
           ))
         )}
 

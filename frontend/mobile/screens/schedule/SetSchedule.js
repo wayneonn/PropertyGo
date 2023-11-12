@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     View,
     Text,
@@ -9,6 +9,7 @@ import {
     FlatList,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import { AuthContext } from '../../AuthContext';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -19,6 +20,7 @@ import {
     updateViewingAvailability, getScheduleByPropertyId
 } from '../../utils/scheduleApi';
 import AppointmentCard from './AppointmentCard';
+import { useFocusEffect } from '@react-navigation/native';
 
 const SetSchedule = ({ route }) => {
     const { propertyListingId } = route.params;
@@ -37,6 +39,8 @@ const SetSchedule = ({ route }) => {
     const [isToBeUpdated, setIsToBeUpdated] = useState(false);
     const [viewingAvailabilityId, setViewingAvailabilityId] = useState(null);
     const [bookedSlots, setBookedSlots] = useState([]);
+    const { user } = useContext(AuthContext);
+    const userId = user.user.userId;
 
     useEffect(() => {
         fetchViewingAvailabilityByDateAndPropertyId();
@@ -44,6 +48,14 @@ const SetSchedule = ({ route }) => {
         fetchScheduleByProperty();
 
     }, [selectedDate, isToBeUpdated]);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchViewingAvailabilityByDateAndPropertyId();
+            fetchViewingAvailabilityByPropertyId();
+            fetchScheduleByProperty();
+        }, [])
+    );
 
     const getTodayDate = () => {
         const options = {
@@ -452,7 +464,7 @@ const SetSchedule = ({ route }) => {
                         <>
                         {sortedSchedules.map((item) => (
                             <AppointmentCard schedule={item} propertyId={item.propertyId} onPress={() => {
-                                navigation.navigate('View Appointment Detail', { userId: item.userId, propertyId: item.propertyId, scheduleId: item.scheduleId });
+                                navigation.navigate('View Appointment Detail', { userId: userId, propertyId: item.propertyId, scheduleId: item.scheduleId });
                             }} />
                         ))}
                     </>                   

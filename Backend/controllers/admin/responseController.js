@@ -1,5 +1,5 @@
 const moment = require("moment");
-const { ContactUs, Response } = require("../../models");
+const { ContactUs, Response, Notification } = require("../../models");
 const { loggedInUsers } = require('../../shared');
 
 const getAllResponses = async (req, res) => {
@@ -61,10 +61,23 @@ const addResponse = async (req, res) => {
   const contactUsUser = await contactUs.getUser();
   const content = `The admin has responded to your ContactUs: "${contactUs.title}"`;
 
-  if (contactUsUser && loggedInUsers.has(contactUsUser.userId)){
-    req.io.emit("userNotification", {"pushToken": contactUsUser.pushToken, "title": contactUs.title, "body": content});
+  if (contactUsUser && loggedInUsers.has(contactUsUser.userId)) {
+    req.io.emit("userNotification", { "pushToken": contactUsUser.pushToken, "title": contactUs.title, "body": content });
+    // console.log("asdasdsadsadasda")
     // console.log("Emitted userNewForumCommentNotification");
-}
+  }
+
+  const notificationBody = {
+    "isRecent": true,
+    "isPending": false,
+    "isCompleted": false,
+    "hasRead": false,
+    "userId": contactUsUser.userId,
+    "content": content,
+    "userNavigationScreen": "response"
+  };
+
+  await Notification.create(notificationBody);
 
   contactUs.updatedAt = moment().format("YYYY-MM-DD HH:mm:ss");
   await contactUs.save();
@@ -98,6 +111,26 @@ const editResponse = async (req, res) => {
   });
 
   const updatedContactUs = await ContactUs.findByPk(contactUsId);
+
+  const contactUsUser = await contactUs.getUser();
+  const content = `The admin has edited a respond to your ContactUs: "${contactUs.title}"`;
+
+  if (contactUsUser && loggedInUsers.has(contactUsUser.userId)) {
+    req.io.emit("userNotification", { "pushToken": contactUsUser.pushToken, "title": contactUs.title, "body": content });
+    // console.log("Emitted userNewForumCommentNotification");
+  }
+
+  const notificationBody = {
+    "isRecent": true,
+    "isPending": false,
+    "isCompleted": false,
+    "hasRead": false,
+    "userId": contactUsUser.userId,
+    "content": content,
+    "userNavigationScreen": "response"
+  };
+
+  await Notification.create(notificationBody);
 
   res
     .status(200)

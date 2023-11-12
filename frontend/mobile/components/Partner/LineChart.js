@@ -2,11 +2,12 @@ import React, {useEffect, useState, useRef} from "react";
 import {Text, View, Animated, TouchableOpacity} from "react-native";
 import {LineChart} from "react-native-chart-kit";
 
-export const MyLineChart = ({monthTransactions, screenWidth, screenHeight, navigation}) => {
+export const MyLineChart = ({monthTransactions, averageTransactions, screenWidth, screenHeight, navigation}) => {
     // Need to read the data from the transactions.
     // I need to use the summary data for each month.
     const labels = monthTransactions.length !== 0 ? monthTransactions.map(item => monthDigitToString(item.month)) : ["Jan", "Feb", "Mar", "Apr", "May", "June"];
     const dataPoints = monthTransactions.length !== 0 ? monthTransactions.map(item => item.totalOnHoldBalance) : [0,0,0,0,0,0];
+    const averagePoints = averageTransactions.length !== 0 ? averageTransactions.map(item => item.average_onHoldBalance) : [0,0,0,0,0,0]
     const [activeDataPoint, setActiveDataPoint] = useState(null);
     const tooltipWidth = 130; // estimated or maximum width of the tooltip
     const tooltipHeight = 50; // estimated or maximum height of the tooltip
@@ -90,7 +91,12 @@ export const MyLineChart = ({monthTransactions, screenWidth, screenHeight, navig
                     labels: labels,
                     datasets: [{
                         data: dataPoints,
-                    }]
+                    },
+                        {
+                            data: averagePoints,
+                            color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Optional customization for the average line color
+                            strokeWidth: 2 // Optional customization for the average line width
+                        }]
                 }}
                 width={screenWidth - 16}
                 height={220}
@@ -137,7 +143,7 @@ export const MyLineChart = ({monthTransactions, screenWidth, screenHeight, navig
                         justifyContent: 'center',
                     }}>
                         <Text style={{ color: 'white', fontSize: 16 }}>
-                            Your total earnings this month are lower than last month. Consider buying a boost!
+                            Your total earnings this month are {<Text style={{fontWeight:"bold", color:"#942911"}}>lower</Text>} than last month. Consider buying a boost!
                         </Text>
                     </Animated.View>
                 </TouchableOpacity>

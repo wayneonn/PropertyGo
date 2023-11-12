@@ -70,6 +70,28 @@ export const fetchTransactionCountryCount = async(USER_ID) => {
     }
 }
 
+export const fetchAverageCountryCount = async() => {
+    try {
+        const res = await fetch(`${BASE_URL}/user/transactions/data/average`)
+        const results = await res.json();
+        console.log(results, "Average count.")
+        return results;
+    } catch (error) {
+        console.log("Error fetching average transaction values: ", error)
+    }
+}
+
+export const fetchAverageTransactionCount = async() => {
+    try {
+        const res = await fetch(`${BASE_URL}/user/transactions/data/count`)
+        const results = await res.json();
+        console.log(results, "Average count of transactions.")
+        return results;
+    } catch (error) {
+        console.log("Error fetching average transaction values: ", error)
+    }
+}
+
 export const createTransaction = async (transactionData) => {
     // console.log("transactionData: ", transactionData)
     try {
@@ -79,6 +101,97 @@ export const createTransaction = async (transactionData) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(transactionData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const createOptionFeeTransaction = async (transactionData) => {
+    // console.log("transactionData: ", transactionData)
+    try {
+      const response = await fetch(`${BASE_URL}/user/transactions/createOptionFeeTransaction`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transactionData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const sellerUploadedOTP = async (transactionId, transactionData) => {
+    // console.log("transactionData: ", transactionData)
+    try {
+      const response = await fetch(`${BASE_URL}/user/transactions/sellerUploadedOTP/${transactionId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transactionData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const buyerUploadedOTP = async (transactionId, transactionData) => {
+    // console.log("transactionData: ", transactionData)
+    try {
+      const response = await fetch(`${BASE_URL}/user/transactions/buyerUploadedOTP/${transactionId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transactionData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const getTransactionByTransactionId = async (transactionId) => {
+    // console.log("transactionData: ", transactionData)
+    try {
+      const response = await fetch(`${BASE_URL}/user/transactions/byTransactionId/${transactionId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
   
       if (response.ok) {
@@ -105,6 +218,120 @@ export const createTransaction = async (transactionData) => {
   
       if (response.ok) {
         console.log("response: ", response)
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const updateTransaction = async (transactionId, transactionData) => {
+    try {
+      const response = await fetch(`${BASE_URL}/user/transactions/${transactionId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json', // Use JSON content type
+        },
+        body: JSON.stringify(transactionData), // Send propertyData as JSON string
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const sellerCancelledOTP = async (transactionId, transactionData) => {
+    // console.log("transactionData: ", transactionData)
+    try {
+      const response = await fetch(`${BASE_URL}/user/transactions/sellerCancelledOTP/${transactionId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transactionData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const buyerRequestReupload = async (transactionId, transactionData) => {
+    // console.log("transactionData: ", transactionData)
+    try {
+      const response = await fetch(`${BASE_URL}/user/transactions/buyerRequestReupload/${transactionId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transactionData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const buyerCancelOTP = async (transactionId, transactionData) => {
+    // console.log("transactionData: ", transactionData)
+    try {
+      const response = await fetch(`${BASE_URL}/user/transactions/buyerCancelOTP/${transactionId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transactionData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const buyerPaidOptionExerciseFee = async (transactionId, transactionData) => {
+    // console.log("transactionData: ", transactionData)
+    try {
+      const response = await fetch(`${BASE_URL}/user/transactions/buyerPaidOptionExerciseFee/${transactionId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transactionData),
+      });
+  
+      if (response.ok) {
         const data = await response.json();
         return { success: true, data };
       } else {

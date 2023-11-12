@@ -112,6 +112,23 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      partnerSubscriptionPaid: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+      },
+      partnerSubscriptionEndDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      bankName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      bankAccount: {
+        type: DataTypes.DOUBLE,
+        allowNull: true,
+      },
     },
     {
       freezeTableName: true,
@@ -167,34 +184,55 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: "documents",
     });
-    User.hasMany(models.Review, {
-      onDelete: "CASCADE",
-      foreignKey: {
-        name: "reviewerId",
-      },
-      as: "reviewsPosted",
-    });
-    User.hasMany(models.Review, {
-      onDelete: "CASCADE",
-      foreignKey: {
-        name: "revieweeId",
-      },
-      as: "reviewsReceived",
-    });
+    // User.hasMany(models.Review, {
+    //   onDelete: "CASCADE",
+    //   foreignKey: {
+    //     name: "reviewerId",
+    //   },
+    //   as: "reviewsPosted",
+    // });
+    // User.hasMany(models.Review, {
+    //   onDelete: "CASCADE",
+    //   foreignKey: {
+    //     name: "revieweeId",
+    //   },
+    //   as: "reviewsReceived",
+    // });
     User.hasMany(models.Chat, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: "userId",
+        name: "receiverId",
+        allowNull: false
       },
       as: "receiverChats",
     });
     User.hasMany(models.Chat, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: "userId",
+        name: "senderId",
+        allowNull: false
       },
       as: "senderChats",
     });
+
+    User.hasMany(models.Message, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: "userId",
+        allowNull: false
+      },
+      as: "messages",
+    });
+
+    User.hasMany(models.Response, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: "userId",
+        allowNull: true
+      },
+      as: "responses",
+    });
+
     User.belongsToMany(models.Property, {
       through: "UserFavourites",
       foreignKey: "userId",

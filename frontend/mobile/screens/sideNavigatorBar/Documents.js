@@ -131,7 +131,6 @@ function UploadScreen({navigation}) {
                 // Slight issue opening certain PDF files.
                 // Native FileSystem logic
 
-                //Filename has " " = Error and fuck you.
                 const fileName = (FileSystem.documentDirectory + result.title).replace(/\s/g, '_');
                 console.log('Filename:', fileName);
 

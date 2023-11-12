@@ -30,3 +30,27 @@
   align-items: center;
   justify-content: space-between;
 }
+
+/* .document {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  transform: 0.1s;
+  word-break: break-all;
+  margin: 20px;
+} */
+
+.document-otp {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: 0.1s;
+}
+

@@ -2,11 +2,15 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io"); // for the event-based notification
 const cors = require("cors");
+const cron = require("node-cron");
+const { Transaction, Property } = require("./models");
 const app = express();
 const globalEmitter = require("./globalEmitter");
 const WebSocket = require("ws");
 const { loggedInUsers } = require("./shared");
 require("dotenv").config();
+// const Transaction = require('./models/Transaction');
+// const Property = require('./models/Property');
 
 const server = http.createServer(app);
 // socket io
@@ -39,7 +43,7 @@ const transactionTestData = require("./test_data/transactionTestData");
 // const invoiceTestData = require("./test_data/invoiceTestData");
 const propertyTestData = require("./test_data/propertyTestData");
 const imageTestData = require("./test_data/imageTestData");
-const reviewTestData = require("./test_data/reviewTestData");
+// const reviewTestData = require("./test_data/reviewTestData");
 const chatTestData = require("./test_data/chatTestData");
 const requestTestData = require("./test_data/requestTestData");
 const partnerApplicationId = require("./test_data/partnerApplicationTestData");
@@ -47,6 +51,8 @@ const forumTopicTestData = require("./test_data/forumTopicTestData");
 const forumPostTestData = require("./test_data/forumPostTestData");
 const forumCommentTestData = require("./test_data/forumCommentTestData");
 const notificationTestData = require("./test_data/notificationTestData");
+const messageTestData = require("./test_data/messageTestData");
+
 const {
   createFakeTransactions,
   generateFakeProperties,
@@ -62,7 +68,7 @@ const responseRouter = require("./routes/admin/responseRoutes");
 const forumTopicAdminRouter = require("./routes/admin/forumTopicRoutes");
 const notificationAdminRouter = require("./routes/admin/notificationRoutes");
 const propertyAdminRouter = require("./routes/admin/propertyRoutes");
-const reviewAdminRouter = require("./routes/admin/reviewRoutes");
+// const reviewAdminRouter = require("./routes/admin/reviewRoutes");
 const folderAdminRouter = require("./routes/admin/folderRoutes");
 const documentAdminRouter = require("./routes/admin/documentRoutes");
 const transactionAdminRouter = require("./routes/admin/transactionRoutes");
@@ -85,13 +91,17 @@ const forumTopicUserRouter = require("./routes/user/forumTopicRoute");
 const forumPostUserRouter = require("./routes/user/forumPostRoute");
 const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
 const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
-const reviewRoute = require("./routes/user/reviewRoute");
+// const reviewRoute = require("./routes/user/reviewRoute");
 const faqRoute = require("./routes/user/faqRoute");
 const notificationRoute = require("./routes/user/notificationRoute");
 const responseRoute = require("./routes/user/responseRoute");
 const scheduleRoute = require("./routes/user/scheduleRoute");
 const viewingAvailabilityRoute = require("./routes/user/viewingAvailabilityRoute");
+const predictionRoute = require("./routes/user/predictionRoute");
 const stripeRoute = require("./routes/user/stripeRoute");
+const chatRoute = require("./routes/user/chatRoute");
+const messageRoute = require("./routes/user/messageRoute");
+const requestRoute = require("./routes/user/requestRoute");
 const e = require("express");
 
 app.use(cors());
@@ -109,11 +119,15 @@ app.use("/admin/auth", authRouter);
 app.use("/admin/faqs", injectIo(io), faqRouter);
 app.use("/admin/users", adminUserRouter);
 app.use("/admin/contactUs", injectIo(io), contactUsAdminRouter);
-app.use("/admin/contactUs/:contactUsId/responses",injectIo(io) , responseRouter);
+app.use(
+  "/admin/contactUs/:contactUsId/responses",
+  injectIo(io),
+  responseRouter
+);
 app.use("/admin/forumTopics", injectIo(io), forumTopicAdminRouter);
 app.use("/admin/notifications", notificationAdminRouter);
 app.use("/admin/properties", propertyAdminRouter);
-app.use("/admin/reviews", reviewAdminRouter);
+// app.use("/admin/reviews", reviewAdminRouter);
 app.use("/admin/documents", documentAdminRouter);
 app.use("/admin/folders", folderAdminRouter);
 app.use("/admin/transactions", transactionAdminRouter);
@@ -137,7 +151,10 @@ app.use(
   faqRoute,
   notificationRoute,
   responseRoute,
-  stripeRoute
+  stripeRoute,
+  chatRoute,
+  messageRoute,
+  requestRoute
 );
 
 io.on("connection", (socket) => {
@@ -166,19 +183,15 @@ io.on("connection", (socket) => {
 
 app.use("/property", propertyRoute);
 
-app.use(
-  "/schedule",
-  injectIo(io),
-  scheduleRoute,
-);
+app.use("/schedule", injectIo(io), scheduleRoute);
 
 app.use("/viewingAvailability", viewingAvailabilityRoute);
 
-app.use("/image", imageRoute);
+app.use("/image", injectIo(io), imageRoute);
 
-app.use("/review", reviewRoute);
+// app.use("/review", reviewRoute);
 
-app.use("/review", reviewRoute);
+app.use("/prediction", predictionRoute);
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})
@@ -211,11 +224,12 @@ db.sequelize
     const existingFaqRecordsCount = await db.FAQ.count();
     const existingTransactionRecordsCount = await db.Transaction.count();
     const existingScheduleRecordsCount = await db.Schedule.count();
-    const existingViewingAvailabilityCount = await db.ViewingAvailability.count();
+    const existingViewingAvailabilityCount =
+      await db.ViewingAvailability.count();
     // const existingInvoiceRecordsCount = await db.Invoice.count();
     const existingPropertyRecordsCount = await db.Property.count();
     const existingImageRecordsCount = await db.Image.count();
-    const existingReviewRecordsCount = await db.Review.count();
+    // const existingReviewRecordsCount = await db.Review.count();
     const existingChatRecordsCount = await db.Chat.count();
     const existingRequestRecordsCount = await db.Request.count();
     const existingContactUsRecordsCount = await db.ContactUs.count();
@@ -226,6 +240,7 @@ db.sequelize
     const existingForumCommentRecordsCount = await db.ForumComment.count();
     const existingResponseRecordsCount = await db.Response.count();
     const existingNotificationRecordsCount = await db.Notification.count();
+    const existingMessageRecordsCount = await db.Message.count();
 
     // General order of data insertion:
     // User -> Admin -> FAQ -> Property -> Image -> Chat -> Transaction -> Invoice -> Review
@@ -338,7 +353,9 @@ db.sequelize
         console.error("Error inserting Viewing Availability test data:", error);
       }
     } else {
-      console.log("Viewing Availability test data already exists in the database.");
+      console.log(
+        "Viewing Availability test data already exists in the database."
+      );
     }
 
     // Images
@@ -384,18 +401,18 @@ db.sequelize
     }
 
     // Review
-    if (existingReviewRecordsCount === 0) {
-      try {
-        for (const reviewData of reviewTestData) {
-          await db.Review.create(reviewData);
-        }
-        console.log("Review test data inserted successfully.");
-      } catch (error) {
-        console.log("Error inserting Review test data:", error);
-      }
-    } else {
-      console.log("Review test data already exists in the database.");
-    }
+    // if (existingReviewRecordsCount === 0) {
+    //   try {
+    //     for (const reviewData of reviewTestData) {
+    //       await db.Review.create(reviewData);
+    //     }
+    //     console.log("Review test data inserted successfully.");
+    //   } catch (error) {
+    //     console.log("Error inserting Review test data:", error);
+    //   }
+    // } else {
+    //   console.log("Review test data already exists in the database.");
+    // }
 
     // // Invoice
     // if (existingInvoiceRecordsCount === 0) {
@@ -546,6 +563,21 @@ db.sequelize
       console.log("ForumComment test data already exists in the database.");
     }
 
+    // Message
+    if (existingMessageRecordsCount === 0) {
+      try {
+        for (const messageData of messageTestData) {
+          await db.Message.create(messageData);
+        }
+
+        console.log("Message test data inserted successfully.");
+      } catch (error) {
+        console.error("Error inserting Message test data:", error);
+      }
+    } else {
+      console.log("Message test data already exists in the database.");
+    }
+
     // if (existingNotificationRecordsCount === 0) {
     //   try {
     //     for (const notificationData of notificationTestData) {
@@ -568,6 +600,58 @@ db.sequelize
     //     console.log("io server running on port 3000");
     //   })
     // })
+
+    async function checkAndUpdateTransactions() {
+      try {
+        // Find transactions that meet the criteria
+        const transactionsToUpdate = await Transaction.findAll({
+          where: {
+            transactionType: "OPTION_FEE",
+            optionFeeStatusEnum: "BUYER_UPLOADED",
+          },
+        });
+
+        console.log("Transactions to update:", transactionsToUpdate);
+
+        for (const transaction of transactionsToUpdate) {
+          const property = await Property.findByPk(transaction.propertyId);
+
+          if (
+            property &&
+            isToday4PM(property.optionExpiryDate) &&
+            property.propertyStatus === "ON_HOLD"
+          ) {
+            // Update the property and transaction
+            property.propertyStatus = "ACTIVE";
+            property.optionExpiryDate = null;
+            transaction.optionFeeStatusEnum = "SELLER_DID_NOT_RESPOND";
+
+            // Save the updated property and transaction
+            await property.save();
+            await transaction.save();
+          }
+        }
+      } catch (error) {
+        console.error("Error checking and updating transactions:", error);
+      }
+    }
+
+    // Helper function to check if the date is today at 4 PM
+    function isToday4PM(date) {
+      const now = new Date();
+      const today4PM = new Date();
+      today4PM.setHours(16, 0, 0, 0);
+      return date && date.getTime() === today4PM.getTime();
+    }
+
+    //min, hour, day, month, weekday fields - indicating that the task will run every day.
+    cron.schedule("0 16 * * *", () => {
+      // Implement your logic to check and update transactions here
+      checkAndUpdateTransactions();
+      console.log(
+        "Running OTP Deadline Checker to update Property and Transaction Status"
+      );
+    });
 
     server.listen(3000, () => {
       console.log("Server started on http://localhost:3000/");

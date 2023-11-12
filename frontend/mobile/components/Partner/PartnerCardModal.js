@@ -1,6 +1,7 @@
 import {Image, Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React from "react";
 import {RatingComponent} from "../RatingStars";
+import {convertImage} from "../../services/commonFunctions";
 
 export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, dateFormatter, navigation}) => {
     return (
@@ -21,10 +22,19 @@ export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, d
                     navigation.navigate('View Profile', { userId: selectedItem?.userDetails.userId })
                     setModalVisible(!modalVisible)
                 }}>
-                    <Image
-                        source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                        style={{width: 50, height: 50, borderRadius: 120}}
-                    />
+                    {
+                        (selectedItem?.userDetails.profileImage !== null && selectedItem !== null) ? (
+                            <Image
+                                source={{uri: `data:image/jpeg;base64,${convertImage(selectedItem.userDetails.profileImage.data)}`}}
+                                style={styles.profileImage}
+                            />
+                        ) : (
+                            <Image
+                                source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                                style={styles.profileImage}
+                            />
+                        )
+                    }
                 </TouchableOpacity>
                 <Text style={styles.propertyPrice}>{selectedItem?.userDetails.userName}</Text>
                 <RatingComponent rating={selectedItem?.userDetails.rating}/>
@@ -111,6 +121,12 @@ const styles = StyleSheet.create({
 
     profileHeader: {
         paddingHorizontal: 10,
+    },
+    profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 120,
+        alignSelf: "center"
     },
 
     propertyTitle: {

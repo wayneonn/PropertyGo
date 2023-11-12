@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
-      tenure: {
+      lease_commence_date: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -112,6 +112,14 @@ module.exports = (sequelize, DataTypes) => {
       adminNotes: {
         type: DataTypes.STRING,
         allowNull: true,
+      },
+      optionExpiryDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      flatType: {
+        type: DataTypes.ENUM("1_ROOM", "2_ROOM", "3_ROOM", "4_ROOM", "5_ROOM", "EXECUTIVE", "MULTI-GENERATION"),
+        allowNull: false,
       },
     },
     {
@@ -173,10 +181,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "propertyId",
       as: "transactions",
     });
-    // Property.hasMany(models.Image, {
-    //     foreignKey: 'imageId',
-    //     as: 'propertyImages',
-    // });
+    Property.hasMany(models.Image, {
+        foreignKey: 'imageId',
+        as: 'propertyImages',
+    });
     Property.belongsToMany(models.User, {
       through: "UserFavourites", // This is the name of the join table
       foreignKey: "propertyId",

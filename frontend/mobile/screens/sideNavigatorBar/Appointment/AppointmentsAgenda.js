@@ -61,7 +61,7 @@ const Appointments = ({ route }) => {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 3000); // 3 seconds in milliseconds
+        }, 1500); // 3 seconds in milliseconds
 
         // Clear the timer when the component unmounts
         return () => clearTimeout(timer);

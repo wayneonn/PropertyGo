@@ -35,6 +35,7 @@ const PropertyUserListingScreen = ({ route }) => {
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const [fullScreenImage, setFullScreenImage] = useState(null);
+  const [approvalStatus, setApprovalStatus] = useState(null);
   const [region, setRegion] = useState({
     latitude: 1.36922522142582,
     longitude: 103.848493192474,
@@ -187,6 +188,7 @@ const PropertyUserListingScreen = ({ route }) => {
       setPropertyListing(data); // Update state with the fetched data
       // Fetch latitude and longitude based on postal code
       // fetchLatitudeLongitudeByPostalCode(data.postalCode);
+      setApprovalStatus(data.approvalStatus);
       const latitude = data.latitude;
       const longitude = data.longitude;
       setRegion({
@@ -255,6 +257,77 @@ const PropertyUserListingScreen = ({ route }) => {
     }
   };
 
+  const getStatusText = (status, propertyStatus) => {
+    if (propertyStatus === 'ACTIVE') {
+      switch (status) {
+        case 'PENDING':
+          return 'Awaiting Admin Approval';
+        case 'APPROVED':
+          return 'Approved';
+        case 'REJECTED':
+          return 'Rejected';
+        default:
+          return status; // Default status text
+      }
+    } else {
+      switch (propertyStatus) {
+        case 'ON_HOLD':
+          return 'On Hold';
+        case 'COMPLETED':
+          return 'Sold';
+        default:
+          return status; // Default status text
+      }
+    }
+  };
+
+  const getStatusColor = (status, propertyStatus) => {
+    if (propertyStatus === 'ACTIVE') {
+      switch (status) {
+        case 'PENDING':
+          return 'yellow';
+        case 'APPROVED':
+          return 'green';
+        case 'REJECTED':
+          return 'red';
+        default:
+          return 'blue'; // Default status text
+      }
+    } else {
+      switch (propertyStatus) {
+        case 'ON_HOLD':
+          return 'yellow';
+        case 'COMPLETED':
+          return 'red';
+        default:
+          return status; // Default status text
+      }
+    }
+  };
+
+  const getStatusTextColor = (status, propertyStatus) => {
+    if (propertyStatus === 'ACTIVE') {
+      switch (status) {
+        case 'PENDING':
+          return 'black';
+        default:
+          return 'white'; // Default color
+      }
+    } else { 
+      switch (propertyStatus) {
+        case 'ON_HOLD':
+          return 'black';
+        default:
+          return 'white'; // Default color
+      }
+    }
+  };
+
+  const capitalizeWords = (str) => {
+    return str.toLowerCase().replace(/(?:^|\s)\w/g, function (match) {
+      return match.toUpperCase();
+    });
+  }
 
   return (
     <View style={styles.mainContainer}>
@@ -296,6 +369,9 @@ const PropertyUserListingScreen = ({ route }) => {
         <View style={styles.propertyDetailsTop}>
           <View style={styles.propertyDetailsTopLeft}>
             <Text style={styles.forSaleText}>For Sales</Text>
+            <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(propertyListing.approvalStatus, propertyListing.propertyStatus) }]}>
+              <Text style={[styles.statusText, { color: getStatusTextColor(propertyListing.approvalStatus, propertyListing.propertyStatus) }]}>{getStatusText(propertyListing.approvalStatus, propertyListing.propertyStatus)}</Text>
+            </View>
             <Text style={styles.title}>{propertyListing.title}</Text>
             <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
             <Text style={styles.pricePerSqm}>
@@ -342,18 +418,47 @@ const PropertyUserListingScreen = ({ route }) => {
           </View>
         </View>
         <View style={styles.dateContainer}>
+          <FontAwesome name="building-o" size={18} color="#333" />
+          <Text style={styles.flatText}>{"Flat Type: "}{capitalizeWords(propertyListing.flatType.toLowerCase().replace(/_/g, ' '))}</Text>
+        </View>
+        <View style={styles.dateContainer}>
           <FontAwesome name="calendar" size={16} color="#333" />
           <Text style={styles.dateText}>{formatDate(propertyListing.createdAt)}</Text>
         </View>
         <Text style={styles.dateContainer}>
           <Ionicons name="time-outline" size={17} color="#333" />
           {" "}
-          <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
+          <Text style={styles.dateText}>{"Lease Commence Year: "}{propertyListing.lease_commence_date}{" Years"}</Text>
         </Text>
+
+        <View style={styles.userInfoContainer}></View>
+        <Text style={styles.locationTitle}>Asking For {" "} <FontAwesome name="money" size={24} color="#333" /> </Text>
+        <Text style={styles.dateContainer}>
+          <Text style={styles.flatText}>{"1. Option Fee: "}</Text>
+          <Text style={styles.description}>${formatPriceWithCommas(propertyListing.optionFee)}</Text>
+        </Text>
+        <Text style={styles.dateContainer}>
+          <Text style={styles.flatText}>{"2. Option Exercise Fee: "}</Text>
+          <Text style={styles.description}>${formatPriceWithCommas(propertyListing.optionExerciseFee)}</Text>
+        </Text>
+        <Text></Text>            
+
         <Text style={styles.descriptionHeader}>Description:</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
         <Text style={styles.description}>{"\n"}</Text>
-
+        {
+          approvalStatus === 'APPROVED' ? (
+            <>
+              <Text style={styles.description}></Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.descriptionHeader}>
+                <Ionicons name="clipboard-outline" size={20} color="#333" />
+                {" "}Admin Notes For Rejection:</Text>
+              <Text style={styles.descriptionAdminNotes}>{propertyListing.adminNotes}</Text>
+            </>
+          )}
         {/* Location Details */}
         <Text style={styles.locationTitle}>Location</Text>
         <View style={styles.locationDetailsContainer}>
@@ -493,9 +598,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
   },
-  description: {
-    fontSize: 16,
-    marginBottom: 16,
+  descriptionAdminNotes: {
+    paddingLeft: 16,
+    marginBottom: 20,
+    color: 'red',
   },
   label: {
     fontSize: 16,
@@ -564,7 +670,6 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     marginBottom: 20,
   },
-
   // Styles for fixed bottom buttons
   bottomButtonsContainer: {
     flexDirection: 'row',
@@ -746,6 +851,29 @@ const styles = StyleSheet.create({
     borderColor: '#000',  // Border color
     borderRadius: 10,     // Make it rounded
     margin: 2,  // Margin for spacing between buttons
+  },
+  statusIndicator: {
+    position: 'absolute',
+    top: -8,
+    right: -95,
+    borderWidth: 0.18,
+    paddingVertical: 0,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+    backgroundColor: 'yellow', // Default color
+  },
+  statusText: {
+    fontSize: 12,
+    letterSpacing: 1,
+    fontWeight: 'bold',
+    color: '#000',
+    padding: 2,
+  },
+  flatText: {
+    fontWeight: 'bold',
+    fontSize: 13,
+    marginLeft: 5,
+    color: '#333',
   },
 });
 

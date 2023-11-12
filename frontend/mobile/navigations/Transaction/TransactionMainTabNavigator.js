@@ -48,7 +48,7 @@ const TransactionTabNavigator = () => {
         component={TokenTransactions}
         options={{
           tabBarLabel: ({ color, focused }) => (
-            <CustomTabLabel label="History" color={color} icon="coins" />
+            <CustomTabLabel label="Tokens" color={color} icon="coins" />
           ),
         }}
       />

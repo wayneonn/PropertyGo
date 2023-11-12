@@ -100,7 +100,7 @@ async function createProperty(req, res) {
         await transaction.commit();
         console.log('Transaction committed successfully.');
 
-        res.json({ propertyListingId: createdProperty.propertyListingId });
+        res.json({ propertyListingId: createdProperty.propertyListingId, title: createdProperty.title });
     } catch (error) {
         await transaction.rollback(); // Roll back the transaction if there was an error creating the property
         console.error('Error creating property:', error);
@@ -174,33 +174,33 @@ async function getPropertyById(req, res) {
 
 async function countUsersFavoritedProperty(req, res) {
     try {
-        
-      const { propertyId } = req.params;
-      console.log('Counting users who favorited property...', propertyId);
-      // Find the property by ID
-      const property = await Property.findByPk(propertyId);
-  
-      if (!property) {
-        return res.status(404).json({ message: 'Property not found' });
-      }
-  
-      // Count the number of users who have favorited this property
-      const count = await User.count({
-        include: [
-          {
-            model: Property,
-            as: 'favouriteProperties',
-            where: { propertyListingId: propertyId },
-          },
-        ],
-      });
-  
-      res.json({ count });
+
+        const { propertyId } = req.params;
+        console.log('Counting users who favorited property...', propertyId);
+        // Find the property by ID
+        const property = await Property.findByPk(propertyId);
+
+        if (!property) {
+            return res.status(404).json({ message: 'Property not found' });
+        }
+
+        // Count the number of users who have favorited this property
+        const count = await User.count({
+            include: [
+                {
+                    model: Property,
+                    as: 'favouriteProperties',
+                    where: { propertyListingId: propertyId },
+                },
+            ],
+        });
+
+        res.json({ count });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
     }
-  }
+}
 
 // Get properties by region with imageIds
 async function getPropertiesByRegion(req, res) {
@@ -220,6 +220,7 @@ async function getPropertiesByRegion(req, res) {
             ],
             where: {
                 approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+                propertyStatus: 'ACTIVE',
             },
         });
 
@@ -296,6 +297,7 @@ async function getPropertiesByFavoriteCount(req, res) {
             ],
             where: {
                 approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+                propertyStatus: 'ACTIVE',
             },
         });
 
@@ -370,6 +372,7 @@ async function getRecentlyAddedProperties(req, res) {
             ],
             where: {
                 approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+                propertyStatus: 'ACTIVE',
             },
             order: [['postedAt', 'DESC']],
         });
@@ -484,52 +487,52 @@ async function editProperty(req, res) {
     console.log('Received property data:', propertyData);
     // Start a transaction
     const transaction = await sequelize.transaction();
-  
-    try {
-      const property = await Property.findByPk(propertyId);
-      if (!property) {
-        await transaction.rollback();
-        return res.status(404).json({ error: 'Property not found' });
-      }
-  
-      // Update the property details
-      await property.update(propertyData, { transaction });
-  
-      await transaction.commit();
-      res.json({ message: 'Property updated successfully' });
-    } catch (error) {
-      await transaction.rollback();
-      console.error('Error editing property:', error);
-      res.status(500).json({ error: 'Error editing property' });
-    }
-  }
 
-  async function searchProperties(req, res) {
     try {
-      const { q } = req.query;
-  
-      // Perform a database query to search for properties
-      const results = await Property.findAll({
-        where: {
-          // Use Sequelize operators to search in relevant fields (address, area, postal code)
-          [Op.or]: [
-            { address: { [Op.like]: `%${q}%` } },
-            { area: { [Op.like]: `%${q}%` } },    
-            { postalCode: { [Op.like]: `%${q}%` } }, 
-          ],
-        },
-      });
-  
-      // Extract the property IDs from the results
-      const propertyIds = results.map((property) => property);
-  
-      res.json(propertyIds);
+        const property = await Property.findByPk(propertyId);
+        if (!property) {
+            await transaction.rollback();
+            return res.status(404).json({ error: 'Property not found' });
+        }
+
+        // Update the property details
+        await property.update(propertyData, { transaction });
+
+        await transaction.commit();
+        res.json({ message: 'Property updated successfully' });
     } catch (error) {
-      console.error('Error searching for properties:', error);
-      res.status(500).json({ error: 'Error searching for properties' });
+        await transaction.rollback();
+        console.error('Error editing property:', error);
+        res.status(500).json({ error: 'Error editing property' });
     }
-  }
-  
+}
+
+async function searchProperties(req, res) {
+    try {
+        const { q } = req.query;
+
+        // Perform a database query to search for properties
+        const results = await Property.findAll({
+            where: {
+                // Use Sequelize operators to search in relevant fields (address, area, postal code)
+                [Op.or]: [
+                    { address: { [Op.like]: `%${q}%` } },
+                    { area: { [Op.like]: `%${q}%` } },
+                    { postalCode: { [Op.like]: `%${q}%` } },
+                ],
+            },
+        });
+
+        // Extract the property IDs from the results
+        const propertyIds = results.map((property) => property);
+
+        res.json(propertyIds);
+    } catch (error) {
+        console.error('Error searching for properties:', error);
+        res.status(500).json({ error: 'Error searching for properties' });
+    }
+}
+
 module.exports = {
     getAllProperties,
     createProperty,

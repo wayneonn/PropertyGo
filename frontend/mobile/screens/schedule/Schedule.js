@@ -27,6 +27,7 @@ import {
 import { set } from 'date-fns';
 import ScheduleCard from './ScheduleCard';
 import AppointmentCard from './AppointmentCard';
+import { useFocusEffect } from '@react-navigation/native';
 
 const SetSchedule = ({ route }) => {
     const { propertyListingId, userDetails } = route.params;
@@ -60,6 +61,14 @@ const SetSchedule = ({ route }) => {
         fetchScheduleByUser();
     }, [selectedDate]);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchViewingAvailabilityByDateAndPropertyId();
+            fetchViewingAvailabilityByPropertyId();
+            fetchScheduleData();
+            fetchScheduleByUser();
+        }, [])
+    );
 
     useEffect(() => {
         if (firstLoad) {
@@ -280,7 +289,7 @@ const SetSchedule = ({ route }) => {
             return [
                 {
                     id: 'initial-load',
-                    time: 'Select a time slot',
+                    time: 'Pick a date',
                     isSlotDisabled: true,
                     userBooked: false,
                 },
@@ -418,6 +427,13 @@ const SetSchedule = ({ route }) => {
         return markedDates;
     };
 
+    const setColor = (userBooked, selectedDate) => {
+        if (userBooked || selectedDate) {
+            return 'white'
+        }
+        return 'black'
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView
@@ -464,7 +480,7 @@ const SetSchedule = ({ route }) => {
                         <Ionicons name="calendar" size={28} color="#00adf5" />
                         {" "}{formatDate(selectedDate)}
                     </Text>
-                    {generateTimeSlots().length > 0 ? (
+                    {generateTimeSlots().length > 0 && !firstLoad ? (
                         <FlatList
                             data={generateTimeSlots()}
                             extraData={refreshFlatList}
@@ -477,7 +493,7 @@ const SetSchedule = ({ route }) => {
                                         styles.timeSlot,
                                         item.isTimeSlotTaken ? { backgroundColor: 'red' } : null, // Set the background color to red for taken time slots
                                     ]}>
-                                        <Text style={styles.timeText}>{item.time}</Text>
+                                        <Text style={[styles.timeText, { color: 'black' }]}>{item.time}</Text>
                                     </View>
                                 ) : (
                                     <TouchableOpacity
@@ -488,7 +504,7 @@ const SetSchedule = ({ route }) => {
                                             selectedTime === item.time ? styles.selectedTimeSlot : null,
                                         ]}
                                     >
-                                        <Text style={styles.timeText}>{item.time}</Text>
+                                        <Text style={[styles.timeText, { color: setColor(item.userBooked, selectedTime === item.time) }]}>{item.time}</Text>
                                     </TouchableOpacity>
 
                                 )
@@ -555,19 +571,20 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
     },
     timeSlot: {
-        flex: 1,
+        // flex: 1,
         padding: 8,
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 4,
         marginBottom: 8,
         alignItems: 'center',
-        justifyContent: 'center',
+        // justifyContent: 'center',
         margin: 4,
         minHeight: 40,
+        width: '30%',
     },
     selectedTimeSlot: {
-        backgroundColor: 'cyan',
+        backgroundColor: '#0080ff',
     },
     timeText: {
         fontSize: 16,

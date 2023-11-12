@@ -107,6 +107,7 @@ export const ImageUpload = ({images, setImages}) => {
 
         try {
             const res = await uploadCompanyPhotos(user.user.userId, images)
+            const result = res.json()
             if (res.success) {
                 Alert.alert(
                     'Upload Succeeded',
@@ -115,7 +116,7 @@ export const ImageUpload = ({images, setImages}) => {
             } else {
                 Alert.alert(
                     "Some error occurred",
-                    `Please try again. ${res.message}`
+                    `Please try again. ${result}`
                 )
             }
         } catch (error) {
