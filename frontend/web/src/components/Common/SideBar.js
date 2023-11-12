@@ -12,6 +12,7 @@ import {
 import { PiPuzzlePiece, PiHouseLine } from "react-icons/pi";
 import { GoPerson } from "react-icons/go";
 import { FaWpforms } from "react-icons/fa";
+import { AiOutlineNotification } from "react-icons/ai";
 
 const SideBar = () => {
   const imageBasePath =
@@ -81,20 +82,6 @@ const SideBar = () => {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="a" href="*">
-            <AiOutlineBook style={{ marginRight: "1em" }}></AiOutlineBook>
-            Invoice
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link className="a" href="*">
-            <AiOutlineCreditCard
-              style={{ marginRight: "1em" }}
-            ></AiOutlineCreditCard>
-            Billing
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
           <Nav.Link className="a" href="/faqs">
             <AiOutlineQuestionCircle
               style={{ marginRight: "1em" }}
@@ -134,6 +121,14 @@ const SideBar = () => {
               style={{ marginRight: "1em" }}
             ></AiOutlineCreditCard>
             OTP
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link className="a" href="/notifications">
+            <AiOutlineNotification
+              style={{ marginRight: "1em" }}
+            ></AiOutlineNotification>
+            Notification
           </Nav.Link>
         </Nav.Item>
       </Nav>
