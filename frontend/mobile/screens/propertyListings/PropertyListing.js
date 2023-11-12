@@ -260,7 +260,7 @@ const PropertyListingScreen = ({ route }) => {
   };
 
   if (!propertyListing) {
-    return <ActivityIndicator style={styles.loadingIndicator} />;
+    return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5"/>;
   }
 
   let profileImageBase64;

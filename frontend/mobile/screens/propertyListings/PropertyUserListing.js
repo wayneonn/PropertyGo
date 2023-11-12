@@ -22,6 +22,7 @@ import DefaultImage from '../../assets/No-Image-Available.webp';
 import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FullScreenImage from './FullScreenImage';
+import PredictionPriceCard from './PredictionPriceCard';
 
 
 const PropertyUserListingScreen = ({ route }) => {
@@ -236,7 +237,7 @@ const PropertyUserListingScreen = ({ route }) => {
   };
 
   if (!propertyListing) {
-    return <ActivityIndicator style={styles.loadingIndicator} />;
+    return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5"/>;
   }
 
   let profileImageBase64;
@@ -428,7 +429,7 @@ const PropertyUserListingScreen = ({ route }) => {
         <Text style={styles.dateContainer}>
           <Ionicons name="time-outline" size={17} color="#333" />
           {" "}
-          <Text style={styles.dateText}>{"Lease Commence Year: "}{propertyListing.lease_commence_date}{" Years"}</Text>
+          <Text style={styles.dateText}>{"Lease Commence Year: "}{propertyListing.lease_commence_date}</Text>
         </Text>
 
         <View style={styles.userInfoContainer}></View>
@@ -445,7 +446,14 @@ const PropertyUserListingScreen = ({ route }) => {
 
         <Text style={styles.descriptionHeader}>Description:</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
-        <Text style={styles.description}>{"\n"}</Text>
+        <PredictionPriceCard
+          flatType = {propertyListing.flatType} 
+          town = {propertyListing.area}
+          floorArea = {propertyListing.size} 
+          // leaseCommenceDate = {propertyListing.lease_commence_date}
+          leaseCommenceDate = {propertyListing.lease_commence_date}
+          property={propertyListing}
+        />
         {
           approvalStatus === 'APPROVED' ? (
             <>
