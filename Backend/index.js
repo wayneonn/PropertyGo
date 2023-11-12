@@ -43,7 +43,7 @@ const transactionTestData = require("./test_data/transactionTestData");
 // const invoiceTestData = require("./test_data/invoiceTestData");
 const propertyTestData = require("./test_data/propertyTestData");
 const imageTestData = require("./test_data/imageTestData");
-const reviewTestData = require("./test_data/reviewTestData");
+// const reviewTestData = require("./test_data/reviewTestData");
 const chatTestData = require("./test_data/chatTestData");
 const requestTestData = require("./test_data/requestTestData");
 const partnerApplicationId = require("./test_data/partnerApplicationTestData");
@@ -68,7 +68,7 @@ const responseRouter = require("./routes/admin/responseRoutes");
 const forumTopicAdminRouter = require("./routes/admin/forumTopicRoutes");
 const notificationAdminRouter = require("./routes/admin/notificationRoutes");
 const propertyAdminRouter = require("./routes/admin/propertyRoutes");
-const reviewAdminRouter = require("./routes/admin/reviewRoutes");
+// const reviewAdminRouter = require("./routes/admin/reviewRoutes");
 const folderAdminRouter = require("./routes/admin/folderRoutes");
 const documentAdminRouter = require("./routes/admin/documentRoutes");
 const transactionAdminRouter = require("./routes/admin/transactionRoutes");
@@ -91,12 +91,13 @@ const forumTopicUserRouter = require("./routes/user/forumTopicRoute");
 const forumPostUserRouter = require("./routes/user/forumPostRoute");
 const forumCommentUserRouter = require("./routes/user/forumCommentRoute");
 const partnerApplicationUserRouter = require("./routes/user/partnerApplicationRoute");
-const reviewRoute = require("./routes/user/reviewRoute");
+// const reviewRoute = require("./routes/user/reviewRoute");
 const faqRoute = require("./routes/user/faqRoute");
 const notificationRoute = require("./routes/user/notificationRoute");
 const responseRoute = require("./routes/user/responseRoute");
 const scheduleRoute = require("./routes/user/scheduleRoute");
 const viewingAvailabilityRoute = require("./routes/user/viewingAvailabilityRoute");
+const predictionRoute = require("./routes/user/predictionRoute");
 const stripeRoute = require("./routes/user/stripeRoute");
 const chatRoute = require("./routes/user/chatRoute");
 const messageRoute = require("./routes/user/messageRoute");
@@ -122,7 +123,7 @@ app.use("/admin/contactUs/:contactUsId/responses", injectIo(io), responseRouter)
 app.use("/admin/forumTopics", injectIo(io), forumTopicAdminRouter);
 app.use("/admin/notifications", notificationAdminRouter);
 app.use("/admin/properties", propertyAdminRouter);
-app.use("/admin/reviews", reviewAdminRouter);
+// app.use("/admin/reviews", reviewAdminRouter);
 app.use("/admin/documents", documentAdminRouter);
 app.use("/admin/folders", folderAdminRouter);
 app.use("/admin/transactions", transactionAdminRouter);
@@ -188,9 +189,9 @@ app.use("/viewingAvailability", viewingAvailabilityRoute);
 
 app.use("/image", injectIo(io), imageRoute);
 
-app.use("/review", reviewRoute);
+// app.use("/review", reviewRoute);
 
-app.use("/review", reviewRoute);
+app.use("/prediction", predictionRoute);
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})
@@ -227,7 +228,7 @@ db.sequelize
     // const existingInvoiceRecordsCount = await db.Invoice.count();
     const existingPropertyRecordsCount = await db.Property.count();
     const existingImageRecordsCount = await db.Image.count();
-    const existingReviewRecordsCount = await db.Review.count();
+    // const existingReviewRecordsCount = await db.Review.count();
     const existingChatRecordsCount = await db.Chat.count();
     const existingRequestRecordsCount = await db.Request.count();
     const existingContactUsRecordsCount = await db.ContactUs.count();
@@ -397,18 +398,18 @@ db.sequelize
     }
 
     // Review
-    if (existingReviewRecordsCount === 0) {
-      try {
-        for (const reviewData of reviewTestData) {
-          await db.Review.create(reviewData);
-        }
-        console.log("Review test data inserted successfully.");
-      } catch (error) {
-        console.log("Error inserting Review test data:", error);
-      }
-    } else {
-      console.log("Review test data already exists in the database.");
-    }
+    // if (existingReviewRecordsCount === 0) {
+    //   try {
+    //     for (const reviewData of reviewTestData) {
+    //       await db.Review.create(reviewData);
+    //     }
+    //     console.log("Review test data inserted successfully.");
+    //   } catch (error) {
+    //     console.log("Error inserting Review test data:", error);
+    //   }
+    // } else {
+    //   console.log("Review test data already exists in the database.");
+    // }
 
     // // Invoice
     // if (existingInvoiceRecordsCount === 0) {
