@@ -46,6 +46,7 @@ const roomTypes = [
   { label: '4 Room', value: '4_ROOM' },
   { label: '5 Room', value: '5_ROOM' },
   { label: 'Executive', value: 'EXECUTIVE' },
+  { label: 'Multi-Generation', value: 'MULTI_GENERATION' },
 ]
 
 export default function PropertyListing() {
@@ -65,7 +66,7 @@ export default function PropertyListing() {
     price: '',
     bed: '',
     bathroom: '',
-    tenure: '',
+    lease_commence_date: '',
     size: '',
     propertyType: '',
     propertyStatus: 'ACTIVE',
@@ -87,7 +88,7 @@ export default function PropertyListing() {
     bed: '2',
     bathroom: '2',
     size: '1200',
-    tenure: '99',
+    lease_commence_date: '1970',
     propertyType: 'Resale',
     propertyStatus: 'ACTIVE',
     userId: user.user.userId,
@@ -107,7 +108,7 @@ export default function PropertyListing() {
     // price: '',
     // bed: '',
     // bathroom: '',
-    // tenure: '',
+    // lease_commence_date: '',
     // size: '',
     // propertyType: '',
     // propertyStatus: 'ACTIVE',
@@ -194,7 +195,7 @@ export default function PropertyListing() {
   //       price: '',
   //       bed: '',
   //       bathroom: '',
-  //       tenure: '',
+  //       lease_commence_date: '',
   //       size: '',
   //       propertyType: '',
   //       propertyStatus: 'ACTIVE',
@@ -825,14 +826,14 @@ export default function PropertyListing() {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Tenure</Text>
+          <Text style={styles.label}>Lease Commence Year</Text>
           <TextInput
-            placeholder="Tenure (e.g. 99 years)"
+            placeholder="Lease Commence Year (e.g. 1976)"
             placeholderTextColor="gray"
-            maxLength={3} // Restrict input to 6 characters
+            maxLength={4} // Restrict input to 6 characters
             keyboardType="numeric" // Show numeric keyboard
-            value={property.tenure}
-            onChangeText={(text) => setProperty({ ...property, tenure: text })}
+            value={property.lease_commence_date}
+            onChangeText={(text) => setProperty({ ...property, lease_commence_date: text })}
             style={styles.input}
           />
         </View>

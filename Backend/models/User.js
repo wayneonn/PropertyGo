@@ -184,20 +184,20 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: "documents",
     });
-    User.hasMany(models.Review, {
-      onDelete: "CASCADE",
-      foreignKey: {
-        name: "reviewerId",
-      },
-      as: "reviewsPosted",
-    });
-    User.hasMany(models.Review, {
-      onDelete: "CASCADE",
-      foreignKey: {
-        name: "revieweeId",
-      },
-      as: "reviewsReceived",
-    });
+    // User.hasMany(models.Review, {
+    //   onDelete: "CASCADE",
+    //   foreignKey: {
+    //     name: "reviewerId",
+    //   },
+    //   as: "reviewsPosted",
+    // });
+    // User.hasMany(models.Review, {
+    //   onDelete: "CASCADE",
+    //   foreignKey: {
+    //     name: "revieweeId",
+    //   },
+    //   as: "reviewsReceived",
+    // });
     User.hasMany(models.Chat, {
       onDelete: "CASCADE",
       foreignKey: {
