@@ -404,7 +404,7 @@ const Otp = () => {
             ) : (
               <tbody>
                 <tr>
-                  <td colSpan="2" style={{ textAlign: "center" }}>
+                  <td colSpan="3" style={{ textAlign: "center" }}>
                     There are no otp documents
                   </td>
                 </tr>
