@@ -71,10 +71,10 @@ module.exports = (sequelize, DataTypes) => {
     Admin.hasOne(models.Notification, {
       onDelete: "CASCADE",
       foreignKey: {
-        name: 'adminNotificationId',
+        name: "adminNotificationId",
         allowNull: true,
       },
-      as: 'notification',
+      as: "notification",
     });
   };
 
