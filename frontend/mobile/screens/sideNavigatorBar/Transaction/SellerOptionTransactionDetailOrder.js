@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, 
+    TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -153,40 +154,42 @@ const OrderDetailScreen = ({ route }) => {
                         transactionUserId={transaction.userId}
                         taxable={transaction.gst}
                     />
+
+
+                    {transaction && transaction.optionFeeStatusEnum == "REQUEST_PLACED" ? (
+                        <TouchableOpacity style={styles.uploadButton}
+                            onPress={() => {
+                                navigation.navigate('Seller Upload OTP', { property: propertyListing, transaction: transaction });
+                            }}>
+                            <Text style={styles.cancelButtonText}>Upload OTP</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <></>
+                    )}
+
+                    {transaction && transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD" ? (
+                        <TouchableOpacity style={styles.uploadButton}
+                            onPress={() => {
+                                navigation.navigate('Seller Reupload OTP', { property: propertyListing, transaction: transaction });
+                            }}>
+                            <Text style={styles.cancelButtonText}>Reupload OTP</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <></>
+                    )}
+
+                    {transaction && (transaction.optionFeeStatusEnum == "REQUEST_PLACED" || transaction.optionFeeStatusEnum == "SELLER_UPLOADED" || transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD") ? (
+                        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelOrder}>
+                            <Text style={styles.cancelButtonText}>Cancel Order</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <></>
+                    )}
                 </>
             ) : (
-                <Text>Loading...</Text>
+                <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5"/>
             )}
 
-            {transaction && transaction.optionFeeStatusEnum == "REQUEST_PLACED" ? (
-                <TouchableOpacity style={styles.uploadButton}
-                    onPress={() => {
-                        navigation.navigate('Seller Upload OTP', { property: propertyListing, transaction: transaction });
-                    }}>
-                    <Text style={styles.cancelButtonText}>Upload OTP</Text>
-                </TouchableOpacity>
-            ) : (
-                <></>
-            )}
-
-            {transaction && transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD" ? (
-                <TouchableOpacity style={styles.uploadButton}
-                    onPress={() => {
-                        navigation.navigate('Seller Reupload OTP', { property: propertyListing, transaction: transaction });
-                    }}>
-                    <Text style={styles.cancelButtonText}>Reupload OTP</Text>
-                </TouchableOpacity>
-            ) : (
-                <></>
-            )}
-
-            {transaction && (transaction.optionFeeStatusEnum == "REQUEST_PLACED" || transaction.optionFeeStatusEnum == "SELLER_UPLOADED" || transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD") ? (
-                <TouchableOpacity style={styles.cancelButton} onPress={handleCancelOrder}>
-                    <Text style={styles.cancelButtonText}>Cancel Order</Text>
-                </TouchableOpacity>
-            ) : (
-                <></>
-            )}
             <Text></Text>
             <Text></Text>
         </ScrollView>
@@ -283,6 +286,12 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         margin: 20,
         marginBottom: 2,
+    },
+    loadingIndicator: {
+        flex: 2,
+        paddingTop: 120,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

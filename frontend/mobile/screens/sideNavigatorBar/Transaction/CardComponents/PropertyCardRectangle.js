@@ -19,7 +19,7 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
   const isSeller = user.user.userId === transaction.userId;
-  const showReimbusement = (transaction.transactionType === 'OPTION_FEE' || transaction.transactionType === 'OPTION_EXERCISE_FEE') && isSeller && (transaction.optionFeeStatusEnum === 'COMPLETED' || transaction.optionFeeStatusEnum === 'ADMIN_SIGNED' || transaction.optionFeeStatusEnum === 'PAID_OPTION_EXERCISE_FEE' )
+  const showReimbusement = (transaction.transactionType === 'OPTION_FEE' || transaction.transactionType === 'OPTION_EXERCISE_FEE') && isSeller && (transaction.optionFeeStatusEnum === 'COMPLETED' || transaction.optionFeeStatusEnum === 'ADMIN_SIGNED' || transaction.optionFeeStatusEnum === 'PAID_OPTION_EXERCISE_FEE')
 
   const formatPrice = (price) => {
     if (price !== null && !isNaN(price)) {
@@ -112,9 +112,11 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
         {propertyImageUri ? (
           <Image source={{ uri: `${propertyImageUri}?timestamp=${cacheBuster}` }} style={styles.propertyImage} />
         ) : (
-          <View style={styles.placeholderImage}>
-            <Image source={DefaultImage} style={styles.placeholderImageImage} />
-          </View>
+          <>
+            <View style={styles.placeholderImage}>
+              <Image source={DefaultImage} style={styles.placeholderImageImage} />
+            </View>
+          </>
         )}
       </View>
       <View style={styles.propertyDetails}>
@@ -141,9 +143,9 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
             <Text style={styles.chatButtonText}>View Invoice</Text>
           </TouchableOpacity>
         </View>
-        {showReimbusement ? (
+      </View>
+      {showReimbusement ? (
           <>
-            {/* <Text></Text> */}
             <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(transaction.reimbursed) }]}>
               <Text style={[styles.statusText, { color: getStatusTextColor(transaction.reimbursed) }]}>{getStatusText(transaction.reimbursed)}</Text>
             </View>
@@ -151,8 +153,6 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
         ) : (
           <></>
         )}
-
-      </View>
       {/* Conditional rendering of favorite button */}
     </TouchableOpacity>
   );
@@ -287,8 +287,9 @@ const styles = StyleSheet.create({
   },
   statusIndicator: {
     position: 'absolute',
-    bottom: -30,
-    left: -125,
+    // marginTop: 100,
+    bottom: 11,
+    left: 5,
     borderWidth: 0.18,
     paddingVertical: 1,
     paddingHorizontal: 8,
