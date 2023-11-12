@@ -24,7 +24,7 @@ import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FullScreenImage from './FullScreenImage';
 import { createChat } from '../../utils/chatApi';
-
+import PredictionPriceCard from './PredictionPriceCard';
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -399,7 +399,7 @@ const PropertyListingScreen = ({ route }) => {
         <Text style={styles.dateContainer}>
           <Ionicons name="time-outline" size={17} color="#333" />
           {" "}
-          <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
+          <Text style={styles.dateText}>{"Lease Commence Year: "}{propertyListing.lease_commence_date}</Text>
         </Text>
 
         {/* <Text >{"\n"}</Text> */}
@@ -418,8 +418,16 @@ const PropertyListingScreen = ({ route }) => {
         <View style={styles.userInfoContainer}></View>
         <Text style={styles.locationTitle}>Description</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
-        <Text style={styles.description}>{"\n"}</Text>
-
+        {/* <Text style={styles.description}>{"\n"}</Text> */}
+        
+        <PredictionPriceCard
+          flatType = {propertyListing.flatType} 
+          town = {propertyListing.area}
+          floorArea = {propertyListing.size} 
+          // leaseCommenceDate = {propertyListing.lease_commence_date}
+          leaseCommenceDate = {propertyListing.lease_commence_date}
+          property={propertyListing}
+        />
 
         {/* Location Details */}
         <Text style={styles.locationTitle}>Location</Text>

@@ -19,7 +19,7 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
   const isSeller = user.user.userId === transaction.userId;
-  const showReimbusement = transaction.transactionType === 'OPTION_FEE' && isSeller && (transaction.optionFeeStatusEnum === 'COMPLETED' || transaction.optionFeeStatusEnum === 'ADMIN_SIGNED')
+  const showReimbusement = (transaction.transactionType === 'OPTION_FEE' || transaction.transactionType === 'OPTION_EXERCISE_FEE') && isSeller && (transaction.optionFeeStatusEnum === 'COMPLETED' || transaction.optionFeeStatusEnum === 'ADMIN_SIGNED' || transaction.optionFeeStatusEnum === 'PAID_OPTION_EXERCISE_FEE' )
 
   const formatPrice = (price) => {
     if (price !== null && !isNaN(price)) {

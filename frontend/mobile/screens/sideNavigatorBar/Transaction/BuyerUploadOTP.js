@@ -413,7 +413,7 @@ export default function SellerReuploadOTP({ route }) {
           <Text style={styles.dateContainer}>
             <Ionicons name="time-outline" size={17} color="#333" />
             {" "}
-            <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
+            <Text style={styles.dateText}>{"Lease Commence Year: "}{propertyListing.lease_commence_date}</Text>
           </Text>
 
           <Text style={styles.locationTitle}>Description</Text>
