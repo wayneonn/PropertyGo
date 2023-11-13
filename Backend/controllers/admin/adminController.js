@@ -25,7 +25,7 @@ const getAllAdmins = async (req, res) => {
   const admins = await Admin.findAll();
 
   res.status(200).json({ admins : admins });
-}
+};
 
 const updateAdminUsername = async (req, res) => {
   try {
