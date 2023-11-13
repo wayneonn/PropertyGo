@@ -5,6 +5,7 @@ import PropertyListing from "../screens/propertyListings/PropertyListing";
 import EditPropertyListing from "../screens/propertyListings/EditPropertyListing";
 import PropertiesList from "../screens/propertyListings/PropertiesList";
 import RegionPropertiesList from "../screens/propertyListings/RegionPropertiesList";
+import FlatTypePropertiesList from "../screens/propertyListings/FlatTypePropertiesList";
 import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import TokenScreen from "../screens/token/TokenScreen"; // Import your Coins screen here
 import TokenCheckoutScreen from "../screens/token/TokenCheckoutScreen"; 
@@ -36,6 +37,7 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="Edit Property Listing" component={EditPropertyListing}/>
             <HomeListingsStack.Screen name="Properties List" component={PropertiesList}/>
             <HomeListingsStack.Screen name="Region Property List" component={RegionPropertiesList} />
+            <HomeListingsStack.Screen name="Flat Type Property List" component={FlatTypePropertiesList} />
             <HomeListingsStack.Screen name="View Profile" component={ViewUserProfile}/>
             <HomeListingsStack.Screen name="Token" component={TokenScreen}/>
             <HomeListingsStack.Screen name="Token Checkout Screen" component={TokenCheckoutScreen}/>

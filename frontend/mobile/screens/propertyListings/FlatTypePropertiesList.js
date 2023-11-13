@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import PropertyCard from '../propertyListings/PropertyCard';
-import PropertyCardRectangle from '../propertyListings/PropertyCardRectangle';
+import PropertyCard from './PropertyCard';
+import PropertyCardRectangle from './PropertyCardRectangle';
 import { Ionicons } from '@expo/vector-icons';
+import { getPropertiesByFlatType } from '../../utils/api';
 import MapView, { Marker, Callout } from 'react-native-maps';
 
-const PropertiesList = ({ route }) => {
-  const { title, properties, navigation } = route.params;
+const FlatTypePropertiesList = ({ route }) => {
+  const { title, navigation, flatType } = route.params;
+  const [properties, setProperties] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [isSquareLayout, setIsSquareLayout] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(false); // State variable to track map visibility
+
+  useEffect(() => {
+    console.log('flatType: ', flatType)
+    loadPropertiesByFlatType(flatType);
+  }, []);
 
   const filteredProperties = properties.filter((property) =>
     property.title.toLowerCase().includes(searchText.toLowerCase())
@@ -21,6 +28,24 @@ const PropertiesList = ({ route }) => {
 
   const toggleMapView = () => {
     setIsMapVisible((prevIsMapVisible) => !prevIsMapVisible);
+  };
+
+  const loadPropertiesByFlatType = async (flatType) => {
+    try {
+      const { success, data } = await getPropertiesByFlatType(flatType);
+
+      if (success) {
+        const top10Properties = data
+        .sort((a, b) => b.favoriteCount - a.favoriteCount)
+        .slice(0, 10);
+        setProperties(data);
+        console.log(`Properties in ${flatType}:`, data)
+      } else {
+        console.error(`Error loading properties in ${flatType}:`, data.message);
+      }
+    } catch (error) {
+      console.error(`Error loading properties in ${flatType}:`, error.message);
+    }
   };
 
   const titleToCoordinates = {
@@ -145,6 +170,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     // marginLeft: 50,
     // alignSelf: 'center',
+    justifyContent: 'center',
     alignContent: 'center',
     paddingHorizontal: 20,
     textAlign: 'center',
@@ -206,4 +232,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PropertiesList;
+export default FlatTypePropertiesList;
