@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import PropertyListing from "../screens/propertyListings/PropertyListings";
 import ListProperty from "../screens/userBottomNavBar/Sell";
 import PropertyListing from "../screens/propertyListings/PropertyListing";
+import RegionPropertiesList from "../screens/propertyListings/RegionPropertiesList";
 import EditPropertyListing from "../screens/propertyListings/EditPropertyListing";
 import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListing";
@@ -40,6 +41,7 @@ const PropertyListingsStackGroup = () => {
             {screens}
             {/* <PropertyListingsStack.Screen name="List Property" component={ListProperty} /> */}
             <PropertyListingsStack.Screen name="Property Listing" component={PropertyListing} />
+            <PropertyListingsStack.Screen name="Region Property List" component={RegionPropertiesList} />
             <PropertyListingsStack.Screen name="Edit Property Listing" component={EditPropertyListing} />
             <PropertyListingsStack.Screen name="View Profile" component={ViewUserProfile} />
             <PropertyListingsStack.Screen name="Boost Listing" component={BoostPropertyListing} />

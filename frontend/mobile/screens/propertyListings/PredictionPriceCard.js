@@ -7,6 +7,7 @@ import { LineChart } from 'react-native-gifted-charts';
 import dataGovSgLogo from '../../assets/data.gov.sg-logo.png';
 import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons, FontAwesome, } from '@expo/vector-icons';
 import { max } from 'date-fns';
+import {BASE_URL} from "../../utils/documentApi";
 
 const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, property }) => {
     const [prices, setPrices] = useState([]);
@@ -32,7 +33,7 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
     };
 
     const fetchData = async (query) => {
-        const response = await fetch(`http://localhost:3000/prediction/property-prices?flatType=${encodeURIComponent(flatType)}&town=${encodeURIComponent(town)}&floor_area_sqm=${floorArea}&year=${query.year}&month=${query.month}&lease_commence_date=${leaseCommenceDate}`);
+        const response = await fetch(`${BASE_URL}/prediction/property-prices?flatType=${encodeURIComponent(flatType)}&town=${encodeURIComponent(town)}&floor_area_sqm=${floorArea}&year=${query.year}&month=${query.month}&lease_commence_date=${leaseCommenceDate}`);
         const data = await response.json();
         return data.predictedPrice;
     };
@@ -41,7 +42,7 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
 
         let formattedPrice = price * 1000.00;
 
-        formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        formattedPrice = price.toString();
         formattedPrice = parseFloat(formattedPrice).toFixed(1);
         return formattedPrice;
     };
@@ -150,7 +151,7 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
                 }).filter(data => data !== null);
 
                 setPrices(chartData);
-                const maxPrice = (Math.floor(newMaxPrice / 100) + 2) * 100;
+                const maxPrice = (Math.floor(newMaxPrice / 100) + 3) * 100;
                 setMaxPrice(parseInt(maxPrice));
                 setIsLoading(false);
             } catch (error) {
@@ -183,6 +184,14 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
         );
     };
 
+    const formatYLabel = (label) => {
+        // Assuming label is a number (e.g., 1, 2, 3)
+        if (label == 0) {
+            return 0;
+        }
+        return `S$ ${label}k`;
+      };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>PriceGPT</Text>
@@ -197,9 +206,10 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
                             animateOnDataChange
                             // hideDataPoints
                             rotateLabel
-                            yAxisTextStyle={{ color: 'black' }}
-                            yAxisSide='right'
+                            yAxisTextStyle={{ color: 'black', marginLeft: -20, fontSize: 11 }}
+                            // yAxisSide='right'
                             animationDuration={1000}
+                            formatYLabel={formatYLabel}
                             onDataChangeAnimationDuration={500}
                             areaChart
                             pointerConfig={{
@@ -217,7 +227,7 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
                                         <View
                                             style={{
                                                 height: 90,
-                                                width: 100,
+                                                width: 110,
                                                 justifyContent: 'center',
                                                 marginTop: -30,
                                                 marginLeft: -40,
@@ -246,7 +256,7 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
                             data={prices}
                             maxValue={maxPrice}
                             height={200}
-                            width={screenWidth - 112}
+                            width={screenWidth - 132}
                             curved
                             noOfSectionsBelowXAxis={0}
                             // hideDataPoints
@@ -323,6 +333,7 @@ const styles = StyleSheet.create({
     },
     containerGraph: {
         marginBottom: 50,
+        marginLeft: 15,
     },
     title: {
         fontSize: 24,

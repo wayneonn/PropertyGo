@@ -107,6 +107,10 @@ const HomePage = ({ navigation }) => {
     navigation.navigate('Properties List', { title: title, properties: properties, navigation: navigation });
   };
 
+  const handleRegionPress = (title, region) => {
+    navigation.navigate('Region Property List', { title: title, navigation: navigation, region: region });
+  };
+
   const handleSearch = async () => {
     if (searchQuery.trim() === '') {
       return;
@@ -155,11 +159,11 @@ const HomePage = ({ navigation }) => {
     { name: 'Popular', icon: "trending-up-outline", target: 'Popular Properties', properties: popularProperties },
     { name: 'Recent', icon: "time-outline", target: 'Recently Added Properties', properties: recentlyAddedProperties },
     // { name: 'Regions', icon: "navigate-circle-outline", target: 'Recently Added Properties', properties: recentlyAddedProperties },
-    { name: 'North Area', icon: "arrow-up-circle-outline", target: 'North Area Properties', properties: recentlyAddedProperties, region: "North" },
-    { name: 'North-East', icon: "arrow-up-circle-outline", target: 'North-East Area List', properties: recentlyAddedProperties, region: "North-East" },
-    { name: 'Central Area', icon: "navigate-circle-outline", target: 'Central Area List', properties: recentlyAddedProperties, region: "Central" },
-    { name: 'West Area', icon: "arrow-back-circle-outline", target: 'West Area List', properties: recentlyAddedProperties, region: "West" },
-    { name: 'East Area', icon: "arrow-forward-circle-outline", target: 'East Area List', properties: recentlyAddedProperties, region: "East" },
+    { name: 'North Area', icon: "arrow-up-circle-outline", target: 'North Area Properties',  region: "North" },
+    { name: 'North-East', icon: "arrow-up-circle-outline", target: 'North-East Area List',  region: "North-East" },
+    { name: 'Central Area', icon: "navigate-circle-outline", target: 'Central Area List',  region: "Central" },
+    { name: 'West Area', icon: "arrow-back-circle-outline", target: 'West Area List',  region: "West" },
+    { name: 'East Area', icon: "arrow-forward-circle-outline", target: 'East Area List',  region: "East" },
     // Add more icons and targets as needed
   ];
 
@@ -223,7 +227,7 @@ const HomePage = ({ navigation }) => {
               {navigationIcons.map((icon, index) => (
                 <TouchableOpacity
                   key={index}
-                  onPress={() => handleTitlePress(icon.target, icon.properties)  }
+                  onPress={() => icon.region === null ? handleTitlePress(icon.target, icon.properties) : handleRegionPress(icon.target, icon.region) }
                   style={styles.iconContainer}
                 >
                    <View style={[styles.iconCircle, icon.name === 'North-East' && { transform: [{ rotate: '45deg' }] }]}>
