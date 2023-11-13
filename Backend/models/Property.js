@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
-      tenure: {
+      lease_commence_date: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -118,7 +118,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       flatType: {
-        type: DataTypes.ENUM("1_ROOM", "2_ROOM", "3_ROOM", "4_ROOM", "5_ROOM", "EXECUTIVE"),
+        type: DataTypes.ENUM("1_ROOM", "2_ROOM", "3_ROOM", "4_ROOM", "5_ROOM", "EXECUTIVE", "MULTI-GENERATION"),
         allowNull: false,
       },
     },

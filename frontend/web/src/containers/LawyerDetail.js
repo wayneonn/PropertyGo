@@ -13,8 +13,8 @@ import { FcFolder, FcOpenedFolder } from "react-icons/fc";
 const LawyerDetail = () => {
   const [lawyer, setLawyer] = useState({});
   const { lawyerId } = useParams();
-  const [reviews, setReviews] = useState([]);
-  const [aveRating, setAveRating] = useState(0);
+  // const [reviews, setReviews] = useState([]);
+  // const [aveRating, setAveRating] = useState(0);
   const [folders, setFolders] = useState([]);
   const [folderId, setFolderId] = useState(0);
   const [documents, setDocuments] = useState([]);
@@ -24,7 +24,7 @@ const LawyerDetail = () => {
   const [fetching, setFetching] = useState();
   const [hoverStates, setHoverStates] = useState([]);
   const [isActive, setIsActive] = useState();
-  const [reviewers, setReviewers] = useState([]);
+  // const [reviewers, setReviewers] = useState([]);
 
   const navigate = useNavigate();
 
@@ -40,27 +40,27 @@ const LawyerDetail = () => {
 
       setIsActive(response.data.isActive);
 
-      const responseReview = await API.get(
-        `http://localhost:3000/admin/reviews`
-      );
+      // const responseReview = await API.get(
+      //   `http://localhost:3000/admin/reviews`
+      // );
 
-      const reviews = responseReview.data.reviews.filter(
-        (review) => review.revieweeId == lawyerId
-      );
+      // const reviews = responseReview.data.reviews.filter(
+      //   (review) => review.revieweeId == lawyerId
+      // );
 
-      let rating = 0.0;
+      // let rating = 0.0;
 
-      if (Array.isArray(reviews) && reviews.length > 0) {
-        reviews.map((review) => {
-          rating = rating + review.rating;
-        });
+      // if (Array.isArray(reviews) && reviews.length > 0) {
+      //   reviews.map((review) => {
+      //     rating = rating + review.rating;
+      //   });
 
-        setAveRating(parseFloat(rating / reviews.length).toFixed(2));
-      }
+      //   setAveRating(parseFloat(rating / reviews.length).toFixed(2));
+      // }
 
-      setReviews(reviews);
+      // setReviews(reviews);
 
-      console.log(reviews.length);
+      // console.log(reviews.length);
 
       const responseFolder = await API.get(
         `http://localhost:3000/admin/folders`
@@ -80,25 +80,25 @@ const LawyerDetail = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchReviewers = async () => {
-      const reviewersData = await Promise.all(
-        reviews.map(async (review) => {
-          try {
-            const response = await API.get(
-              `http://localhost:3000/admin/users/getUser/${review.reviewerId}`
-            );
-            return response.data;
-          } catch (error) {
-            console.error(error);
-          }
-        })
-      );
-      setReviewers(reviewersData);
-    };
+  // useEffect(() => {
+  //   const fetchReviewers = async () => {
+  //     const reviewersData = await Promise.all(
+  //       reviews.map(async (review) => {
+  //         try {
+  //           const response = await API.get(
+  //             `http://localhost:3000/admin/users/getUser/${review.reviewerId}`
+  //           );
+  //           return response.data;
+  //         } catch (error) {
+  //           console.error(error);
+  //         }
+  //       })
+  //     );
+  //     setReviewers(reviewersData);
+  //   };
 
-    fetchReviewers();
-  }, [reviews]);
+  //   fetchReviewers();
+  // }, [reviews]);
 
   useEffect(() => {
     fetchData();
@@ -338,7 +338,7 @@ const LawyerDetail = () => {
                     )}
                   </div>
                 </div>
-                <div className="rating-lawyer">
+                {/* <div className="rating-lawyer">
                   <span
                     style={{
                       fontSize: "18px",
@@ -361,7 +361,7 @@ const LawyerDetail = () => {
                   >
                     5 <FaStar style={{ marginLeft: "3px", color: "red" }} />
                   </span>
-                </div>
+                </div> */}
               </div>
               <div
                 style={{
@@ -456,7 +456,7 @@ const LawyerDetail = () => {
               </div>
             </div>
           </div>
-          <div className="reviews-lawyer">
+          {/* <div className="reviews-lawyer">
             <span
               style={{
                 display: "flex",
@@ -545,7 +545,7 @@ const LawyerDetail = () => {
                 There are currently no reviews...
               </span>
             )}
-          </div>
+          </div> */}
         </div>
         <div className="document-area-lawyer">
           <span style={{ fontSize: "18px", fontWeight: "500" }}>Folders</span>

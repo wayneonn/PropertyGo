@@ -44,7 +44,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       transactionType: {
-        type: DataTypes.ENUM("REQUEST", "TOKEN_PURCHASE", "OPTION_FEE", "OPTION_EXERCISE_FEE", "PARTNER_SUBSCRIPTION", "COMMISSION_FEE"),
+        type: DataTypes.ENUM(
+          "REQUEST",
+          "TOKEN_PURCHASE",
+          "OPTION_FEE",
+          "OPTION_EXERCISE_FEE",
+          "PARTNER_SUBSCRIPTION",
+          "COMMISSION_FEE"
+        ),
         allowNull: false,
       },
       reimbursed: {
@@ -53,7 +60,21 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       optionFeeStatusEnum: {
-        type: DataTypes.ENUM("REQUEST_PLACED", "BUYER_UPLOADED", "SELLER_UPLOADED", "ADMIN_SIGNED", "COMPLETED", "SELLER_DID_NOT_RESPOND", "ADMIN_REJECTED", "BUYER_CANCELLED", "SELLER_CANCELLED", "BUYER_REQUEST_REUPLOAD", "PAID_OPTION_EXERCISE_FEE", "PENDING_COMMISSION", "COMMISSION_PAID"),
+        type: DataTypes.ENUM(
+          "REQUEST_PLACED",
+          "BUYER_UPLOADED",
+          "SELLER_UPLOADED",
+          "ADMIN_SIGNED",
+          "COMPLETED",
+          "SELLER_DID_NOT_RESPOND",
+          "ADMIN_REJECTED",
+          "BUYER_CANCELLED",
+          "SELLER_CANCELLED",
+          "BUYER_REQUEST_REUPLOAD",
+          "PAID_OPTION_EXERCISE_FEE",
+          "PENDING_COMMISSION",
+          "COMMISSION_PAID"
+        ),
         allowNull: true,
       },
     },
@@ -65,7 +86,7 @@ module.exports = (sequelize, DataTypes) => {
   Transaction.associate = function (models) {
     Transaction.hasMany(models.Document, {
       foreignKey: "transactionId",
-      allowNull: false,
+      allowNull: true,
     });
     Transaction.belongsTo(models.Request, {
       as: "request",
@@ -86,9 +107,9 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       foreignKey: {
         allowNull: true,
-        name: 'transactionId'
+        name: "transactionId",
       },
-      as: 'notifications',
+      as: "notifications",
     });
     Transaction.belongsTo(models.Document, {
       as: "otpDocument",

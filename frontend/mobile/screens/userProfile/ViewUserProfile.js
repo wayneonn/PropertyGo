@@ -31,21 +31,21 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
     }
   };
 
-  const fetchRating = async (userId) => {
-    try {
-      const { success, data, message } = await getRatingByUser(userId);
+  // const fetchRating = async (userId) => {
+  //   try {
+  //     const { success, data, message } = await getRatingByUser(userId);
 
-      if (success) {
-        // Handle the user data here
-        return data;
-      } else {
-        // Handle the error here
-        console.error('Error fetching user:', message);
-      }
-    } catch (error) {
-      console.error('Error fetching user:', error);
-    }
-  };
+  //     if (success) {
+  //       // Handle the user data here
+  //       return data;
+  //     } else {
+  //       // Handle the error here
+  //       console.error('Error fetching user:', message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching user:', error);
+  //   }
+  // };
 
 
   useEffect(() => {
@@ -53,10 +53,10 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
     fetchUser(userId).then((userData) => {
       setUser(userData);
     });
-    fetchRating(userId).then((rating) => {
-      setRating(rating);
-      console.log("rating: ", rating.userRating);
-    });
+    // fetchRating(userId).then((rating) => {
+    //   setRating(rating);
+    //   console.log("rating: ", rating.userRating);
+    // });
   }, [userId]);
 
 
@@ -113,15 +113,15 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
             <Text style={styles.label}>Phone Number:</Text>
             <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
           </View>
-          <View style={styles.row}>
+          {/* <View style={styles.row}>
             <Text style={styles.label}>Rating:</Text>
             <Text style={styles.value}>
               {rating.userRating !== null
                 ? rating.userRating.toFixed(1)
                 : '0.0 [New User]'}
             </Text>
-          </View>
-          <View style={styles.ratingContainer}>
+          </View> */}
+          {/* <View style={styles.ratingContainer}>
             <StarRating
               disabled={true}
               maxStars={5}
@@ -130,7 +130,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
               emptyStarColor="gold"
               starSize={24}
             />
-          </View>
+          </View> */}
         </View>
       ) : (
         <ActivityIndicator size="large" color="dodgerblue" />

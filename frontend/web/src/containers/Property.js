@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import { Carousel, Modal, Button, Form } from "react-bootstrap";
 import "./styles/Property.css";
 import { useParams } from "react-router-dom";
@@ -8,6 +8,9 @@ import { RxDimensions } from "react-icons/rx";
 import { FcDocument } from "react-icons/fc";
 
 import API from "../services/API";
+
+// import SignatureCanvas from "react-signature-canvas";
+// import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 const Property = () => {
   const [property, setProperty] = useState({});
@@ -21,6 +24,9 @@ const Property = () => {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
+
+  // const [signatureDataURL, setSignatureDataURL] = useState(null);
+  // const signatureCanvasRef = useRef();
 
   const [validationMessages, setValidationMessages] = useState({
     emptyRejectionReason: false,
@@ -52,17 +58,6 @@ const Property = () => {
         `http://localhost:3000/admin/transactions`
       );
 
-      // console.log(transactionResponse.data);
-
-      // const transactions = transactionResponse.data.transactions
-      //   .filter((transaction) => transaction.propertyId == propertyId)
-      //   .filter((transaction) => transaction.transactionType == "OTP") // transaction is for OTP payment
-      //   .filter((transaction) => transaction.status == "PAID"); // transaction is paid, means property is sold
-
-      // console.log(transactions);
-
-      // const buyerId = transactions[0].buyerId;
-
       console.log("buyer: " + response.data.buyerId);
 
       if (response.data.buyerId != null) {
@@ -85,14 +80,6 @@ const Property = () => {
       const documents = documentResponse.data.data.filter(
         (document) => document.propertyId == propertyId
       );
-      // .filter(
-      //   (document) =>
-      //     document.userId == response.data.buyerId ||
-      //     document.userId == sellerResponse.data.userId
-      // );
-      //need howard help fetch documents
-
-      // console.log(documents);
 
       setDocuments(documents);
     } catch (error) {
@@ -180,6 +167,88 @@ const Property = () => {
       console.error("Error fetching document data: ", error);
     }
   };
+
+  //   const handleDownload = async (documentId) => {
+  //     try {
+  //       const response = await API.get(`http://127.0.0.1:3000/user/documents/${documentId}/data`);
+  //       const byteCharacters = atob(response.data.document);
+  //       const byteArrays = [];
+  //       for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+  //         const slice = byteCharacters.slice(offset, offset + 512);
+  //         const byteNumbers = new Array(slice.length);
+  //         for (let i = 0; i < slice.length; i++) {
+  //           byteNumbers[i] = slice.charCodeAt(i);
+  //         }
+  //         const byteArray = new Uint8Array(byteNumbers);
+  //         byteArrays.push(byteArray);
+  //       }
+
+  //       const blob = new Blob(byteArrays, { type: 'application/pdf' });
+  //       const url = URL.createObjectURL(blob);
+
+  //       const newTab = window.open(url, '_blank');
+
+  //       newTab.onload = () => {
+  //         const newTabDocument = newTab.document;
+  //         const signatureContainer = newTabDocument.createElement('div');
+  //         newTabDocument.body.appendChild(signatureContainer);
+
+  //         const signCanvas = new SignatureCanvas({
+  //           onEnd: () => {
+  //             setSignatureDataURL(signCanvas.toDataURL());
+  //           },
+  //         });
+  //         signatureContainer.appendChild(signCanvas);
+
+  //         const saveButton = newTabDocument.createElement('button');
+  //         saveButton.innerText = 'Save';
+  //         saveButton.onclick = () => {
+  //           const combinedDocument = combineDocumentWithSignature(blob, signCanvas.toDataURL());
+
+  //           // Create a new Blob from the combined data
+  //           const combinedBlob = new Blob([combinedDocument], { type: 'application/pdf' });
+
+  //           // Open a new tab to download the signed document
+  //           const signedDocumentUrl = URL.createObjectURL(combinedBlob);
+  //           const signedDocumentTab = window.open(signedDocumentUrl, '_blank');
+  //           URL.revokeObjectURL(signedDocumentUrl);
+
+  //           // Close the original document tab
+  //           newTab.close();
+  //         };
+  //         signatureContainer.appendChild(saveButton);
+  //       };
+  //     } catch (error) {
+  //       console.error('Error fetching document data: ', error);
+  //     }
+  //   };
+
+  // const combineDocumentWithSignature = async (documentBlob, signatureDataURL) => {
+  //   const originalDocumentArrayBuffer = await documentBlob.arrayBuffer();
+
+  //   // Load the original PDF document
+  //   const pdfDoc = await PDFDocument.load(originalDocumentArrayBuffer);
+
+  //   // Create a new page for the signature
+  //   const [width, height] = [pdfDoc.getPage(0).getWidth(), pdfDoc.getPage(0).getHeight()];
+  //   const signaturePage = pdfDoc.addPage([width, height]);
+  //   const signatureCanvas = signaturePage.getCanvas();
+  //   const signatureImage = await pdfDoc.embedPng(signatureDataURL);
+
+  //   // Draw the signature on the new page
+  //   signatureCanvas.drawImage(signatureImage, {
+  //     x: 0,
+  //     y: 0,
+  //     width: width,
+  //     height: height,
+  //   });
+
+  //   // Update the PDF with the new page
+  //   const pdfBytes = await pdfDoc.save();
+
+  //   // Convert the Uint8Array to Blob
+  //   return new Blob([pdfBytes], { type: 'application/pdf' });
+  // };
 
   const handleCloseDocumentModal = () => {
     setShowDocumentModal(false);
