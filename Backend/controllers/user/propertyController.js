@@ -211,6 +211,8 @@ async function getPropertiesByRegion(req, res) {
         const properties = await Property.findAll({
             where: {
                 region: region,
+                approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+                propertyStatus: 'ACTIVE',
             },
             include: [
                 {
@@ -218,10 +220,6 @@ async function getPropertiesByRegion(req, res) {
                     as: 'favouritedByUsers',
                 },
             ],
-            where: {
-                approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
-                propertyStatus: 'ACTIVE',
-            },
         });
 
         // Check if properties is undefined or empty

@@ -8,17 +8,19 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Swiper from 'react-native-swiper';
 import ImageSwiper from '../propertyListings/ImageSwiper';
+import { Dimensions } from 'react-native';
+
 
 
 const SearchBar = () => {
-    return (
-        <View style={styles.searchBar}>
-            <TextInput placeholder="Enter Postal Code/MRT Address/District" style={styles.searchInput}/>
-            <TouchableOpacity style={styles.searchIconContainer}>
-                <Image source={require('../../assets/Top-Navbar-Icons/search-icon.png')} style={styles.searchIcon}/>
-            </TouchableOpacity>
-        </View>
-    );
+  return (
+    <View style={styles.searchBar}>
+      <TextInput placeholder="Enter Postal Code/MRT Address/District" style={styles.searchInput} />
+      <TouchableOpacity style={styles.searchIconContainer}>
+        <Image source={require('../../assets/Top-Navbar-Icons/search-icon.png')} style={styles.searchIcon} />
+      </TouchableOpacity>
+    </View>
+  );
 };
 
 const HomePage = ({ navigation }) => {
@@ -33,6 +35,15 @@ const HomePage = ({ navigation }) => {
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [sortedPopularProperties, setSortedPopularProperties] = useState([]);
   const [sortedRecentlyAddedProperties, setSortedRecentlyAddedProperties] = useState([]);
+  const { width } = Dimensions.get('window');
+  const [scrollIndex, setScrollIndex] = useState(0);
+  const iconSize = 30;
+  const handleScroll = (event) => {
+    // Calculate the current page (icon set index)
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const currentIndex = Math.round(contentOffsetX / width);
+    setScrollIndex(currentIndex);
+  };
 
   const handlePropertyPress = (propertyListingId) => {
     // Navigate to the Property Listing screen with the given propertyListingId
@@ -44,7 +55,7 @@ const HomePage = ({ navigation }) => {
     loadPopularProperties();
     // Load recently added properties
     loadRecentlyAddedProperties();
-  }, []);  
+  }, []);
 
 
   useFocusEffect(
@@ -95,7 +106,7 @@ const HomePage = ({ navigation }) => {
   const handleTitlePress = (title, properties) => {
     navigation.navigate('Properties List', { title: title, properties: properties, navigation: navigation });
   };
-  
+
   const handleSearch = async () => {
     if (searchQuery.trim() === '') {
       return;
@@ -122,7 +133,7 @@ const HomePage = ({ navigation }) => {
     setSearchQuery(item.address);
     setSuggestions([]);
     navigation.navigate('Search Results', { searchQuery: item.address });
-  };  
+  };
 
   const handleSearchInputChange = (text) => {
     setSearchQuery(text);
@@ -134,12 +145,23 @@ const HomePage = ({ navigation }) => {
       //   clearTimeout(searchTimeout);
       // }
       // const timeout = setTimeout(() => {
-        fetchSuggestions(text);
+      fetchSuggestions(text);
       // }, 0); // Adjust the delay as needed (e.g., 500 milliseconds)
       // setSearchTimeout(timeout);
     }
   };
 
+  const navigationIcons = [
+    { name: 'Popular', icon: "trending-up-outline", target: 'Popular Properties', properties: popularProperties },
+    { name: 'Recent', icon: "time-outline", target: 'Recently Added Properties', properties: recentlyAddedProperties },
+    // { name: 'Regions', icon: "navigate-circle-outline", target: 'Recently Added Properties', properties: recentlyAddedProperties },
+    { name: 'North Area', icon: "arrow-up-circle-outline", target: 'North Area Properties', properties: recentlyAddedProperties, region: "North" },
+    { name: 'North-East', icon: "arrow-up-circle-outline", target: 'North-East Area List', properties: recentlyAddedProperties, region: "North-East" },
+    { name: 'Central Area', icon: "navigate-circle-outline", target: 'Central Area List', properties: recentlyAddedProperties, region: "Central" },
+    { name: 'West Area', icon: "arrow-back-circle-outline", target: 'West Area List', properties: recentlyAddedProperties, region: "West" },
+    { name: 'East Area', icon: "arrow-forward-circle-outline", target: 'East Area List', properties: recentlyAddedProperties, region: "East" },
+    // Add more icons and targets as needed
+  ];
 
   return (
     <ScrollView style={styles.container}>
@@ -157,6 +179,7 @@ const HomePage = ({ navigation }) => {
           style={styles.searchIconContainer}
           onPress={handleSearch}
         >
+
           <Image
             source={require('../../assets/Top-Navbar-Icons/search-icon.png')}
             style={styles.searchIcon}
@@ -195,6 +218,23 @@ const HomePage = ({ navigation }) => {
         </View>
       ) : (
         <>
+          <View style={styles.iconScrollContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {navigationIcons.map((icon, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleTitlePress(icon.target, icon.properties)  }
+                  style={styles.iconContainer}
+                >
+                   <View style={[styles.iconCircle, icon.name === 'North-East' && { transform: [{ rotate: '45deg' }] }]}>
+                    <Ionicons name={icon.icon} size={iconSize}  />
+                  </View>
+                  <Text style={styles.iconText}>{icon.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
           {/* Popular Properties Section */}
           <View style={styles.sectionContainer}>
             <TouchableOpacity onPress={() => handleTitlePress('Popular Properties', popularProperties)}>
@@ -408,7 +448,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-
+  iconScrollContainer: {
+    flexDirection: 'row',
+    paddingBottom: 5,
+    paddingTop: 20, // Adjust the padding as needed
+    paddingLeft: 20, // Adjust the margin as needed
+  },
+  iconContainer: {
+    alignItems: 'center',
+    marginRight: 20, // Space between icons
+  },
+  iconImage: {
+    width: 50, // Adjust size as needed
+    height: 50, // Adjust size as needed
+    marginBottom: 5, // Space between icon and text
+  },
+  iconText: {
+    fontSize: 12, // Adjust font size as needed
+    letterSpacing: 0.75,
+  },
+  iconCircle: {
+    width: 30 * 2, // Make the circle's diameter twice the size of the icon
+    height: 30 * 2, // Make the circle's diameter twice the size of the icon
+    borderRadius: 30, // The borderRadius should be half the diameter to make it a circle
+    backgroundColor: '#FFD700', // The background color of the circle
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 5, // Space between the icon circle and text
+  },
 });
 
 export default HomePage;

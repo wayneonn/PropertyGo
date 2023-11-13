@@ -51,7 +51,7 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
         let formattedPrice = price / 1000.00;
 
         // formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        formattedPrice = parseFloat(formattedPrice).toFixed(1);
+        formattedPrice = parseFloat(formattedPrice).toFixed(2);
         return formattedPrice;
     };
 
@@ -70,69 +70,97 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
 
     useEffect(() => {
         const { year, month } = getCurrentYearAndMonth();
-        const dataFetchPromises = [];
-        yearNow = year;
-        monthNow = month;
         const startYear = year - 1; // Starting 3 years back
         const endYear = year + 3; // Going to 2 years forward
         let currentMonth = month;
         let newMaxPrice = -Infinity;
 
-        for (let i = 0; i < 8; i++) { // Fetch data for 8 data points (4 years, every 6 months)
-            let currentYear = startYear + Math.floor((currentMonth + i * 6 - 1) / 12); // Calculate the current year
-            currentMonth = (currentMonth + i * 6 - 1) % 12 + 1; // Calculate the current month
+        const fetchDataForYearAndMonth = async (currentYear, currentMonth) => {
+            try {
+                const predictedPrice = await fetchData({ year: currentYear, month: currentMonth });
+                return { year: currentYear, month: currentMonth, predictedPrice };
+            } catch (error) {
+                console.error(`Error fetching prediction data for ${currentYear}-${currentMonth}:`, error);
+                return null;
+            }
+        };
 
-            dataFetchPromises.push(fetchData({ year: currentYear, month: currentMonth }));
-        }
-
-        Promise.all(dataFetchPromises).then(fetchedPrices => {
-            const chartData = fetchedPrices.map((price, index) => {
-                const labelMonth = (currentMonth + index * 6) % 12; // Calculate the month for the label
-                const labelYear = startYear + Math.floor((currentMonth + index * 6) / 12); // Calculate the year for the label
-                const formattedDate = `${getMonthNameFromNumber(labelMonth)} ${labelYear.toString().slice(-2)}`;
-                console.log("labelMonth: ", labelMonth);
-                console.log("labelYear: ", labelYear);
-                const isToday = labelMonth === monthNow && labelYear === yearNow;
-                if (isToday) {
-                    setPredictedPropertyPriceCurrentDate(price)
-                    console.log("predictedPropertyPriceCurrentDate: ", predictedPropertyPriceCurrentDate);
+        const fetchAllData = async () => {
+            const dataFetchPromises = [];
+            yearNow = year;
+            monthNow = month;
+        
+            const today = new Date(); // Assuming today is Nov 2023
+            let currentYear = startYear; // Start from the current year
+            let currentMonth = today.getMonth() + 1; // Start from the current month, adding 1 for 1-based indexing
+        
+            for (let i = 0; i < 8; i++) {
+                dataFetchPromises.push(await fetchDataForYearAndMonth(currentYear, currentMonth));
+                
+                // Add 6 months to the current month
+                currentMonth += 6;
+        
+                // If the current month is greater than 12, increment the year and adjust the month
+                if (currentMonth > 12) {
+                    currentYear++;
+                    currentMonth -= 12;
                 }
+        
+                console.log('currentYear:', currentYear, 'currentMonth:', currentMonth);
+            }
+        
+            try {
+                const fetchedData = await Promise.all(dataFetchPromises);
+                const chartData = fetchedData.map((data, index) => {
+                    if (data) {
+                        const { year, month, predictedPrice } = data;
+                        const labelMonth = (currentMonth + index * 6) % 12;
+                        const labelYear = startYear + Math.floor((currentMonth + index * 6) / 12);
+                        const formattedDate = `${getMonthNameFromNumber(labelMonth)} ${labelYear.toString().slice(-2)}`;
 
-                if (price / 1000 > newMaxPrice) {
-                    newMaxPrice = price / 1000;
-                }
-                console.log("price: ", price);
-                console.log("maxPrice: ", newMaxPrice);
+                        const isToday = labelMonth === monthNow && labelYear === yearNow;
+                        if (isToday) {
+                            setPredictedPropertyPriceCurrentDate(predictedPrice);
+                        }
 
-                return {
-                    value: price / 1000,
-                    year: formattedDate,
-                    labelComponent: () => (
-                        isToday ? (
-                            <Text style={styles.todayText}>
-                                {"  "}
-                                <Ionicons name="caret-back-outline" size={14} color="red" />
-                                {"Today"}
-                            </Text>
-                        ) : (
-                            <Text style={styles.yearText}>
-                                {"     "}
-                                {getMonthNameFromNumber(labelMonth)} {labelYear.toString().slice(-2)}
-                            </Text>
-                        )
-                    ),
-                };
-            });
-            setTimeout(() => {
-                setPrices(chartData); // Set prices after a delay
-                setMaxPrice(parseInt(newMaxPrice + 200));
-                console.log("maxPrice added: ", maxPrice);
-                setIsLoading(false); // Update isLoading state to false
-            }, 3000); // Delay for 3 seconds
-        }).catch(error => {
-            console.error('Error fetching prediction data:', error);
-        });
+                        if (predictedPrice / 1000 > newMaxPrice) {
+                            newMaxPrice = predictedPrice / 1000;
+                        }
+
+                        return {
+                            value: predictedPrice / 1000,
+                            year: formattedDate,
+                            labelComponent: () => (
+                                isToday ? (
+                                    <Text style={styles.todayText}>
+                                        {"  "}
+                                        <Ionicons name="caret-back-outline" size={14} color="red" />
+                                        {"Today"}
+                                    </Text>
+                                ) : (
+                                    <Text style={styles.yearText}>
+                                        {"     "}
+                                        {getMonthNameFromNumber(labelMonth)} {labelYear.toString().slice(-2)}
+                                    </Text>
+                                )
+                            ),
+                        };
+                    }
+                    return null;
+                }).filter(data => data !== null);
+
+                setPrices(chartData);
+                const maxPrice = (Math.floor(newMaxPrice / 100) + 2) * 100;
+                setMaxPrice(parseInt(maxPrice));
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error fetching prediction data:', error);
+            }
+        };
+
+        fetchAllData();
     }, [flatType, town, floorArea, leaseCommenceDate]);
+
 
     const capitalizeWords = (str) => {
         return str.toLowerCase().replace(/(?:^|\s)\w/g, function (match) {
@@ -169,16 +197,16 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
                             animateOnDataChange
                             // hideDataPoints
                             rotateLabel
-                            yAxisTextStyle={{ color: 'gray' }}
+                            yAxisTextStyle={{ color: 'black' }}
                             yAxisSide='right'
                             animationDuration={1000}
                             onDataChangeAnimationDuration={500}
                             areaChart
                             pointerConfig={{
                                 pointerStripHeight: 160,
-                                pointerStripColor: 'lightgray',
+                                pointerStripColor: 'black',
                                 pointerStripWidth: 2,
-                                pointerColor: 'lightgray',
+                                pointerColor: 'red',
                                 radius: 6,
                                 pointerLabelWidth: 100,
                                 pointerLabelHeight: 90,
@@ -232,8 +260,8 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
                             rulesColor="gray"
                             rulesType="solid"
                             initialSpacing={20}
-                            yAxisColor="lightgray"
-                            xAxisColor="lightgray"
+                            yAxisColor="black"
+                            xAxisColor="black"
                             renderYAxisLabel={(value) => `S$ ${value}k`}
                             startFromZero={true}
                         />
@@ -264,7 +292,7 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
                 </>
             ) : (
                 <>
-                    <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5"/>
+                    <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5" />
                     {/* <Text styles={styles.loadingText}>Loading...</Text> */}
                 </>
             )}
