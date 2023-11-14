@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignContent: 'center',
     marginBottom: 1,
     padding: 2,
     marginRight: 10,

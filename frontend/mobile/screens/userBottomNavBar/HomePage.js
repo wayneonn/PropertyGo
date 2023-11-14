@@ -519,9 +519,10 @@ const styles = StyleSheet.create({
   },
   iconScrollContainer: {
     flexDirection: 'row',
+    width: '96.5%',
     paddingBottom: 5,
     paddingTop: 20, // Adjust the padding as needed
-    paddingLeft: 20, // Adjust the margin as needed
+    paddingLeft: 15, // Adjust the margin as needed
   },
   iconContainer: {
     alignItems: 'center',

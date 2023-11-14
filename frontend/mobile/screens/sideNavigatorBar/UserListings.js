@@ -81,9 +81,6 @@ const UserListings = ({ navigation }) => {
     <ScrollView style={styles.container}>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
           <Text style={styles.title}>User Listings</Text>
         </View>
         <TextInput
@@ -92,30 +89,32 @@ const UserListings = ({ navigation }) => {
           onChangeText={(text) => setSearchText(text)}
           value={searchText}
         />
-        <TouchableOpacity style={styles.toggleButton} onPress={toggleCardLayout}>
-          <View style={styles.toggleContainer}>
-            <TouchableOpacity style={styles.toggleMapButton} onPress={toggleMapView}>
-              <Ionicons
-                name={isMapVisible ? 'stop-outline' : 'map'} // Change icon based on map visibility
-                size={20}
-                color="white"
-                style={{ marginLeft: 5 }}
-              />
-              <Text style={styles.toggleMapButtonText}>
-                {isMapVisible ? 'Hide Map' : 'Show Map'}{' '}
-              </Text>
-            </TouchableOpacity>
-            <Text>{'                                            '}</Text>
+
+        <View style={styles.toggleContainer}>
+          <TouchableOpacity style={[styles.toggleMapButton]} onPress={toggleMapView}>
+            <Ionicons
+              name={isMapVisible ? 'stop-outline' : 'map'} // Change icon based on map visibility
+              size={20}
+              color="white"
+              style={{ marginLeft: 5 }}
+            />
+            <Text style={styles.toggleMapButtonText}>
+              {isMapVisible ? 'Hide Map' : 'Show Map'}{' '}
+            </Text>
+          </TouchableOpacity>
+          <Text>{'                                            '}</Text>
+          <TouchableOpacity style={styles.toggleButton} onPress={toggleCardLayout}>
             <Ionicons
               name={isSquareLayout ? 'list' : 'grid'}
               size={24}
               color="#333"
+              style={{ marginLeft: -5 }}
             />
             <Text style={styles.toggleLabel}>
               {isSquareLayout ? 'List' : 'Grid'}
             </Text>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
 
         {/* Conditionally render the MapView based on isMapVisible */}
         {isMapVisible && (
@@ -175,7 +174,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
     marginBottom: 10,
-    marginLeft: 70,
     alignSelf: 'center',
   },
   searchBar: {
@@ -187,8 +185,11 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   toggleButton: {
+    flexDirection: 'row',
     alignItems: 'flex-end',
-    marginBottom: 10,
+    marginBottom: 1,
+    padding: 2,
+    marginRight: 10,
   },
   toggleContainer: {
     flexDirection: 'row',
@@ -219,6 +220,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+    justifyContent: 'center',
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 10,
   },
 });
 
