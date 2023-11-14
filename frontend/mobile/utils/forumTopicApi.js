@@ -131,3 +131,25 @@ export const deleteForumTopic = async (userId, forumTopicId) => {
         throw error;
     }
 };
+
+export const getTopicByForumTopicId = async (forumTopicId) => {
+    // console.log("transactionData: ", transactionData)
+    try {
+      const response = await fetch(`${BASE_URL}/user/forumTopic/getTopicById/${forumTopicId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return { success: true, data };
+      } else {
+        const errorData = await response.json();
+        return { success: false, message: errorData.message };
+      }
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  };

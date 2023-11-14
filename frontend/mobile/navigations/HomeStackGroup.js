@@ -13,9 +13,12 @@ import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListi
 import SearchResults from '../screens/propertyListings/SearchResults';
 import SetSchedule from "../screens/schedule/SetSchedule";
 import Schedule from "../screens/schedule/Schedule";
+import ForumTopic from "../screens/forum/PropertyForumPostDefault";
+import ForumComment from "../screens/forum/PropertyForumComment";
 import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFeeCheckoutScreen";
 import PurchaseOptionFeeInfo from "../screens/purchase/PurchaseOptionFeeInfo";
 import ViewAppointmentDetail from "../screens/sideNavigatorBar/Appointment/ViewAppointmentDetail";
+import MortgageCalculator from "../screens/sideNavigatorBar/PropertyMortgageCalculator";
 import Map from "../screens/propertyListings/map";
 import OptionTransactionDetailOrder from '../screens/sideNavigatorBar/Transaction/OptionTransactionDetailOrder';
 import SellerOptionTransactionDetailOrder from '../screens/sideNavigatorBar/Transaction/SellerOptionTransactionDetailOrder';
@@ -52,6 +55,9 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name={"Seller Option Transaction Order Screen"} component={SellerOptionTransactionDetailOrder}/>
             <HomeListingsStack.Screen name="Chat" component={ChatTabNavigator}/>
             <HomeListingsStack.Screen name={"Buyer Upload OTP"} component={BuyerUploadOTP}/>
+            <HomeListingsStack.Screen name={"Forum Topic"} component={ForumTopic}/>
+            <HomeListingsStack.Screen name={"Forum Comment"} component={ForumComment}/>
+            <HomeListingsStack.Screen name={"Mortgage Calculator"} component={MortgageCalculator}/>
             {/* <HomeListingsStack.Screen name="Message" component={Message}/> */}
         </HomeListingsStack.Navigator>
     );

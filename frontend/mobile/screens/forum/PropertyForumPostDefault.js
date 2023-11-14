@@ -2,17 +2,19 @@ import React, { useState, useContext, useCallback, useEffect } from 'react';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, RefreshControl } from 'react-native';
-import ForumPostItem from '../../components/Forum/ForumPostItem';
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import PropertyForumPostItem from '../../components/Forum/PropertyForumPostItem';
 import { getAllForumPost, updateForumPost, createForumPost, updateForumPostFlaggedStatus, deleteForumPost } from '../../utils/forumPostApi';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { getTopicByForumTopicId } from '../../utils/forumTopicApi';
 import AddForumPostModal from '../../components/Forum/AddForumPostModal';
 import SearchBar from '../../components/Forum/SearchBar';
 
-const ForumPostDefault = ({ navigation }) => {
+const ForumPostDefault = ({ navigation, route }) => {
 
   const { user } = useContext(AuthContext);
-  const route = useRoute();
-  const { topic } = route.params;
+  // const route = useRoute();
+  const { topicId } = route.params;
+  const [topic, setTopic] = useState([]);
   const [forumPosts, setforumPosts] = useState([]);
   const [sort, setSort] = useState(false) //true will be ASC
   const [isModalVisible, setModalVisible] = useState(false);
@@ -20,10 +22,32 @@ const ForumPostDefault = ({ navigation }) => {
   const [filteredPosts, setFilteredPosts] = useState([])
   const [refreshing, setRefreshing] = useState(false);
 
+  useEffect(() => {
+    console.log("topicId: ", topicId)
+    fetchForumTopic();
+  }, [])
+
+  useEffect(() => {
+    if (topic && topic.forumTopicId) {
+      useParentCallback();
+    }
+  }, [topic, useParentCallback]);
+
+  const fetchForumTopic = async () => {
+    try {
+      const { success, data, message } = await getTopicByForumTopicId(topicId);
+      console.log("data: ", data.forumTopics[0])
+      setTopic(data.forumTopics[0]);
+    } catch (error) {
+      console.error('Error fetching transaction:', error);
+    }
+  };
+
   const useParentCallback = useCallback(() => {
     const fetchData = async () => {
       try {
-        const forumPostData = await getAllForumPost(user.user.userId, topic.forumTopicId, null, sort);
+        console.log("topic.forumTopicId: ", topicId)
+        const forumPostData = await getAllForumPost(user.user.userId, topicId, null, sort);
 
         setforumPosts(forumPostData)
         setFilteredPosts(forumPostData);
@@ -48,7 +72,7 @@ const ForumPostDefault = ({ navigation }) => {
 
   const handlePostPress = (post) => {
     setSearchQuery('');
-    navigation.navigate("Forum Comment", {post});
+    navigation.navigate("Forum Comment", { post });
   };
 
   const handleFilterPress = () => {
@@ -118,39 +142,51 @@ const ForumPostDefault = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            tintColor={'#FFD700'}
-          />
-        }
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>{topic.topicName}{" test"}</Text>
-          <TouchableOpacity onPress={handleFilterPress} style={styles.filterButton}>
-            <AntDesign name={sort ? "arrowup" : "arrowdown"} size={20} color="black" />
+      {!topic && !forumPosts ? (
+        <>
+          <Text style={styles.title}>No forum posts available</Text>
+        </>
+      ) : (
+        <>
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor={'#FFD700'}
+              />
+            }
+          >
+            <View style={styles.header}>
+              <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={24} color="black" />
+              </TouchableOpacity>
+              <Text style={styles.title}>{topic.topicName}</Text>
+              <TouchableOpacity onPress={handleFilterPress} style={styles.filterButton}>
+                <AntDesign name={sort ? "arrowup" : "arrowdown"} size={20} color="black" />
+              </TouchableOpacity>
+            </View>
+            <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
+            {filteredPosts.map((post, index) => (
+              <PropertyForumPostItem
+                key={post.forumPostId}
+                userId={user.user.userId}
+                post={post}
+                onPress={() => handlePostPress(post)}
+                onReport={() => handleFlag(post.forumPostId)}
+                onDelete={() => handleDelete(post.forumPostId)}
+                useParentCallback={useParentCallback}
+              />
+            ))}
+          </ScrollView>
+          <AddForumPostModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumPost} forumTopicId={topic.forumTopicId} />
+          <TouchableOpacity onPress={toggleModal} style={styles.addItem}>
+            <Ionicons name="add-circle" size={50} color="#FFD700" />
           </TouchableOpacity>
-        </View>
-        <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
-        {filteredPosts.map((post, index) => (
-          <ForumPostItem
-            key={post.forumPostId}
-            userId={user.user.userId}
-            post={post}
-            onPress={() => handlePostPress(post)}
-            onReport={() => handleFlag(post.forumPostId)}
-            onDelete={() => handleDelete(post.forumPostId)}
-            useParentCallback={useParentCallback}
-          />
-        ))}
+        </>
+      )}
 
-      </ScrollView>
-      <AddForumPostModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumPost} forumTopicId={topic.forumTopicId} />
-      <TouchableOpacity onPress={toggleModal} style={styles.addItem}>
-        <Ionicons name="add-circle" size={50} color="#FFD700" />
-      </TouchableOpacity>
+
     </SafeAreaView>
 
   );
@@ -170,11 +206,15 @@ const styles = StyleSheet.create({
     // borderWidth:1,
     paddingEnd: 10,
     marginVertical: 10,
+    marginBottom: 40,
   },
   title: {
     fontSize: 18,
+    marginBottom: -40,
     marginHorizontal: 17,
     fontWeight: 'bold', // Add fontWeight to make the title bold
+    textAlign: 'center',
+    paddingHorizontal: 50,
   },
   filterButton: {
     paddingHorizontal: 10,
@@ -187,7 +227,13 @@ const styles = StyleSheet.create({
     // flex:1,
     // borderWidth:1,
     // backgroundColor: "black"
-  }
+  },
+  backButton: {
+    position: 'absolute',
+    top: 16, // Adjust the top position as needed
+    left: 16, // Adjust the left position as needed
+    zIndex: 1, // Place it above the swiper
+  },
 });
 
 export default ForumPostDefault;
