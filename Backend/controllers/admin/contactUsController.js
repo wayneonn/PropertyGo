@@ -63,6 +63,10 @@ const closeContactUs = async (req, res) => {
   try {
     const contactUs = await ContactUs.findByPk(contactUsId);
 
+    if (!contactUs) {
+      return res.status(404).json({ message: "Contact Us not found" });
+    }
+
     req.body.status = "CLOSED";
     req.body.updatedAt = moment().format("YYYY-MM-DD HH:mm:ss");
 

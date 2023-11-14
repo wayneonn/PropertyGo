@@ -3,7 +3,6 @@ const router = express.Router();
 
 const {
     getAllAdmins,
-    getAdminName,
     getSingleAdmin,
     updateAdminUsername,
     updateAdminPassword
