@@ -227,7 +227,7 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
                                         <View
                                             style={{
                                                 height: 90,
-                                                width: 110,
+                                                width: 120,
                                                 justifyContent: 'center',
                                                 marginTop: -30,
                                                 marginLeft: -40,

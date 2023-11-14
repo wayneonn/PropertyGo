@@ -206,20 +206,23 @@ const styles = StyleSheet.create({
     // borderWidth:1,
     paddingEnd: 10,
     marginVertical: 10,
-    marginBottom: 40,
+    marginBottom: 60,
   },
   title: {
     fontSize: 18,
     marginBottom: -30,
-    marginHorizontal: 17,
+    marginHorizontal: 50,
     fontWeight: 'bold', // Add fontWeight to make the title bold
     textAlign: 'center',
-    paddingHorizontal: 90,
+    paddingHorizontal: 40,
     alignContent: 'center',
-    marginRight: -20,
+    // marginRight: -20,
+
   },
   filterButton: {
     paddingHorizontal: 10,
+    position: 'absolute',
+    right: 16, // Adjust the top position as needed
   },
   addItem: {
     alignItems: 'center',
