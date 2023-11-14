@@ -128,7 +128,7 @@ const ForumPostDefault = ({ navigation }) => {
         }
       >
         <View style={styles.header}>
-          <Text style={styles.title}>{topic.topicName}{" test"}</Text>
+          <Text style={styles.title}>{topic.topicName}</Text>
           <TouchableOpacity onPress={handleFilterPress} style={styles.filterButton}>
             <AntDesign name={sort ? "arrowup" : "arrowdown"} size={20} color="black" />
           </TouchableOpacity>

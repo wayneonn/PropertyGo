@@ -7,6 +7,7 @@ import StarRating from 'react-native-star-rating';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { createChat } from '../../../../utils/chatApi';
+import base64 from 'react-native-base64';
 
 function CustomerCard({ sellerId, transaction, property }) {
   const userId = sellerId;

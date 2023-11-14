@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     height: 30,
     // borderWidth:1,
@@ -210,11 +210,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    marginBottom: -40,
+    marginBottom: -30,
     marginHorizontal: 17,
     fontWeight: 'bold', // Add fontWeight to make the title bold
     textAlign: 'center',
-    paddingHorizontal: 50,
+    paddingHorizontal: 90,
+    alignContent: 'center',
+    marginRight: -20,
   },
   filterButton: {
     paddingHorizontal: 10,
