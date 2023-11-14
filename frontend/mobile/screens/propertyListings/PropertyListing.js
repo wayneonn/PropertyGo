@@ -288,7 +288,7 @@ const PropertyListingScreen = ({ route }) => {
   }
   const handleChatWithSeller = async () => {
 
-    chatData = {
+    const chatData = {
       propertyId: propertyListingId,
       receiverId: propertyListing.sellerId
     }
@@ -298,7 +298,6 @@ const PropertyListingScreen = ({ route }) => {
     console.log(data.chatId)
 
     navigation.navigate("Message", { chatId: data.chatId });
-
   }
 
 

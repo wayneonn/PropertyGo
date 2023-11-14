@@ -23,6 +23,10 @@ const getRandomRequestId = async (USER_ID) => {
     return faker.helpers.arrayElement(requestId);
 };
 
+const one_year_ago = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().split('T')[0]
+const today = new Date().toISOString().split('T')[0]
+
+
 exports.createFakeRequests = async (numOfRecords, User, Chat) => {
     const requests = [];
     const transactions = [];
@@ -33,7 +37,7 @@ exports.createFakeRequests = async (numOfRecords, User, Chat) => {
 
         const fakeRequest = {
             price: faker.finance.amount(50, 5000, 2),
-            createdAt: faker.date.between({from:'2023-01-01', to:'2023-09-30'}),
+            createdAt: faker.date.between({from:one_year_ago, to:today}),
             jobTitle: faker.person.jobTitle(),
             jobDescription: faker.lorem.paragraph(),
             userId: faker.helpers.arrayElement([2,3,4,7,8,9]), // Assuming User model is available and has some records
@@ -49,7 +53,7 @@ exports.createFakeRequests = async (numOfRecords, User, Chat) => {
             requestId: i + 2,
             transactionItem: "SERVICE",
             invoiceId: faker.number.int({min:1, max:6}),
-            createdAt: faker.date.between({from:'2023-01-01', to:'2023-09-30'}),
+            createdAt: faker.date.between({from:one_year_ago, to:today}),
             quantity: 1
         };
         transactions.push(fakeTransaction);
@@ -77,7 +81,7 @@ exports.createFakeTransactions = async (numOfRecords) => {
             propertyId: faker.number.int({min:1, max:29}),
             transactionItem: transactionItem,
             invoiceId: faker.number.int({min:1, max:6}),
-            createdAt: faker.date.between({from:'2023-01-01', to:'2023-09-30'}),
+            createdAt: faker.date.between({from:one_year_ago, to:today}),
             quantity: transactionItem === "Token Purchase" ? faker.helpers.arrayElement([5, 10, 15, 20, 25,30, 40, 50]): 1
         };
         transactions.push(fakeTransaction);

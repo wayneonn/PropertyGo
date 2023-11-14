@@ -1,4 +1,4 @@
-const { Request, User, Notification } = require("../../models");
+const { Request, Transaction, User, Notification } = require("../../models");
 
 // Create a new Request
 exports.getRequest = async (req, res) => {
@@ -23,7 +23,12 @@ exports.findRequest = async (req, res) => {
 // Get a single Request by ID
 exports.getSingleRequest = async (req, res) => {
     try {
-        const request = await Request.findByPk(req.params.id);
+        const request = await Request.findByPk(req.params.id, {
+            include: [{
+                model: Transaction,
+                as: 'transactions' // Replace 'transactions' with the alias you have used in your association, if any
+            }]
+        });
         if (request) {
             res.json(request);
         } else {

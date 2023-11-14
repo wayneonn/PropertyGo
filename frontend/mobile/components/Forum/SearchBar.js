@@ -7,7 +7,7 @@ const SearchBar = ({ handleSearch, searchQuery }) => {
     return (
         <View style={styles.searchBarContainer}>
             <TextInput
-                placeholder="Search"
+                placeholder="Search by Name/Title"
                 style={styles.searchBar}
                 value={searchQuery}
                 onChangeText={handleSearch}

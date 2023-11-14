@@ -22,13 +22,10 @@ export const ImageDisplayComponent = () => {
 
     useEffect(() => {
         loadImages();
-
         const socket = socketIOClient("http://localhost:3000");
-
         socket.on("newImageLoaded", () => {
             loadImages();
         });
-
         socket.on("newImageRemoved", () => {
             loadImages();
         });

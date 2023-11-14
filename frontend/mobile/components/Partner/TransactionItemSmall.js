@@ -28,7 +28,7 @@ const TransactionItemSmall = ({ item, onPress}) => (
                 {item.transaction.status}
             </Text>
             <Text style={[styles.propertyPrice, {color: "#353531"}]}>
-                {item.transaction.onHoldBalance}
+                Total Amount: SGD {item.transaction.onHoldBalance}
             </Text>
             <Text style={styles.propertyPrice}>
                 {item.userDetails.userName}

@@ -5,12 +5,17 @@ import {RatingComponent} from "../RatingStars";
 import {dateFormatter} from "../../services/commonFunctions"
 import axios from "axios";
 import {BASE_URL} from "../../utils/documentApi";
+import { MaterialIcons } from '@expo/vector-icons';
 
 export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, navigation}) => {
     const [status, setStatus] = useState(selectedItem?.transaction.status)
+
     useEffect(() => {
         console.log("Status updated.")
     }, [status]);
+
+    // There needs to be additional functionality here that influences the chat.
+    // Also maybe the notification module?
     const handleRequestPaid = async() => {
         try {
             const updatedTransactionData = { status: 'PAID' }; // New status
@@ -24,6 +29,12 @@ export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, n
             Alert.alert("Transaction error occurred.", error)
         }
     }
+
+    const viewRequestDetails = async() => {
+        setModalVisible(!modalVisible)
+        navigation.navigate("View Request", {requestId: selectedItem?.transaction.requestId})
+    }
+
     return (
         <Modal
             animationType="slide"
@@ -44,17 +55,32 @@ export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, n
                     <RatingComponent rating={selectedItem?.userDetails.rating}/>
                     <Text style={styles.propertyDetails}>Request ID: {selectedItem?.transaction.requestId}</Text>
                     <Text style={styles.propertyDetails}>{dateFormatter(selectedItem?.transaction.createdAt)}</Text>
-                    {selectedItem?.transaction.status === "PENDING" ? <TouchableOpacity
-                        style={[styles.button, styles.buttonAccept]}
-                        onPress={handleRequestPaid}
-                    >
-                        <Text style={styles.textStyle}>Mark Request as Done</Text>
-                    </TouchableOpacity> : null}
+                    <View style={styles.buttonContainer}>
+                        {selectedItem?.transaction.status === "PENDING" && (
+                            <TouchableOpacity
+                                style={[styles.button, styles.buttonAccept, {flexDirection: "row", alignItems:"center"}]}
+                                onPress={handleRequestPaid}
+                            >
+                                <MaterialIcons name="check-circle" size={24} color="white" />
+                                <Text style={styles.textStyle}>  Mark Request as Done</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+
                     <TouchableOpacity
-                        style={[styles.button, styles.buttonClose]}
+                        style={[styles.button, styles.buttonViewDetails, {flexDirection: "row", alignItems:"center"}]}
+                        onPress={viewRequestDetails}
+                    >
+                        <MaterialIcons name="visibility" size={24} color="white" />
+                        <Text style={styles.textStyle}>  View Request Details</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[styles.button, styles.buttonClose, {flexDirection: "row", alignItems:"center"}]}
                         onPress={() => setModalVisible(!modalVisible)}
                     >
-                        <Text style={styles.textStyle}>Hide</Text>
+                        <MaterialIcons name="close" size={24} color="white" />
+                        <Text style={styles.textStyle}>  Hide</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -112,6 +138,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20, // Increase horizontal padding for a wider button
         elevation: 2,
         marginTop: 15, // Add top margin for spacing from the last text element
+        width: 260
+    },
+    buttonContainer: {
+        flexDirection: 'row', // Arrange buttons in a row
+        justifyContent: 'space-evenly', // Even spacing between buttons
+        width: '100%', // Full width to accommodate side-by-side buttons
+    },
+
+    buttonViewDetails: {
+        backgroundColor: "#f0ad4e", // Different color for 'View Details' button
     },
     buttonClose: {
         backgroundColor: "#2196F3",

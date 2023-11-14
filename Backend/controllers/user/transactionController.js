@@ -115,7 +115,7 @@ exports.getTransactionValueByLastSixMonths = async (req, res) => {
                 [Sequelize.fn('COUNT', Sequelize.col('transactionId')), 'transactionCount']
             ],
             where: {
-                requestId: requestIds,  // Replace with the sellerId you're interested in
+                requestId: requestIds,
                 createdAt: {
                     [Op.gte]: sixMonthsAgo
                 },
@@ -416,7 +416,7 @@ exports.getTransactionPDFReport = async (req, res) => {
 
         // Total Number of Transactions by Seller:
         const totalTransactions = await Transaction.count({
-            where: { propertyId: propertyIds }
+            where: { requestId: requestIds }
         });
 
         // Transaction Status Breakdown:
@@ -427,25 +427,25 @@ exports.getTransactionPDFReport = async (req, res) => {
 
         // Total On Hold Balance:
         const totalOnHoldBalance = await Transaction.sum('onHoldBalance', {
-            where: { propertyId: propertyIds }
+            where: { requestId: requestIds }
         });
 
 
         // Total On Hold Balance:
         const totalPaidBalance = await Transaction.sum('onHoldBalance', {
-            where: { propertyId: propertyIds, status: "PAID" }
+            where: { requestId: requestIds, status: "PAID" }
         });
 
-        // Number of Properties Sold:
+        // Number of Request Sold:
         const propertiesSold = await Transaction.count({
-            where: { propertyId: propertyIds },
+            where: { requestId: requestIds },
             distinct: true,
-            col: 'propertyId'
+            status: "PAID"
         });
 
         // Number of Invoices:
         const totalInvoices = await Transaction.count({
-            where: { propertyId: propertyIds },
+            where: { requestId: requestIds},
             distinct: true,
 
         });

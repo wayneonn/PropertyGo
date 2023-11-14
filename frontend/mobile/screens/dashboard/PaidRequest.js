@@ -23,8 +23,9 @@ import {RadioCheckBox} from "../../components/Partner/RadioCheckBox";
 import {convertImage, dateFormatter} from "../../services/commonFunctions";
 import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
-import downloadAndOpenPDF from "../../services/pdfReport";
+import {downloadAndOpenPDF} from "../../services/pdfReport";
 import TransactionItemSmall from "../../components/Partner/TransactionItemSmall";
+import { MaterialIcons } from '@expo/vector-icons';
 
 const PaidRequest = ({ navigation }) => {
     const { user } = useContext(AuthContext);
@@ -73,19 +74,18 @@ const PaidRequest = ({ navigation }) => {
 
     const handleSearch = (text) => {
         setFilter(null);
-        
+
         // Filter the chats based on the search query
-        const filtered = chats.filter((chat) =>
-          chat.propertyListing.title.toLowerCase().includes(text.toLowerCase())
+        const filtered = paidTransactions.filter((item) =>
+            item.userDetails.userName.toLowerCase().includes(text.toLowerCase())
         );
         // // console.log("text :" + text)
 
         if (text === "") {
-          setFilteredChats(chats);
+            setFilteredTransactions(paidTransactions);
         } else {
-          setFilteredChats(filtered);
+            setFilteredTransactions(filtered);
         }
-
         setSearchQuery(text);
     };
 
@@ -126,15 +126,17 @@ const PaidRequest = ({ navigation }) => {
                 />
             }>
                 <View style={[styles.scene, {backgroundColor: '#f3f3f3'}]}>
-                    <TouchableOpacity style={[styles.button, styles.buttonClose, {marginTop: 10, width: "80%"}]}
-                                      onPress={() => {
+                    <TouchableOpacity style={[styles.button, styles.buttonClose, {marginTop: 10, width: "80%", alignItems:"center", flexDirection: "row", justifyContent: "center"}]}
+                                      onPress={() =>
                                           downloadAndOpenPDF(USER_ID)
-                                      }}>
-                        <Text style={styles.textStyle}>Create PDF Report</Text>
+                                      }>
+                        <MaterialIcons name="picture-as-pdf" size={24} color="white" />
+                        <Text style={styles.textStyle}>  Create PDF Report</Text>
                     </TouchableOpacity>
                     <Text>&nbsp;</Text>
+                    <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
                     {/*<RadioCheckBox filterBy={sortCriteriaPaid} setFilterBy={setSortCriteriaPaid} names={names}/>*/}
-                    {paidTransactions.length !== 0 ? paidTransactions.map((item) => (
+                    {filteredTransactions.length !== 0 ? filteredTransactions.map((item) => (
                         <TransactionItemSmall onPress={() => {
                             setSelectedTransaction(item);
                             setModalVisible(true);

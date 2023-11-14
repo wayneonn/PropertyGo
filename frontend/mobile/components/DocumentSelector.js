@@ -249,10 +249,12 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
     );
 
     return (
-        <SafeAreaView style={{paddingHorizontal: 10, backgroundColor: '#fff' }}>
+        <SafeAreaView style={{paddingHorizontal: 10, backgroundColor: '#fff', borderWidth: 1,
+            borderColor: "#ddd", borderRadius: 5,}}>
             <FlatList
                 ListHeaderComponent={
                     <>
+                        <Text>&nbsp;</Text>
                         <Text style={styles.detailText}>List of Selected Documents:</Text>
                     </>
                 }
@@ -286,8 +288,8 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
                                     color={selectedDocuments.length === 0 ? "grey" : "black"}
                                 />
                             </TouchableOpacity>
-
                         </View>
+                        <Text>&nbsp;</Text>
                     </>
                 }
                 ListEmptyComponent={() => (

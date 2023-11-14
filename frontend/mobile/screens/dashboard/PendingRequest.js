@@ -12,18 +12,13 @@ import {
     RefreshControl,
     Image
 } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import {AntDesign, MaterialIcons} from '@expo/vector-icons';
 import SearchBar from '../../components/Forum/SearchBar';
-import ChatItem from '../../components/Chat/ChatItem';
-import { getUserSenderChat } from '../../utils/chatApi';
-import ChatModal from '../../components/Chat/ChatModal';
-import base64 from 'react-native-base64';
 import {fetchTopTransactionsWithUsersStatus} from "../../utils/transactionApi";
 import {RadioCheckBox} from "../../components/Partner/RadioCheckBox";
-import {convertImage, dateFormatter} from "../../services/commonFunctions";
 import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
-import downloadAndOpenPDF from "../../services/pdfReport";
+import {downloadAndOpenPDF} from "../../services/pdfReport";
 import TransactionItemSmall from "../../components/Partner/TransactionItemSmall";
 
 const PendingRequest = ({ navigation }) => {
@@ -55,6 +50,7 @@ const PendingRequest = ({ navigation }) => {
 
     useFocusEffect(useParentCallback);
 
+    // I need some degree of infinite scrolling.
     const fetchTransactionPending = async () => {
         try {
             const transactions = await fetchTopTransactionsWithUsersStatus(USER_ID, "PENDING");
@@ -75,17 +71,16 @@ const PendingRequest = ({ navigation }) => {
         setFilter(null);
 
         // Filter the chats based on the search query
-        const filtered = chats.filter((chat) =>
-            chat.propertyListing.title.toLowerCase().includes(text.toLowerCase())
+        const filtered = pendingTransactions.filter((item) =>
+            item.userDetails.userName.toLowerCase().includes(text.toLowerCase())
         );
         // // console.log("text :" + text)
 
         if (text === "") {
-            setFilteredChats(chats);
+            setFilteredTransactions(pendingTransactions);
         } else {
-            setFilteredChats(filtered);
+            setFilteredTransactions(filtered);
         }
-
         setSearchQuery(text);
     };
 
@@ -126,15 +121,17 @@ const PendingRequest = ({ navigation }) => {
                 />
             }>
                 <View style={[styles.scene, {backgroundColor: '#f3f3f3'}]}>
-                    <TouchableOpacity style={[styles.button, styles.buttonClose, {marginTop: 10, width: "80%"}]}
-                                      onPress={() => {
+                    <TouchableOpacity style={[styles.button, styles.buttonClose, {marginTop: 10, width: "80%", alignItems:"center", flexDirection: "row", justifyContent: "center"}]}
+                                      onPress={() =>
                                           downloadAndOpenPDF(USER_ID)
-                                      }}>
-                        <Text style={styles.textStyle}>Create PDF Report</Text>
+                                      }>
+                        <MaterialIcons name="picture-as-pdf" size={24} color="white" />
+                        <Text style={styles.textStyle}>  Create PDF Report</Text>
                     </TouchableOpacity>
                     <Text>&nbsp;</Text>
+                    <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
                     {/*<RadioCheckBox filterBy={sortCriteriaPaid} setFilterBy={setSortCriteriaPaid} names={names}/>*/}
-                    {pendingTransactions.length !== 0 ? pendingTransactions.map((item) => (
+                    {filteredTransactions.length !== 0 ? filteredTransactions.map((item) => (
                         <TransactionItemSmall onPress={() => {
                             setSelectedTransaction(item);
                             setModalVisible(true);
