@@ -37,7 +37,7 @@ exports.createFakeTransactions = async (numOfRecords) => {
     const fakeTransaction = {
       onHoldBalance: faker.finance.amount(300, 1000, 2),
       status: faker.helpers.arrayElement(["PENDING", "PAID"]),
-      buyerId: faker.number.int({ min: 3, max: 6 }),
+      buyerId: faker.number.int({ min: 3, max: 5 }),
       propertyId: faker.number.int({ min: 1, max: 29 }),
       transactionItem: transactionItem,
       invoiceId: faker.number.int({ min: 1, max: 6 }),

@@ -15,6 +15,8 @@ import PropertyCard from '../../propertyListings/PropertyCardRectangle';
 import { set } from 'date-fns';
 import { useFocusEffect } from '@react-navigation/native';
 import { format } from 'date-fns';
+import { createChat } from '../../../utils/chatApi';
+import PropertyCardRectangle from './PropertyCardRectangleAppointment';
 
 function ViewUserProfile({ route, navigation }) { // Add navigation parameter
   const { userId, propertyId, scheduleId } = route.params;
@@ -75,7 +77,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
       if (success) {
         // Handle the user data here
         setUser(data);
-        fetchRating(userId);
+        // fetchRating(userId);
       } else {
         // Handle the error here
         console.error('Error fetching user:', message);
@@ -85,21 +87,21 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
     }
   };
 
-  const fetchRating = async (userId) => {
-    try {
-      const { success, data, message } = await getRatingByUser(userId);
+  // const fetchRating = async (userId) => {
+  //   try {
+  //     const { success, data, message } = await getRatingByUser(userId);
 
-      if (success) {
-        // Handle the user data here
-        setRating(data);
-      } else {
-        // Handle the error here
-        console.error('Error fetching user:', message);
-      }
-    } catch (error) {
-      console.error('Error fetching user:', error);
-    }
-  };
+  //     if (success) {
+  //       // Handle the user data here
+  //       setRating(data);
+  //     } else {
+  //       // Handle the error here
+  //       console.error('Error fetching user:', message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching user:', error);
+  //   }
+  // };
 
 
   useEffect(() => {
@@ -117,7 +119,7 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
       });
       fetchPropertyListing(propertyId);
     }, [])
-);
+  );
 
 
   const getStatusColor = (status) => {
@@ -359,7 +361,23 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
     date.setMinutes(minutes);
     return format(date, 'h:mm a'); // e.g., 2:00 PM
   };
-  
+
+  const handleChatWithSeller = async () => {
+    chatData = {
+      propertyId: propertyListing.propertyListingId,
+      receiverId: propertyListing.sellerId
+    }
+    let userId;
+    if (isSeller) {
+      userId = sellerId;
+    } else {
+      userId = user.user.userId;
+    }
+    const data = await createChat(userId, chatData);
+    // console.log(data.chatId)
+    navigation.navigate("Message", { chatId: data.chatId });
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.viewContainer}>
@@ -448,7 +466,8 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
             <ActivityIndicator size="large" color="dodgerblue" />
           )}
         </View>
-        <View style={styles.section}>
+
+        {/* <View style={styles.section}>
           <Text style={styles.sectionHeader}>Property Listing</Text>
           {propertyListing && (
             <PropertyCard
@@ -457,7 +476,16 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
               onPress={() => handlePropertyPress(propertyListing.propertyListingId)}
             />
           )}
-        </View>
+        </View> */}
+
+        <PropertyCardRectangle
+          property={propertyListing}
+          seller={userDetails}
+          onPress={() => {
+            navigation.navigate('Property Listing', { propertyListingId: propertyListing.propertyListingId })
+          }}
+        />
+
         {/* User Profile Section */}
         <View style={styles.section}>
           <Text style={[styles.sectionHeader, { marginBottom: 30 }]}>User Profile</Text>
@@ -477,11 +505,12 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
           </View>
 
           <View style={styles.profileInfo}>
-            {rating !== null ? (
+            {userDetails !== null ? (
               <>
                 <InfoRow label="Name:" value={userDetails.name} />
                 <InfoRow label="Country:" value={userDetails.countryOfOrigin} />
-                <InfoRow label="Rating:" value={rating.userRating !== null ? rating.userRating.toFixed(1) : '0.0 [New User]'} />
+                <InfoRow label="Email:" value={userDetails.email} />
+                {/* <InfoRow label="Rating:" value={rating.userRating !== null ? rating.userRating.toFixed(1) : '0.0 [New User]'} />
 
                 <View style={styles.ratingContainer}>
                   <StarRating
@@ -492,11 +521,12 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
                     emptyStarColor="gold"
                     starSize={24}
                   />
-                </View>
+                </View> */}
                 <View style={{ alignItems: "center", marginBottom: 10 }}>
+
                   <TouchableOpacity
                     style={styles.editProfileButton}
-                    onPress={() => { }}
+                    onPress={handleChatWithSeller}
                   >
                     <Icon
                       name="edit"
@@ -591,7 +621,7 @@ const styles = StyleSheet.create({
   editProfileButton: {
     backgroundColor: 'dodgerblue',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 20,
     marginTop: 20,
     alignItems: 'center', // Center horizontally
     flexDirection: 'row',
@@ -604,6 +634,7 @@ const styles = StyleSheet.create({
   },
   editProfileButtonText: {
     color: 'white',
+    fontWeight: '600',
     textAlign: 'center',
   },
   loginLink: {
@@ -634,10 +665,18 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 10,
     marginVertical: 10,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: 'white',
     borderRadius: 5,
     borderColor: '#e1e1e1',
     borderWidth: 1,
+    elevation: 5, // Add elevation for shadow on Android
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   sectionHeader: {
     fontSize: 24,
@@ -721,7 +760,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 14,
-    fontWeight: '400',
+    fontWeight: '600',
     color: '#FFF',           // Black text color for all buttons
   },
 });

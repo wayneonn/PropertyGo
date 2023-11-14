@@ -624,6 +624,7 @@ db.sequelize
             // Update the property and transaction
             property.propertyStatus = "ACTIVE";
             property.optionExpiryDate = null;
+            property.offeredPrice = null;
             transaction.optionFeeStatusEnum = "SELLER_DID_NOT_RESPOND";
 
             // Save the updated property and transaction

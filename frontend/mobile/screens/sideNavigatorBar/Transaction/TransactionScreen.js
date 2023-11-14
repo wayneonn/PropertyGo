@@ -136,40 +136,40 @@ const TransactionScreen = ({ route }) => {
                     )}
                 </View>
                 {/* <View style={styles.bankAccountContainer}> */}
-                    {showReimbusement ? (
-                        transaction.reimbursed === true ? (
-                            <>
-                                <View style={styles.bankAccountInfoContainer}>
-                                    <Text style={styles.label}>Transferred to Bank Account:</Text>
-                                </View>
-                                <View style={styles.bankAccountInfoContainer}>
+                {showReimbusement ? (
+                    transaction.reimbursed === true ? (
+                        <>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Transferred to Bank Account:</Text>
+                            </View>
+                            <View style={styles.bankAccountInfoContainer}>
                                 <Text style={styles.label}>Bank: </Text>
-                                    <Text style={styles.info}>{user.user.bankName}</Text>
-                                </View>
-                                <View style={styles.bankAccountInfoContainer}>
-                                    <Text style={styles.label}>Bank Account Number: </Text>
-                                    <Text style={styles.info}>{user.user.bankAccount}</Text>
-                                </View>
-                            </> 
-                            ) : (
-                                <>
-                                <View style={styles.bankAccountInfoContainer}>
-                                    <Text style={styles.label}>Pending Transfer to Bank Account:</Text>
-                                </View>
-                                <View style={styles.bankAccountInfoContainer}>
-                                <Text style={styles.label}>Bank: </Text>
-                                    <Text style={styles.info}>{user.user.bankName}</Text>
-                                </View>
-                                <View style={styles.bankAccountInfoContainer}>
-                                    <Text style={styles.label}>Bank Account Number: </Text>
-                                    <Text style={styles.info}>{user.user.bankAccount}</Text>
-                                </View>
-                            </> 
-                        )
+                                <Text style={styles.info}>{user.user.bankName}</Text>
+                            </View>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Bank Account Number: </Text>
+                                <Text style={styles.info}>{user.user.bankAccount}</Text>
+                            </View>
+                        </>
                     ) : (
                         <>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Pending Transfer to Bank Account:</Text>
+                            </View>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Bank: </Text>
+                                <Text style={styles.info}>{user.user.bankName}</Text>
+                            </View>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Bank Account Number: </Text>
+                                <Text style={styles.info}>{user.user.bankAccount}</Text>
+                            </View>
                         </>
-                    )}
+                    )
+                ) : (
+                    <>
+                    </>
+                )}
                 {/* </View> */}
             </View>
             <TouchableOpacity style={[styles.button, styles.buttonClose, { marginTop: 50, width: "60%" }]}
@@ -192,12 +192,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 30,
+        justifyContent: 'center',
     },
     header: {
         fontSize: 32,
         fontWeight: 'bold',
         color: '#333',
-        marginLeft: 120,
+        alignContent: 'center',
+        textAlign: 'center',
+        // marginLeft: 120,
         marginTop: 10,
         paddingBottom: 20,
     },

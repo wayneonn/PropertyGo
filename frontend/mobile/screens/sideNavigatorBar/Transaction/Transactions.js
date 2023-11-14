@@ -53,7 +53,7 @@ const TransactionScreen = () => {
         }
     };
 
-    console.log("transactions:", transactions); // Log the transactions state
+    // console.log("transactions:", transactions); // Log the transactions state
 
     return (
         <View style={styles.container}>

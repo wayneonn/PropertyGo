@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const PurchaseOptionFeeInfo = ({ route }) => {
     const { user } = useContext(AuthContext);
-    const { propertyListing } = route.params;
+    const { propertyListing, isOfferedPrice } = route.params;
     const navigation = useNavigation();
     const description = "Purchase Option Fee";
 
@@ -32,6 +32,7 @@ const PurchaseOptionFeeInfo = ({ route }) => {
         const transactionType = "OPTION_FEE"
         const gst = false;
         const paymentAmount = 0; //As payment is still processing
+        
         const transaction = await createTransactionRecord(propertyListing, user.user, status, transactionType, description, 1, paymentAmount, gst);
         Alert.alert('Success', 'Your request is confirmed!');
         console.log("transaction: ", transaction);

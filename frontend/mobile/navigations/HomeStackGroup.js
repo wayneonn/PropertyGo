@@ -4,6 +4,8 @@ import HomePage from "../screens/userBottomNavBar/HomePage";
 import PropertyListing from "../screens/propertyListings/PropertyListing";
 import EditPropertyListing from "../screens/propertyListings/EditPropertyListing";
 import PropertiesList from "../screens/propertyListings/PropertiesList";
+import RegionPropertiesList from "../screens/propertyListings/RegionPropertiesList";
+import FlatTypePropertiesList from "../screens/propertyListings/FlatTypePropertiesList";
 import ViewUserProfile from "../screens/userProfile/ViewUserProfile";
 import TokenScreen from "../screens/token/TokenScreen"; // Import your Coins screen here
 import TokenCheckoutScreen from "../screens/token/TokenCheckoutScreen"; 
@@ -11,13 +13,17 @@ import BoostPropertyListing from "../screens/propertyListings/BoostPropertyListi
 import SearchResults from '../screens/propertyListings/SearchResults';
 import SetSchedule from "../screens/schedule/SetSchedule";
 import Schedule from "../screens/schedule/Schedule";
+import ForumTopic from "../screens/forum/PropertyForumPostDefault";
+import ForumComment from "../screens/forum/PropertyForumComment";
 import PurchaseOptionFee from "../screens/purchase/PurchaseOptionFeeCheckoutScreen";
 import PurchaseOptionFeeInfo from "../screens/purchase/PurchaseOptionFeeInfo";
 import ViewAppointmentDetail from "../screens/sideNavigatorBar/Appointment/ViewAppointmentDetail";
+import MortgageCalculator from "../screens/sideNavigatorBar/PropertyMortgageCalculator";
 import Map from "../screens/propertyListings/map";
 import OptionTransactionDetailOrder from '../screens/sideNavigatorBar/Transaction/OptionTransactionDetailOrder';
 import SellerOptionTransactionDetailOrder from '../screens/sideNavigatorBar/Transaction/SellerOptionTransactionDetailOrder';
 import ChatTabNavigator from "./ChatTabNavigator";
+import BuyerUploadOTP from '../screens/sideNavigatorBar/Transaction/BuyerUploadOTP';
 import Message from "../screens/chat/Message";
 
 const HomeListingsStack = createNativeStackNavigator();
@@ -33,6 +39,8 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="Property Listing" component={PropertyListing}/>
             <HomeListingsStack.Screen name="Edit Property Listing" component={EditPropertyListing}/>
             <HomeListingsStack.Screen name="Properties List" component={PropertiesList}/>
+            <HomeListingsStack.Screen name="Region Property List" component={RegionPropertiesList} />
+            <HomeListingsStack.Screen name="Flat Type Property List" component={FlatTypePropertiesList} />
             <HomeListingsStack.Screen name="View Profile" component={ViewUserProfile}/>
             <HomeListingsStack.Screen name="Token" component={TokenScreen}/>
             <HomeListingsStack.Screen name="Token Checkout Screen" component={TokenCheckoutScreen}/>
@@ -46,6 +54,10 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name={"Option Transaction Order Screen"} component={OptionTransactionDetailOrder}/>
             <HomeListingsStack.Screen name={"Seller Option Transaction Order Screen"} component={SellerOptionTransactionDetailOrder}/>
             <HomeListingsStack.Screen name="Chat" component={ChatTabNavigator}/>
+            <HomeListingsStack.Screen name={"Buyer Upload OTP"} component={BuyerUploadOTP}/>
+            <HomeListingsStack.Screen name={"Forum Topic"} component={ForumTopic}/>
+            <HomeListingsStack.Screen name={"Forum Comment"} component={ForumComment}/>
+            <HomeListingsStack.Screen name={"Mortgage Calculator"} component={MortgageCalculator}/>
             {/* <HomeListingsStack.Screen name="Message" component={Message}/> */}
         </HomeListingsStack.Navigator>
     );

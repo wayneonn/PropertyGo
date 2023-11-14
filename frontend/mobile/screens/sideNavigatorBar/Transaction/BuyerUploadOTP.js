@@ -422,7 +422,15 @@ export default function SellerReuploadOTP({ route }) {
               <Text style={styles.forSaleText}>For Sales</Text>
               <Text style={styles.title}>{propertyListing.title}</Text>
               <Text style={styles.priceLabel}>
-                ${formatPriceWithCommas(propertyListing.price)}
+                {propertyListing.offeredPrice ? (
+                  <>
+                    ${formatPriceWithCommas(propertyListing.offeredPrice)}
+                  </>
+                ) : (
+                  <>
+                    ${formatPriceWithCommas(propertyListing.price)}
+                  </>
+                )}
               </Text>
               <Text style={styles.pricePerSqm}>
                 $
@@ -478,7 +486,7 @@ export default function SellerReuploadOTP({ route }) {
               <Text style={styles.optionExpiryTextBold}>
                 {Math.ceil(
                   (new Date(propertyListing.optionExpiryDate) - new Date()) /
-                    (1000 * 60 * 60 * 24)
+                  (1000 * 60 * 60 * 24)
                 )}
                 {" days"}
               </Text>

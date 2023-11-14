@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import PropertyCard from '../propertyListings/PropertyCard';
-import PropertyCardRectangle from '../propertyListings/PropertyCardRectangle';
+import PropertyCard from './PropertyCard';
+import PropertyCardRectangle from './PropertyCardRectangle';
 import { Ionicons } from '@expo/vector-icons';
+import { getPropertiesByRegion } from '../../utils/api';
 import MapView, { Marker, Callout } from 'react-native-maps';
 
-const PropertiesList = ({ route }) => {
-  const { title, properties, navigation } = route.params;
+const RegionPropertiesList = ({ route }) => {
+  const { title, navigation, region } = route.params;
+  const [properties, setProperties] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [isSquareLayout, setIsSquareLayout] = useState(true);
   const [isMapVisible, setIsMapVisible] = useState(false); // State variable to track map visibility
+
+  useEffect(() => {
+    console.log('region: ', region)
+    loadPropertiesByRegion(region);
+  }, []);
 
   const filteredProperties = properties.filter((property) =>
     property.title.toLowerCase().includes(searchText.toLowerCase())
@@ -21,6 +28,24 @@ const PropertiesList = ({ route }) => {
 
   const toggleMapView = () => {
     setIsMapVisible((prevIsMapVisible) => !prevIsMapVisible);
+  };
+
+  const loadPropertiesByRegion = async (region) => {
+    try {
+      const { success, data } = await getPropertiesByRegion(region);
+
+      if (success) {
+        const top10Properties = data
+        .sort((a, b) => b.favoriteCount - a.favoriteCount)
+        .slice(0, 10);
+        setProperties(data);
+        console.log(`Properties in ${region}:`, data)
+      } else {
+        console.error(`Error loading properties in ${region}:`, data.message);
+      }
+    } catch (error) {
+      console.error(`Error loading properties in ${region}:`, error.message);
+    }
   };
 
   const titleToCoordinates = {
@@ -159,7 +184,7 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     flexDirection: 'row',
-    alignContent: 'center',
+    alignItems: 'flex-end',
     marginBottom: 1,
     padding: 2,
     marginRight: 10,
@@ -206,4 +231,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PropertiesList;
+export default RegionPropertiesList;
