@@ -86,87 +86,8 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
         );
     }
 
-    return (
-        <ScrollView>
-            <View style={styles.container}>
-                <View style={styles.headerContainer}>
-                    {/* Back button */}
-                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                        <Ionicons name="arrow-back" size={24} color="black"/>
-                    </TouchableOpacity>
-                    <Text style={styles.header}>User Profile</Text>
-                </View>
-                <View style={styles.profileHeader}>
-                    {profileImageBase64 ? (
-                        <Image
-                            source={{uri: `data:image/jpeg;base64,${profileImageBase64}`}}
-                            style={styles.profileImage}
-                        />
-                    ) : (
-                        <Image
-                            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                            style={{width: 150, height: 150, borderRadius: 120}}
-                        />
-                    )}
-                    <Text style={styles.heading}>Profile Picture</Text>
-                </View>
-                {rating !== null ? (
-                    <View style={styles.profileInfo}>
-                        <View style={styles.row}>
-                            <Text style={styles.label}>Name:</Text>
-                            <Text style={styles.value}>{userDetails.name}</Text>
-                        </View>
-                        <View style={styles.row}>
-                            <Text style={styles.label}>Country:</Text>
-                            <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
-                        </View>
-                        <View style={styles.row}>
-                            <Text style={styles.label}>Phone Number:</Text>
-                            <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
-                        </View>
-                        <View style={styles.row}>
-                            <Text style={styles.label}>Rating:</Text>
-                            <Text style={styles.value}>
-                                {rating.userRating !== null
-                                    ? rating.userRating.toFixed(1)
-                                    : '0.0 [New User]'}
-                            </Text>
-                        </View>
-                        <View style={styles.ratingContainer}>
-                            <StarRating
-                                disabled={true}
-                                maxStars={5}
-                                rating={rating.userRating !== null ? rating.userRating : 0}
-                                fullStarColor="gold"
-                                emptyStarColor="gold"
-                                starSize={24}
-                            />
-                        </View>
-                    </View>
-                ) : (
-                    <ActivityIndicator size="large" color="dodgerblue"/>
-                )}
-                <TouchableOpacity
-                    style={styles.editProfileButton}
-                    onPress={() => {
-                        // navigation.navigate('EditProfile'); // Change this to the correct screen name
-                    }}
-                >
-                    <Icon
-                        name="edit"
-                        size={20}
-                        color="white"
-                        style={styles.editIcon}
-                    />
-                    <Text style={styles.editProfileButtonText}>Chat With User</Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
-    );
-  }
-
   const handleChatWithSeller = async () => {
-    chatData = {
+    const chatData = {
       propertyId: property.propertyListingId,
       receiverId: property.sellerId
     }

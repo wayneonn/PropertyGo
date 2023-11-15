@@ -40,21 +40,21 @@ exports.getSingleRequest = async (req, res) => {
     }
 };
 
-// Update a Request
-exports.updateRequest = async (req, res) => {
-    try {
-        const updated = await Request.update(req.body, {
-            where: { requestId: req.params.id },
-        });
-        if (updated) {
-            res.json({ message: 'Request updated successfully' });
-        } else {
-            res.status(404).json({ error: 'Request not found' });
-        }
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
+// // Update a Request
+// exports.updateRequest = async (req, res) => {
+//     try {
+//         const updated = await Request.update(req.body, {
+//             where: { requestId: req.params.id },
+//         });
+//         if (updated) {
+//             res.json({ message: 'Request updated successfully' });
+//         } else {
+//             res.status(404).json({ error: 'Request not found' });
+//         }
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
 
 // Delete a Request
 exports.deleteRequest = async (req, res) => {
@@ -87,7 +87,7 @@ exports.findRequestByPartnerId = async (req, res) => {
     }
 };
 
-const createRequest = async (req, res) => {
+exports.createRequest = async (req, res) => {
     const userId = parseInt(req.params.userId);
 
     // Assuming you want to set userId in the Request model
@@ -102,7 +102,7 @@ const createRequest = async (req, res) => {
     }
 };
 
-const updateRequest = async (req, res) => {
+exports.updateRequest = async (req, res) => {
     const requestId = parseInt(req.params.requestId);
     const {requestStatus , price} = req.body
 
@@ -130,7 +130,3 @@ const updateRequest = async (req, res) => {
     }
 };
 
-module.exports = {
-    createRequest,
-    updateRequest
-};

@@ -5,7 +5,6 @@ const {
     getRequest,
     findRequest,
     getSingleRequest,
-    updateRequest,
     deleteRequest, findRequestByPartnerId,
   createRequest,
     updateRequest
@@ -18,7 +17,6 @@ router.route('/')
 
 router.route('/:id')
     .get(getSingleRequest)
-    .put(updateRequest)
     .delete(deleteRequest);
 
 // Route to find requests by receiverId

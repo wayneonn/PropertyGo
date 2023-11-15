@@ -10,7 +10,7 @@ import {BASE_URL} from "../../utils/documentApi";
 
 const MAX_HORIZONTAL_IMAGES = 10;
 
-const ChatUploadImages = ({isVisible, onClose, chatId}) => {
+const ChatUploadImages = ({isVisible, onClose, chatId, sendMessage}) => {
     const [images, setImages] = useState([])
     const [fullScreenImage, setFullScreenImage] = useState(null);
     const {user} = useContext(AuthContext);
@@ -130,7 +130,8 @@ const ChatUploadImages = ({isVisible, onClose, chatId}) => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    return {success: true, data};
+                    console.log(data)
+                    return {success: true, data: data};
                 } else {
                     const errorData = await response.json();
                     console.log("Image upload error data: ", errorData)
@@ -150,16 +151,17 @@ const ChatUploadImages = ({isVisible, onClose, chatId}) => {
 
         try {
             const res = await uploadChatPhotos()
-            const result = res.json()
             if (res.success) {
                 Alert.alert(
                     'Upload Succeeded',
                     'The photos has been created successfully.'
                 );
+                sendMessage(`Image ID: ${res.data.successImages[0]} sent.`)
+                onClose();
             } else {
                 Alert.alert(
                     "Some error occurred",
-                    `Please try again. ${result}`
+                    `Please try again. ${res}`
                 )
             }
         } catch (error) {

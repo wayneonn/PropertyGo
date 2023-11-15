@@ -496,7 +496,7 @@ const Message = ({route, navigation}) => {
             </KeyboardAvoidingView>
 
             <MakeRequestModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleMakeRequest}/>
-            <ChatUploadImages isVisible={isImageModalVisible} onClose={toggleImageModal} chatId={chatId}/>
+            <ChatUploadImages isVisible={isImageModalVisible} onClose={toggleImageModal} chatId={chatId} sendMessage={sendMessage}/>
             <ChatDocumentUpload chatId={chatId} userId={user.user.userId} isVisible={isUploadModalVisible} onClose={toggleUploadModal} sendMessage={sendMessage}/>
         </View>
 
