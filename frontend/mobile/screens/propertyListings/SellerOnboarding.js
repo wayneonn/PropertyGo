@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, Button, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, Button, TextInput, ScrollView, Alert, } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { AuthContext } from "../../AuthContext";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -64,7 +64,7 @@ const SellerOnboarding = ({ }) => {
         formData.append('email', user.email);
         formData.append('countryOfOrigin', user.countryOfOrigin);
         formData.append('dateOfBirth', user.dateOfBirth);
-    
+
         const { success, data, message } = await updateUserProfile(user.userId, formData);
         // console.log("updateUserStripeCustomerId success: ", success, " data: ", data, " message: ", message);
         fetchUpdatedUserDetails(user, login);
@@ -74,7 +74,7 @@ const SellerOnboarding = ({ }) => {
         console.log("fetchUpdatedUserDetails user: ", user);
         try {
             const { success, data, message } = await loginUser(user.userName, user.password);
-    
+
             if (success) {
                 console.log("success!: ");
                 login(data);
@@ -87,12 +87,27 @@ const SellerOnboarding = ({ }) => {
     };
 
     const handleSubmit = async () => {
+        if (bankName === '') {
+            Alert.alert('Please select a Bank', 'Please choose a bank.');
+            return;
+        }
+
+        if (bankAccount === '') {
+            Alert.alert('Please enter Bank Account Number', 'Bank Account Number is required.');
+            return;
+        }
+
+        if (!/^\d{9}$/.test(bankAccount)) {
+            Alert.alert('Invalid Bank Account Number', 'Bank Account Number must be exactly 9 digits long.');
+            return;
+        }
+
         updateUser(user.user, login);
         navigation.navigate('List Property');
     }
 
 
-return (
+    return (
         <View style={styles.container}>
             <ScrollView
                 style={styles.scrollView}

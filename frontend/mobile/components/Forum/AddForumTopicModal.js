@@ -75,7 +75,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
         backgroundColor: 'white',
@@ -83,6 +82,7 @@ const styles = StyleSheet.create({
         padding: 20,
         alignItems: 'center',
         width: '80%', // Adjust the width of the modal content
+        marginBottom: 70,
     },
     modalTitle: {
         fontSize: 20,

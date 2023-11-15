@@ -163,6 +163,7 @@ const ForumComment = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView
+                keyboardDismissMode="on-drag"
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
@@ -298,20 +299,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20,
         justifyContent: 'center',
-      },
-      backButton: {
+    },
+    backButton: {
         position: 'absolute',
         top: 15, // Adjust the top position as needed
         left: 15, // Adjust the left position as needed
         zIndex: 1, // Place it above the swiper
-      },
-      title: {
+    },
+    title: {
         fontSize: 24,
         color: "#333",
-        marginTop: 15 ,
+        marginTop: 15,
         marginBottom: 5,
         fontWeight: "bold",
-      },
+    },
 })
 
 export default ForumComment;

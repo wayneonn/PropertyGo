@@ -1,7 +1,7 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, RefreshControl } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, RefreshControl, KeyboardAvoidingView } from 'react-native';
 import PropertyForumPostItem from '../../components/Forum/PropertyForumPostItem';
 import { getAllForumPost, updateForumPost, createForumPost, updateForumPostFlaggedStatus, deleteForumPost } from '../../utils/forumPostApi';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -142,53 +142,56 @@ const ForumPostDefault = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {!topic && !forumPosts ? (
-        <>
-          <Text style={styles.title}>No forum posts available</Text>
-        </>
-      ) : (
-        <>
-          <ScrollView
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-                tintColor={'#FFD700'}
-              />
-            }
-          >
-            <View style={styles.header}>
-              <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={24} color="black" />
-              </TouchableOpacity>
-              <Text style={styles.title}>{topic.topicName}</Text>
-              <TouchableOpacity onPress={handleFilterPress} style={styles.filterButton}>
-                <AntDesign name={sort ? "arrowup" : "arrowdown"} size={20} color="black" />
-              </TouchableOpacity>
-            </View>
-            <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
-            {filteredPosts.map((post, index) => (
-              <PropertyForumPostItem
-                key={post.forumPostId}
-                userId={user.user.userId}
-                post={post}
-                onPress={() => handlePostPress(post)}
-                onReport={() => handleFlag(post.forumPostId)}
-                onDelete={() => handleDelete(post.forumPostId)}
-                useParentCallback={useParentCallback}
-              />
-            ))}
-          </ScrollView>
-          <AddForumPostModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumPost} forumTopicId={topic.forumTopicId} />
-          <TouchableOpacity onPress={toggleModal} style={styles.addItem}>
-            <Ionicons name="add-circle" size={50} color="#FFD700" />
-          </TouchableOpacity>
-        </>
-      )}
+        {!topic && !forumPosts ? (
+          <>
+            <Text style={styles.title}>No forum posts available</Text>
+          </>
+        ) : (
+          <>
 
+            <ScrollView
+              // keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
+              contentContainerStyle={styles.scrollViewContent}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={handleRefresh}
+                  tintColor={'#FFD700'}
+                />
+              }
+            >
+              <View style={styles.header}>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                  <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+                <Text style={styles.title}>{topic.topicName}</Text>
+                <TouchableOpacity onPress={handleFilterPress} style={styles.filterButton}>
+                  <AntDesign name={sort ? "arrowup" : "arrowdown"} size={20} color="black" />
+                </TouchableOpacity>
+              </View>
+              <SearchBar searchQuery={searchQuery} handleSearch={handleSearch} />
+              {filteredPosts.map((post, index) => (
+                <PropertyForumPostItem
+                  key={post.forumPostId}
+                  userId={user.user.userId}
+                  post={post}
+                  onPress={() => handlePostPress(post)}
+                  onReport={() => handleFlag(post.forumPostId)}
+                  onDelete={() => handleDelete(post.forumPostId)}
+                  useParentCallback={useParentCallback}
+                />
+              ))}
+            </ScrollView>
 
-    </SafeAreaView>
-
+            <AddForumPostModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumPost} forumTopicId={topic.forumTopicId} />
+            <TouchableOpacity onPress={toggleModal} style={styles.addItem}>
+              <Ionicons name="add-circle" size={50} color="#FFD700" />
+            </TouchableOpacity>
+          </>
+        )
+        }
+    </SafeAreaView >
   );
 };
 
