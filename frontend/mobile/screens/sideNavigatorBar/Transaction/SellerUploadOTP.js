@@ -146,7 +146,7 @@ export default function SellerUploadOTP({ route }) {
 
       // Check if optionExpiryDate is not today or before today
 
-      console.log("optionExpiryDate: ", (optionExpiryDate && optionExpiryDate <= new Date()) )
+      console.log("optionExpiryDate: ", (optionExpiryDate && optionExpiryDate <= new Date()))
 
       if (selectedDocuments.length === 0 && !optionExpiryDate) {
         Alert.alert(
@@ -320,6 +320,11 @@ export default function SellerUploadOTP({ route }) {
     return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
   };
 
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
+  useEffect(() => {
+    setCacheBuster(Date.now());
+  }, [propertyListing]);
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -366,7 +371,17 @@ export default function SellerUploadOTP({ route }) {
             <View style={styles.propertyDetailsTopLeft}>
               <Text style={styles.forSaleText}>For Sales</Text>
               <Text style={styles.title}>{propertyListing.title}</Text>
-              <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
+              <Text style={styles.priceLabel}>
+                {propertyListing.offeredPrice ? (
+                  <>
+                    ${formatPriceWithCommas(propertyListing.offeredPrice)}
+                  </>
+                ) : (
+                  <>
+                    ${formatPriceWithCommas(propertyListing.price)}
+                  </>
+                )}
+              </Text>
               <Text style={styles.pricePerSqm}>
                 ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
               </Text>
@@ -386,7 +401,7 @@ export default function SellerUploadOTP({ route }) {
           <Text style={styles.dateContainer}>
             <Ionicons name="time-outline" size={17} color="#333" />
             {" "}
-            <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
+            <Text style={styles.dateText}>{"Lease Commence Year: "}{propertyListing.lease_commence_date}</Text>
           </Text>
 
           <Text style={styles.locationTitle}>Description</Text>
@@ -676,7 +691,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#3498db',
     borderRadius: 8,
     padding: 10,
-    paddingHorizontal: 17,
+    paddingHorizontal: 15,
     alignItems: 'center',
     marginTop: 10,
     marginRight: 10,
@@ -703,7 +718,7 @@ const styles = StyleSheet.create({
   removeDocumentButtonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 12,
   },
   selectedDocumentContainer: {
     borderWidth: 1,

@@ -1,5 +1,5 @@
-import { React, useState, useEffect } from "react";
-import { Card, Button, Form, Table, Modal } from "react-bootstrap";
+import { React, useState, useEffect, useRef } from "react";
+import { Table, Button } from "react-bootstrap";
 import "./styles/Otp.css";
 import API from "../services/API";
 import { formats, modules } from "../components/Common/RichTextEditor";
@@ -7,21 +7,27 @@ import { useNavigate } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb.js";
 import Pagination from "react-bootstrap/Pagination";
 import base64 from "react-native-base64";
+import { FcDocument } from "react-icons/fc";
+import { FiUpload } from "react-icons/fi";
+import { TiTick } from "react-icons/ti";
+import { ImCross } from "react-icons/im";
+import axios from "axios";
 
 const Otp = () => {
+  const fileInputRef = useRef(null);
   const [transactions, setTransactions] = useState([]);
-  const [paidTransactions, setPaidTransactions] = useState([]);
-  const [pendingTransactions, setPendingTransactions] = useState([]);
-  const [showReleaseModal, setShowReleaseModal] = useState(false);
-  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState({});
+  // const [selectedFiles, setSelectedFiles] = useState([])
+  const [documentId, setDocumentId] = useState(0);
+  // const [pendingTransactions, setPendingTransactions] = useState([]);
 
   const itemsPerPage = 4;
 
-  const [currentPagePaid, setCurrentPagePaid] = useState(1);
-  const [totalPagePaid, setTotalPagePaid] = useState(0);
+  // const [currentPageSigned, setCurrentPageSigned] = useState(1);
+  // const [totalPageSigned, setTotalPageSigned] = useState(0);
 
-  const indexOfLastItemPaid = currentPagePaid * itemsPerPage;
-  const indexOfFirstItemPaid = indexOfLastItemPaid - itemsPerPage;
+  // const indexOfLastItemSigned = currentPageSigned * itemsPerPage;
+  // const indexOfFirstItemSigned = indexOfLastItemSigned - itemsPerPage;
 
   const [currentPagePending, setCurrentPagePending] = useState(1);
   const [totalPagePending, setTotalPagePending] = useState(0);
@@ -38,9 +44,9 @@ const Otp = () => {
     setCurrentPagePending(pageNumber);
   };
 
-  const handlePageChangePaid = (pageNumber) => {
-    setCurrentPagePaid(pageNumber);
-  };
+  // const handlePageChangePaid = (pageNumber) => {
+  //   setCurrentPageSigned(pageNumber);
+  // };
 
   const fetchData = async () => {
     try {
@@ -49,26 +55,22 @@ const Otp = () => {
       );
       const transactions = response.data.transactions;
 
-      console.log(transactions);
-
-      const onHoldTransactions = transactions.filter(
-        (transaction) => transaction.onHoldBalance > 0
+      const otpTransactions = transactions.filter(
+        (transaction) =>
+          transaction.transactionType === "OPTION_FEE" &&
+          (transaction.optionFeeStatusEnum === "BUYER_UPLOADED" ||
+            transaction.optionFeeStatusEnum === "ADMIN_SIGNED")
       );
 
-      const paidTransactions = onHoldTransactions.filter(
-        (transaction) => transaction.status == "PAID"
-      );
+      // const unreimbursed = otpTransactions.filter(
+      //   (transaction) => transaction.reimbursed == 0
+      // );
 
-      const pendingTransactions = onHoldTransactions.filter(
-        (transaction) => transaction.status == "PENDING"
-      );
+      // setSignedTransactions(reimbursedTransactions);
+      // setPendingTransactions(unreimbursed);
+      setTransactions(otpTransactions);
 
-      setTransactions(onHoldTransactions);
-      setPaidTransactions(paidTransactions);
-      setPendingTransactions(pendingTransactions);
-
-      setTotalPagePaid(Math.ceil(paidTransactions.length / itemsPerPage));
-      setTotalPagePending(Math.ceil(pendingTransactions.length / itemsPerPage));
+      setTotalPagePending(Math.ceil(otpTransactions.length / itemsPerPage));
     } catch (error) {
       console.error(error);
     }
@@ -78,25 +80,181 @@ const Otp = () => {
     fetchData();
   }, []);
 
-  const toggleReleaseModal = async () => {
-    setShowReleaseModal(!showReleaseModal);
+  const handleDownload = async (documentId) => {
+    try {
+      const response = await API.get(
+        `http://127.0.0.1:3000/user/documents/${documentId}/data`
+      );
+      console.log("This is the document: ", response.data.document);
+      const byteCharacters = atob(response.data.document); // Decode the Base64 string
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      const blob = new Blob(byteArrays, { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error fetching document data: ", error);
+    }
   };
 
-  const handleCloseReleaseModal = () => {
-    setShowReleaseModal(false);
+  const handleButtonClick = async (documentId) => {
+    setDocumentId(documentId);
+    // Trigger the click event of the file input
+    fileInputRef.current.click();
   };
 
-  const toggleRefundModal = async () => {
-    setShowRefundModal(!showRefundModal);
+  const handleFileChange = (event) => {
+    // const selectedFiles = event.target.files;
+    const selectedFile = event.target.files[0];
+
+    console.log("hi");
+
+    // setSelectedFiles(selectedFiles);
+    setSelectedFile(selectedFile);
+
+    // console.log(selectedFile);
+    // console.log(selectedFiles);
   };
 
-  const handleCloseRefundModal = () => {
-    setShowRefundModal(false);
+  const handleUpload = async (documentId) => {
+    const documentResponse = await API.get(
+      `http://localhost:3000/admin/documents`
+    );
+
+    const document = documentResponse.data.data.filter(
+      (document) => document.documentId == documentId
+    );
+
+    console.log("document: " + document[0].userId);
+
+    // console.log(documentResponse.data.data[0]);
+    // let document = "";
+
+    // for (let i = 0; i < documentResponse.data.data.length; i++) {
+    //   const dId = documentResponse.data.data[i].documentId;
+    // }
+
+    // documentResponse.data.data.map((d) => {
+    //   console.log("id ", d.documentId);
+    //   console.log("description ", d.description);
+    // });
+
+    console.log("document: " + document);
+
+    if (selectedFile) {
+      try {
+        const fileData = new FormData();
+
+        // console.log(selectedFiles);
+
+        // Array.from(selectedFiles).forEach((file) => {
+        //   // console.log("file" + file);
+        //   const fileUri = URL.createObjectURL(file);
+        //   const fileType = file.mimeType;
+        //   const fileName = file.name;
+        //   // const folderId = propertyFolderId;
+
+        //   fileData.append("documents", {
+        //     uri: fileUri,
+        //     name: fileName,
+        //     type: fileType,
+        //   });
+
+        //   console.log("File URI: ", fileUri);
+
+        //   // Append other required data to the FormData object
+        //   fileData.append("userId", 1);
+        //   fileData.append("transactionId", 7);
+        //   fileData.append("folderId", 1);
+        //   fileData.append("description", "otp document");
+        // });
+
+        // const fileUri = URL.createObjectURL(selectedFile);
+        // const fileType = selectedFile.mimeType;
+        // const fileName = selectedFile.name;
+        // const folderId = propertyFolderId;
+
+        // fileData.append("documents", {
+        //   uri: fileUri,
+        //   name: fileName,
+        //   type: fileType,
+        // });
+        // fileData.append("documentUri", fileUri);
+        // fileData.append("documentFileType", fileType);
+        // fileData.append("documentFileName", fileName);
+
+        // console.log("File URI: ", fileUri);
+
+        // Append other required data to the FormData object
+        fileData.append("documents", selectedFile);
+        fileData.append("userId", document[0].userId);
+        fileData.append("transactionId", document[0].transactionId);
+        fileData.append("folderId", document[0].folderId);
+        fileData.append("description", document[0].description);
+
+        // const response = await fetch(
+        //   `http://localhost:3000/user/documents/${documentId}/update`,
+        //   {
+        //     method: "put",
+        //     body: bodyData,
+        //     files: fileData,
+        //     // headers: {
+        //     //   "Content-type": "multipart/form-data",
+        //     // },
+        //   }
+        // );
+
+        // const response = await API.put(
+        //   `http://localhost:3000/admin/documents/${documentId}/update`,
+        //   fileData,
+        //   {
+        //     headers: {
+        //       "Content-Type": "multipart/form-data",
+        //     },
+        //   }
+        // );
+
+        const response = await axios.put(
+          `http://localhost:3000/admin/documents/${documentId}/update`,
+          fileData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // Check the response status and log the result
+        // if (response.ok) {
+        //   const data = await response.json();
+        //   const firstDocumentId = data.documentId;
+        //   console.log(
+        //     "Upload response:",
+        //     data,
+        //     "documentId: ",
+        //     firstDocumentId
+        //   );
+        //   return firstDocumentId;
+        //   // await documentFetch();
+        // } else {
+        //   console.log("File upload failed ", response);
+        //   return null;
+        // }
+      } catch (error) {
+        console.log("Error upload:", error);
+        return null;
+      }
+    }
   };
-
-  const handleReleasePayment = () => {};
-
-  const handleRefund = () => {};
 
   return (
     <div className="otp">
@@ -108,11 +266,7 @@ const Otp = () => {
           justifyContent: "space-between",
         }}
       >
-        <BreadCrumb
-          names={["Home"]}
-          lastname="Users"
-          links={["/"]}
-        ></BreadCrumb>
+        <BreadCrumb names={["Home"]} lastname="OTP" links={["/"]}></BreadCrumb>
       </div>
       <div className="otpList">
         <div className="heading-otp">
@@ -125,7 +279,7 @@ const Otp = () => {
               padding: "5px 10px 5px 10px",
             }}
           >
-            Pending Payments
+            OTP
           </h3>
         </div>
         <div>
@@ -136,14 +290,14 @@ const Otp = () => {
               }}
             >
               <tr>
-                <th>On Hold Balance</th>
-                <th style={{ width: "600px" }}>Action</th>
+                <th style={{ width: "300px" }}>OTP document</th>
+                <th>Upload</th>
+                <th style={{ width: "300px" }}>Signed</th>
               </tr>
             </thead>
-            {Array.isArray(pendingTransactions) &&
-            pendingTransactions.length > 0 ? (
+            {Array.isArray(transactions) && transactions.length > 0 ? (
               <tbody>
-                {pendingTransactions
+                {transactions
                   .slice(indexOfFirstItemPending, indexOfLastItemPending)
                   .map((transaction) => (
                     <tr
@@ -152,49 +306,97 @@ const Otp = () => {
                         textAlign: "center",
                       }}
                     >
-                      <td>S$ {transaction.onHoldBalance}</td>
                       <td>
-                        <Button
-                          size="sm"
-                          title="View property listing"
-                          style={{
-                            backgroundColor: "#FFD700",
-                            border: "0",
-                            marginRight: "10px",
-                            color: "black",
-                          }}
-                          onClick={() =>
-                            navigate(`/property/${transaction.propertyId}`)
-                          }
-                        >
-                          View Property Listing
-                        </Button>
-                        <Button
-                          size="sm"
-                          title="Release payment to seller"
-                          style={{
-                            backgroundColor: "#FFD700",
-                            border: "0",
-                            marginRight: "10px",
-                            color: "black",
-                          }}
-                          onClick={() => toggleReleaseModal()}
-                        >
-                          Release Payment to seller
-                        </Button>
-                        <Button
-                          size="sm"
-                          title="Refund payment to buyer"
-                          style={{
-                            backgroundColor: "#FFD700",
-                            border: "0",
-                            marginRight: "10px",
-                            color: "black",
-                          }}
-                          onClick={() => toggleRefundModal()}
-                        >
-                          Refund Payment to buyer
-                        </Button>
+                        {transaction.optionToPurchaseDocumentId != null ? (
+                          <div
+                            className="document-otp"
+                            onClick={() =>
+                              handleDownload(
+                                transaction.optionToPurchaseDocumentId
+                              )
+                            }
+                          >
+                            <FcDocument
+                              style={{ width: "45px", height: "45px" }}
+                            ></FcDocument>
+                          </div>
+                        ) : (
+                          <span>No Document</span>
+                        )}
+                      </td>
+                      <td>
+                        <div>
+                          <input
+                            type="file"
+                            // ref={fileInputRef}
+                            // // style={{ display: "none" }}
+                            // multiple
+                            onChange={handleFileChange}
+                          />
+                          {transaction.reimbursed == 1 ? (
+                            <Button
+                              style={{
+                                backgroundColor: "#FFD700",
+                                color: "black",
+                                border: 0,
+                              }}
+                              disabled
+                              onClick={() =>
+                                handleUpload(
+                                  transaction.optionToPurchaseDocumentId
+                                )
+                              }
+                            >
+                              <FiUpload />
+                            </Button>
+                          ) : (
+                            <Button
+                              style={{
+                                backgroundColor: "#FFD700",
+                                color: "black",
+                                border: 0,
+                              }}
+                              onClick={() =>
+                                handleUpload(
+                                  transaction.optionToPurchaseDocumentId
+                                )
+                              }
+                            >
+                              <FiUpload />
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          {transaction.reimbursed == 1 ? (
+                            <Button
+                              style={{
+                                // backgroundColor: "#FFD700",
+                                background: "none",
+                                color: "black",
+                                border: 0,
+                              }}
+                            >
+                              <TiTick
+                                style={{ width: "20px", height: "20px" }}
+                              />
+                            </Button>
+                          ) : (
+                            <Button
+                              style={{
+                                // backgroundColor: "#FFD700",
+                                background: "none",
+                                color: "black",
+                                border: 0,
+                              }}
+                            >
+                              <ImCross
+                                style={{ width: "12px", height: "12px" }}
+                              />
+                            </Button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -202,8 +404,8 @@ const Otp = () => {
             ) : (
               <tbody>
                 <tr>
-                  <td colSpan="2" style={{ textAlign: "center" }}>
-                    There are no pending payments
+                  <td colSpan="3" style={{ textAlign: "center" }}>
+                    There are no otp documents
                   </td>
                 </tr>
               </tbody>
@@ -224,202 +426,6 @@ const Otp = () => {
           </Pagination>
         </div>
       </div>
-      <div className="otpList">
-        <div className="heading">
-          <h3
-            style={{
-              color: "black",
-              font: "Montserrat",
-              fontWeight: "700",
-              fontSize: "16px",
-              padding: "5px 10px 5px 10px",
-            }}
-          >
-            Paid payments
-          </h3>
-        </div>
-        <div>
-          <Table hover responsive="sm" size="md">
-            <thead
-              style={{
-                textAlign: "center",
-              }}
-            >
-              <tr>
-                <th>Status</th>
-                <th>Balance</th>
-                <th style={{ width: "400px" }}>Action</th>
-              </tr>
-            </thead>
-            {Array.isArray(paidTransactions) && paidTransactions.length > 0 ? (
-              <tbody>
-                {paidTransactions
-                  .slice(indexOfFirstItemPaid, indexOfLastItemPaid)
-                  .map((transaction) => (
-                    <tr
-                      key={transaction.transactionId}
-                      style={{
-                        textAlign: "center",
-                      }}
-                    >
-                      <td>{transaction.status}</td>
-                      <td>S$ {transaction.onHoldBalance}</td>
-                      <td>
-                        <Button
-                          size="sm"
-                          title="View property listing"
-                          style={{
-                            backgroundColor: "#FFD700",
-                            border: "0",
-                            marginRight: "10px",
-                            color: "black",
-                          }}
-                          onClick={() =>
-                            navigate(`/property/${transaction.propertyId}`)
-                          }
-                        >
-                          View property listing
-                        </Button>
-                        <Button
-                          size="sm"
-                          title="View prospective buyer"
-                          style={{
-                            backgroundColor: "#FFD700",
-                            border: "0",
-                            marginRight: "10px",
-                            color: "black",
-                          }}
-                          onClick={() =>
-                            navigate(`/users/details/${transaction.buyerId}`)
-                          }
-                        >
-                          View prospective buyer
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            ) : (
-              <tbody>
-                <tr>
-                  <td colSpan="3" style={{ textAlign: "center" }}>
-                    There are no paid payments
-                  </td>
-                </tr>
-              </tbody>
-            )}
-          </Table>
-        </div>
-        <div>
-          <Pagination className="otp-paginate">
-            {Array.from({ length: totalPagePaid }).map((_, index) => (
-              <Pagination.Item
-                key={index}
-                active={index + 1 === currentPagePaid}
-                onClick={() => handlePageChangePaid(index + 1)}
-              >
-                {index + 1}
-              </Pagination.Item>
-            ))}
-          </Pagination>
-        </div>
-      </div>
-      <Modal
-        show={showReleaseModal}
-        onHide={handleCloseReleaseModal}
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title style={{ fontSize: "20px" }}>
-            Release payment
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Are you sure you want to release otp payment to the seller?</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            style={{
-              backgroundColor: "#F5F6F7",
-              border: "0",
-              width: "92px",
-              height: "40px",
-              borderRadius: "160px",
-              color: "black",
-              font: "Public Sans",
-              fontWeight: "600",
-              fontSize: "14px",
-            }}
-            onClick={handleCloseReleaseModal}
-          >
-            No
-          </Button>
-          <Button
-            style={{
-              backgroundColor: "#FFD700",
-              border: "0",
-              width: "92px",
-              height: "40px",
-              borderRadius: "160px",
-              color: "black",
-              font: "Public Sans",
-              fontWeight: "600",
-              fontSize: "14px",
-            }}
-            onClick={handleReleasePayment}
-          >
-            Yes
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <Modal
-        show={showRefundModal}
-        onHide={handleCloseRefundModal}
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title style={{ fontSize: "20px" }}>Refund payment</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Are you sure you want to refund otp payment to the buyer?</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            style={{
-              backgroundColor: "#F5F6F7",
-              border: "0",
-              width: "92px",
-              height: "40px",
-              borderRadius: "160px",
-              color: "black",
-              font: "Public Sans",
-              fontWeight: "600",
-              fontSize: "14px",
-            }}
-            onClick={handleCloseRefundModal}
-          >
-            No
-          </Button>
-          <Button
-            style={{
-              backgroundColor: "#FFD700",
-              border: "0",
-              width: "92px",
-              height: "40px",
-              borderRadius: "160px",
-              color: "black",
-              font: "Public Sans",
-              fontWeight: "600",
-              fontSize: "14px",
-            }}
-            onClick={handleRefund}
-          >
-            Yes
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 };

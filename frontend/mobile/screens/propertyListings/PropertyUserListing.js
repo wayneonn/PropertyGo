@@ -22,6 +22,7 @@ import DefaultImage from '../../assets/No-Image-Available.webp';
 import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FullScreenImage from './FullScreenImage';
+import PredictionPriceCard from './PredictionPriceCard';
 
 
 const PropertyUserListingScreen = ({ route }) => {
@@ -236,7 +237,7 @@ const PropertyUserListingScreen = ({ route }) => {
   };
 
   if (!propertyListing) {
-    return <ActivityIndicator style={styles.loadingIndicator} />;
+    return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5"/>;
   }
 
   let profileImageBase64;
@@ -373,7 +374,17 @@ const PropertyUserListingScreen = ({ route }) => {
               <Text style={[styles.statusText, { color: getStatusTextColor(propertyListing.approvalStatus, propertyListing.propertyStatus) }]}>{getStatusText(propertyListing.approvalStatus, propertyListing.propertyStatus)}</Text>
             </View>
             <Text style={styles.title}>{propertyListing.title}</Text>
-            <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
+            <Text style={styles.priceLabel}>
+              {propertyListing.offeredPrice ? (
+                <>
+                  ${formatPriceWithCommas(propertyListing.offeredPrice)}
+                </>
+              ) : (
+                <>
+                  ${formatPriceWithCommas(propertyListing.price)}
+                </>
+              )}
+            </Text>
             <Text style={styles.pricePerSqm}>
               ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
             </Text>
@@ -396,7 +407,7 @@ const PropertyUserListingScreen = ({ route }) => {
                 <TouchableOpacity
                   onPress={() => {
                     if (userDetails) {
-                      navigation.navigate('View Profile', { userId: userDetails.userId }); // Pass the userId parameter
+                      navigation.navigate('View Profile', { userId: userDetails.userId, property: propertyListing }); // Pass the userId parameter
                     }
                   }}
                 >
@@ -428,7 +439,7 @@ const PropertyUserListingScreen = ({ route }) => {
         <Text style={styles.dateContainer}>
           <Ionicons name="time-outline" size={17} color="#333" />
           {" "}
-          <Text style={styles.dateText}>{"Tenure: "}{propertyListing.tenure}{" Years"}</Text>
+          <Text style={styles.dateText}>{"Lease Commence Year: "}{propertyListing.lease_commence_date}</Text>
         </Text>
 
         <View style={styles.userInfoContainer}></View>
@@ -445,7 +456,14 @@ const PropertyUserListingScreen = ({ route }) => {
 
         <Text style={styles.descriptionHeader}>Description:</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
-        <Text style={styles.description}>{"\n"}</Text>
+        <PredictionPriceCard
+          flatType = {propertyListing.flatType} 
+          town = {propertyListing.area}
+          floorArea = {propertyListing.size} 
+          // leaseCommenceDate = {propertyListing.lease_commence_date}
+          leaseCommenceDate = {propertyListing.lease_commence_date}
+          property={propertyListing}
+        />
         {
           approvalStatus === 'APPROVED' ? (
             <>
@@ -555,7 +573,12 @@ const PropertyUserListingScreen = ({ route }) => {
             }}>
               <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buyButton}>
+            <TouchableOpacity style={[styles.buyButton, propertyListing.propertyStatus === "ON_HOLD" || propertyListing.propertyStatus === "COMPLETED" ? { backgroundColor: "#ccc" } : null]} 
+            onPress={() => {
+              navigation.navigate('Purchase Option Fee Info', { propertyListing, isOfferedPrice: false });
+            }}
+              disabled={propertyListing.propertyStatus === "ON_HOLD" || propertyListing.propertyStatus === "COMPLETED"}
+            >
               <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>
           </>

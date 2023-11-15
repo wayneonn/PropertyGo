@@ -105,13 +105,15 @@ const ForumTopicDefault = ({ navigation }) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-          tintColor={'#FFD700'}
-        />
-      }>
+      <ScrollView
+        keyboardDismissMode="on-drag"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={'#FFD700'}
+          />
+        }>
         <View style={styles.header}>
           <Text style={styles.title}>Forum Topics</Text>
           <TouchableOpacity onPress={handleFilterPress} style={styles.filterButton}>
@@ -123,7 +125,7 @@ const ForumTopicDefault = ({ navigation }) => {
           <ForumItem
             key={topic.forumTopicId}
             userId={user.user.userId}
-            topicUserId = {topic.userId}
+            topicUserId={topic.userId}
             topicId={topic.forumTopicId}
             topicName={topic.topicName}
             updatedAt={topic.updatedAt}
@@ -137,7 +139,7 @@ const ForumTopicDefault = ({ navigation }) => {
       <TouchableOpacity onPress={toggleModal} style={styles.addItem}>
         <Ionicons name="add-circle" size={50} color="#FFD700" />
       </TouchableOpacity>
-      <AddForumTopicModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumTopic} forumTopics={forumTopicsUnrestricted}/>
+      <AddForumTopicModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleNewForumTopic} forumTopics={forumTopicsUnrestricted} />
     </SafeAreaView>
 
   );

@@ -6,7 +6,9 @@ const {
     findRequest,
     getSingleRequest,
     updateRequest,
-    deleteRequest, findRequestByPartnerId
+    deleteRequest, findRequestByPartnerId,
+  createRequest,
+    updateRequest
 } = require('../../controllers/user/requestController');
 
 // Assuming that your path and method names are appropriate for your API design
@@ -22,5 +24,11 @@ router.route('/:id')
 // Route to find requests by receiverId
 router.route('/partner/:partnerId')
     .get(findRequestByPartnerId);
+
+router.route('/:userId/request')
+    .post(createRequest)
+
+router.route('/updateRequest/:requestId')
+    .put(updateRequest)
 
 module.exports = router;

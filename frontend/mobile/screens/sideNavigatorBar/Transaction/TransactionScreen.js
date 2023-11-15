@@ -9,6 +9,8 @@ const TransactionScreen = ({ route }) => {
     const { user } = useContext(AuthContext);
     const navigation = useNavigation(); // Use useNavigation to access the navigation object
     const { transaction } = route.params;
+    const isSeller = user.user.userId === transaction.userId;
+    const showReimbusement = (transaction.transactionType === 'OPTION_FEE' || transaction.transactionType === 'OPTION_EXERCISE_FEE') && isSeller && (transaction.optionFeeStatusEnum === 'COMPLETED' || transaction.optionFeeStatusEnum === 'PAID_OPTION_EXERCISE_FEE' || transaction.optionFeeStatusEnum === 'ADMIN_SIGNED')
 
     // Function to format date in a readable way
     const formatDate = (dateString) => {
@@ -66,7 +68,7 @@ const TransactionScreen = ({ route }) => {
                     <View style={styles.invoiceItem}>
                         <Text style={styles.info}>{transaction.quantity}{" Qty"}</Text>
                         <Text style={styles.info}>{transaction.transactionItem}</Text>
-                        <Text style={styles.info}>{formatCurrency(transaction.paymentAmount)}</Text>
+                        <Text style={styles.info}>{formatCurrency(transaction.paymentAmount === 0 ? transaction.onHoldBalance : transaction.paymentAmount)}</Text>
                     </View>
                 )}
 
@@ -99,7 +101,7 @@ const TransactionScreen = ({ route }) => {
                         <Text style={styles.info}></Text>
                         <Text style={(styles.label)}>GST (8%):</Text>
                         <Text style={styles.info}>
-                            {formatCurrency(transaction.paymentAmount * 0.08)}
+                            {formatCurrency(transaction.paymentAmount === 0 ? transaction.onHoldBalance * 0.08 : transaction.paymentAmount * 0.08)}
                         </Text>
                     </View>
                 )}
@@ -112,7 +114,10 @@ const TransactionScreen = ({ route }) => {
                             <Text style={styles.label}>Total Amount:</Text>
                             <Text style={styles.info}>
                                 {formatCurrency(
-                                    transaction.onHoldBalance
+                                    transaction.onHoldBalance +
+                                    (transaction.gst ?
+                                        (transaction.paymentAmount === 0 ? transaction.onHoldBalance * 0.08 : transaction.paymentAmount * 0.08)
+                                        : 0)
                                 )}
                             </Text>
                         </>
@@ -122,12 +127,50 @@ const TransactionScreen = ({ route }) => {
                             <Text style={styles.info}>
                                 {formatCurrency(
                                     transaction.paymentAmount +
-                                    (transaction.gst ? transaction.paymentAmount * 0.08 : 0)
+                                    (transaction.gst ?
+                                        (transaction.paymentAmount === 0 ? transaction.onHoldBalance * 0.08 : transaction.paymentAmount * 0.08)
+                                        : 0)
                                 )}
                             </Text>
                         </>
                     )}
                 </View>
+                {/* <View style={styles.bankAccountContainer}> */}
+                {showReimbusement ? (
+                    transaction.reimbursed === true ? (
+                        <>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Transferred to Bank Account:</Text>
+                            </View>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Bank: </Text>
+                                <Text style={styles.info}>{user.user.bankName}</Text>
+                            </View>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Bank Account Number: </Text>
+                                <Text style={styles.info}>{user.user.bankAccount}</Text>
+                            </View>
+                        </>
+                    ) : (
+                        <>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Pending Transfer to Bank Account:</Text>
+                            </View>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Bank: </Text>
+                                <Text style={styles.info}>{user.user.bankName}</Text>
+                            </View>
+                            <View style={styles.bankAccountInfoContainer}>
+                                <Text style={styles.label}>Bank Account Number: </Text>
+                                <Text style={styles.info}>{user.user.bankAccount}</Text>
+                            </View>
+                        </>
+                    )
+                ) : (
+                    <>
+                    </>
+                )}
+                {/* </View> */}
             </View>
             <TouchableOpacity style={[styles.button, styles.buttonClose, { marginTop: 50, width: "60%" }]}
                 onPress={() => {
@@ -149,12 +192,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 30,
+        justifyContent: 'center',
     },
     header: {
         fontSize: 32,
         fontWeight: 'bold',
         color: '#333',
-        marginLeft: 120,
+        alignContent: 'center',
+        textAlign: 'center',
+        // marginLeft: 120,
         marginTop: 10,
         paddingBottom: 20,
     },
@@ -192,6 +238,22 @@ const styles = StyleSheet.create({
         borderTopColor: '#ddd',
         paddingTop: 10,
         paddingBottom: 15,
+    },
+    bankAccountContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 15,
+        borderTopColor: '#ddd',
+        paddingTop: 10,
+        paddingBottom: 15,
+    },
+    bankAccountInfoContainer: {
+        flexDirection: 'row',
+        // justifyContent: 'space-between',
+        marginTop: 10,
+        borderTopColor: '#ddd',
+        paddingTop: 1,
+        paddingBottom: 1,
     },
     descriptionLineContainer: {
         flexDirection: 'row',

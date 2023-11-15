@@ -282,22 +282,22 @@ async function sellerCancelsViewing(req, res) {
     }
   }
 
-async function getScheduleById(req, res) {
-    const scheduleId = req.params.scheduleId;
+// async function getScheduleById(req, res) {
+//     const scheduleId = req.params.scheduleId;
 
-    try {
-        const schedule = await Schedule.findByPk(scheduleId);
+//     try {
+//         const schedule = await Schedule.findByPk(scheduleId);
 
-        if (!schedule) {
-            return res.status(404).json({ error: 'Schedule not found' });
-        }
+//         if (!schedule) {
+//             return res.status(404).json({ error: 'Schedule not found' });
+//         }
 
-        res.json(schedule);
-    } catch (error) {
-        console.error('Error fetching schedule:', error);
-        res.status(500).json({ error: 'Error fetching schedule' });
-    }
-}
+//         res.json(schedule);
+//     } catch (error) {
+//         console.error('Error fetching schedule:', error);
+//         res.status(500).json({ error: 'Error fetching schedule' });
+//     }
+// }
 
 async function updateScheduleByUserIdAndDate(req, res) {
     const userId = req.params.userId;

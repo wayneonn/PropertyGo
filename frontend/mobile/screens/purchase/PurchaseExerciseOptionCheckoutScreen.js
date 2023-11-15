@@ -85,6 +85,7 @@ const PurchaseExerciseOptionCheckoutScreen = ({ route }) => {
                     paymentAmount: amount,
                     quantity: 1,
                     gst,
+                    stripePaymentResponse: paymentIntent,
                     buyerId: user.user.userId,
                     userId: propertyListing.sellerId,
                     propertyId: propertyListing.propertyListingId,
@@ -94,11 +95,11 @@ const PurchaseExerciseOptionCheckoutScreen = ({ route }) => {
                 });
 
                 await createTransaction({
-                    onHoldBalance: propertyListing.price * 0.005,
+                    onHoldBalance: propertyListing.offeredPrice ? propertyListing.offeredPrice * 0.005 : propertyListing.price * 0.005,
                     transactionItem: "Commision Fee",
                     paymentAmount: 0,
                     quantity: 1,
-                    gst,
+                    gst: true,
                     buyerId: propertyListing.sellerId,
                     userId: user.user.userId,
                     propertyId: propertyListing.propertyListingId,

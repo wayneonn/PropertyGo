@@ -285,6 +285,28 @@ export const getPropertiesByRegion = async (region) => {
   }
 };
 
+// Add a new route to filter properties by region
+export const getPropertiesByFlatType = async (flatType) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${PROPERTY_ENDPOINT}/propertiesByFlatType/${flatType}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, data };
+    } else {
+      const errorData = await response.json();
+      return { success: false, message: errorData.message };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
 // Add a new route to get properties sorted by favorite count in descending order
 export const getPropertiesByFavoriteCount = async () => {
   try {

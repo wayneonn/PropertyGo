@@ -26,8 +26,8 @@ const PurchaseExerciseOptionCheckoutScreen = ({ route }) => {
     const [custIdExists, setCustIdExists] = useState(false);
     const stripeCustomerId = user.user.stripeCustomerId;
     const description = "Commission Fee";
-    const amount = propertyListing.price * 0.005;
-    const taxable = false;
+    const amount = propertyListing.offeredPrice ? propertyListing.offeredPrice * 0.005 : propertyListing.price * 0.005;
+    const taxable = true;
 
     const initializePayment = async () => {
         // console.log("amount at purchaseOptionFee: ", amount);
@@ -60,7 +60,7 @@ const PurchaseExerciseOptionCheckoutScreen = ({ route }) => {
                 }
                 const status = "PAID"
                 const transactionType = "OPTION_EXERCISE_FEE"
-                const gst = false;
+                const gst = true;
 
                 await updateTransaction(
                     transaction.transactionId,

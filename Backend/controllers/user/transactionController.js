@@ -637,18 +637,18 @@ exports.createOptionFeeTransaction = async (req, res) => {
             "isCompleted": false,
             "hasRead": false,
             "userNotificationId": createdTransaction.buyerId,
-            "userId" : seller.userId,
-            "content" : content,
-            "transactionId" : createdTransaction.transactionId,
+            "userId": seller.userId,
+            "content": content,
+            "transactionId": createdTransaction.transactionId,
         };
 
         await Notification.create(notificationBody);
 
         // const transactionUser = await transaction.getSeller();
 
-        if (seller && loggedInUsers.has(seller.userId)){
+        if (seller && loggedInUsers.has(seller.userId)) {
             // console.log("propertyUser :", propertyUser)
-            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+            req.io.emit("userNotification", { "pushToken": seller.pushToken, "title": property.title, "body": content });
             console.log("Emitted userNewForumCommentNotification");
         }
 
@@ -695,15 +695,15 @@ exports.sellerUploadedOTP = async (req, res) => {
             "isCompleted": false,
             "hasRead": false,
             "userNotificationId": sellerId,
-            "userId" : buyerId,
-            "content" : content,
-            "transactionId" : transaction.transactionId,
+            "userId": buyerId,
+            "content": content,
+            "transactionId": transaction.transactionId,
         };
 
         await Notification.create(notificationBody);
 
-        if (buyer && loggedInUsers.has(buyer.userId)){
-            req.io.emit("userNotification", {"pushToken": buyer.pushToken, "title": property.title, "body": content});
+        if (buyer && loggedInUsers.has(buyer.userId)) {
+            req.io.emit("userNotification", { "pushToken": buyer.pushToken, "title": property.title, "body": content });
             console.log("Emitted sellerUploadedOTP Notification");
         }
 
@@ -750,15 +750,15 @@ exports.sellerCancelledOTP = async (req, res) => {
             "isCompleted": false,
             "hasRead": false,
             "userNotificationId": sellerId,
-            "userId" : buyerId,
-            "content" : content,
-            "transactionId" : transaction.transactionId,
+            "userId": buyerId,
+            "content": content,
+            "transactionId": transaction.transactionId,
         };
 
         await Notification.create(notificationBody);
 
-        if (buyer && loggedInUsers.has(buyer.userId)){
-            req.io.emit("userNotification", {"pushToken": buyer.pushToken, "title": property.title, "body": content});
+        if (buyer && loggedInUsers.has(buyer.userId)) {
+            req.io.emit("userNotification", { "pushToken": buyer.pushToken, "title": property.title, "body": content });
             console.log("Emitted sellerCancelledOTP Notification");
         }
 
@@ -805,15 +805,15 @@ exports.buyerUploadedOTP = async (req, res) => {
             "isCompleted": false,
             "hasRead": false,
             "userNotificationId": buyerId,
-            "userId" : sellerId,
-            "content" : content,
-            "transactionId" : transaction.transactionId,
+            "userId": sellerId,
+            "content": content,
+            "transactionId": transaction.transactionId,
         };
 
         await Notification.create(notificationBody);
 
-        if (seller && loggedInUsers.has(seller.userId)){
-            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+        if (seller && loggedInUsers.has(seller.userId)) {
+            req.io.emit("userNotification", { "pushToken": seller.pushToken, "title": property.title, "body": content });
             console.log("Emitted buyerUploadedOTP Notification");
         }
 
@@ -860,15 +860,15 @@ exports.buyerRequestReupload = async (req, res) => {
             "isCompleted": false,
             "hasRead": false,
             "userNotificationId": buyerId,
-            "userId" : sellerId,
-            "content" : content,
-            "transactionId" : transaction.transactionId,
+            "userId": sellerId,
+            "content": content,
+            "transactionId": transaction.transactionId,
         };
 
         await Notification.create(notificationBody);
 
-        if (seller && loggedInUsers.has(seller.userId)){
-            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+        if (seller && loggedInUsers.has(seller.userId)) {
+            req.io.emit("userNotification", { "pushToken": seller.pushToken, "title": property.title, "body": content });
             console.log("Emitted sellerUploadedOTP Notification");
         }
 
@@ -915,15 +915,15 @@ exports.buyerCancelOTP = async (req, res) => {
             "isCompleted": false,
             "hasRead": false,
             "userNotificationId": buyerId,
-            "userId" : sellerId,
-            "content" : content,
-            "transactionId" : transaction.transactionId,
+            "userId": sellerId,
+            "content": content,
+            "transactionId": transaction.transactionId,
         };
 
         await Notification.create(notificationBody);
 
-        if (seller && loggedInUsers.has(seller.userId)){
-            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+        if (seller && loggedInUsers.has(seller.userId)) {
+            req.io.emit("userNotification", { "pushToken": seller.pushToken, "title": property.title, "body": content });
             console.log("Emitted sellerUploadedOTP Notification");
         }
 
@@ -970,15 +970,15 @@ exports.buyerPaidOptionExerciseFee = async (req, res) => {
             "isCompleted": false,
             "hasRead": false,
             "userNotificationId": buyerId,
-            "userId" : sellerId,
-            "content" : content,
-            "transactionId" : transaction.transactionId,
+            "userId": sellerId,
+            "content": content,
+            "transactionId": transaction.transactionId,
         };
 
         await Notification.create(notificationBody);
 
-        if (seller && loggedInUsers.has(seller.userId)){
-            req.io.emit("userNotification", {"pushToken": seller.pushToken, "title": property.title, "body": content});
+        if (seller && loggedInUsers.has(seller.userId)) {
+            req.io.emit("userNotification", { "pushToken": seller.pushToken, "title": property.title, "body": content });
             console.log("Emitted buyerPaidOptionExerciseFee Notification");
         }
 
@@ -992,7 +992,7 @@ exports.buyerPaidOptionExerciseFee = async (req, res) => {
 exports.getUserTransactions = async (req, res) => {
     try {
         const transactions = await Transaction.findAll({
-            where: { 
+            where: {
                 [Op.or]: [
                     { userId: req.params.id },
                     { buyerId: req.params.id }
@@ -1014,6 +1014,9 @@ exports.getTransactionInvoicePdf = async (req, res) => {
             return res.status(404).json({ message: 'Transaction not found' });
         }
         const user = await User.findByPk(transaction.buyerId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
         const invoiceNumber = transaction.transactionId;
         const invoiceDate = transaction.createdAt;
@@ -1026,6 +1029,30 @@ exports.getTransactionInvoicePdf = async (req, res) => {
         const status = transaction.status; // PENDING, PAID
         const name = user.name;
         const email = user.email;
+        const bankName = user.bankName;
+        const bankAccount = user.bankAccount;
+        const isSeller = user.userId === transaction.userId;
+        const showReimbusement = (transaction.transactionType === 'OPTION_FEE' || transaction.transactionType === 'OPTION_EXERCISE_FEE') && isSeller && (transaction.optionFeeStatusEnum === 'COMPLETED' || transaction.optionFeeStatusEnum === 'PAID_OPTION_EXERCISE_FEE' || transaction.optionFeeStatusEnum === 'ADMIN_SIGNED')
+        const bankDetails = showReimbusement ? (
+            transaction.reimbursed == true ?
+            (`<div className="invoice-details">
+                <p><strong>Transferred to Bank Account:</strong></p>
+                <p>Bank name Name: ${bankName}</p>
+                <p>Customer Email: ${bankAccount}</p>
+            </div>`
+            ) : (
+                `<div className="invoice-details">
+                <p><strong>Pending Transfer to Bank Account:</strong></p>
+                <p>Bank name Name: ${bankName}</p>
+                <p>Customer Email: ${bankAccount}</p>
+            </div>`
+            )
+        ) : (
+            `<div className="invoice-details">
+
+            </div>`
+        );
+
         const imagePath = 'https://i.ibb.co/XxHFhhX/Property-Go-High-Res-Logo.png';
         console.log("imagePath: ", imagePath);
 
@@ -1135,12 +1162,12 @@ exports.getTransactionInvoicePdf = async (req, res) => {
                 <div class="invoice-details">
                     <p>Invoice Number: ${invoiceNumber}</p>
                     <p>Invoice Date: ${new Date(invoiceDate).toLocaleString('en-SG', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}</p>
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+        })}</p>
                     <p>Customer Name: ${name}</p>
                     <p>Customer Email: ${email}</p>
                 </div>
@@ -1165,6 +1192,7 @@ exports.getTransactionInvoicePdf = async (req, res) => {
                     <p><strong>${gst ? 'GST (8%):' : 'GST (8%):'}</strong> $${(gst ? subtotal * 0.08 : 0).toFixed(2)}</p>
                     <p><strong>Total:</strong> $${total.toFixed(2)}</p>
                 </div>
+                ${bankDetails}
                 <div class="footer">
                     <p>Thank you for your business!</p>
                 </div>
@@ -1173,9 +1201,11 @@ exports.getTransactionInvoicePdf = async (req, res) => {
         </html>
         `;
 
+        // console.log("htmlContent: ", htmlContent)
+
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        
+
         await page.setContent(htmlContent, { waitUntil: 'load' }); // Wait for load
         const pdfBuffer = await page.pdf({ format: 'A4' });
 
@@ -1185,6 +1215,7 @@ exports.getTransactionInvoicePdf = async (req, res) => {
             'Content-Type': 'application/pdf',
             'Content-Length': pdfBuffer.length,
         });
+
         res.status(200).send(pdfBuffer);
     } catch (error) {
         res.status(500).json({ message: "Error creating invoice: ", error: error.message });
