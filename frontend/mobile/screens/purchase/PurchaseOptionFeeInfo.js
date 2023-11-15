@@ -49,28 +49,28 @@ const PurchaseOptionFeeInfo = ({ route }) => {
                 <Text style={styles.header}>Option Fee Process</Text>
             </View>
 
+            <View style={styles.cardContainer}>
+                <Text style={styles.headerDescription}><Text style={styles.bold}>Step 1:</Text> Payment of Option Fee via Stripe</Text>
+                <Text style={styles.description}><Text style={styles.bold}>1.</Text> The buyer initiates the property purchasing process by making a payment for the Option Fee using the provided Stripe payment gateway. This fee is required to secure the property and hold it for the buyer's consideration.</Text>
+                <Text style={styles.description}><Text style={styles.bold}>2.</Text> The paid amount is placed on hold for a period of 3 days. During this time, the seller is notified of the payment and given the opportunity to respond.</Text>
+                <Text style={styles.description}><Text style={styles.bold}>3.</Text> If the seller does not respond within the specified time frame, the Option Fee is automatically refunded to the buyer.</Text>
 
-            <Text style={styles.headerDescription}><Text style={styles.bold}>Step 1:</Text> Payment of Option Fee via Stripe</Text>
-            <Text style={styles.description}><Text style={styles.bold}>1.</Text> The buyer initiates the property purchasing process by making a payment for the Option Fee using the provided Stripe payment gateway. This fee is required to secure the property and hold it for the buyer's consideration.</Text>
-            <Text style={styles.description}><Text style={styles.bold}>2.</Text> The paid amount is placed on hold for a period of 3 days. During this time, the seller is notified of the payment and given the opportunity to respond.</Text>
-            <Text style={styles.description}><Text style={styles.bold}>3.</Text> If the seller does not respond within the specified time frame, the Option Fee is automatically refunded to the buyer.</Text>
+                <Text style={styles.headerDescription}><Text style={styles.bold}>Step 2:</Text> Notification of Seller's Response</Text>
+                <Text style={styles.description}><Text style={styles.bold}>1.</Text> Upon the seller's response, including uploading the Option To Purchase document, the buyer receives a notification informing them of the seller's action.</Text>
+                <Text style={styles.description}><Text style={styles.bold}>2.</Text> The buyer reviews and signs the document as required.</Text>
 
-            <Text style={styles.headerDescription}><Text style={styles.bold}>Step 2:</Text> Notification of Seller's Response</Text>
-            <Text style={styles.description}><Text style={styles.bold}>1.</Text> Upon the seller's response, including uploading the Option To Purchase document, the buyer receives a notification informing them of the seller's action.</Text>
-            <Text style={styles.description}><Text style={styles.bold}>2.</Text> The buyer reviews and signs the document as required.</Text>
+                <Text style={styles.headerDescription}><Text style={styles.bold}>Step 3:</Text> Admin Signature</Text>
+                <Text style={styles.description}><Text style={styles.bold}>1.</Text> After the buyer signs the document, it is forwarded to the admin for their signature as a witness to the transaction.</Text>
 
-            <Text style={styles.headerDescription}><Text style={styles.bold}>Step 3:</Text> Admin Signature</Text>
-            <Text style={styles.description}><Text style={styles.bold}>1.</Text> After the buyer signs the document, it is forwarded to the admin for their signature as a witness to the transaction.</Text>
+                <Text style={styles.headerDescription}><Text style={styles.bold}>Step 4:</Text> Setting the Option to Purchase Deadline</Text>
+                <Text style={styles.description}><Text style={styles.bold}>1.</Text> The seller specifies an Option to Purchase deadline within the application. The buyer must sign the document before this deadline.</Text>
 
-            <Text style={styles.headerDescription}><Text style={styles.bold}>Step 4:</Text> Setting the Option to Purchase Deadline</Text>
-            <Text style={styles.description}><Text style={styles.bold}>1.</Text> The seller specifies an Option to Purchase deadline within the application. The buyer must sign the document before this deadline.</Text>
+                <Text style={styles.headerDescription}><Text style={styles.bold}>Step 5:</Text> Exercising the Purchase</Text>
+                <Text style={styles.description}><Text style={styles.bold}>1.</Text> If the buyer decides to proceed with the purchase, they pay the Option Exercise Fee as specified by the seller. If it's past the OTP Deadline, the property listing's status changes from 'ON HOLD' to 'ACTIVE,' making the property available for other potential buyers.</Text>
+                <Text style={styles.description}><Text style={styles.bold}>2.</Text> Subsequently, the buyer and seller can continue the transaction process, including arranging the down payment and housing financing through the Platform's chat.</Text>
 
-            <Text style={styles.headerDescription}><Text style={styles.bold}>Step 5:</Text> Exercising the Purchase</Text>
-            <Text style={styles.description}><Text style={styles.bold}>1.</Text> If the buyer decides to proceed with the purchase, they pay the Option Exercise Fee as specified by the seller. If it's past the OTP Deadline, the property listing's status changes from 'ON HOLD' to 'ACTIVE,' making the property available for other potential buyers.</Text>
-            <Text style={styles.description}><Text style={styles.bold}>2.</Text> Subsequently, the buyer and seller can continue the transaction process, including arranging the down payment and housing financing through the Platform's chat.</Text>
-
-            <Text></Text>
-
+                <Text></Text>
+            </View>
 
             {/* Button to proceed to checkout */}
             <TouchableOpacity style={styles.checkoutButton} onPress={handleSubmit}>
@@ -154,6 +154,22 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         letterSpacing: 0.4,
     },
+    cardContainer: {
+        backgroundColor: 'white', // Set the background color to white
+        borderRadius: 10,
+        margin: 16,
+        padding: 2,
+        elevation: 5, // Add elevation for shadow on Android
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        paddingTop: 25,
+        marginBottom: 40,
+      },
 });
 
 export default PurchaseOptionFeeInfo;
