@@ -4,7 +4,8 @@ const { createSchedule, getScheduleById,
     updateScheduleByUserIdAndDate, deleteSchedule, getScheduleByDateAndPropertyId,
     getScheduleByUserId, getScheduleByPropertyId, getScheduleBySellerId, 
     sellerApprovesViewing, sellerRejectsViewing, sellerCancelsViewing,
-    buyerCancelsViewing} = require('../../controllers/user/scheduleController');
+    buyerCancelsViewing, createScheduleWithChat, getScheduleByChatId, partnerCancelsViewingWithChat
+} = require('../../controllers/user/scheduleController');
 
 router.post('/', createSchedule);
 router.get('/date-property', getScheduleByDateAndPropertyId);
@@ -18,5 +19,9 @@ router.post('/sellerApprovesViewing/:scheduleId', sellerApprovesViewing);
 router.post('/sellerRejectsViewing/:scheduleId', sellerRejectsViewing);
 router.post('/sellerCancelsViewing/:scheduleId', sellerCancelsViewing);
 router.post('/buyerCancelsViewing/:scheduleId', buyerCancelsViewing);
+// Break to Partner Schedule
+router.post('/chat', createScheduleWithChat)
+router.get('/byChatId', getScheduleByChatId)
+
 
 module.exports = router;

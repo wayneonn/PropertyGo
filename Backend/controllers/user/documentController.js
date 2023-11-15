@@ -16,6 +16,7 @@ exports.uploadDocuments = async (req, res) => {
   let folderId = req.body.folderId;
   let partnerApplicationId = req.body.partnerApplicationId;
   let propertyId = req.body.propertyId;
+  let chatId = req.body.chatId
   // If userId is an array, pick first element
   if (Array.isArray(userId)) {
     userId = userId[0];
@@ -59,6 +60,7 @@ exports.uploadDocuments = async (req, res) => {
         folderId: folderId,
         partnerApplicationId: partnerApplicationId,
         propertyId: propertyId,
+        chatId: chatId
       });
 
       documentIds.push(createdDocument.documentId); // Store the created document's ID

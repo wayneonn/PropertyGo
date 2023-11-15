@@ -3,7 +3,7 @@ import {
     Alert,
     FlatList,
     Image,
-    KeyboardAvoidingView,
+    KeyboardAvoidingView, Platform,
     RefreshControl,
     ScrollView,
     StyleSheet,
@@ -24,9 +24,14 @@ import {getChatById} from '../../utils/chatApi';
 import {addMessage, changeMessage} from '../../utils/messageApi'
 import base64 from 'react-native-base64';
 import MakeRequestModal from "../../components/Chat/MakeRequestModal";
-import {BASE_URL} from "../../utils/documentApi"
+import {BASE_URL, createFolder} from "../../utils/documentApi"
 import axios from 'axios'
 import MessageRequest from "../../components/Chat/MessageRequest";
+import MessageDownloadDocuments from "../../components/Chat/MessageDownloadDocuments";
+import ChatDocumentUpload from "../../components/Chat/ChatUploadDocuments";
+import {openBrowserAsync} from "expo-web-browser";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 
 // Add unique message.
 const Message = ({route, navigation}) => {
@@ -39,6 +44,7 @@ const Message = ({route, navigation}) => {
     const [transaction, setTransaction] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [isModalVisible, setModalVisible] = useState(false);
+    const [isUploadModalVisible, setIsUploadModalVisible] = useState(false)
 
     const fetchData = async () => {
         try {
@@ -263,10 +269,73 @@ const Message = ({route, navigation}) => {
         }
     }
 
+    const downloadPDF = async (item) => {
+        const documentId = item.messageText.split(':')[1].trim();
+        const response = await fetch(
+            `${BASE_URL}/user/documents/${documentId}/data`
+        );
+        console.log(response)
+        const result = await response.json();
+        console.log(result)
+        // The web version is kinda not needed.
+        if (Platform.OS === "web") {
+            const byteCharacters = atob(result.document); // Decode the Base64 string
+            const byteArrays = [];
+            for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                const slice = byteCharacters.slice(offset, offset + 512);
+                const byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+            const blob = new Blob(byteArrays, {type: "application/pdf"});
+            const url = URL.createObjectURL(blob);
+            await openBrowserAsync(url); // Assuming this opens the URL in a new browser tab/window
+            FileSaver.saveAs(blob, document.name); // Assuming document.name is the desired name of the downloaded file
+            URL.revokeObjectURL(url);
+        } else {
+            try {
+                // Slight issue opening certain PDF files.
+                // Native FileSystem logic
+
+                const fileName = (FileSystem.documentDirectory + result.title).replace(/\s/g, '_');
+                console.log('Filename:', fileName);
+
+                await FileSystem.writeAsStringAsync(
+                    fileName,
+                    result.document,
+                    {encoding: FileSystem.EncodingType.Base64}
+                );
+
+                const isAvailable = await Sharing.isAvailableAsync();
+                if (!isAvailable) {
+                    alert(`Uh oh, sharing isn't available on your platform`);
+                    return;
+                }
+
+                if (fileName) {
+                    alert("Downloaded to " + fileName);
+                    await Sharing.shareAsync(fileName);
+                } else {
+                    alert("Failed to download PDF");
+                }
+            } catch (error) {
+                console.error("Error opening the file", error);
+                alert("Failed to open PDF");
+            }
+        }
+    };
+
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
+
+    const toggleUploadModal = () => {
+        setIsUploadModalVisible(!isUploadModalVisible)
+    }
 
     return (
         <View style={styles.container}>
@@ -281,15 +350,25 @@ const Message = ({route, navigation}) => {
                             <Text style={styles.message}>
                                 {chat ? chat.receiver.email : "No email address available."}
                             </Text>
-
-                            {chat && user.user.userId === chat.receiverId ?
+                            <View style={{flexDirection: "row"}}>
+                                {chat && user.user.userId === chat.receiverId ?
+                                    <TouchableOpacity
+                                        style={styles.makeOfferButton}
+                                        onPress={toggleModal}
+                                    >
+                                        <Text style={styles.buttonText}>New Request</Text>
+                                    </TouchableOpacity>
+                                    : null}
+                                <Text>&nbsp;</Text>
                                 <TouchableOpacity
                                     style={styles.makeOfferButton}
-                                    onPress={toggleModal}
+                                    onPress={toggleUploadModal}
                                 >
-                                    <Text style={styles.buttonText}>Make Request!</Text>
+                                    <Text style={styles.buttonText}>Documents</Text>
                                 </TouchableOpacity>
-                                : null}
+                            </View>
+
+                            <ChatDocumentUpload chatId={chatId} userId={user.user.userId} isVisible={isUploadModalVisible} onClose={toggleUploadModal} sendMessage={sendMessage}/>
 
                             {/*{chat && user.user.userId === chat.receiver.userId && !chat.request ?*/}
                             {/*    <TouchableOpacity*/}
@@ -341,6 +420,7 @@ const Message = ({route, navigation}) => {
                     renderItem={({item}) => {
                         // Check if the message text starts with "Request"
                         const isRequest = item.messageText.startsWith("Request ID");
+                        const isDocument = item.messageText.startsWith("Document");
                         return (
                             <View
                                 style={item.userId === user.user.userId ? styles.messageSentContainer : styles.messageReceivedContainer}>
@@ -363,14 +443,18 @@ const Message = ({route, navigation}) => {
                                     <MessageRequest item={item} handleAccept={acceptRequest}
                                                     handleReject={rejectRequest}/>
                                     :
-                                    // Regular message rendering
-                                    <View
-                                        style={item.userId === user.user.userId ? styles.sentMessage : styles.receivedMessage}>
-                                        <Text style={styles.messageText}><HTML
-                                            source={{html: item.messageText.replace(/<\/?p>/g, '').replace(/<html>|<\/html>/g, '')}}
-                                            contentWidth={windowWidth}/></Text>
-                                        <Text style={styles.time}>{getTimeAgo(item.createdAt)}</Text>
-                                    </View>
+                                    isDocument ?
+                                        // Render the MessageDownloadDocuments component for messages starting with "Download"
+                                        <MessageDownloadDocuments item={item} handleDownload={downloadPDF}/>
+                                        :
+                                        // Regular message rendering
+                                        <View
+                                            style={item.userId === user.user.userId ? styles.sentMessage : styles.receivedMessage}>
+                                            <Text style={styles.messageText}><HTML
+                                                source={{html: item.messageText.replace(/<\/?p>/g, '').replace(/<html>|<\/html>/g, '')}}
+                                                contentWidth={windowWidth}/></Text>
+                                            <Text style={styles.time}>{getTimeAgo(item.createdAt)}</Text>
+                                        </View>
                                 }
                             </View>
                         );
@@ -551,6 +635,7 @@ const styles = StyleSheet.create({
         width: '35%',
         paddingVertical: 5,
         alignItems: "center",
+        justifyContent: "center",
         borderRadius: 6
     },
     buttonText: {

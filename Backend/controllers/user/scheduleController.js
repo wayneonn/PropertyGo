@@ -1,4 +1,4 @@
-const { Schedule, Notification, User, Property } = require('../../models');
+const { Schedule, Notification, User, Property, Chat } = require('../../models');
 const { loggedInUsers } = require('../../shared');
 
 async function createSchedule(req, res) {
@@ -442,6 +442,76 @@ async function getScheduleBySellerId(req, res) {
     }
 }
 
+async function getScheduleByChatId(req, res) {
+    const chatId = req.params.chatId;
+    try {
+        // Query the database to find schedules for the specified chat ID
+        const schedules = await Schedule.findAll({
+            where: {
+                chatId,
+            },
+        });
+        if (!schedules || schedules.length === 0) {
+            return res.status(404).json({ error: 'Schedules not found for the specified chat ID' });
+        }
+        res.json(schedules);
+    } catch (error) {
+        console.error('Error fetching schedules by Chat ID:', error);
+        res.status(500).json({ error: 'Error fetching schedules by Chat ID' });
+    }
+}
+
+async function createScheduleWithChat(req, res) {
+    const scheduleData = req.body;
+    try {
+        // Ensure that scheduleData includes chatId
+        if (!scheduleData.chatId) {
+            return res.status(400).json({ message: 'Chat ID is required' });
+        }
+        const createdSchedule = await Schedule.create(scheduleData);
+        // Fetch user details
+        const user = await User.findByPk(createdSchedule.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // Fetch chat details
+        const chat = await Chat.findByPk(createdSchedule.chatId);
+        if (!chat) {
+            return res.status(404).json({ message: 'Chat not found' });
+        }
+
+        // You might need to adjust this content based on how your Chat model is structured
+        const content = `${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)} has made a new schedule for a chat on ${createdSchedule.meetupDate} at ${createdSchedule.meetupTime}`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": false,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": userId,
+            // Assuming you want to notify partner in the chat
+            "userId": chat.receiverId,
+            "content": content,
+            "scheduleId": createdSchedule.scheduleId,
+        };
+
+        await Notification.create(notificationBody);
+
+        // Logic for real-time notification to the other participant in the chat
+        // Adjust this based on your application's logic and structure
+        const otherParticipant = await User.findByPk(chat.receiverId);
+        if (otherParticipant && loggedInUsers.has(otherParticipant.userId)){
+            req.io.emit("userNotification", {"pushToken": otherParticipant.pushToken, "title": "New Schedule", "body": content});
+            console.log("Emitted new schedule notification");
+        }
+        res.json(createdSchedule);
+    } catch (error) {
+        console.error("Error creating schedule with chat:", error);
+        res.status(500).json({ error: "Error creating schedule with chat" });
+    }
+}
+
+
 module.exports = {
     createSchedule,
     getScheduleById,
@@ -455,4 +525,7 @@ module.exports = {
     sellerRejectsViewing,
     sellerCancelsViewing,
     buyerCancelsViewing,
+    // This is the break to Partner functions
+    getScheduleByChatId,
+    createScheduleWithChat,
 };

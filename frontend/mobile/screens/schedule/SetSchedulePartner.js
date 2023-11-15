@@ -24,7 +24,9 @@ import { useFocusEffect } from '@react-navigation/native';
 
 
 const SetSchedulePartner = ({ route }) => {
-    // Honestly, we should make the schedule chat specific. 
+    // Honestly, we should make the schedule chat specific.
+    // Should we link it to the chat, or should we link it to something else.
+    // Honestly I wonder if you can literally link the same timeslots in different listings. Yes. You can.
     const { chatId } = route.params;
     const navigation = useNavigation();
 
