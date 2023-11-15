@@ -1,5 +1,5 @@
 const sharp = require('sharp');
-const { Image, Property } = require('../../models'); // Import your Image model
+const { Image, Property, Chat } = require('../../models'); // Import your Image model
 
 // Get all images associated with a property by its ID
 async function getImagesByPropertyId(req, res) {
@@ -186,6 +186,52 @@ async function getImagesByPartner(req, res) {
     }
 }
 
+// This only creates a single picture though?
+async function createImageWithChatId(req, res) {
+    try {
+        const { chatId } = req.params;
+        // const { title } = req.body;
+        const image = req.file; // Use req.file to get the uploaded image data
+        console.log("image", image)
+        // Find the property by ID
+        const chat = await Chat.findByPk(chatId);
+
+        if (!chat) {
+            return res.status(404).json({ error: 'Property not found' });
+        }
+
+        // Process and save the image data
+        try {
+            if (!image) {
+                return res.status(400).json({ error: 'No image selected' });
+            }
+
+            const processedImageBuffer = await sharp(image.buffer)
+                .resize({ width: 800 }) // You can set the dimensions accordingly
+                .webp()
+                .toBuffer();
+
+            const imageData = {
+                // title,
+                image: processedImageBuffer,
+                chatId: chatId,
+            };
+
+            // Create the image record with the associated propertyId
+            const createdImage = await Image.create(imageData);
+
+            res.json({ message: 'Image created successfully', imageId: createdImage.imageId });
+        } catch (imageError) {
+            console.error('Error processing image:', imageError);
+            return res.status(500).json({ error: 'Error processing image' });
+        }
+    } catch (error) {
+        console.error('Error creating image:', error);
+        res.status(500).json({ error: 'Error creating image' });
+    }
+}
+
+
 // async function getImageIdByPartner (req, res) {
 //     try {
 //         const imageIds = await Image.findAll({
@@ -209,5 +255,6 @@ module.exports = {
     removeImageById,
     updateImageById,
     createImageWithPropertyId,
-    getImagesByPartner
+    createImageWithChatId,
+    getImagesByPartner,
 };

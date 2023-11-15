@@ -17,11 +17,11 @@ export const ImageSwiper = ({images_new}) => {
             >
                 {images_new === undefined ? images.map((image, index) => (
                     <View key={index}>
-                        <Image source={image} style={styles.swiperImage}/>
+                        <Image source={image} style={styles.swiperImage} resizeMode={"cover"}/>
                     </View>
                 )) : images_new.map((image, index) => (
                     <View key={index}>
-                        <Image source={typeof image === "string" ? {uri : image} : image} style={styles.swiperImage}/>
+                        <Image source={typeof image === "string" ? {uri : image} : image} style={styles.swiperImage} resizeMode={"cover"}/>
                     </View>
                 ))}
             </Swiper>
@@ -265,3 +265,5 @@ const styles = StyleSheet.create({
     },
 
 });
+
+export default ImageSwiper

@@ -46,13 +46,14 @@ module.exports = (sequelize, DataTypes) => {
             "transactionId",
             "partnerApplicationId",
             "propertyId",
+              "chatId",
           ].filter((key) => {
             return this[key] != null;
           });
 
           if (setKeys.length !== 1) {
             throw new Error(
-              "Exactly one of transactionId, partnerApplicationId, or propertyId must be set."
+              "Exactly one of transactionId, partnerApplicationId, chatId or propertyId must be set."
             );
           }
         },
@@ -108,6 +109,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: "PartnerApplication",
     });
+
+    Document.belongsTo(models.Chat, {
+      foreignKey: {
+        name: "chatId",
+        allowNull: true,
+      }, as: "Chat"
+    })
   };
 
   // Document.addHook('beforeSave', (document, options) => {

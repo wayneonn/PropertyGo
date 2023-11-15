@@ -23,6 +23,7 @@ import documentSubmissionScreen from "../screens/partnerApplication/DocumentSubm
 import Response from '../screens/sideNavigatorBar/Response';
 import ResponseTopNavBar from '../components/ContactUs/ResponseTopNavBar';
 import Message from '../screens/chat/Message';
+import MessagePartner from "../screens/chat/MessagePartner";
 import MessageTopNavBar from '../components/Chat/MessageTopNavBar';
 
 import { AuthContext } from '../AuthContext';
@@ -237,8 +238,7 @@ const LoginNavigator = () => {
                     component={Message}
                     options={{ header: () => <MessageTopNavBar /> }}
                 />
-
-
+                <Stack.Screen name={"Message Partner"} component={MessagePartner} options={{header: () => <MessageTopNavBar/>}} />
             </Stack.Navigator>
         </FormDataProvider>
     );

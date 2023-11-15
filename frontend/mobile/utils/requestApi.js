@@ -1,7 +1,18 @@
+
 import axios from 'axios';
 import configData from "../config.json"
 
 const BASE_URL = configData.BASE_URL;
+
+export const createRequest = async(USER_TYPE, START, END) => {
+    try {
+        const res = await fetch(`${BASE_URL}/user/partners/${USER_TYPE}/${START}/${END}`)
+        const results = await res.json();
+        return results
+    } catch (error) {
+        console.error("Fetch partners failed: ", error)
+    }
+}
 
 export const createRequest = async (userId, requestData) => {
     try {

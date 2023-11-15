@@ -56,6 +56,7 @@ const messageTestData = require("./test_data/messageTestData");
 const {
   createFakeTransactions,
   generateFakeProperties,
+    createFakeRequests
 } = require("./test_data/fakerDataGenerator");
 
 // admin routes
@@ -192,6 +193,9 @@ app.use("/image", injectIo(io), imageRoute);
 // app.use("/review", reviewRoute);
 
 app.use("/prediction", predictionRoute);
+
+app.use("/request", requestRoute)
+
 
 // TRYING TO USE WEBSOCKETS.
 // const wss = new WebSocket.Server({server})
@@ -392,6 +396,7 @@ db.sequelize
         for (const requestData of requestTestData) {
           await db.Request.create(requestData);
         }
+        const genRequest = await createFakeRequests(1000)
         console.log("Request test data inserted successfully.");
       } catch (error) {
         console.log("Error inserting Request test data:", error);

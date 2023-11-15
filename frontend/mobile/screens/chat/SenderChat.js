@@ -25,8 +25,11 @@ const SenderChat = ({ navigation }) => {
 
                 const chatDatas = await getUserSenderChat(user.user.userId);
                 // console.log(chatDatas);
-                setChats(chatDatas);
-                setFilteredChats(chatDatas);
+                const filtered = chatDatas.filter((chat) =>
+                    !["LAWYER", "CONTRACTOR"].includes(chat.receiver.userType)
+                );
+                setChats(filtered);
+                setFilteredChats(filtered);
                 setSearchQuery('');
                 setFilter(null);
 

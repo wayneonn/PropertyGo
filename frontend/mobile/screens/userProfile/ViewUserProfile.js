@@ -1,9 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, } from 'react-native';
-import { AuthContext } from '../../AuthContext';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View, ScrollView} from 'react-native';
 import base64 from 'react-native-base64';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icon library
-import { getUserById, getRatingByUser } from '../../utils/api';
+import {getRatingByUser, getUserById} from '../../utils/api';
 import StarRating from 'react-native-star-rating';
 import { Ionicons } from '@expo/vector-icons';
 import { createChat } from '../../utils/chatApi';
@@ -15,22 +14,22 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
   const [userDetails, setUser] = useState(null);
   const [rating, setRating] = useState(null);
 
-  const fetchUser = async (userId) => {
-    try {
-      console.log("userId: ", userId)
-      const { success, data, message } = await getUserById(userId);
+    const fetchUser = async (userId) => {
+        try {
+            console.log("userId: ", userId)
+            const {success, data, message} = await getUserById(userId);
 
-      if (success) {
-        // Handle the user data here
-        return data;
-      } else {
-        // Handle the error here
-        console.error('Error fetching user:', message);
-      }
-    } catch (error) {
-      console.error('Error fetching user:', error);
-    }
-  };
+            if (success) {
+                // Handle the user data here
+                return data;
+            } else {
+                // Handle the error here
+                console.error('Error fetching user:', message);
+            }
+        } catch (error) {
+            console.error('Error fetching user:', error);
+        }
+    };
 
   // const fetchRating = async (userId) => {
   //   try {
@@ -48,6 +47,16 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
   //   }
   // };
 
+    useEffect(() => {
+        // Fetch user details based on the provided userId
+        fetchUser(userId).then((userData) => {
+            setUser(userData);
+        });
+        fetchRating(userId).then((rating) => {
+            setRating(rating);
+            console.log("rating: ", rating.userRating);
+        });
+    }, [userId]);
 
   useEffect(() => {
     // Fetch user details based on the provided userId
@@ -61,19 +70,98 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
   }, [userId]);
 
 
-  let profileImageBase64;
-  if (userDetails && userDetails.profileImage && userDetails.profileImage.data) {
-    profileImageBase64 = base64.encodeFromByteArray(userDetails.profileImage.data);
-  }
+    let profileImageBase64;
+    if (userDetails && userDetails.profileImage && userDetails.profileImage.data) {
+        profileImageBase64 = base64.encodeFromByteArray(userDetails.profileImage.data);
+    }
 
-  if (!userDetails) {
+    if (!userDetails) {
+        return (
+            <View style={styles.container}>
+                <Text>Please log in to view your profile.</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+                    <Text style={styles.loginLink}>Login</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
     return (
-      <View style={styles.container}>
-        <Text>Please log in to view your profile.</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
-          <Text style={styles.loginLink}>Login</Text>
-        </TouchableOpacity>
-      </View>
+        <ScrollView>
+            <View style={styles.container}>
+                <View style={styles.headerContainer}>
+                    {/* Back button */}
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                        <Ionicons name="arrow-back" size={24} color="black"/>
+                    </TouchableOpacity>
+                    <Text style={styles.header}>User Profile</Text>
+                </View>
+                <View style={styles.profileHeader}>
+                    {profileImageBase64 ? (
+                        <Image
+                            source={{uri: `data:image/jpeg;base64,${profileImageBase64}`}}
+                            style={styles.profileImage}
+                        />
+                    ) : (
+                        <Image
+                            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                            style={{width: 150, height: 150, borderRadius: 120}}
+                        />
+                    )}
+                    <Text style={styles.heading}>Profile Picture</Text>
+                </View>
+                {rating !== null ? (
+                    <View style={styles.profileInfo}>
+                        <View style={styles.row}>
+                            <Text style={styles.label}>Name:</Text>
+                            <Text style={styles.value}>{userDetails.name}</Text>
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.label}>Country:</Text>
+                            <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.label}>Phone Number:</Text>
+                            <Text style={styles.value}>{userDetails.countryOfOrigin}</Text>
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.label}>Rating:</Text>
+                            <Text style={styles.value}>
+                                {rating.userRating !== null
+                                    ? rating.userRating.toFixed(1)
+                                    : '0.0 [New User]'}
+                            </Text>
+                        </View>
+                        <View style={styles.ratingContainer}>
+                            <StarRating
+                                disabled={true}
+                                maxStars={5}
+                                rating={rating.userRating !== null ? rating.userRating : 0}
+                                fullStarColor="gold"
+                                emptyStarColor="gold"
+                                starSize={24}
+                            />
+                        </View>
+                    </View>
+                ) : (
+                    <ActivityIndicator size="large" color="dodgerblue"/>
+                )}
+                <TouchableOpacity
+                    style={styles.editProfileButton}
+                    onPress={() => {
+                        // navigation.navigate('EditProfile'); // Change this to the correct screen name
+                    }}
+                >
+                    <Icon
+                        name="edit"
+                        size={20}
+                        color="white"
+                        style={styles.editIcon}
+                    />
+                    <Text style={styles.editProfileButtonText}>Chat With User</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
     );
   }
 

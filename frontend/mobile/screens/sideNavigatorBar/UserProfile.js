@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AuthContext} from '../../AuthContext';
 import base64 from 'react-native-base64';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icon library
@@ -25,55 +25,57 @@ function UserProfile({navigation}) {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>User Profile</Text>
-            <View style={styles.profileHeader}>
-                {profileImageBase64 ? (
-                    <Image
-                        source={{uri: `data:image/jpeg;base64,${profileImageBase64}`}}
-                        style={styles.profileImage}
+        <ScrollView>
+            <View style={styles.container}>
+                <Text style={styles.header}>User Profile</Text>
+                <View style={styles.profileHeader}>
+                    {profileImageBase64 ? (
+                        <Image
+                            source={{uri: `data:image/jpeg;base64,${profileImageBase64}`}}
+                            style={styles.profileImage}
+                        />
+                    ) : (
+                        <Image
+                            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
+                            style={{width: 150, height: 150, borderRadius: 120}}
+                        />
+                    )}
+                    <Text style={styles.heading}>Profile Picture</Text>
+                </View>
+                <View style={styles.profileInfo}>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Name:</Text>
+                        <Text style={styles.value}>{user.user.name}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Email:</Text>
+                        <Text style={styles.value}>{user.user.email}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Country:</Text>
+                        <Text style={styles.value}>{user.user.countryOfOrigin}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Date Of Birth:</Text>
+                        <Text style={styles.value}>{user.user.dateOfBirth}</Text>
+                    </View>
+                </View>
+                <TouchableOpacity
+                    style={styles.editProfileButton}
+                    onPress={() => {
+                        navigation.navigate('EditProfile'); //Change this to the correct screen name
+                    }}
+                >
+                    <Icon
+                        name="edit"
+                        size={20}
+                        color="white"
+                        style={styles.editIcon}
                     />
-                ) : (
-                    <Image
-                        source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                        style={{width: 150, height: 150, borderRadius: 120}}
-                    />
-                )}
-                <Text style={styles.heading}>Profile Picture</Text>
+                    <Text style={styles.editProfileButtonText}>Edit Profile</Text>
+                </TouchableOpacity>
             </View>
-            <View style={styles.profileInfo}>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Name:</Text>
-                    <Text style={styles.value}>{user.user.name}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Email:</Text>
-                    <Text style={styles.value}>{user.user.email}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Country:</Text>
-                    <Text style={styles.value}>{user.user.countryOfOrigin}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Date Of Birth:</Text>
-                    <Text style={styles.value}>{user.user.dateOfBirth}</Text>
-                </View>
-            </View>
-            <TouchableOpacity
-                style={styles.editProfileButton}
-                onPress={() => {
-                    navigation.navigate('EditProfile'); //Change this to the correct screen name
-                }}
-            >
-                <Icon
-                    name="edit"
-                    size={20}
-                    color="white"
-                    style={styles.editIcon}
-                />
-                <Text style={styles.editProfileButtonText}>Edit Profile</Text>
-            </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 }
 

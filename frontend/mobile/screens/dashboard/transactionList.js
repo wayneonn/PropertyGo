@@ -10,6 +10,8 @@ import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
 import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {RadioCheckBox} from "../../components/Partner/RadioCheckBox";
 
+// I should make it more like the Tab Navigator.
+// Reuse all the older code.
 const TransactionList = ({navigation}) => {
     const {user} = useContext(AuthContext);
     const USER_ID = user.user.userId
