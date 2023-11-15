@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {AuthContext} from '../../AuthContext';
-import {Ionicons} from '@expo/vector-icons';
+import {Ionicons, MaterialIcons} from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {getTimeAgo} from '../../services/CalculateTimeAgo';
 import HTML from 'react-native-render-html';
@@ -32,6 +32,7 @@ import ChatDocumentUpload from "../../components/Chat/ChatUploadDocuments";
 import {openBrowserAsync} from "expo-web-browser";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
+import ChatUploadImages from "../../components/Chat/ChatUploadImages";
 
 // Add unique message.
 const Message = ({route, navigation}) => {
@@ -45,6 +46,7 @@ const Message = ({route, navigation}) => {
     const [refreshing, setRefreshing] = useState(false);
     const [isModalVisible, setModalVisible] = useState(false);
     const [isUploadModalVisible, setIsUploadModalVisible] = useState(false)
+    const [isImageModalVisible, setIsImageModalVisible] = useState(false)
 
     const fetchData = async () => {
         try {
@@ -337,6 +339,10 @@ const Message = ({route, navigation}) => {
         setIsUploadModalVisible(!isUploadModalVisible)
     }
 
+    const toggleImageModal = () => {
+        setIsImageModalVisible(!isImageModalVisible)
+    }
+
     return (
         <View style={styles.container}>
             <TouchableOpacity>
@@ -356,7 +362,8 @@ const Message = ({route, navigation}) => {
                                         style={styles.makeOfferButton}
                                         onPress={toggleModal}
                                     >
-                                        <Text style={styles.buttonText}>New Request</Text>
+                                        <MaterialIcons name="add" size={20} color="#000" />
+                                        <Text style={styles.buttonText}> Request</Text>
                                     </TouchableOpacity>
                                     : null}
                                 <Text>&nbsp;</Text>
@@ -364,11 +371,18 @@ const Message = ({route, navigation}) => {
                                     style={styles.makeOfferButton}
                                     onPress={toggleUploadModal}
                                 >
-                                    <Text style={styles.buttonText}>Documents</Text>
+                                    <MaterialIcons name="description" size={20} color="#000" />
+                                </TouchableOpacity>
+                                <Text>&nbsp;</Text>
+                                <TouchableOpacity
+                                    style={styles.makeOfferButton}
+                                    onPress={toggleImageModal}
+                                >
+                                    <Ionicons name="images" size={20} color="#000" />
                                 </TouchableOpacity>
                             </View>
 
-                            <ChatDocumentUpload chatId={chatId} userId={user.user.userId} isVisible={isUploadModalVisible} onClose={toggleUploadModal} sendMessage={sendMessage}/>
+
 
                             {/*{chat && user.user.userId === chat.receiver.userId && !chat.request ?*/}
                             {/*    <TouchableOpacity*/}
@@ -482,8 +496,10 @@ const Message = ({route, navigation}) => {
             </KeyboardAvoidingView>
 
             <MakeRequestModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleMakeRequest}/>
-
+            <ChatUploadImages isVisible={isImageModalVisible} onClose={toggleImageModal} chatId={chatId}/>
+            <ChatDocumentUpload chatId={chatId} userId={user.user.userId} isVisible={isUploadModalVisible} onClose={toggleUploadModal} sendMessage={sendMessage}/>
         </View>
+
     );
 };
 
@@ -632,10 +648,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         // marginHorizontal: 15,
         marginTop: 5,
-        width: '35%',
+        width: '31%',
         paddingVertical: 5,
         alignItems: "center",
         justifyContent: "center",
+        flexDirection: "row",
         borderRadius: 6
     },
     buttonText: {
