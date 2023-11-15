@@ -28,6 +28,7 @@ import {BASE_URL, createFolder} from "../../utils/documentApi"
 import axios from 'axios'
 import MessageRequest from "../../components/Chat/MessageRequest";
 import MessageDownloadDocuments from "../../components/Chat/MessageDownloadDocuments";
+import MessageImages from "../../components/Chat/MessageImages";
 import ChatDocumentUpload from "../../components/Chat/ChatUploadDocuments";
 import {openBrowserAsync} from "expo-web-browser";
 import * as FileSystem from "expo-file-system";
@@ -435,6 +436,7 @@ const Message = ({route, navigation}) => {
                         // Check if the message text starts with "Request"
                         const isRequest = item.messageText.startsWith("Request ID");
                         const isDocument = item.messageText.startsWith("Document");
+                        const isImage = item.messageText.startsWith("Image ID");
                         return (
                             <View
                                 style={item.userId === user.user.userId ? styles.messageSentContainer : styles.messageReceivedContainer}>
@@ -460,7 +462,10 @@ const Message = ({route, navigation}) => {
                                     isDocument ?
                                         // Render the MessageDownloadDocuments component for messages starting with "Download"
                                         <MessageDownloadDocuments item={item} handleDownload={downloadPDF}/>
-                                        :
+
+                                    : isImage ?
+                                    // Render logic for messages that are images
+                                    <MessageImages item={item} /> :
                                         // Regular message rendering
                                         <View
                                             style={item.userId === user.user.userId ? styles.sentMessage : styles.receivedMessage}>

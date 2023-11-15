@@ -3,7 +3,7 @@ import {View, Text, Button, StyleSheet, Image} from 'react-native';
 import {AuthContext} from "../../AuthContext";
 import {Ionicons} from "@expo/vector-icons";
 
-const MessageImages = ({ item}) => {
+const MessageImages = ({item}) => {
     const { user } = useContext(AuthContext);
     const isSent = item.userId === user.user.userId;
     const imageId = item.messageText.split(':')[1].trim();
