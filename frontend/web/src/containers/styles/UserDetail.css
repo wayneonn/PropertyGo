@@ -29,16 +29,16 @@
 .status-box {
   background-color: #FFD700;
   /* background-color: pink; */
-  height: 300px;
-  width: 1000px;
+  height: 330px;
+  width: 800px;
   margin-left: 30px;
   border-radius: 8px;
 }
 
 .deactivated-box {
   background-color: #FF6666;
-  height: 300px;
-  width: 1000px;
+  height: 330px;
+  width: 800px;
   margin-left: 30px;
   border-radius: 8px;
 }

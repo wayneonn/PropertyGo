@@ -438,7 +438,7 @@ const ContractorDetail = () => {
               <div
                 style={{
                   display: "flex",
-                  marginTop: "60px",
+                  marginTop: "80px",
                   marginLeft: "5px",
                   alignItems: "center",
                   justifyContent: "space-between",

@@ -429,10 +429,10 @@ const UserDetail = () => {
               <div
                 style={{
                   display: "flex",
-                  marginTop: "50px",
+                  marginTop: "80px",
                   marginLeft: "5px",
                   alignItems: "center",
-                  justifyContent: "space-between",
+                  // justifyContent: "space-between",
                 }}
               >
                 {isActive === true ? (

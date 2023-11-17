@@ -456,7 +456,7 @@ const LawyerDetail = () => {
               <div
                 style={{
                   display: "flex",
-                  marginTop: "10px",
+                  marginTop: "20px",
                   marginLeft: "5px",
                   alignItems: "center",
                   justifyContent: "space-between",
