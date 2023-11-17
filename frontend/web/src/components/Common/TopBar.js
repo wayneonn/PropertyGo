@@ -12,8 +12,29 @@ const TopBar = () => {
   );
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [admin, setAdmin] = useState({});
 
-  const unreadNotificationCount = notifications.filter((notification) => !notification.isRead).length;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await API.get(
+          `http://localhost:3000/admins/${localStorage.getItem(
+            "loggedInAdmin"
+          )}`
+        );
+
+        console.log(response.data);
+        setAdmin(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const unreadNotificationCount = notifications.filter(
+    (notification) => !notification.isRead
+  ).length;
 
   // toast message
   const [show, setShow] = useState(false);
@@ -165,11 +186,11 @@ const TopBar = () => {
       fetchData();
     });
 
-    socket.on('newAdminFlaggedForumPost', () => {
+    socket.on("newAdminFlaggedForumPost", () => {
       fetchData();
     });
 
-    socket.on('newAdminResetAppropriateForumPost', () => {
+    socket.on("newAdminResetAppropriateForumPost", () => {
       fetchData();
     });
 
@@ -183,11 +204,11 @@ const TopBar = () => {
       fetchData();
     });
 
-    socket.on('newAdminFlaggedForumComment', () => {
+    socket.on("newAdminFlaggedForumComment", () => {
       fetchData();
     });
 
-    socket.on('newAdminResetAppropriateForumComment', () => {
+    socket.on("newAdminResetAppropriateForumComment", () => {
       fetchData();
     });
 
@@ -259,15 +280,29 @@ const TopBar = () => {
         </Row>
       </div>
       <div className="icons-container">
+        <div className="admin-name">
+          <span>
+            Welcome! You are logged in as,{" "}
+            <span style={{ fontWeight: "500" }}>{admin.userName}</span>
+          </span>
+        </div>
         {notificationIcon === "MdNotificationImportant" ? (
-          <div className="notification-icon-container" onClick={handleAvailableNotification}>
+          <div
+            className="notification-icon-container"
+            onClick={handleAvailableNotification}
+          >
             <MdNotificationImportant className="notif" />
             {unreadNotificationCount > 0 && (
-              <div className="notification-badge">{unreadNotificationCount}</div>
+              <div className="notification-badge">
+                {unreadNotificationCount}
+              </div>
             )}
           </div>
         ) : (
-          <div className="notification-icon-container" onClick={handleEmptyNotification}>
+          <div
+            className="notification-icon-container"
+            onClick={handleEmptyNotification}
+          >
             <IoMdNotificationsOutline className="notif" />
           </div>
         )}
