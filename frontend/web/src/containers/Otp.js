@@ -70,6 +70,8 @@ const Otp = () => {
       // setPendingTransactions(unreimbursed);
       setTransactions(otpTransactions);
 
+      console.log("fetch data " + transactions);
+
       setTotalPagePending(Math.ceil(otpTransactions.length / itemsPerPage));
     } catch (error) {
       console.error(error);
@@ -125,7 +127,7 @@ const Otp = () => {
     // console.log(selectedFiles);
   };
 
-  const handleUpload = async (documentId) => {
+  const handleUpload = async (documentId, transactionId) => {
     const documentResponse = await API.get(
       `http://localhost:3000/admin/documents`
     );
@@ -138,6 +140,8 @@ const Otp = () => {
 
     console.log("document: " + document);
 
+    console.log("document transaction id " + document[0].transactionId);
+
     if (selectedFile) {
       try {
         const fileData = new FormData();
@@ -145,7 +149,7 @@ const Otp = () => {
         // Append other required data to the FormData object
         fileData.append("documents", selectedFile);
         fileData.append("userId", document[0].userId);
-        fileData.append("transactionId", document[0].transactionId);
+        fileData.append("transactionId", transactionId);
         fileData.append("folderId", document[0].folderId);
         fileData.append("description", document[0].description);
 
@@ -253,7 +257,7 @@ const Otp = () => {
                               }}
                               onClick={() =>
                                 handleUpload(
-                                  transaction.optionToPurchaseDocumentId
+                                  transaction.optionToPurchaseDocumentId, transaction.transactionId
                                 )
                               }
                             >
