@@ -53,7 +53,7 @@ async function sendPushNotification(notificationData) {
         title: notificationData.title,
         body: notificationData.body,
         data: {
-            navigateTo: "Activity", // Add the navigation destination here
+            navigateTo: notificationData.chatNotificationBoolean ? "Chat" : "Activity", // Add the navigation destination here
             // someData: 'goes here',
         },
     };
@@ -158,7 +158,20 @@ const LoginNavigator = () => {
             // console.log("userNewForumCommentNotification")
 
             // console.log({pushToken,title,body})
-            sendPushNotification({ pushToken, title, body });
+            sendPushNotification({ pushToken, title, body});
+        });
+
+        socket.on("userChatNotification", (data) => {
+            // console.log("Received userNewForumCommentNotification");
+            // Handle user logout event
+            const pushToken = data.pushToken;
+            const title = data.title;
+            const body = data.body;
+            const chatNotificationBoolean = data.chatNotificationBoolean;
+            // console.log("userNewForumCommentNotification")
+
+            // console.log({pushToken,title,body})
+            sendPushNotification({ pushToken, title, body, chatNotificationBoolean });
         });
 
         return () => {

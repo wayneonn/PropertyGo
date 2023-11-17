@@ -1,14 +1,54 @@
-const { Request, User, Notification } = require("../../models");
+const { Request, User, Notification, Chat, Property } = require("../../models");
 const sequelize = require('sequelize');
+const { loggedInUsers } = require('../../shared');
 
 const createRequest = async (req, res) => {
-    const userId = parseInt(req.params.userId);
-
-    // Assuming you want to set userId in the Request model
-    req.body.userId = userId;
-
     try {
+        const userId = parseInt(req.params.userId);
+        const { chatId, price } = req.body;
+    
+        // Assuming you want to set userId in the Request model
+        req.body.userId = userId;
+    
+        const chat = await Chat.findByPk(chatId, {
+            include: [{
+                model: Property,
+                as:"propertyListing"
+            }]
+        });
+
+        if (!chat) {
+            return res.status(404).json({ message: 'Chat Not Found' });
+        }
+
+
+        const sender = await User.findByPk(userId);
+        const reveiver = await chat.getReceiver();
+
+        const content = `${sender.userName.charAt(0).toUpperCase() + sender.userName.slice(1)} has made a request on "${chat.propertyListing.title}"`;
+
+        const notificationBody = {
+            "isRecent": true,
+            "isPending": true,
+            "isCompleted": false,
+            "hasRead": false,
+            "userNotificationId": userId,
+            "userId" : reveiver.userId,
+            "content" : content,
+            // "userNavigationScreen" : "sellerChat"
+        };
+
+        await Notification.create(notificationBody);
+
+        if (reveiver && loggedInUsers.has(reveiver.userId) && reveiver.userId !== userId){
+            req.io.emit("userNotification", {"pushToken": reveiver.pushToken, "title": chat.propertyListing.title, "body": content});
+            // console.log("Emitted userNewForumCommentNotification");
+        }
+
+
         const request = await Request.create(req.body);
+
+
         res.status(201).json({ request });
     } catch (error) {
         console.error(error);

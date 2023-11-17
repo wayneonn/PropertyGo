@@ -1,4 +1,4 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext, useCallback, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, KeyboardAvoidingView, RefreshControl } from 'react-native';
@@ -8,6 +8,7 @@ import ChatItem from '../../components/Chat/ChatItem';
 import { getUserReceiverChat } from '../../utils/chatApi';
 import ChatModal from '../../components/Chat/ChatModal';
 import base64 from 'react-native-base64';
+import { socket } from '../../navigations/LoginNavigator';
 
 const ReceiverChat = ({ navigation }) => {
 
@@ -39,6 +40,13 @@ const ReceiverChat = ({ navigation }) => {
     }, [])
 
     useFocusEffect(useParentCallback);
+
+    useEffect(() => {
+        socket.on("userChatNotification", (data) => {
+            // console.log("RESPONDEDEDEDE")
+            useParentCallback();
+        });
+    })
 
     const handleRefresh = async () => {
         setRefreshing(true);

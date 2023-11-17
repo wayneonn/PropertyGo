@@ -113,7 +113,8 @@ const UserBottomNavigator = () => {
                                     color="#FFD700"
                                     style={[
                                         styles.icon,
-                                        notificationCount > 0 ? { marginRight: 15 } : null // Add marginRight conditionally
+                                        notificationCount && (iconName === "md-notifications-sharp" || 
+                                        notificationCount && iconName === "md-notifications-outline")  > 0 ? { marginRight: 10 } : null // Add marginRight conditionally
                                     ]}
                                 />
                             </View>

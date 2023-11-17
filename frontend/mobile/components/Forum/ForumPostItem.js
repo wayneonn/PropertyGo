@@ -147,11 +147,13 @@ const styles = StyleSheet.create({
         marginRight: 5,
         fontWeight: 'bold',
         // borderWidth:1,
+        maxWidth:"70%",
     },
     age: {
         fontSize: 10,
         color: 'gray',
-
+        alignSelf:"flex-start",
+        marginTop: 2,
     },
     message: {
         fontSize: 14,
