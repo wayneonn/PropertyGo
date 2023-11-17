@@ -4,7 +4,7 @@ import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 
 const TransactionCard = ({ transaction, onPress }) => {
     console.log("transactionCard", transaction)
-    const { transactionItem, createdAt, paymentAmount, gst } = transaction;
+    const { transactionItem, createdAt, paymentAmount, gst, onHoldBalance } = transaction;
     const totalAmount = gst ? paymentAmount * 1.08 : paymentAmount;
 
     const transactionDate = new Date(createdAt);
@@ -29,7 +29,7 @@ const TransactionCard = ({ transaction, onPress }) => {
                     Date: {localDate} | Time: {localTime}
                 </Text>
                 {transaction.status === 'PENDING' ? (
-                    <Text style={styles.totalAmount}>On Hold: SGD {transaction.onHoldBalance.toFixed(2)}</Text>
+                    <Text style={styles.totalAmount}>On Hold: SGD {onHoldBalance.toFixed(2)}</Text>
                 ) : (
                     <Text style={styles.totalAmount}>Total Amount: SGD {totalAmount.toFixed(2)}</Text>
                 )}

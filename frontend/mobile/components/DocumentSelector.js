@@ -73,7 +73,7 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
         try {
             const transactions = await fetchTransactions(USER_ID)
             console.log("Fetched Transactions: ", transactions)
-            setTransactions(transactions);
+            setTransactions(transactions.filter((item) => item.status.toLowerCase().includes("pending")).filter((item) => item.transactionItem.toLowerCase().includes("service")));
             setDefaultTransactionId(transactions[0].transactionId);
         } catch (error) {
             console.error(error);
@@ -249,10 +249,12 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
     );
 
     return (
-        <SafeAreaView style={{paddingHorizontal: 10, backgroundColor: '#fff' }}>
+        <SafeAreaView style={{paddingHorizontal: 10, backgroundColor: '#fff', borderWidth: 1,
+            borderColor: "#ddd", borderRadius: 5,}}>
             <FlatList
                 ListHeaderComponent={
                     <>
+                        <Text>&nbsp;</Text>
                         <Text style={styles.detailText}>List of Selected Documents:</Text>
                     </>
                 }
@@ -286,8 +288,8 @@ export const DocumentSelector = ({documentFetch, folderState, isTransaction}) =>
                                     color={selectedDocuments.length === 0 ? "grey" : "black"}
                                 />
                             </TouchableOpacity>
-
                         </View>
+                        <Text>&nbsp;</Text>
                     </>
                 }
                 ListEmptyComponent={() => (
@@ -325,6 +327,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 15,
         padding: 5,
+        backgroundColor: '#FFD700',
     },
 
     descriptionContainer: {
@@ -388,16 +391,18 @@ const styles = StyleSheet.create({
 
 
     button: {
-        backgroundColor: '#D3D3D3', // A pleasant blue tone for the primary button
+        backgroundColor: '#FFD700',
         padding: 10,
         borderRadius: 5,
         width: '100%',
         alignItems: 'center',
         marginVertical: 5, // A little vertical margin for aesthetic spacing
-        flexDirection: "row"
+        flexDirection: "row",
+        borderColor: '#000',
+        borderWidth: 1,
     },
     cancelButton: {
-        backgroundColor: '#ccc', // A neutral gray for the cancel button
+        backgroundColor: '#FFD700',
         padding: 10,
         borderRadius: 5,
         width: '100%',

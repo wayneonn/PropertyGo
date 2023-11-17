@@ -18,13 +18,13 @@ import {
 import * as FileSystem from "expo-file-system";
 import * as Sharing from 'expo-sharing';
 import {openBrowserAsync} from "expo-web-browser";
-import {AuthContext} from "../../AuthContext";
+import {AuthContext} from "../../../AuthContext";
 import DropDownPicker from 'react-native-dropdown-picker';
-import {DocumentSelector} from "../../components/DocumentSelector";
-import {BASE_URL, fetchDocuments, fetchFolders} from "../../utils/documentApi";
+import {DocumentSelector} from "../../../components/DocumentSelector";
+import {BASE_URL, fetchDocuments, fetchFolders} from "../../../utils/documentApi";
 
 // ICON IMPORTS
-import {AntDesign, Entypo, FontAwesome, MaterialIcons} from '@expo/vector-icons';
+import {AntDesign, Entypo, FontAwesome, Ionicons, MaterialIcons} from '@expo/vector-icons';
 
 //Conditional FileSaver import.
 let FileSaver;
@@ -244,6 +244,7 @@ function UploadScreen({navigation}) {
                         padding: 5, // set padding
                         alignItems: 'center', // center the icon horizontally
                         justifyContent: 'center', // center the icon vertically
+                        backgroundColor: "#dd1c1a"
                     }}>
                     <FontAwesome name="remove" size={25} color="black"/>
                 </TouchableOpacity>
@@ -257,6 +258,7 @@ function UploadScreen({navigation}) {
                         padding: 5, // set padding
                         alignItems: 'center', // center the icon horizontally
                         justifyContent: 'center', // center the icon vertically
+                        backgroundColor: '#FFD700',
                     }}
                 >
                     <Entypo name="download" size={24} color="black"/>
@@ -270,9 +272,6 @@ function UploadScreen({navigation}) {
     return (
         <SafeAreaView style={styles.container}>
             {/* Wrap the FlatList in a View with border styles */}
-            <View style={styles.documentListContainer}>
-                <DocumentSelector documentFetch={fetchData} folderState={folders} isTransaction={true}/>
-            </View>
             <Text> &nbsp; &nbsp;</Text>
             <View style={styles.documentListContainer}>
                 <FlatList
@@ -282,11 +281,11 @@ function UploadScreen({navigation}) {
                             <View style={styles.documentListContainer}>
                                 <TextInput
                                     style={styles.searchBar}
-                                    placeholder="Search documents..."
+                                    placeholder=" Search documents..."
                                     value={searchQuery}
                                     onChangeText={setSearchQuery}
                                 />
-                                <Text> Select your Folder Below: </Text>
+                                <Text style={{fontStyle:"italic"}}> Select your Folder Below: </Text>
                                 <View style={{zIndex: 5100}}>
                                     <DropDownPicker
                                         listMode={"MODAL"}
@@ -351,13 +350,6 @@ function UploadScreen({navigation}) {
                     keyExtractor={(item, index) =>
                         item.id ? item.id.toString() : index.toString()
                     }
-                    ListFooterComponent={
-                        <>
-                            <Text style={styles.graytext}>
-                                Welcome, {user.user.name}, you are the #{USER_ID} user!
-                            </Text>
-                        </>
-                    }
                 />
             </View>
         </SafeAreaView>
@@ -366,10 +358,9 @@ function UploadScreen({navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        padding: '10%',
-        backgroundColor: "#fff",
         flex: 1,
-        paddingHorizontal: 10,
+        backgroundColor: "#f5f5f5", // Light gray background for contrast
+        paddingHorizontal: 15, // Consistent horizontal padding
     },
 
     headerText: {
@@ -381,7 +372,7 @@ const styles = StyleSheet.create({
     searchBar: {
         height: '25%', // 'auto' is not a valid value for height in React Native
         borderWidth: 1,
-        borderColor: "#ccc",
+        backgroundColor: '#fff', // White background for search bar
         borderRadius: 10,
         paddingHorizontal: 2,
         marginVertical: 2,
@@ -395,6 +386,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 15,
         padding: 5,
+        backgroundColor: '#FFD700',
     },
 
     descriptionContainer: {
@@ -444,10 +436,12 @@ const styles = StyleSheet.create({
     documentListContainer: {
         borderWidth: 1,
         borderColor: "#ddd",
+        backgroundColor: '#fff', // White background for search bar
         borderRadius: 5, // Changed from `2%` to a fixed value
         padding: "3%",
         paddingTop: "3.5%",
         flex: 1,
+        height: 190
     },
 
     documentItem: {

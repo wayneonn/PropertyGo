@@ -50,7 +50,34 @@ const addMessage = async (req, res) => {
     }
 };
 
+const updateMessage = async (req, res) => {
+    try {
+        // Validate the request data
+        const { messageData, messageId } = req.body;
+        console.log(req.body)
+        console.log(messageData)
+        console.log(messageId)
+        if (!messageId || !messageData) {
+            return res.status(400).json({ message: 'Invalid update data' });
+        }
+
+        // Find the message by ID
+        const message = await Message.findByPk(messageId);
+        if (!message) {
+            return res.status(404).json({ message: 'Message Not Found' });
+        }
+
+        // Update the message text
+        message.messageText = messageData;
+        await message.save();
+        res.status(200).json({ message: 'Message updated successfully', updatedMessage: message });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 
 module.exports = {
-    addMessage
+    addMessage,
+    updateMessage
 };

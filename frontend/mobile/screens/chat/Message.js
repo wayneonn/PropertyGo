@@ -11,6 +11,7 @@ import { getChatById } from '../../utils/chatApi';
 import { addMessage } from '../../utils/messageApi'
 import base64 from 'react-native-base64';
 import MakeOfferModal from '../../components/Chat/MakeOfferModal';
+import MakeRequestModal from "../../components/Chat/MakeRequestModal";
 import EditOfferModal from '../../components/Chat/EditOfferModal';
 import { createRequest, updateRequest } from '../../utils/requestApi';
 import { editProperty } from '../../utils/api';
@@ -59,7 +60,7 @@ const Message = ({ route, navigation }) => {
   const handleSubmit = async () => {
 
     try {
-      messageData = {
+      const messageData = {
         messageText: newMessage,
         userId: user.user.userId,
         chatId: chat.chatId

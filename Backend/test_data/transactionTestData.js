@@ -1,6 +1,6 @@
 module.exports = [
   {
-    transactionId: 1,
+    // transactionId: 1,
     onHoldBalance: 0,
     buyerId: 1, // buyer
     propertyId: 3,
@@ -14,7 +14,7 @@ module.exports = [
     paymentAmount: 10,
   },
   {
-    transactionId: 2,
+    // transactionId: 2,
     onHoldBalance: 0,
     buyerId: 1, // buyer
     propertyId: 2,
@@ -28,7 +28,7 @@ module.exports = [
     paymentAmount: 20,
   },
   {
-    transactionId: 3,
+    // transactionId: 3,
     onHoldBalance: 0,
     buyerId: 1, // buyer
     propertyId: 1,
@@ -42,7 +42,7 @@ module.exports = [
     paymentAmount: 20,
   },
   {
-    transactionId: 4,
+    // transactionId: 4,
     onHoldBalance: 0,
     buyerId: 1, // buyer
     propertyId: 4,
@@ -56,7 +56,7 @@ module.exports = [
     paymentAmount: 50,
   },
   {
-    transactionId: 5,
+    // transactionId: 5,
     onHoldBalance: 0,
     buyerId: 1, // buyer
     propertyId: 5,
@@ -70,7 +70,7 @@ module.exports = [
     paymentAmount: 10,
   },
   {
-    transactionId: 6,
+    // transactionId: 6,
     onHoldBalance: 0,
     buyerId: 1, // buyer
     propertyId: 6,
