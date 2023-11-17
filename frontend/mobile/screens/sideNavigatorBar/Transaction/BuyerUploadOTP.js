@@ -422,7 +422,15 @@ export default function SellerReuploadOTP({ route }) {
               <Text style={styles.forSaleText}>For Sales</Text>
               <Text style={styles.title}>{propertyListing.title}</Text>
               <Text style={styles.priceLabel}>
-                ${formatPriceWithCommas(propertyListing.price)}
+                {propertyListing.offeredPrice ? (
+                  <>
+                    ${formatPriceWithCommas(propertyListing.offeredPrice)}
+                  </>
+                ) : (
+                  <>
+                    ${formatPriceWithCommas(propertyListing.price)}
+                  </>
+                )}
               </Text>
               <Text style={styles.pricePerSqm}>
                 $
@@ -478,7 +486,7 @@ export default function SellerReuploadOTP({ route }) {
               <Text style={styles.optionExpiryTextBold}>
                 {Math.ceil(
                   (new Date(propertyListing.optionExpiryDate) - new Date()) /
-                    (1000 * 60 * 60 * 24)
+                  (1000 * 60 * 60 * 24)
                 )}
                 {" days"}
               </Text>
@@ -780,14 +788,14 @@ const styles = StyleSheet.create({
   uploadDocumentButtonText: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 12,
   },
   replaceDocumentButton: {
     flex: 1,
     backgroundColor: "#3498db",
     borderRadius: 8,
     padding: 10,
-    paddingHorizontal: 17,
+    paddingHorizontal: 15,
     alignItems: "center",
     marginTop: 10,
     marginRight: 10,

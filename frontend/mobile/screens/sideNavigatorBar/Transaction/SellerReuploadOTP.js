@@ -227,35 +227,35 @@ export default function SellerReuploadOTP({ route }) {
     console.log("createDocument", selectedDocuments);
     try {
       const fileData = new FormData();
-  
+
       selectedDocuments.forEach((document) => {
         const fileUri = document.uri;
         const fileType = document.mimeType;
         const fileName = document.name;
         const folderId = propertyFolderId;
-  
+
         fileData.append("documents", {
           uri: fileUri,
           name: fileName,
           type: fileType,
         });
-  
+
         console.log("File URI: ", fileUri);
-  
+
         // Append other required data to the FormData object
         fileData.append("propertyId", propertyListingId);
         fileData.append("description", `OTP Document (${title})`);
         fileData.append("folderId", folderId);
         fileData.append("userId", user.user.userId);
       });
-  
+
       console.log("fileData: ", fileData);
       console.log("optionToPurchaseDocumentId at createdocument: ", transaction.optionToPurchaseDocumentId);
       const response = await fetch(`${BASE_URL}/user/documents/${transaction.optionToPurchaseDocumentId}/update`, {
         method: "put",
         body: fileData,
       });
-  
+
       // Check the response status and log the result
       if (response.ok) {
         const data = await response.json();
@@ -272,7 +272,7 @@ export default function SellerReuploadOTP({ route }) {
       return null;
     }
   };
-  
+
 
   const openPdf = async (filePath) => {
     try {
@@ -325,66 +325,66 @@ export default function SellerReuploadOTP({ route }) {
 
   const downloadPDF = async () => {
     const response = await fetch(
-        `${BASE_URL}/user/documents/${transaction.optionToPurchaseDocumentId}/data`
+      `${BASE_URL}/user/documents/${transaction.optionToPurchaseDocumentId}/data`
     );
     console.log(response)
     const result = await response.json();
     console.log(result)
     // The web version is kinda not needed.
     if (Platform.OS === "web") {
-        const byteCharacters = atob(result.document); // Decode the Base64 string
-        const byteArrays = [];
-        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-            const slice = byteCharacters.slice(offset, offset + 512);
-            const byteNumbers = new Array(slice.length);
-            for (let i = 0; i < slice.length; i++) {
-                byteNumbers[i] = slice.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            byteArrays.push(byteArray);
+      const byteCharacters = atob(result.document); // Decode the Base64 string
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
         }
-        const blob = new Blob(byteArrays, {type: "application/pdf"});
-        const url = URL.createObjectURL(blob);
-        await openBrowserAsync(url); // Assuming this opens the URL in a new browser tab/window
-        FileSaver.saveAs(blob, document.name); // Assuming document.name is the desired name of the downloaded file
-        URL.revokeObjectURL(url);
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      const blob = new Blob(byteArrays, { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      await openBrowserAsync(url); // Assuming this opens the URL in a new browser tab/window
+      FileSaver.saveAs(blob, document.name); // Assuming document.name is the desired name of the downloaded file
+      URL.revokeObjectURL(url);
     } else {
-        try {
-            // Slight issue opening certain PDF files.
-            // Native FileSystem logic
+      try {
+        // Slight issue opening certain PDF files.
+        // Native FileSystem logic
 
-            const fileName = (FileSystem.documentDirectory + result.title).replace(/\s/g, '_');
-            console.log('Filename:', fileName);
+        const fileName = (FileSystem.documentDirectory + result.title).replace(/\s/g, '_');
+        console.log('Filename:', fileName);
 
-            await FileSystem.writeAsStringAsync(
-                fileName,
-                result.document,
-                {encoding: FileSystem.EncodingType.Base64}
-            );
+        await FileSystem.writeAsStringAsync(
+          fileName,
+          result.document,
+          { encoding: FileSystem.EncodingType.Base64 }
+        );
 
-            const isAvailable = await Sharing.isAvailableAsync();
-            if (!isAvailable) {
-                alert(`Uh oh, sharing isn't available on your platform`);
-                return;
-            }
-
-            if (fileName) {
-                // alert("Downloaded to " + fileName);
-                await Sharing.shareAsync(fileName);
-            } else {
-                alert("Failed to download PDF");
-            }
-        } catch (error) {
-            console.error("Error opening the file", error);
-            alert("Failed to open PDF");
+        const isAvailable = await Sharing.isAvailableAsync();
+        if (!isAvailable) {
+          alert(`Uh oh, sharing isn't available on your platform`);
+          return;
         }
-    }
-};
 
-const [cacheBuster, setCacheBuster] = useState(Date.now());
-useEffect(() => {
-  setCacheBuster(Date.now());
-}, [propertyListing]);
+        if (fileName) {
+          // alert("Downloaded to " + fileName);
+          await Sharing.shareAsync(fileName);
+        } else {
+          alert("Failed to download PDF");
+        }
+      } catch (error) {
+        console.error("Error opening the file", error);
+        alert("Failed to open PDF");
+      }
+    }
+  };
+
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
+  useEffect(() => {
+    setCacheBuster(Date.now());
+  }, [propertyListing]);
 
   return (
     <View style={styles.container}>
@@ -432,7 +432,17 @@ useEffect(() => {
             <View style={styles.propertyDetailsTopLeft}>
               <Text style={styles.forSaleText}>For Sales</Text>
               <Text style={styles.title}>{propertyListing.title}</Text>
-              <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
+              <Text style={styles.priceLabel}>
+                {propertyListing.offeredPrice ? (
+                  <>
+                    ${formatPriceWithCommas(propertyListing.offeredPrice)}
+                  </>
+                ) : (
+                  <>
+                    ${formatPriceWithCommas(propertyListing.price)}
+                  </>
+                )}
+              </Text>
               <Text style={styles.pricePerSqm}>
                 ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
               </Text>
@@ -752,7 +762,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#3498db',
     borderRadius: 8,
     padding: 10,
-    paddingHorizontal: 17,
+    paddingHorizontal: 15,
     alignItems: 'center',
     marginTop: 10,
     marginRight: 10,
@@ -779,7 +789,7 @@ const styles = StyleSheet.create({
   removeDocumentButtonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 12,
   },
   selectedDocumentContainer: {
     borderWidth: 1,

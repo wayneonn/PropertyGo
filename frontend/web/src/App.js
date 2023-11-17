@@ -25,6 +25,7 @@ import AllProperties from "./containers/AllProperties";
 import AllProperty from "./containers/AllProperty";
 import Otp from "./containers/Otp";
 import Payment from "./containers/Payment";
+import Dashboard from "./containers/Dashboard";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -70,6 +71,7 @@ function App() {
           <Route path="/properties" element={<AllProperties />} />
           <Route path="/property/:propertyId" element={<AllProperty />} />
           <Route path="/otp" element={<Otp />} />
+          <Route path="/" element={<Dashboard />} />
           {/* <Route
             path="/otp"
             element={

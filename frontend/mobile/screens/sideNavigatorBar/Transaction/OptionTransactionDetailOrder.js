@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, 
+    TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -17,6 +18,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import {
     buyerCancelOTP, buyerRequestReupload
 } from '../../../utils/transactionApi';
+import {
+    editProperty
+} from '../../../utils/api';
 
 const OrderDetailScreen = ({ route }) => {
     const navigation = useNavigation();
@@ -97,6 +101,13 @@ const OrderDetailScreen = ({ route }) => {
         await buyerCancelOTP(transaction.transactionId, {
             optionToPurchaseDocumentId: transaction.optionToPurchaseDocumentId,
         });
+        await editProperty(
+            propertyListing.propertyListingId,
+            {
+                optionExpiryDate: null,
+                offeredPrice: null,
+            }
+        );
         Alert.alert(
             'Cancel Successful',
             'You have successfully cancelled the order.'
@@ -147,7 +158,7 @@ const OrderDetailScreen = ({ route }) => {
 
             {propertyListing && seller ? (
                 <>
-                    <CustomerCard sellerId={transaction.userId} transaction={transaction}/>
+                    <CustomerCard sellerId={transaction.userId} transaction={transaction} property={propertyListing} />
 
                     <PropertyCardRectangle
                         property={propertyListing}
@@ -168,60 +179,61 @@ const OrderDetailScreen = ({ route }) => {
                         transactionUserId={transaction.userId}
                         taxable={transaction.gst}
                     />
+
+
+                    <View style={styles.bottomButtonsContainer}>
+                        {transaction && transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ? (
+                            <TouchableOpacity style={styles.uploadButton}
+                                onPress={() => {
+                                    navigation.navigate('Buyer Upload OTP', { property: propertyListing, transaction: transaction });
+                                }}>
+                                <Text style={styles.cancelButtonText}>Upload OTP</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <></>
+                        )}
+
+                        {transaction && transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ? (
+                            <TouchableOpacity style={styles.requestReuploadButton} onPress={handleRequestReupload}>
+                                <Text style={styles.cancelButtonText}>Request Reupload</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <></>
+                        )}
+                    </View>
+
+                    {transaction && (transaction.optionFeeStatusEnum == "REQUEST_PLACED" || transaction.optionFeeStatusEnum == "SELLER_UPLOADED" || transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD") ? (
+                        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelOrder}>
+                            <Text style={styles.cancelButtonText}>Cancel Order</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <></>
+                    )}
+
+                    {transaction && transaction.optionFeeStatusEnum == "ADMIN_SIGNED" ? (
+                        <TouchableOpacity style={styles.uploadButton}
+                            onPress={() => {
+                                navigation.navigate('Exercise Option Checkout', { propertyListing, quantity: 1, transaction: transaction });
+                            }}>
+                            <Text style={styles.cancelButtonText}>Exercise Option</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <></>
+                    )}
+
+                    {transaction && transaction.optionFeeStatusEnum == "PENDING_COMMISSION" ? (
+                        <TouchableOpacity style={styles.uploadButton}
+                            onPress={() => {
+                                navigation.navigate('Commission Checkout', { propertyListing, quantity: 1, transaction: transaction });
+                            }}>
+                            <Text style={styles.cancelButtonText}>Pay Commission</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <></>
+                    )}
                 </>
             ) : (
-                <Text>Loading...</Text>
-            )}
-
-            <View style={styles.bottomButtonsContainer}>
-                {transaction && transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ? (
-                    <TouchableOpacity style={styles.uploadButton}
-                        onPress={() => {
-                            navigation.navigate('Buyer Upload OTP', { property: propertyListing, transaction: transaction });
-                        }}>
-                        <Text style={styles.cancelButtonText}>Upload OTP</Text>
-                    </TouchableOpacity>
-                ) : (
-                    <></>
-                )}
-
-                {transaction && transaction.optionFeeStatusEnum == "SELLER_UPLOADED" ? (
-                    <TouchableOpacity style={styles.requestReuploadButton} onPress={handleRequestReupload}>
-                        <Text style={styles.cancelButtonText}>Request Reupload</Text>
-                    </TouchableOpacity>
-                ) : (
-                    <></>
-                )}
-            </View>
-
-            {transaction && (transaction.optionFeeStatusEnum == "REQUEST_PLACED" || transaction.optionFeeStatusEnum == "SELLER_UPLOADED" || transaction.optionFeeStatusEnum == "BUYER_REQUEST_REUPLOAD") ? (
-                <TouchableOpacity style={styles.cancelButton} onPress={handleCancelOrder}>
-                    <Text style={styles.cancelButtonText}>Cancel Order</Text>
-                </TouchableOpacity>
-            ) : (
-                <></>
-            )}
-
-            {transaction && transaction.optionFeeStatusEnum == "ADMIN_SIGNED" ? (
-                <TouchableOpacity style={styles.uploadButton}
-                    onPress={() => {
-                        navigation.navigate('Exercise Option Checkout', { propertyListing, quantity: 1, transaction: transaction });
-                    }}>
-                    <Text style={styles.cancelButtonText}>Exercise Option</Text>
-                </TouchableOpacity>
-            ) : (
-                <></>
-            )}
-
-            {transaction && transaction.optionFeeStatusEnum == "PENDING_COMMISSION" ? (
-                <TouchableOpacity style={styles.uploadButton}
-                    onPress={() => {
-                        navigation.navigate('Commission Checkout', { propertyListing, quantity: 1, transaction: transaction });
-                    }}>
-                    <Text style={styles.cancelButtonText}>Pay Commission</Text>
-                </TouchableOpacity>
-            ) : (
-                <></>
+                <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5"/>
             )}
 
             <Text></Text>
@@ -336,6 +348,12 @@ const styles = StyleSheet.create({
         borderTopColor: '#eee',
         justifyContent: 'space-between', // Added for spacing between buttons
         paddingHorizontal: 11, // Padding to give space from the screen edge
+    },
+    loadingIndicator: {
+        flex: 2,
+        paddingTop: 120,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

@@ -165,6 +165,11 @@ const EditPropertyListing = ({ route }) => {
       return;
     }
 
+    if (optionExercisePrice + optionPrice > 5000) {
+      Alert.alert('Fee Exceeds S$5000.', 'With HDB Guidelines, the Option Fee and Option Exercise Fee cannot exceed S$5000.');
+      return;
+    }
+
     if (!/^\d+$/.test(propertyData.size)) {
       Alert.alert('Invalid Size', 'Size must be a numeric value.');
       return;

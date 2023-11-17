@@ -6,6 +6,8 @@ import {
 import { LineChart } from 'react-native-gifted-charts';
 import dataGovSgLogo from '../../assets/data.gov.sg-logo.png';
 import { Entypo, FontAwesome5, MaterialCommunityIcons, Ionicons, FontAwesome, } from '@expo/vector-icons';
+import { max } from 'date-fns';
+import {BASE_URL} from "../../utils/documentApi";
 
 const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, property }) => {
     const [prices, setPrices] = useState([]);
@@ -16,7 +18,9 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
     let yearNow;
     const [predictedPropertyPriceCurrentDate, setPredictedPropertyPriceCurrentDate] = useState(0);
     const isHigherThanAverage = predictedPropertyPriceCurrentDate > property.price;
-    const percentagePriceDifference = (Math.abs(property.price - predictedPropertyPriceCurrentDate) / property.price * 100).toFixed(2);
+    const percentagePriceDifference = (Math.abs(property.price - predictedPropertyPriceCurrentDate) / property.price * 100.00).toFixed(2);
+    const [maxPrice, setMaxPrice] = useState(-Infinity);
+    let test = 1020;
 
     const toggleViewMode = () => {
         setViewMode(viewMode === 'year' ? 'monthYear' : 'year');
@@ -29,15 +33,26 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
     };
 
     const fetchData = async (query) => {
-        const response = await fetch(`http://localhost:3000/prediction/property-prices?flatType=${encodeURIComponent(flatType)}&town=${encodeURIComponent(town)}&floor_area_sqm=${floorArea}&year=${query.year}&month=${query.month}&lease_commence_date=${leaseCommenceDate}`);
+        const response = await fetch(`${BASE_URL}/prediction/property-prices?flatType=${encodeURIComponent(flatType)}&town=${encodeURIComponent(town)}&floor_area_sqm=${floorArea}&year=${query.year}&month=${query.month}&lease_commence_date=${leaseCommenceDate}`);
         const data = await response.json();
         return data.predictedPrice;
     };
 
     const formatPriceWithCommas = (price) => {
-        let formattedPrice = price * 1000;
-        formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        let formattedPrice = price * 1000.00;
+
+        formattedPrice = price.toString();
         formattedPrice = parseFloat(formattedPrice).toFixed(1);
+        return formattedPrice;
+    };
+
+    const formatPriceWithCommasPredictionText = (price) => {
+
+        let formattedPrice = price / 1000.00;
+
+        // formattedPrice = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        formattedPrice = parseFloat(formattedPrice).toFixed(2);
         return formattedPrice;
     };
 
@@ -56,49 +71,97 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
 
     useEffect(() => {
         const { year, month } = getCurrentYearAndMonth();
-        const dataFetchPromises = [];
-        yearNow = year;
-        monthNow = month;
         const startYear = year - 1; // Starting 3 years back
         const endYear = year + 3; // Going to 2 years forward
         let currentMonth = month;
+        let newMaxPrice = -Infinity;
 
-        for (let i = 0; i < 8; i++) { // Fetch data for 8 data points (4 years, every 6 months)
-            let currentYear = startYear + Math.floor((currentMonth + i * 6 - 1) / 12); // Calculate the current year
-            currentMonth = (currentMonth + i * 6 - 1) % 12 + 1; // Calculate the current month
+        const fetchDataForYearAndMonth = async (currentYear, currentMonth) => {
+            try {
+                const predictedPrice = await fetchData({ year: currentYear, month: currentMonth });
+                return { year: currentYear, month: currentMonth, predictedPrice };
+            } catch (error) {
+                console.error(`Error fetching prediction data for ${currentYear}-${currentMonth}:`, error);
+                return null;
+            }
+        };
 
-            dataFetchPromises.push(fetchData({ year: currentYear, month: currentMonth }));
-        }
-
-        Promise.all(dataFetchPromises).then(fetchedPrices => {
-            const chartData = fetchedPrices.map((price, index) => {
-                const labelMonth = (currentMonth + index * 6) % 12; // Calculate the month for the label
-                const labelYear = startYear + Math.floor((currentMonth + index * 6) / 12); // Calculate the year for the label
-                const formattedDate = `${getMonthNameFromNumber(labelMonth)} ${labelYear.toString().slice(-2)}`;
-                console.log("labelMonth: ", labelMonth);
-                console.log("labelYear: ", labelYear);
-                if (labelMonth === monthNow && labelYear === yearNow) {
-                    setPredictedPropertyPriceCurrentDate(price)
-                    console.log("predictedPropertyPriceCurrentDate: ", predictedPropertyPriceCurrentDate);
+        const fetchAllData = async () => {
+            const dataFetchPromises = [];
+            yearNow = year;
+            monthNow = month;
+        
+            const today = new Date(); // Assuming today is Nov 2023
+            let currentYear = startYear; // Start from the current year
+            let currentMonth = today.getMonth() + 1; // Start from the current month, adding 1 for 1-based indexing
+        
+            for (let i = 0; i < 8; i++) {
+                dataFetchPromises.push(await fetchDataForYearAndMonth(currentYear, currentMonth));
+                
+                // Add 6 months to the current month
+                currentMonth += 6;
+        
+                // If the current month is greater than 12, increment the year and adjust the month
+                if (currentMonth > 12) {
+                    currentYear++;
+                    currentMonth -= 12;
                 }
-                return {
-                    value: price / 1000,
-                    year: formattedDate,
-                    labelComponent: () => (
-                        <Text style={styles.yearText}>
-                            {"     "}{getMonthNameFromNumber(labelMonth)} {labelYear.toString().slice(-2)}
-                        </Text>
-                    ),
-                };
-            });
-            setTimeout(() => {
-                setPrices(chartData); // Set prices after a delay
-                setIsLoading(false); // Update isLoading state to false
-            }, 3000); // Delay for 3 seconds
-        }).catch(error => {
-            console.error('Error fetching prediction data:', error);
-        });
+        
+                console.log('currentYear:', currentYear, 'currentMonth:', currentMonth);
+            }
+        
+            try {
+                const fetchedData = await Promise.all(dataFetchPromises);
+                const chartData = fetchedData.map((data, index) => {
+                    if (data) {
+                        const { year, month, predictedPrice } = data;
+                        const labelMonth = (currentMonth + index * 6) % 12;
+                        const labelYear = startYear + Math.floor((currentMonth + index * 6) / 12);
+                        const formattedDate = `${getMonthNameFromNumber(labelMonth)} ${labelYear.toString().slice(-2)}`;
+
+                        const isToday = labelMonth === monthNow && labelYear === yearNow;
+                        if (isToday) {
+                            setPredictedPropertyPriceCurrentDate(predictedPrice);
+                        }
+
+                        if (predictedPrice / 1000 > newMaxPrice) {
+                            newMaxPrice = predictedPrice / 1000;
+                        }
+
+                        return {
+                            value: predictedPrice / 1000,
+                            year: formattedDate,
+                            labelComponent: () => (
+                                isToday ? (
+                                    <Text style={styles.todayText}>
+                                        {"  "}
+                                        <Ionicons name="caret-back-outline" size={14} color="red" />
+                                        {"Today"}
+                                    </Text>
+                                ) : (
+                                    <Text style={styles.yearText}>
+                                        {"     "}
+                                        {getMonthNameFromNumber(labelMonth)} {labelYear.toString().slice(-2)}
+                                    </Text>
+                                )
+                            ),
+                        };
+                    }
+                    return null;
+                }).filter(data => data !== null);
+
+                setPrices(chartData);
+                const maxPrice = (Math.floor(newMaxPrice / 100) + 3) * 100;
+                setMaxPrice(parseInt(maxPrice));
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error fetching prediction data:', error);
+            }
+        };
+
+        fetchAllData();
     }, [flatType, town, floorArea, leaseCommenceDate]);
+
 
     const capitalizeWords = (str) => {
         return str.toLowerCase().replace(/(?:^|\s)\w/g, function (match) {
@@ -121,88 +184,98 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
         );
     };
 
+    const formatYLabel = (label) => {
+        // Assuming label is a number (e.g., 1, 2, 3)
+        if (label == 0) {
+            return 0;
+        }
+        return `S$ ${label}k`;
+      };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>PriceGPT</Text>
-            {prices.length > 0 && !isLoading ? (
+            {prices.length > 0 && !isLoading && maxPrice !== -Infinity ? (
                 <>
-                    <LineChart
-                        isAnimated
-                        thickness={5}
-                        color="#FFD700"
-                        noOfSections={4}
-                        animateOnDataChange
-                        // hideDataPoints
-                        rotateLabel
-                        yAxisTextStyle={{ color: 'gray' }}
-                        yAxisSide='right'
-                        animationDuration={1000}
-                        onDataChangeAnimationDuration={500}
-                        areaChart
-                        pointerConfig={{
-                            pointerStripHeight: 160,
-                            pointerStripColor: 'lightgray',
-                            pointerStripWidth: 2,
-                            pointerColor: 'lightgray',
-                            radius: 6,
-                            pointerLabelWidth: 100,
-                            pointerLabelHeight: 90,
-                            activatePointersOnLongPress: true,
-                            autoAdjustPointerLabelPosition: false,
-                            pointerLabelComponent: items => {
-                                return (
-                                    <View
-                                        style={{
-                                            height: 90,
-                                            width: 100,
-                                            justifyContent: 'center',
-                                            marginTop: -30,
-                                            marginLeft: -40,
-                                        }}>
-                                        <Text style={{ color: 'black', fontSize: 14, marginBottom: 6, textAlign: 'center' }}>
-                                            {items[0].year}
-                                        </Text>
-
-                                        <View style={{ paddingHorizontal: 14, paddingVertical: 6, borderRadius: 5, backgroundColor: 'black' }}>
-                                            <Text style={{ fontWeight: 'bold', textAlign: 'center', color: 'white' }}>
-                                                {'S$ ' + formatPriceWithCommas(items[0].value) + 'k'}
+                    <View style={styles.containerGraph}>
+                        <LineChart
+                            isAnimated
+                            thickness={5}
+                            color="#FFD700"
+                            noOfSections={4}
+                            animateOnDataChange
+                            // hideDataPoints
+                            rotateLabel
+                            yAxisTextStyle={{ color: 'black', marginLeft: -20, fontSize: 11 }}
+                            // yAxisSide='right'
+                            animationDuration={1000}
+                            formatYLabel={formatYLabel}
+                            onDataChangeAnimationDuration={500}
+                            areaChart
+                            pointerConfig={{
+                                pointerStripHeight: 160,
+                                pointerStripColor: 'black',
+                                pointerStripWidth: 2,
+                                pointerColor: 'red',
+                                radius: 6,
+                                pointerLabelWidth: 100,
+                                pointerLabelHeight: 90,
+                                activatePointersOnLongPress: true,
+                                autoAdjustPointerLabelPosition: false,
+                                pointerLabelComponent: items => {
+                                    return (
+                                        <View
+                                            style={{
+                                                height: 90,
+                                                width: 120,
+                                                justifyContent: 'center',
+                                                marginTop: -30,
+                                                marginLeft: -40,
+                                            }}>
+                                            <Text style={{ color: 'black', fontSize: 14, marginBottom: 6, textAlign: 'center' }}>
+                                                {items[0].year}
                                             </Text>
-                                        </View>
-                                    </View>
-                                );
-                            },
-                            labelComponent: () => (
-                                <Text style={styles.yearText}>
-                                    {"     "}{viewMode === 'year'
-                                        ? items[0].year.toString().slice(-2)
-                                        : items[0].year}
-                                </Text>
-                            ),
-                        }}
-                        pointerLabelComponent
-                        data={prices}
-                        maxValue={1000}
-                        height={200}
-                        width={screenWidth - 112}
-                        curved
-                        noOfSectionsBelowXAxis={0}
-                        // hideDataPoints
-                        startFillColor={'#FFD700'}
-                        endFillColor={'rgb(84,219,234)'}
-                        startOpacity={0.4}
-                        endOpacity={0.1}
-                        // stepValue={100}
-                        spacing={58}
-                        backgroundColor="white"
-                        rulesColor="gray"
-                        rulesType="solid"
-                        initialSpacing={20}
-                        yAxisColor="lightgray"
-                        xAxisColor="lightgray"
-                        renderYAxisLabel={(value) => `S$ ${value}k`}
-                        startFromZero={true}
-                    />
 
+                                            <View style={{ paddingHorizontal: 14, paddingVertical: 6, borderRadius: 5, backgroundColor: 'black' }}>
+                                                <Text style={{ fontWeight: 'bold', textAlign: 'center', color: 'white' }}>
+                                                    {'S$ ' + formatPriceWithCommas(items[0].value) + 'k'}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    );
+                                },
+                                labelComponent: () => (
+                                    <Text style={styles.yearText}>
+                                        {"     "}{viewMode === 'year'
+                                            ? items[0].year.toString().slice(-2)
+                                            : items[0].year}
+                                    </Text>
+                                ),
+                            }}
+                            pointerLabelComponent
+                            data={prices}
+                            maxValue={maxPrice}
+                            height={200}
+                            width={screenWidth - 132}
+                            curved
+                            noOfSectionsBelowXAxis={0}
+                            // hideDataPoints
+                            startFillColor={'#FFD700'}
+                            endFillColor={'rgb(84,219,234)'}
+                            startOpacity={0.4}
+                            endOpacity={0.1}
+                            // stepValue={100}
+                            spacing={58}
+                            backgroundColor="white"
+                            rulesColor="gray"
+                            rulesType="solid"
+                            initialSpacing={20}
+                            yAxisColor="black"
+                            xAxisColor="black"
+                            renderYAxisLabel={(value) => `S$ ${value}k`}
+                            startFromZero={true}
+                        />
+                    </View>
                     <View style={styles.bottomButtonsContainer}>
                         {/* <TouchableOpacity style={styles.buyButton} onPress={toggleViewMode}>
                             <Ionicons name="calendar-outline" size={18} color="black" />
@@ -215,12 +288,12 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
                             of <Text style={styles.descriptionBold}>{capitalizeWords(property.flatType.toLowerCase().replace(/_/g, ' '))} </Text>
                             listed here is listed
                             at a price of
-                            S$<Text style={styles.descriptionBold}>{formatPriceWithCommas(property.price)}k</Text>, which is
+                            S$<Text style={styles.descriptionBold}>{formatPriceWithCommasPredictionText(property.price)}k</Text>, which is
                             {" "}<Text style={styles.descriptionBold}>{percentagePriceDifference}%</Text>
                             {isHigherThanAverage ? <Text style={styles.lowerText}> <Ionicons name="arrow-down-circle-outline" size={18} color="green" />lower</Text> : <Text style={styles.higherText}> <Ionicons name="arrow-up-circle-outline" size={18} color="#d32f2f" />higher</Text>} than the average asking price of
-                            S$<Text style={styles.descriptionBold}>{formatPriceWithCommas(predictedPropertyPriceCurrentDate)}k. </Text> {'\n\n'}
-                            This is with reference to the Listed Property's Flat Type, Lease Commence Year, Floor Area and District from
-                            past resale transactions from <Text style={styles.descriptionBold}>data.gov.sg</Text>.
+                            S$<Text style={styles.descriptionBold}>{formatPriceWithCommasPredictionText(predictedPropertyPriceCurrentDate)}k. </Text> {'\n\n'}
+                            <Text style={styles.footnoteText}>This is with reference to the Listed Property's Flat Type, Lease Commence Year, Floor Area and District from
+                                past resale transactions from <Text style={styles.descriptionBold}>data.gov.sg</Text>.</Text>
                         </Text>
                     </View>
                     {/* <View style={styles.dataContainer}>
@@ -229,7 +302,7 @@ const PredictionPriceCard = ({ flatType, town, floorArea, leaseCommenceDate, pro
                 </>
             ) : (
                 <>
-                    <ActivityIndicator style={styles.loadingIndicator} />
+                    <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5" />
                     {/* <Text styles={styles.loadingText}>Loading...</Text> */}
                 </>
             )}
@@ -246,7 +319,7 @@ const styles = StyleSheet.create({
         margin: 20,
         paddingTop: 20,
         marginBottom: 30,
-        paddingBottom: 265,
+        paddingBottom: 105,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -255,7 +328,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 2,
+        height: '29.5%',
         // alignItems: 'center', // Center chart in card
+    },
+    containerGraph: {
+        marginBottom: 50,
+        marginLeft: 15,
     },
     title: {
         fontSize: 24,
@@ -267,6 +345,10 @@ const styles = StyleSheet.create({
     yearText: {
         fontSize: 11,
         // color: 'white',
+    },
+    todayText: {
+        fontSize: 12,
+        fontWeight: 'bold',
     },
     loadingText: {
         fontSize: 16,
@@ -289,7 +371,7 @@ const styles = StyleSheet.create({
         // marginTop: 30, // Margin for spacing between buttons and bottom of screen
     },
     descriptionText: {
-        position: 'absolute',
+        // position: 'absolute',
         paddingVertical: 15,
         paddingHorizontal: 20,
         letterSpacing: 0.75,
@@ -299,10 +381,10 @@ const styles = StyleSheet.create({
         borderColor: '#000',   // Border color
         borderRadius: 10,      // Make it rounded
         margin: 2,  // Margin for spacing between buttons
-        marginTop: 35, // Margin for spacing between buttons and bottom of screen
+        // marginTop: 40, // Margin for spacing between buttons and bottom of screen
     },
     dataText: {
-        position: 'absolute',
+        // position: 'absolute',
         // paddingVertical: 2,
         paddingHorizontal: 15,
         fontSize: 10,
@@ -325,6 +407,11 @@ const styles = StyleSheet.create({
     descriptionBold: {
         fontWeight: 'bold',
         letterSpacing: 0.75,
+    },
+    footnoteText: {
+        fontSize: 11,
+        letterSpacing: 0.75,
+        fontWeight: '300',
     },
     higherText: {
         color: '#d32f2f',

@@ -100,6 +100,12 @@ const createFaq = async (req, res) => {
   // removing styling spaces of the question first
   // const formattedQuestion = cleanEmptyStylingTags(question);
 
+  if (!adminId) {
+    return res
+      .status(401)
+      .json({ message: `Admin Id is empty.` });
+  }
+
   const questionFound = await getFaqForUniqueness({
     question: question,
     faqType,
@@ -188,7 +194,7 @@ const deleteFaq = async (req, res) => {
   }
 
   await faq.destroy();
-  res.status(200).json({ msg: "Success! FAQ removed." });
+  res.status(200).json({ message: "Success! FAQ removed." });
 };
 
 module.exports = {

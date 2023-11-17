@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginLeft: 50,
+    // marginLeft: 50,
     // alignSelf: 'center',
     alignContent: 'center',
     paddingHorizontal: 20,
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignContent: 'center',
     marginBottom: 1,
     padding: 2,
     marginRight: 10,
@@ -196,6 +196,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+    justifyContent: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 0, // Adjust the top position as needed
+    left: 12, // Adjust the left position as needed
+    zIndex: 1, // Place it above the swiper
   },
 });
 

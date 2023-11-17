@@ -48,7 +48,7 @@ const ForumPostDefault = ({ navigation }) => {
 
   const handlePostPress = (post) => {
     setSearchQuery('');
-    navigation.navigate("Forum Comment", {post});
+    navigation.navigate("Forum Comment", { post });
   };
 
   const handleFilterPress = () => {
@@ -119,6 +119,7 @@ const ForumPostDefault = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
+        keyboardDismissMode="on-drag"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

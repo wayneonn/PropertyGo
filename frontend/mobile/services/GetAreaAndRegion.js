@@ -58,3 +58,126 @@ export const getAreaAndRegion = async (postalCode) => {
   };
   
   
+  export const getForumIdByRegion = (areaName) => {
+    const areas = [
+      {
+        "forumTopicId": 1,
+        "topicName": "Raffles Place, Cecil, Marina, People’s Park",
+      },
+      {
+        "forumTopicId": 2,
+        "topicName": "Anson, Tanjong Pagar",
+      },
+      {
+        "forumTopicId": 3,
+        "topicName": "Queenstown, Tiong Bahru",
+      },
+      {
+        "forumTopicId": 4,
+        "topicName": "Telok Blangah, Harbourfront",
+      },
+      {
+        "forumTopicId": 5,
+        "topicName": "Pasir Panjang, Hong Leong Garden, Clementi New Town",
+      },
+      {
+        "forumTopicId": 6,
+        "topicName": "High Street, Beach Road (part)",
+      },
+      {
+        "forumTopicId": 7,
+        "topicName": "Middle Road, Golden Mile",
+      },
+      {
+        "forumTopicId": 8,
+        "topicName": "Little India",
+      },
+      {
+        "forumTopicId": 9,
+        "topicName": "Orchard, Cairnhill, River Valley",
+      },
+      {
+        "forumTopicId": 10,
+        "topicName": "Ardmore, Bukit Timah, Holland Road, Tanglin",
+      },
+      {
+        "forumTopicId": 11,
+        "topicName": "Watten Estate, Novena, Thomson",
+      },
+      {
+        "forumTopicId": 12,
+        "topicName": "Balestier, Toa Payoh, Serangoon",
+      },
+      {
+        "forumTopicId": 13,
+        "topicName": "Macpherson, Braddell",
+      },
+      {
+        "forumTopicId": 14,
+        "topicName": "Geylang, Eunos",
+      },
+      {
+        "forumTopicId": 15,
+        "topicName": "Katong, Joo Chiat, Amber Road",
+      },
+      {
+        "forumTopicId": 16,
+        "topicName": "Bedok, Upper East Coast, Eastwood, Kew Drive",
+      },
+      {
+        "forumTopicId": 17,
+        "topicName": "Loyang, Changi",
+      },
+      {
+        "forumTopicId": 18,
+        "topicName": "Tampines, Pasir Ris",
+      },
+      {
+        "forumTopicId": 19,
+        "topicName": "Serangoon Garden, Hougang, Punggol",
+      },
+      {
+        "forumTopicId": 20,
+        "topicName": "Bishan, Ang Mo Kio",
+      },
+      {
+        "forumTopicId": 21,
+        "topicName": "Upper Bukit Timah, Clementi Park, Ulu Pandan",
+      },
+      {
+        "forumTopicId": 22,
+        "topicName": "Jurong",
+      },
+      {
+        "forumTopicId": 23,
+        "topicName": "Hillview, Dairy Farm, Bukit Panjang, Choa Chu Kang",
+      },
+      {
+        "forumTopicId": 24,
+        "topicName": "Lim Chu Kang, Tengah",
+      },
+      {
+        "forumTopicId": 25,
+        "topicName": "Kranji, Woodgrove",
+      },
+      {
+        "forumTopicId": 26,
+        "topicName": "Upper Thomson, Springleaf",
+      },
+      {
+        "forumTopicId": 27,
+        "topicName": "Yishun, Sembawang",
+      },
+      {
+        "forumTopicId": 28,
+        "topicName": "Seletar",
+      }
+    ];
+  
+    const matchingArea = areas.find((area) =>
+      area.topicName.toLowerCase().includes(areaName.toLowerCase())
+    );
+  
+    return matchingArea ? matchingArea.forumTopicId : null;
+  };
+  

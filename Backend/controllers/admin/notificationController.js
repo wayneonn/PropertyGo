@@ -47,6 +47,11 @@ const markAsRead = async (req, res) => {
   req.body.hasRead = true;
 
   const notification = await Notification.findByPk(notificationId);
+
+  if (!notification) {
+    return res.status(404).json({ message: "Notification not found" });
+  }
+
   await notification.update(req.body);
 
   const updatedNotification = await Notification.findByPk(notificationId);
@@ -68,7 +73,7 @@ const markAllAsRead = async (req, res) => {
 
   return res
     .status(200)
-    .json({ message: "All notifcations have been marked as read" });
+    .json({ message: "All notifications have been marked as read" });
 };
 
 module.exports = {

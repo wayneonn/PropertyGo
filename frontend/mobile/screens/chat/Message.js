@@ -14,7 +14,8 @@ import MakeOfferModal from '../../components/Chat/MakeOfferModal';
 import EditOfferModal from '../../components/Chat/EditOfferModal';
 import { createRequest, updateRequest } from '../../utils/requestApi';
 import { editProperty } from '../../utils/api';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+import DefaultImage from '../../assets/No-Image-Available.webp';
 
 const Message = ({ route, navigation }) => {
 
@@ -156,6 +157,15 @@ const Message = ({ route, navigation }) => {
     }
   };
 
+  const formatPrice = (price) => {
+    if (price !== null && !isNaN(price)) {
+      const formattedPrice = price.toFixed(2); // Format to 2 decimal places
+      return formattedPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    } else {
+      return 'N/A'; // Handle the case when price is null, undefined, or not a number
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => handlePropertyPress(chat.propertyListing.propertyListingId)}>
@@ -166,7 +176,7 @@ const Message = ({ route, navigation }) => {
                 <Text style={styles.title}>{chat ? chat.propertyListing.title : "Loading"}</Text>
               </View>
               <Text style={styles.message}>
-                ${chat ? chat.propertyListing.price.toFixed(2) : "0.00"}
+                ${chat ? formatPrice(chat.propertyListing.price) : "0.00"}
               </Text>
 
               {chat && user.user.userId === chat.senderId && !chat.request ?
@@ -182,29 +192,42 @@ const Message = ({ route, navigation }) => {
                 <View>
                   <View style={styles.editOfferContainer}>
                     <Text style={styles.offerText}>
-                      ${chat ? chat.request.price.toFixed(2) : "0.00"}
+                      Your Offer: ${chat ? formatPrice(chat.request.price) : "0.00"}
                     </Text>
 
-                    <TouchableOpacity
-                      style={[styles.editOfferButton, chat.request.requestStatus === "ACCEPTED" ? { backgroundColor: "#ccc" } : null]}
-                      onPress={toggleEditModal}
-                      disabled= {chat.request.requestStatus === "ACCEPTED"}
-                    >
-                      <Text style={styles.buttonText}>Edit Offer!</Text>
-                    </TouchableOpacity>
+                    {chat.request.requestStatus === "ACCEPTED" ? (
+                      <TouchableOpacity
+                        style={[styles.purchaseButton]}
+                        onPress={() => {
+                          navigation.navigate('Purchase Option Fee Info', { propertyListing : chat.propertyListing, isOfferedPrice: true });
+                        }}
+                      >
+                        <FontAwesome name="shopping-cart" size={16} color="white" />
+                        <Text style={styles.purchaseText}>{"  "}Purchase</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={[styles.editOfferButton, chat.request.requestStatus === "ACCEPTED" ? { backgroundColor: "#ccc" } : null]}
+                        onPress={toggleEditModal}
+                        disabled={chat.request.requestStatus === "ACCEPTED"}
+                      >
+                        <Text style={styles.buttonText}>Edit Offer!</Text>
+                      </TouchableOpacity>
+                    )}
 
                   </View>
+
                   {chat.request.requestStatus === "ACCEPTED" ?
                     <View style={styles.statusOfferContainer}>
-                      <Text style={styles.acceptedText}> OFFER ACCETPED!! </Text>
+                      <Text style={styles.acceptedText}> OFFER ACCEPTED! </Text>
                       <MaterialCommunityIcons name="sticker-check" size={24} color="green" />
                     </View>
                     : chat.request.requestStatus === "REJECTED" ?
-                    <View style={styles.statusOfferContainer}>
-                      <Text style={styles.rejectedText}> OFFER REJECTED!! </Text>
-                      <MaterialCommunityIcons name="sticker-alert" size={24} color="red" />
-                    </View>
-                    : null
+                      <View style={styles.statusOfferContainer}>
+                        <Text style={styles.rejectedText}> OFFER REJECTED! </Text>
+                        <MaterialCommunityIcons name="sticker-alert" size={24} color="red" />
+                      </View>
+                      : null
                   }
                 </View>
                 : null}
@@ -212,7 +235,7 @@ const Message = ({ route, navigation }) => {
               {chat && user.user.userId === chat.receiverId && chat.request ?
                 <View>
                   <Text style={styles.sellerOfferText}>
-                    Offer Price : ${chat ? chat.request.price.toFixed(2) : "0.00"}
+                    Offer Price : ${chat ? formatPrice(chat.request.price) : "0.00"}
                   </Text>
                   {chat.request.requestStatus === "PENDING" ?
                     <View style={styles.sellerOfferContainer}>
@@ -221,7 +244,7 @@ const Message = ({ route, navigation }) => {
                         style={styles.rejectOfferButton}
                         onPress={rejectOffer}
                       >
-                        <Text style={styles.buttonText}>Reject Offer</Text>
+                        <Text style={styles.buttonTextReject}>Reject Offer</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
@@ -233,12 +256,12 @@ const Message = ({ route, navigation }) => {
                     </View>
                     : chat.request.requestStatus === "ACCEPTED" ?
                       <View style={styles.statusOfferContainer}>
-                        <Text style={styles.acceptedText}> OFFER ACCETPED!! </Text>
+                        <Text style={styles.acceptedText}> OFFER ACCEPTED! </Text>
                         <MaterialCommunityIcons name="sticker-check" size={24} color="green" />
                       </View>
                       :
                       <View style={styles.statusOfferContainer}>
-                        <Text style={styles.rejectedText}> OFFER REJECTED!! </Text>
+                        <Text style={styles.rejectedText}> OFFER REJECTED! </Text>
                         <MaterialCommunityIcons name="sticker-alert" size={24} color="red" />
                       </View>
                   }
@@ -250,9 +273,12 @@ const Message = ({ route, navigation }) => {
               {chat && chat.propertyListing.propertyImages.length !== 0 ? (
                 <Image source={{ uri: `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.propertyListing.propertyImages[0].image.data)}` }} style={styles.propertyImage} />
               ) : (
-                <View style={styles.propertyImagePlaceholder}>
-                  <Ionicons name="home" size={24} color="white" />
-                </View>
+                // <View style={styles.placeholderImage}>
+                <Image source={DefaultImage} style={styles.propertyImage} />
+                // </View>
+                // <View style={styles.propertyImagePlaceholder}>
+                //   <Ionicons name="home" size={24} color="white" />
+                // </View>
               )}
             </View>
           </View>
@@ -269,6 +295,7 @@ const Message = ({ route, navigation }) => {
                 : item.userId === chat.receiverId && chat.receiver.profileImage ? (
                   <Image source={{ uri: `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.receiver.profileImage.data)}` }} style={styles.profileImage} />)
                   : (
+
                     <View style={styles.profileImagePlaceholder}>
                       <Icon name="user" size={20} color="white" />
                     </View>
@@ -378,12 +405,14 @@ const styles = StyleSheet.create({
     // justifyContent:"center"
   },
   offerText: {
+    marginTop: 10,
     fontSize: 18,
     fontWeight: 'bold',
     color: "red",
     width: "60%",
   },
   sellerOfferText: {
+    marginVertical: 8,
     fontSize: 18,
     fontWeight: 'bold',
     color: "blue",
@@ -499,6 +528,19 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginHorizontal: 5,
   },
+  purchaseButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: "#4CAF50",
+    borderWidth: 1,
+    width: '35%',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    alignItems: "center",
+    borderRadius: 6,
+    marginHorizontal: 5,
+  },
   rejectOfferButton: {
     backgroundColor: "red",
     borderWidth: 1,
@@ -520,6 +562,14 @@ const styles = StyleSheet.create({
   buttonText: {
     fontWeight: 'bold',
   },
+  purchaseText: {
+    color: "white",
+    fontWeight: 'bold',
+  },
+  buttonTextReject: {
+    color: "white",
+    fontWeight: 'bold',
+  },
   acceptedText: {
     fontWeight: 'bold',
     color: "green",
@@ -529,7 +579,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: "red",
     fontSize: 14,
-  }
+  },
+  placeholderImage: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10
+  },
 });
 
 export default Message;
