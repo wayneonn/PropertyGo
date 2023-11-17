@@ -244,6 +244,7 @@ function UploadScreen({navigation}) {
                         padding: 5, // set padding
                         alignItems: 'center', // center the icon horizontally
                         justifyContent: 'center', // center the icon vertically
+                        backgroundColor: "#dd1c1a"
                     }}>
                     <FontAwesome name="remove" size={25} color="black"/>
                 </TouchableOpacity>
@@ -257,6 +258,7 @@ function UploadScreen({navigation}) {
                         padding: 5, // set padding
                         alignItems: 'center', // center the icon horizontally
                         justifyContent: 'center', // center the icon vertically
+                        backgroundColor: '#FFD700',
                     }}
                 >
                     <Entypo name="download" size={24} color="black"/>
@@ -384,7 +386,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 15,
         padding: 5,
-        backgroundColor: '#fff', // Consistent background color
+        backgroundColor: '#FFD700',
     },
 
     descriptionContainer: {

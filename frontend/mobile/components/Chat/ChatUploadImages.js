@@ -159,7 +159,9 @@ const ChatUploadImages = ({isVisible, onClose, chatId, sendMessage}) => {
                 );
                 res.data.successImages.forEach((item, index, array) => {
                     if (Object.is(array.length - 1, index)) {
-                        sendMessage(`Image ID: ${item} sent. \nImage Description: \n${description}`)
+                        setTimeout(() => {
+                            sendMessage(`Image ID: ${item} sent. \nImage Description: \n${description}`);
+                        }, 300);
                     } else {
                         sendMessage(`Image ID: ${item} sent.`)
                     }

@@ -59,7 +59,7 @@ const ChatTabNavigator = () => {
                 component={PartnerSenderChat}
                 options={{
                     tabBarLabel: ({ color, focused }) => (
-                        <CustomTabLabel label="Partner" color={color} icon="inbox-arrow-down-outline" />
+                        <CustomTabLabel label="Partner" color={color} icon="doctor" />
                     ),
                 }}
             />

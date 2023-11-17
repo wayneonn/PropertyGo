@@ -93,6 +93,7 @@ const SingleRequestScreen = ({ navigation, route }) => {
                 <Text style={styles.actionText}>  Contact Client</Text>
             </TouchableOpacity>
 
+            {/*Is there even a need for a handle document upload? */}
             <TouchableOpacity style={styles.actionButton} onPress={handleDocumentUpload}>
                 <MaterialIcons name="file-upload" size={24} color="black" />
                 <Text style={styles.actionText}>  Upload Documents</Text>
