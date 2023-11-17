@@ -89,7 +89,7 @@ exports.findRequestByPartnerId = async (req, res) => {
     }
 };
 
-const createRequest = async (req, res) => {
+exports.createRequest = async (req, res) => {
     try {
         const userId = parseInt(req.params.userId);
         const { chatId, price } = req.body;
