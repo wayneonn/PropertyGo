@@ -84,6 +84,7 @@ const ContractorServices = ({navigation}) => {
             propertyId: 1,
             receiverId: selectedContractor?.userId
         }
+        console.log(selectedContractor)
         const data = await createChat(user.user.userId, chatData);
         console.log(data.chatId)
         setModalVisible(!modalVisible);
@@ -177,7 +178,7 @@ const ContractorServices = ({navigation}) => {
                     )) : <LoadingIndicator/>}
                 </View>
                 <ContractorModal modalImage={modalImage} modalVisible={modalVisible} setModalVisible={setModalVisible}
-                             handleChatWithLawyer={handleChatWithContractor} selectedContractor={selectedContractor} navigation={navigation}/>
+                             handleChatWithContractor={handleChatWithContractor} selectedContractor={selectedContractor} navigation={navigation}/>
             </ScrollView>
         </SafeAreaView>
     )

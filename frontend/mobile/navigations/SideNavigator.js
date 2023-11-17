@@ -95,7 +95,7 @@ const drawerScreens = [
     createDrawerScreen('FAQ', FAQ, 'help-circle', 'FAQ'),
     createDrawerScreen('Contact Us Group', ContactUsStackGroup, 'mail', 'Contact Us'),
     // createDrawerScreen('Work With Us', WorkWithUs, 'briefcase', 'Work With Us'),
-    createDrawerScreen('Chats', Chat, 'person', 'Chats' )
+    // createDrawerScreen('Chats', Chat, 'person', 'Chats' )
 ];
 
 const SideBar = ({route}) => {

@@ -1,20 +1,29 @@
 import React, {useContext} from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import {AuthContext} from "../../AuthContext";
+import {getTimeAgo} from "../../services/CalculateTimeAgo";
+import {Divider} from "@rneui/themed";
 
 const MessageRequest = ({ item, handleAccept, handleReject }) => {
     const { user } = useContext(AuthContext);
     const isSent = item.userId === user.user.userId;
+    // Split the string into an array of lines
+    let lines = item.messageText.split('\n');
+    // Remove the first line and join the remaining lines
+    let modifiedText = lines.slice(1).join('\n').trim();
 
     return (
         <View style={isSent ? styles.sentMessage : styles.receivedMessage}>
-            <Text>{item.messageText}</Text>
+            <Text>{modifiedText}</Text>
+            <Text>&nbsp;</Text>
+            <Divider width={"2"} insetType="middle"/>
             {!isSent && (
                 <View style={styles.buttonContainer}>
                     <Button title="Accept" onPress={() => handleAccept(item)} />
                     <Button title="Reject" onPress={() => handleReject(item)} />
                 </View>
             )}
+            <Text style={styles.time}>{getTimeAgo(item.createdAt)}</Text>
         </View>
     );
 };
@@ -40,6 +49,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 10,
+    },
+    time: {
+        fontSize: 10,
+        color: "grey",
+        alignSelf: 'flex-end',
+        // justifyContent: "flex-end"
     },
 });
 

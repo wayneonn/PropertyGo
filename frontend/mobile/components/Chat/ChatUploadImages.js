@@ -156,7 +156,9 @@ const ChatUploadImages = ({isVisible, onClose, chatId, sendMessage}) => {
                     'Upload Succeeded',
                     'The photos has been created successfully.'
                 );
-                sendMessage(`Image ID: ${res.data.successImages[0]} sent.`)
+                res.data.successImages.forEach((index) => {
+                    sendMessage(`Image ID: ${index} sent.`)
+                })
                 onClose();
             } else {
                 Alert.alert(

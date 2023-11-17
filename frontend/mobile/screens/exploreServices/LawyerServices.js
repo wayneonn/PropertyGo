@@ -62,6 +62,7 @@ const LawyerServices = ({navigation}) => {
         try {
             const lawyers = await fetchPartnerByRangeAndType(USER_TYPE[0], start, end)
             setLawyers(lawyers.partnerInfo)
+            setFilteredLawyer(lawyers.partnerInfo)
             console.log("Found lawyers: ", lawyers)
         } catch (error) {
             console.error("Error fetching lawyers: ", error)
@@ -93,7 +94,7 @@ const LawyerServices = ({navigation}) => {
         setFilter(null);
 
         const filtered = lawyers.filter((item) => {
-            let propertyToFilter = '';
+            let propertyToFilter = ' ';
 
             switch (filterBy) {
                 case 'Company':

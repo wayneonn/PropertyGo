@@ -29,25 +29,28 @@ import axios from 'axios'
 import MessageRequest from "../../components/Chat/MessageRequest";
 import MessageDownloadDocuments from "../../components/Chat/MessageDownloadDocuments";
 import MessageImages from "../../components/Chat/MessageImages";
+import MessagePlain from "../../components/Chat/MessagePlain";
 import ChatDocumentUpload from "../../components/Chat/ChatUploadDocuments";
 import {openBrowserAsync} from "expo-web-browser";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import ChatUploadImages from "../../components/Chat/ChatUploadImages";
+import SearchBar from "../../components/Forum/SearchBar"
 
 // Add unique message.
 const Message = ({route, navigation}) => {
     const {user} = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
+    const [filteredMessages, setFilteredMessages] = useState([])
     const [chat, setChat] = useState(null);
     const chatId = route.params.chatId;
     const [newMessage, setNewMessage] = useState('');
-    const windowWidth = useWindowDimensions().width;
     const [transaction, setTransaction] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [isModalVisible, setModalVisible] = useState(false);
     const [isUploadModalVisible, setIsUploadModalVisible] = useState(false)
     const [isImageModalVisible, setIsImageModalVisible] = useState(false)
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchData = async () => {
         try {
@@ -69,7 +72,8 @@ const Message = ({route, navigation}) => {
             console.log(chatData);
             setChat(chatData);
             setMessages(chatData.messages);
-
+            setFilteredMessages(chatData.messages);
+            setSearchQuery("")
         } catch (error) {
             console.error(error);
         }
@@ -145,6 +149,19 @@ const Message = ({route, navigation}) => {
         // SHOULD BE A FUNCTION //
     }
 
+    const handleSearch = (text) => {
+        const filtered = messages.filter((item) => {
+            return item.messageText.toLowerCase().includes(text.toLowerCase());
+        });
+
+        if (text === "") {
+            setFilteredMessages(messages);
+        } else {
+            setFilteredMessages(filtered);
+        }
+        setSearchQuery(text);
+    };
+
 
     const handleMakeRequest = async (jobTitle, jobDescription, amount) => {
         // Check for missing inputs
@@ -166,7 +183,7 @@ const Message = ({route, navigation}) => {
             const request = response.data
             Alert.alert('Success', `This is the Request response: ${request.requestId}`);
 
-            const requestMessage = `Request ID:${request.requestId} \nJob Title: ${jobTitle} \nJob Description: ${jobDescription} \nAmount: ${amount}`
+            const requestMessage = `Request ID: ${request.requestId} \nJob Title: ${jobTitle} \nJob Description: \n${jobDescription} \nAmount: ${amount}`
             const send = await sendMessage(requestMessage)
         } catch (error) {
             const errorMessage = error.response ? error.response.data.error : error.message;
@@ -383,8 +400,6 @@ const Message = ({route, navigation}) => {
                                 </TouchableOpacity>
                             </View>
 
-
-
                             {/*{chat && user.user.userId === chat.receiver.userId && !chat.request ?*/}
                             {/*    <TouchableOpacity*/}
                             {/*        style={styles.makeOfferButton}*/}
@@ -407,6 +422,7 @@ const Message = ({route, navigation}) => {
                             {/*}*/}
 
                         </View>
+
                         <View style={styles.propertyImageContainer}>
                             {chat && chat.receiver.profileImage ? (
                                 <Image
@@ -419,6 +435,9 @@ const Message = ({route, navigation}) => {
                             )}
                         </View>
                     </View>
+                    <View style={{marginTop: 10, alignItems:"center", height: 50}}>
+                        <SearchBar handleSearch={handleSearch} searchQuery={searchQuery}/>
+                    </View>
                 </View>
             </TouchableOpacity>
             <ScrollView refreshControl={
@@ -430,13 +449,14 @@ const Message = ({route, navigation}) => {
             }
             >
                 <FlatList
-                    data={messages}
+                    data={filteredMessages}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({item}) => {
-                        // Check if the message text starts with "Request"
-                        const isRequest = item.messageText.startsWith("Request ID");
-                        const isDocument = item.messageText.startsWith("Document");
-                        const isImage = item.messageText.startsWith("Image ID");
+                        // Check if the message text starts the right headers
+                        // Potential Issue here, what if someone replies with something weird.
+                        const isRequest = item.messageText.startsWith("Request ID: ");
+                        const isDocument = item.messageText.startsWith("Document ID: ");
+                        const isImage = item.messageText.startsWith("Image ID: ");
                         return (
                             <View
                                 style={item.userId === user.user.userId ? styles.messageSentContainer : styles.messageReceivedContainer}>
@@ -454,26 +474,21 @@ const Message = ({route, navigation}) => {
                                                     <Icon name="user" size={20} color="white"/>
                                                 </View>
                                             ) : null}
+
                                 {isRequest ?
                                     // Render the MessageRequest component for messages starting with "Job Title"
                                     <MessageRequest item={item} handleAccept={acceptRequest}
                                                     handleReject={rejectRequest}/>
                                     :
                                     isDocument ?
-                                        // Render the MessageDownloadDocuments component for messages starting with "Download"
-                                        <MessageDownloadDocuments item={item} handleDownload={downloadPDF}/>
-
+                                    // Render the MessageDownloadDocuments component for messages starting with "Download"
+                                    <MessageDownloadDocuments item={item} handleDownload={downloadPDF}/>
                                     : isImage ?
                                     // Render logic for messages that are images
-                                    <MessageImages item={item} /> :
-                                        // Regular message rendering
-                                        <View
-                                            style={item.userId === user.user.userId ? styles.sentMessage : styles.receivedMessage}>
-                                            <Text style={styles.messageText}><HTML
-                                                source={{html: item.messageText.replace(/<\/?p>/g, '').replace(/<html>|<\/html>/g, '')}}
-                                                contentWidth={windowWidth}/></Text>
-                                            <Text style={styles.time}>{getTimeAgo(item.createdAt)}</Text>
-                                        </View>
+                                    <MessageImages item={item} />
+                                    :
+                                    // Regular message rendering
+                                    <MessagePlain item={item}/>
                                 }
                             </View>
                         );
