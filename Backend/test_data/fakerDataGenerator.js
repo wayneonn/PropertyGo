@@ -41,13 +41,14 @@ exports.createFakeTransactions = async (numOfRecords) => {
       propertyId: faker.number.int({ min: 1, max: 29 }),
       transactionItem: transactionItem,
       invoiceId: faker.number.int({ min: 1, max: 6 }),
-      createdAt: faker.date.between({ from: "2023-01-01", to: "2023-09-30" }),
+      createdAt: faker.date.between({ from: "2023-01-01", to: "2023-11-18" }),
       quantity:
         transactionItem === "Token Purchase"
-          ? faker.helpers.arrayElement([5, 10, 15, 20, 25, 30, 40, 50])
+          ? faker.helpers.arrayElement([10, 20, 50])
           : 1,
       transactionType:
-        transactionItem === "Option Fee" ? "OPTION_FEE" : "TOKEN_PURCHASE",
+      Math.floor(Math.random() * 2) == 0 ? "COMMISSION_FEE" : (transactionItem === "Option Fee" ? "OPTION_FEE" : "TOKEN_PURCHASE"),
+      userId: Math.floor(Math.random() * (6 - 2) + 2)
     };
     transactions.push(fakeTransaction);
   }

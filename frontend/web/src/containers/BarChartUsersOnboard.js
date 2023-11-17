@@ -1,114 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Bar } from 'react-chartjs-2';
 import API from "../services/API";
 
 const BarChartUsersOnboard = () => {
-  const userData = [
-    {
-      userId: 1,
-      userName: "User1",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-11-01T00:00:00.000Z",
-    },
-    {
-      userId: 2,
-      userName: "User2",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-10-02T00:00:00.000Z",
-    },
-    {
-      userId: 3,
-      userName: "User3",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-11-03T00:00:00.000Z",
-    },
-    {
-      userId: 4,
-      userName: "User4",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-10-01T00:00:00.000Z",
-    },
-    {
-      userId: 5,
-      userName: "User5",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-10-02T00:00:00.000Z",
-    },
-    {
-      userId: 6,
-      userName: "User6",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-10-03T00:00:00.000Z",
-    },
-    {
-      userId: 7,
-      userName: "User7",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-09-01T00:00:00.000Z",
-    },
-    {
-      userId: 8,
-      userName: "User8",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-09-02T00:00:00.000Z",
-    },
-    {
-      userId: 9,
-      userName: "User9",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-09-03T00:00:00.000Z",
-    },
-    {
-      userId: 10,
-      userName: "User9",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-06-03T00:00:00.000Z",
-    },
-    {
-      userId: 11,
-      userName: "User9",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-08-03T00:00:00.000Z",
-    },
-    {
-      userId: 12,
-      userName: "User9",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-07-03T00:00:00.000Z",
-    },
-    {
-      userId: 12,
-      userName: "User9",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-01-03T00:00:00.000Z",
-    },
-    {
-      userId: 12,
-      userName: "User9",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-01-03T00:00:00.000Z",
-    },
-    {
-      userId: 12,
-      userName: "User9",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-02-03T00:00:00.000Z",
-    },
-    {
-      userId: 12,
-      userName: "User9",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-03-03T00:00:00.000Z",
-    },
-    {
-      userId: 12,
-      userName: "User9",
-      userType: "BUYER_SELLER",
-      createdAt: "2023-04-03T00:00:00.000Z",
-    },
-  ];
-  const [selectedTimePeriod, setSelectedTimePeriod] = useState(3); 
+  const [selectedTimePeriod, setSelectedTimePeriod] = useState(3);
 
   const monthOrder = {
     January: 0,
@@ -129,8 +25,7 @@ const BarChartUsersOnboard = () => {
     setSelectedTimePeriod(parseInt(event.target.value, 10));
   };
 
-  // Function to filter data for the last X months
-  const filterDataForLastXMonths = (month) => {
+  const filterDataForLastXMonths = (month, userData) => {
     const today = new Date();
     const lastXMonths = new Date(today);
     lastXMonths.setMonth(today.getMonth() - month);
@@ -190,42 +85,50 @@ const BarChartUsersOnboard = () => {
 
   useEffect(() => {
 
-    let filteredData = "";
+    const fetchData = async () => {
+      try {
+        const response = await API.get('http://localhost:3000/admin/users');
+        const users = response.data;
 
-    if (selectedTimePeriod == 3) {
-      filteredData = filterDataForLastXMonths(3);
-    } else if (selectedTimePeriod == 6) {
-      filteredData = filterDataForLastXMonths(6);
-    } else {
-      filteredData = filterDataForLastXMonths(12);
+        let filteredData = "";
+
+        if (selectedTimePeriod == 3) {
+          filteredData = filterDataForLastXMonths(3, users);
+        } else if (selectedTimePeriod == 6) {
+          filteredData = filterDataForLastXMonths(6, users);
+        } else {
+          filteredData = filterDataForLastXMonths(12, users);
+        }
+
+        const groupedUsers = groupUsersByCreatedAtMonth(filteredData);
+
+        const jsonArray = Object.entries(groupedUsers).map(([key, value]) => {
+          return { name: key, count: value };
+        });
+
+        const dataSortedByMonth = jsonArray.sort((a, b) => monthOrder[a.name] - monthOrder[b.name]);
+
+        const data = {
+          labels: dataSortedByMonth.map((data) => data.name),
+          datasets: [
+            {
+              data: dataSortedByMonth.map((data) => data.count), 
+              backgroundColor: createBackgroundColor(dataSortedByMonth.length),
+            },
+          ],
+        };
+
+        setChartData(data);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
-    const groupedUsers = groupUsersByCreatedAtMonth(filteredData);
-
-    const jsonArray = Object.entries(groupedUsers).map(([key, value]) => {
-      return { name: key, count: value };
-    });
-
-    const dataSortedByMonth = jsonArray.sort((a, b) => monthOrder[a.name] - monthOrder[b.name]);
-
-    // Create the dataset for the chart
-    const data = {
-      labels: dataSortedByMonth.map((data) => data.name),
-      datasets: [
-        {
-          data: dataSortedByMonth.map((data) => data.count), // Number of users for the last 3 months
-          backgroundColor: createBackgroundColor(dataSortedByMonth.length),
-        },
-      ],
-    };
-
-    // Render the chart
-    setChartData(data);
-
+    fetchData();
   }, [selectedTimePeriod]);
 
   return (
-    <div style={{width: "50%"}}>
+    <div style={{ width: "50%" }}>
       <section className="col-lg-14 connectedSortable">
         <div className="card">
           <div className="card-header">
@@ -236,8 +139,8 @@ const BarChartUsersOnboard = () => {
           </div>
           <div className="card-body">
             <div className="tab-content p-0">
-              <div style={{textAlign: "right", marginRight: "0"}}>
-                <label htmlFor="timePeriodSelect" style={{marginRight: "1em"}}>Select Time Period:</label>
+              <div style={{ textAlign: "right", marginRight: "0" }}>
+                <label htmlFor="timePeriodSelect" style={{ marginRight: "1em" }}>Select Time Period:</label>
                 <select
                   id="timePeriodSelect"
                   onChange={handleSelectChange}
@@ -259,11 +162,10 @@ const BarChartUsersOnboard = () => {
                           display: false
                         }
                       },
-                      // maintainAspectRatio: false,
                       scales: {
                         y: {
                           ticks: {
-                           precision: 0
+                            precision: 0
                           },
                           beginAtZero: true
                         },
