@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
         padding: 20,
         alignItems: 'center',
         width: '80%', // Adjust the width of the modal content
+        marginBottom: 70,
     },
     modalTitle: {
         fontSize: 20,

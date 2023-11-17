@@ -80,47 +80,47 @@ export default function PropertyListing() {
     latitude: '',
   }
   const [property, setProperty] = useState({
-    title: 'Sample Title',
-    description:
-      'Sample Description (You can add a longer description here.)',
-    price: '100000', // Add a dollar symbol to the price
-    offeredPrice: '90000', // Add a dollar symbol to the offered price
-    bed: '2',
-    bathroom: '2',
-    size: '1200',
-    lease_commence_date: '1970',
-    propertyType: 'Resale',
-    propertyStatus: 'ACTIVE',
-    userId: user.user.userId,
-    sellerId: user.user.userId,
-    postalCode: '822126',
-    address: 'Home',
-    unitNumber: '17-360',
-    area: '',
-    region: '',
-    longitude: '',
-    latitude: '',
-    roomType: '',
-
-    //Original
-    // title: '',
-    // description: '',
-    // price: '',
-    // bed: '',
-    // bathroom: '',
-    // lease_commence_date: '',
-    // size: '',
-    // propertyType: '',
+    // title: 'Sample Title',
+    // description:
+    //   'Sample Description (You can add a longer description here.)',
+    // price: '100000', // Add a dollar symbol to the price
+    // offeredPrice: '90000', // Add a dollar symbol to the offered price
+    // bed: '2',
+    // bathroom: '2',
+    // size: '1200',
+    // lease_commence_date: '1970',
+    // propertyType: 'Resale',
     // propertyStatus: 'ACTIVE',
     // userId: user.user.userId,
-    // postalCode: '',
-    // address: '',
-    // unitNumber: '',
+    // sellerId: user.user.userId,
+    // postalCode: '822126',
+    // address: 'Home',
+    // unitNumber: '17-360',
     // area: '',
     // region: '',
     // longitude: '',
     // latitude: '',
     // roomType: '',
+
+    //Original
+    title: '',
+    description: '',
+    price: '',
+    bed: '',
+    bathroom: '',
+    lease_commence_date: '',
+    size: '',
+    propertyType: '',
+    propertyStatus: 'ACTIVE',
+    sellerId: user.user.userId,
+    postalCode: '',
+    address: '',
+    unitNumber: '',
+    area: '',
+    region: '',
+    longitude: '',
+    latitude: '',
+    roomType: '',
   });
 
   const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
@@ -141,10 +141,10 @@ export default function PropertyListing() {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [selectedDocuments, setSelectedDocuments] = useState([]); // Documents to upload
   const [isDocumentUploaded, setIsDocumentUploaded] = useState(false);
-  
- useEffect(() => {
-  fetchFolderData();
- }, []);
+
+  useEffect(() => {
+    fetchFolderData();
+  }, []);
 
   // Function to format the price with dollar sign and commas
   const formatPrice = (price) => {
@@ -186,32 +186,33 @@ export default function PropertyListing() {
     }
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     // console.log('Home page gained focus');
-  //     setProperty({
-  //       title: '',
-  //       description: '',
-  //       price: '',
-  //       bed: '',
-  //       bathroom: '',
-  //       lease_commence_date: '',
-  //       size: '',
-  //       propertyType: '',
-  //       propertyStatus: 'ACTIVE',
-  //       userId: user.user.userId,
-  //       postalCode: '',
-  //       address: '',
-  //       unitNumber: '',
-  //       area: '',
-  //       region: '',
-  //       longitude: '',
-  //       latitude: '',
-  //     });
-  //     setImages([]);
-  //     setFormattedPrice('');
-  //   }, [])
-  // );
+  useFocusEffect(
+    React.useCallback(() => {
+      // console.log('Home page gained focus');
+      setProperty({
+        title: '',
+        description: '',
+        price: '',
+        bed: '',
+        bathroom: '',
+        lease_commence_date: '',
+        size: '',
+        propertyType: '',
+        propertyStatus: 'ACTIVE',
+        sellerId: user.user.userId,
+        postalCode: '',
+        address: '',
+        unitNumber: '',
+        area: '',
+        region: '',
+        longitude: '',
+        latitude: '',
+        roomType: '',
+      });
+      setImages([]);
+      setFormattedPrice('');
+    }, [])
+  );
 
   const handleChoosePhoto = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -415,6 +416,22 @@ export default function PropertyListing() {
       return;
     }
 
+    if (!optionPrice || optionPrice <= 0) {
+      Alert.alert('Invalid Option Price', 'Please enter your Option Fee.');
+      return;
+    }
+
+
+    if (!optionExercisePrice || optionExercisePrice <= 0) {
+      Alert.alert('Invalid Option Exercise Price', 'Please enter your Option Exercise Fee.');
+      return;
+    }
+
+    if (optionExercisePrice + optionPrice > 5000) {
+      Alert.alert('Fee Exceeds S$5000.', 'With HDB Guidelines, the Option Fee and Option Exercise Fee cannot exceed S$5000.');
+      return;
+    }
+
     if (!/^\d+$/.test(property.size)) {
       Alert.alert('Invalid Size', 'Size must be a numeric value.');
       return;
@@ -479,7 +496,7 @@ export default function PropertyListing() {
         fetchFolderData();
 
         createDocument(propertyListingId, title);
-        
+
 
         navigation.navigate('Property Listing', { propertyListingId });
       } else {
@@ -498,33 +515,33 @@ export default function PropertyListing() {
     console.log("createDocument", selectedDocuments);
     try {
       const fileData = new FormData();
-  
+
       selectedDocuments.forEach((document) => {
         const fileUri = document.uri;
         const fileType = document.mimeType;
         const fileName = document.name;
         const folderId = propertyFolderId;
-  
+
         fileData.append("documents", {
           uri: fileUri,
           name: fileName,
           type: fileType,
         });
-  
+
         console.log("File URI: ", fileUri);
-  
+
         // Append other required data to the FormData object
         fileData.append("propertyId", propertyListingId);
         fileData.append("description", `Intent To Sell Document (${title})`);
         fileData.append("folderId", folderId);
         fileData.append("userId", user.user.userId);
       });
-  
+
       const response = await fetch(`${BASE_URL}/user/documents/upload`, {
         method: "post",
         body: fileData,
       });
-  
+
       // Check the response status and log the result
       if (response.ok) {
         const data = await response.json();
@@ -573,6 +590,7 @@ export default function PropertyListing() {
   return (
     <View style={styles.container}>
       <ScrollView
+        keyboardDismissMode="on-drag"
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
         keyboardShouldPersistTaps="handled" // Add this prop
@@ -608,111 +626,111 @@ export default function PropertyListing() {
           onClose={() => setFullScreenImage(null)} // Close the full-screen image view
         />
 
-<View style={styles.inputContainer}>
-  <Text style={styles.label}>Select Document</Text>
-  {selectedDocuments.length > 0 ? (
-    <View style={styles.documentContainer}>
-      <TouchableOpacity
-        style={styles.selectedDocumentContainer}
-        onPress={async () => {
-          if (selectedDocuments && selectedDocuments[0].uri) {
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Select Document</Text>
+          {selectedDocuments.length > 0 ? (
+            <View style={styles.documentContainer}>
+              <TouchableOpacity
+                style={styles.selectedDocumentContainer}
+                onPress={async () => {
+                  if (selectedDocuments && selectedDocuments[0].uri) {
 
-            const filePath = selectedDocuments[0].uri;
-            console.log('Opening document:', filePath);
+                    const filePath = selectedDocuments[0].uri;
+                    console.log('Opening document:', filePath);
 
-            // Check if the file exists
-            const fileInfo = await FileSystem.getInfoAsync(filePath);
-            // console.log('File exists:', fileInfo)
-            if (fileInfo.exists) {
-              // Request permission to access the file
-              console.log('File exists:', filePath)
-              const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-              openPdf(filePath);
-            } else {
-              console.warn('Selected document file does not exist.');
-            }
-          } else {
-            console.warn('Selected document URI is not valid.');
-          }
-        }}
-      >
-         <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', }}>
-          <Ionicons name="document-text-outline" size={24} color="blue" />
-          <Text style={styles.selectedDocumentText}> Selected Document: </Text>
-          <Text style={styles.selectedDocumentName}>
-          {selectedDocuments[0].name}
-        </Text>
+                    // Check if the file exists
+                    const fileInfo = await FileSystem.getInfoAsync(filePath);
+                    // console.log('File exists:', fileInfo)
+                    if (fileInfo.exists) {
+                      // Request permission to access the file
+                      console.log('File exists:', filePath)
+                      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+                      openPdf(filePath);
+                    } else {
+                      console.warn('Selected document file does not exist.');
+                    }
+                  } else {
+                    console.warn('Selected document URI is not valid.');
+                  }
+                }}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', }}>
+                  <Ionicons name="document-text-outline" size={24} color="blue" />
+                  <Text style={styles.selectedDocumentText}> Selected Document: </Text>
+                  <Text style={styles.selectedDocumentName}>
+                    {selectedDocuments[0].name}
+                  </Text>
+                </View>
+
+              </TouchableOpacity>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <TouchableOpacity
+                  style={styles.replaceDocumentButton}
+                  onPress={handleSelectDocument}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Ionicons name="repeat-outline" size={24} color="white" />
+                    <Text style={styles.removeDocumentButtonText}> Replace</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.removeDocumentButton}
+                  onPress={() => {
+                    // Handle removing the selected document
+                    setSelectedDocuments([]);
+                    setIsDocumentUploaded(false);
+                  }}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Ionicons name="trash-bin-outline" size={24} color="white" />
+                    <Text style={styles.removeDocumentButtonText}> Remove</Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.viewDocumentButton}
+                  onPress={async () => {
+                    if (selectedDocuments && selectedDocuments[0].uri) {
+
+                      const filePath = selectedDocuments[0].uri;
+                      console.log('Opening document:', filePath);
+
+                      // Check if the file exists
+                      const fileInfo = await FileSystem.getInfoAsync(filePath);
+                      // console.log('File exists:', fileInfo)
+                      if (fileInfo.exists) {
+                        // Request permission to access the file
+                        console.log('File exists:', filePath)
+                        const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+                        openPdf(filePath);
+                      } else {
+                        console.warn('Selected document file does not exist.');
+                      }
+                    } else {
+                      console.warn('Selected document URI is not valid.');
+                    }
+                  }}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Ionicons name="eye-outline" size={24} color="white" />
+                    <Text style={styles.removeDocumentButtonText}>   View    </Text>
+                  </View>
+                </TouchableOpacity>
+
+              </View>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.selectDocumentButton}
+              onPress={handleSelectDocument}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="add-outline" size={24} color="white" />
+                <Text style={styles.selectDocumentButtonText}>Upload Intent to Sell Document</Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
-
-      </TouchableOpacity>
-      <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity
-          style={styles.replaceDocumentButton}
-          onPress={handleSelectDocument}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Ionicons name="repeat-outline" size={24} color="white" />
-            <Text style={styles.removeDocumentButtonText}> Replace</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.removeDocumentButton}
-          onPress={() => {
-            // Handle removing the selected document
-            setSelectedDocuments([]);
-            setIsDocumentUploaded(false);
-          }}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Ionicons name="trash-bin-outline" size={24} color="white" />
-            <Text style={styles.removeDocumentButtonText}> Remove</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-        style={styles.viewDocumentButton}
-        onPress={async () => {
-          if (selectedDocuments && selectedDocuments[0].uri) {
-
-            const filePath = selectedDocuments[0].uri;
-            console.log('Opening document:', filePath);
-
-            // Check if the file exists
-            const fileInfo = await FileSystem.getInfoAsync(filePath);
-            // console.log('File exists:', fileInfo)
-            if (fileInfo.exists) {
-              // Request permission to access the file
-              console.log('File exists:', filePath)
-              const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-              openPdf(filePath);
-            } else {
-              console.warn('Selected document file does not exist.');
-            }
-          } else {
-            console.warn('Selected document URI is not valid.');
-          }
-        }}
-      >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Ionicons name="eye-outline" size={24} color="white" />
-            <Text style={styles.removeDocumentButtonText}>   View    </Text>
-          </View>
-        </TouchableOpacity>
-        
-      </View>
-    </View>
-  ) : (
-    <TouchableOpacity
-      style={styles.selectDocumentButton}
-      onPress={handleSelectDocument}
-    >
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Ionicons name="add-outline" size={24} color="white" />
-        <Text style={styles.selectDocumentButtonText}>Upload Intent to Sell Document</Text>
-      </View>
-    </TouchableOpacity>
-  )}
-</View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Title</Text>
@@ -1078,7 +1096,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '80%',
     justifyContent: 'center',
-     marginLeft: 30,
+    marginLeft: 30,
     marginTop: 10,
     marginBottom: 10,
   },
@@ -1097,7 +1115,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     marginTop: 10,
-    marginRight: 10, 
+    marginRight: 10,
   },
   uploadDocumentButtonText: {
     color: 'white',
@@ -1112,7 +1130,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     marginTop: 10, // Add some top margin for spacing
-    marginRight: 10, 
+    marginRight: 10,
   },
   viewDocumentButton: {
     backgroundColor: 'green',
@@ -1126,7 +1144,7 @@ const styles = StyleSheet.create({
   removeDocumentButtonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 12,
   },
 
   // Style for Selected Document container
@@ -1146,7 +1164,6 @@ const styles = StyleSheet.create({
     marginTop: 0, // Add some top margin for spacing
   },
   documentContainer: {
-
     paddingHorizontal: 2,
     alignItems: 'center',
   },

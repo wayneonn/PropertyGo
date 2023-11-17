@@ -4,657 +4,6 @@ import { Line, Pie, getElementAtEvent, getElementsAtEvent } from 'react-chartjs-
 import API from "../services/API";
 
 const PieChartToken = () => {
-    const tokenData = [
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-11-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-10-28 07:10:45",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-09-18 00:22:15",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-08-18 00:22:15",
-            status: "PENDING"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-04-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-03-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-02-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-01-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-02-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-03-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-04-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-08-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-09-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-10-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-11-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-10-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-09-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-08-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-11-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-10-28 07:10:45",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-09-18 00:22:15",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-08-18 00:22:15",
-            status: "PENDING"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-04-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-03-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-02-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-01-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-02-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-03-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-04-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-08-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-09-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-10-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-11-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-10-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-09-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-08-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 10,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-11-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-10-28 07:10:45",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-09-18 00:22:15",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-08-18 00:22:15",
-            status: "PENDING"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-04-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-03-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-02-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-01-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-02-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-03-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-04-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-08-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-09-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-10-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-11-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-10-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-09-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-08-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 20,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-11-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-10-28 07:10:45",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-09-18 00:22:15",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-08-18 00:22:15",
-            status: "PENDING"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-04-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-03-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-02-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-01-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-02-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-03-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-04-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-08-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-09-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-10-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-11-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-10-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-09-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-08-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-07-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-06-10 14:01:38",
-            status: "PAID"
-        },
-        {
-            transactionItem: "Token Purchase",
-            paymentAmount: 50,
-            createdAt: "2023-05-10 14:01:38",
-            status: "PAID"
-        },
-    ];
-
     const map = { 0: 10, 1: 20, 2: 50 };
     const tokenMain = { "10": 0, "20": 1, "50": 2 };
 
@@ -693,17 +42,17 @@ const PieChartToken = () => {
         setSelectedTimePeriod(parseInt(event.target.value, 10));
     };
 
-    const getChartData = () => {
+    const getChartData = (tokenData) => {
         const data = { "10": 0, "20": 0, "50": 0 };
 
         for (let i = 0; i < tokenData.length; i++) {
-            data[tokenData[i].paymentAmount]++;
+            data[tokenData[i].quantity]++;
         }
 
         return data;
     };
 
-    const filterDataForLastXMonths = (month, tokenNumber) => {
+    const filterDataForLastXMonths = (month, tokenNumber, tokenData) => {
         const today = new Date();
 
         const lastXMonths = new Date(today);
@@ -714,7 +63,9 @@ const PieChartToken = () => {
 
         const filteredTokenData = tokenData.filter((item) => item.status === "PAID").filter((item) => {
             return new Date(item.createdAt) >= threeMonthsAgo && new Date(item.createdAt) <= lastXMonths;
-        }).filter((item) => item.paymentAmount == tokenNumber);
+        }).filter((item) => item.quantity == tokenNumber);;
+
+        console.log("filtered token data " + filteredTokenData.length);
 
         return filteredTokenData;
     };
@@ -755,13 +106,14 @@ const PieChartToken = () => {
 
         const { datasetIndex, index } = element[0];
 
+        console.log(map[index]);
+
         setSelectedTokenNumber(map[index]);
     };
 
     const printElementsAtEvent = (elements) => {
         if (!elements.length) return;
-    
-        console.log(elements);
+
       };
 
     const onClick = (event) => {
@@ -777,49 +129,62 @@ const PieChartToken = () => {
 
     useEffect(() => {
 
-        const pieChartData = getChartData();
-        const values = Object.values(pieChartData);
+        const fetchData = async () => {
+            try {
+                const response = await API.get('http://localhost:3000/user/transactions/getTransactions/admin');
+                const tokens = response.data.filter((item) => item.transactionType == "TOKEN_PURCHASE").filter((item) => item.quantity == 10 || item.quantity == 20 || item.quantity == 50);
+                
+                const pieChartData = getChartData(tokens);
 
-        const pieData = {
-            labels: ['10', '20', '50'],
-            datasets: [
-                {
-                    label: '# of token quantity purchased',
-                    data: values,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    borderWidth: 1,
-                },
-            ],
+                console.log(pieChartData);
+
+                const values = Object.values(pieChartData);
+        
+                const pieData = {
+                    labels: ['10', '20', '50'],
+                    datasets: [
+                        {
+                            label: '# of token quantity purchased',
+                            data: values,
+                            backgroundColor: backgroundColor,
+                            borderColor: borderColor,
+                            borderWidth: 1,
+                        },
+                    ],
+                };
+        
+                setPieChartData(pieData);
+        
+                let filteredData = "";
+        
+                filteredData = filterDataForLastXMonths(selectedTimePeriod, selectedTokenNumber, tokens);
+        
+                const groupedUsers = groupUsersByCreatedAtMonth(filteredData);
+        
+                const jsonArray = Object.entries(groupedUsers).map(([key, value]) => {
+                    return { name: key, count: value };
+                });
+        
+                const dataSortedByMonth = jsonArray.sort((a, b) => monthOrder[a.name] - monthOrder[b.name]);
+        
+                const data = {
+                    labels: dataSortedByMonth.map((data) => data.name),
+                    datasets: [
+                        {
+                            data: dataSortedByMonth.map((data) => data.count), 
+                            borderColor: borderColor[tokenMain[selectedTokenNumber]],
+                            backgroundColor: backgroundColor[tokenMain[selectedTokenNumber]],
+                        },
+                    ],
+                };
+        
+                setLineChartData(data);
+            } catch (error) {  
+                console.error(error);
+            }
         };
 
-        setPieChartData(pieData);
-
-        let filteredData = "";
-
-
-        filteredData = filterDataForLastXMonths(selectedTimePeriod, selectedTokenNumber);
-
-        const groupedUsers = groupUsersByCreatedAtMonth(filteredData);
-
-        const jsonArray = Object.entries(groupedUsers).map(([key, value]) => {
-            return { name: key, count: value };
-        });
-
-        const dataSortedByMonth = jsonArray.sort((a, b) => monthOrder[a.name] - monthOrder[b.name]);
-
-        const data = {
-            labels: dataSortedByMonth.map((data) => data.name),
-            datasets: [
-                {
-                    data: dataSortedByMonth.map((data) => data.count), 
-                    borderColor: borderColor[tokenMain[selectedTokenNumber]],
-                    backgroundColor: backgroundColor[tokenMain[selectedTokenNumber]],
-                },
-            ],
-        };
-
-        setLineChartData(data);
+        fetchData();
 
     }, [selectedTimePeriod, selectedTokenNumber]);
 

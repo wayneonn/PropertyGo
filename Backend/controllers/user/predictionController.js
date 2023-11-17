@@ -24,7 +24,7 @@ const lossHistory = {
 function loadModel() {
     // Load the model from the saved location
     const modelLoadPath = path.join(__dirname, 'trained_model/model.json');
-    console.log("modelLoadPath: ", modelLoadPath)
+    // console.log("modelLoadPath: ", modelLoadPath)
     return tf.loadLayersModel(`file://${modelLoadPath}`);
 }
 

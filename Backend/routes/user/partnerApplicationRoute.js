@@ -8,4 +8,5 @@ router.post('/partner/new_app/', partnerApplicationController.postPartnerApplica
 router.get('/partner/admin/approval/', partnerApplicationController.getAllPartnerApplicationsNotApproved);
 router.put('/partner/admin/approve/:id', partnerApplicationController.updatePartnerApplicationByID);
 router.put('/partner/admin/reject/:id', partnerApplicationController.rejectPartnerApplicationByID);
+router.get('/partner/list', partnerApplicationController.getPartnerApplications);
 module.exports = router;

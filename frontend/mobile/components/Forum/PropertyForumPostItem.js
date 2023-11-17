@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, View, Text, Image, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, View, Text, Image } from 'react-native';
 import { Octicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import ForumPostItemHeader from './ForumPostItemHeader';
@@ -37,7 +37,7 @@ const ForumPostItem = ({ userId, post, onPress, onReport, onDelete, useParentCal
 
     const toggleEditModal = () => {
         setEditModalVisible(!isEditModalVisible);
-    };
+      };
 
     const handleUpvote = async () => {
         try {
@@ -65,66 +65,61 @@ const ForumPostItem = ({ userId, post, onPress, onReport, onDelete, useParentCal
         console.log(postDetails)
         if (!postDetails) {
             return;
-        }
-
-        try {
-
+          }
+      
+          try {
+            
             const forumTopic = await updateForumPost(userId, postDetails);
             useParentCallback();
-        } catch (error) {
+          } catch (error) {
             console.error(error);
-        }
+          }
 
     };
 
     return (
         <TouchableOpacity onPress={onPress}>
-            <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
-                <View style={styles.topicItemContainer}>
-                    <ForumPostItemHeader
-                        userId={post.userId}
-                        onMoreOptionsPress={toggleModal}
-                        editable={post.userId === userId}
-                        onEdit={toggleEditModal}
-                    />
+            <View style={styles.topicItemContainer}>
+                <ForumPostItemHeader
+                    userId={post.userId}
+                    onMoreOptionsPress={toggleModal}
+                    editable ={post.userId === userId}
+                    onEdit ={toggleEditModal}
+                />
 
-                    <View >
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.title}>{post.title}</Text>
-                            <Text style={styles.age}>{getTimeAgo(post.updatedAt)}</Text>
-                        </View>
-                        <View>
-                            <Text style={styles.message}>{post.message}</Text>
-                        </View>
-                        <ImageGallery images={post.images} />
+                <View >
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.title}>{post.title}</Text>
+                        <Text style={styles.age}>{getTimeAgo(post.updatedAt)}</Text>
                     </View>
+                    <View>
+                        <Text style={styles.message}>{post.message}</Text>
+                    </View>
+                    <ImageGallery images={post.images} />
+                </View>
 
-                    <View style={styles.iconContainer}>
-                        <View style={styles.voteContainer}>
-                            <TouchableOpacity onPress={handleUpvote}>
-                                <FontAwesome name="thumbs-up" size={20} color={voteDetails.userUpvote ? "green" : "grey"} />
-                            </TouchableOpacity>
-                            <Text style={styles.totalVoteText}>{voteDetails.totalUpvote - voteDetails.totalDownvote}</Text>
-                            <TouchableOpacity onPress={handleDownvote}>
-                                <FontAwesome name="thumbs-down" size={20} color={voteDetails.userDownvote ? "red" : "grey"} />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.commentContainer}>
-                            <Octicons name="comment-discussion" size={20} color="#FFD700" />
-                            <Text style={styles.commentText}>{voteDetails.totalCommentCount}</Text>
-                        </View>
+                <View style={styles.iconContainer}>
+                    <View style={styles.voteContainer}>
+                        <TouchableOpacity onPress={handleUpvote}>
+                            <FontAwesome name="thumbs-up" size={20} color={voteDetails.userUpvote ? "green" : "grey"} />
+                        </TouchableOpacity>
+                        <Text style={styles.totalVoteText}>{voteDetails.totalUpvote - voteDetails.totalDownvote}</Text>
+                        <TouchableOpacity onPress={handleDownvote}>
+                            <FontAwesome name="thumbs-down" size={20} color={voteDetails.userDownvote ? "red" : "grey"} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.commentContainer}>
+                        <Octicons name="comment-discussion" size={20} color="#FFD700" />
+                        <Text style={styles.commentText}>{voteDetails.totalCommentCount}</Text>
                     </View>
                 </View>
-                <EditForumPostModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEdit} post={post} />
-                {post.userId === userId ?
-                    <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Post"} onDelete={onDelete} />
-                    :
-                    <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Post"} flagged={flagged} />
-                }
-            </KeyboardAvoidingView>
+            </View>
+            <EditForumPostModal isVisible={isEditModalVisible} onCancel={toggleEditModal} onSubmit={handleEdit} post={post}/>
+            {post.userId === userId ?
+                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Post"} onDelete={onDelete} />
+                :
+                <ForumModal isVisible={isModalVisible} onClose={toggleModal} onReport={onReport} itemType={"Post"} flagged={flagged}/>
+            }
         </TouchableOpacity>
     );
 };

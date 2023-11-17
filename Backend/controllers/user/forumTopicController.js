@@ -465,6 +465,21 @@ const deleteForumTopicName = async (req, res) => {
     }
 };
 
+const getForumTopicById = async (req, res) => {
+    try {
+        // const forumTopicId = parseInt(req.params.forumTopicId);
+        const forumTopics = await ForumTopic.findAll({
+            where: { forumTopicId: req.params.forumTopicId },
+        });
+        
+        res.json({ forumTopics });
+    } catch (error) {
+        res
+            .status(500)
+            .json({ message: "Error fetching forum topic: ", error: error.message });
+    }
+}
+
 module.exports = {
     createForumTopic,
     getAllForumTopic,
@@ -477,5 +492,6 @@ module.exports = {
     getAllUserUpvotedForumTopic,
     getAllUserDownvotedForumTopic,
     getAllUserFlaggedForumTopic,
-    getAllForumTopicUnrestricted
+    getAllForumTopicUnrestricted,
+    getForumTopicById
 };

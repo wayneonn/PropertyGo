@@ -211,6 +211,8 @@ async function getPropertiesByRegion(req, res) {
         const properties = await Property.findAll({
             where: {
                 region: region,
+                approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+                propertyStatus: 'ACTIVE',
             },
             include: [
                 {
@@ -218,10 +220,6 @@ async function getPropertiesByRegion(req, res) {
                     as: 'favouritedByUsers',
                 },
             ],
-            where: {
-                approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
-                propertyStatus: 'ACTIVE',
-            },
         });
 
         // Check if properties is undefined or empty
@@ -281,7 +279,82 @@ async function getPropertiesByRegion(req, res) {
     }
 }
 
+// Get properties by region with imageIds
+async function getPropertiesByFlatType(req, res) {
+    try {
+        const { flatType } = req.params;
 
+        // Find properties based on the specified region parameter
+        const properties = await Property.findAll({
+            where: {
+                flatType: flatType,
+                approvalStatus: 'APPROVED', // Filter for properties with approvalStatus === "APPROVED"
+                propertyStatus: 'ACTIVE',
+            },
+            include: [
+                {
+                    model: User,
+                    as: 'favouritedByUsers',
+                },
+            ],
+        });
+
+        // Check if properties is undefined or empty
+        if (!properties || properties.length === 0) {
+            return res.status(404).json({ message: 'No properties found in the specified region' });
+        }
+
+        // Create an object to store image IDs mapped to property IDs
+        const imageIdToPropertyIdMap = {};
+
+        // Fetch associated images and populate the mapping
+        const images = await Image.findAll();
+        images.forEach(image => {
+            const propertyId = image.propertyId;
+            const imageId = image.imageId;
+            if (!imageIdToPropertyIdMap[propertyId]) {
+                imageIdToPropertyIdMap[propertyId] = [];
+            }
+            imageIdToPropertyIdMap[propertyId].push(imageId);
+        });
+
+        // Create an array to store properties with image IDs and like counts
+        const propertiesWithImagesAndLikes = properties.map(property => {
+            const favoriteCount = property.favouritedByUsers.length;
+            const propertyJSON = property.toJSON();
+            const imageIds = imageIdToPropertyIdMap[property.propertyListingId] || [];
+            propertyJSON.images = imageIds;
+            propertyJSON.favoriteCount = favoriteCount;
+            return propertyJSON;
+        });
+
+        // Sort properties by boosted status and favorite count in descending order
+        propertiesWithImagesAndLikes.sort((a, b) => {
+            // Check if both properties are boosted
+            const isBoostedA = a.boostListingEndDate && new Date(a.boostListingEndDate) >= new Date();
+            const isBoostedB = b.boostListingEndDate && new Date(b.boostListingEndDate) >= new Date();
+
+            if (isBoostedA && isBoostedB) {
+                // If both are boosted, sort by favorite count in descending order
+                return b.favoriteCount - a.favoriteCount;
+            } else if (isBoostedA) {
+                // If only A is boosted, place it above B
+                return -1;
+            } else if (isBoostedB) {
+                // If only B is boosted, place it above A
+                return 1;
+            } else {
+                // If neither is boosted, sort by postedAt (creation date) in descending order
+                return new Date(b.postedAt) - new Date(a.postedAt);
+            }
+        });
+
+        res.json(propertiesWithImagesAndLikes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
 
 
 // Add a new route to get properties sorted by favorite count in descending order
@@ -546,4 +619,5 @@ module.exports = {
     removeProperty,
     editProperty,
     searchProperties,
+    getPropertiesByFlatType
 };

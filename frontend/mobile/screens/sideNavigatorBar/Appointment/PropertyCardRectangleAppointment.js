@@ -8,18 +8,18 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { getImageUriById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites } from '../../../../utils/api';
-import { AuthContext } from '../../../../AuthContext';
-import DefaultImage from '../../../../assets/No-Image-Available-Small.jpg';
+import { getImageUriById, addFavoriteProperty, removeFavoriteProperty, isPropertyInFavorites } from '../../../utils/api';
+import { AuthContext } from '../../../AuthContext';
+import DefaultImage from '../../../assets/No-Image-Available-Small.jpg';
 
-const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
+const PropertyCardRectangle = ({ property, onPress, seller }) => {
   const [propertyImageUri, setPropertyImageUri] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [cacheBuster, setCacheBuster] = useState(Date.now());
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
-  const isSeller = user.user.userId === transaction.userId;
-  const showReimbusement = (transaction.transactionType === 'OPTION_FEE' || transaction.transactionType === 'OPTION_EXERCISE_FEE') && isSeller && (transaction.optionFeeStatusEnum === 'COMPLETED' || transaction.optionFeeStatusEnum === 'ADMIN_SIGNED' || transaction.optionFeeStatusEnum === 'PAID_OPTION_EXERCISE_FEE')
+  // const isSeller = user.user.userId === transaction.userId;
+  // const showReimbusement = (transaction.transactionType === 'OPTION_FEE' || transaction.transactionType === 'OPTION_EXERCISE_FEE') && isSeller && (transaction.optionFeeStatusEnum === 'COMPLETED' || transaction.optionFeeStatusEnum === 'ADMIN_SIGNED' || transaction.optionFeeStatusEnum === 'PAID_OPTION_EXERCISE_FEE' )
 
   const formatPrice = (price) => {
     if (price !== null && !isNaN(price)) {
@@ -103,20 +103,18 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
     }
   };
 
-  const taxRate = (transaction.gst === true ? 1.08 : 1.00);
+  // const taxRate = (transaction.gst === true ? 1.08 : 1.00);
 
   // Inside your PropertyCardRectangle component
   return (
-    <TouchableOpacity style={showReimbusement ? styles.cardReimburse : styles.card} onPress={() => onPress(property.propertyId)}>
+    <TouchableOpacity style={styles.card} onPress={() => onPress(property.propertyId)}>
       <View style={styles.imageContainer}>
         {propertyImageUri ? (
           <Image source={{ uri: `${propertyImageUri}?timestamp=${cacheBuster}` }} style={styles.propertyImage} />
         ) : (
-          <>
-            <View style={styles.placeholderImage}>
-              <Image source={DefaultImage} style={styles.placeholderImageImage} />
-            </View>
-          </>
+          <View style={styles.placeholderImage}>
+            <Image source={DefaultImage} style={styles.placeholderImageImage} />
+          </View>
         )}
       </View>
       <View style={styles.propertyDetails}>
@@ -125,11 +123,10 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
         <Text style={styles.soldBy}>Sold by: {seller.name}</Text>
         <Text></Text>
         <View style={styles.optionFeeContainer}>
-          <Text style={styles.optionFeeLabel}>{getItem(transaction.transactionType)}: </Text>
+          <Text style={styles.optionFeeLabel}>Listing Price: </Text>
           {/* <Text>{'             '}</Text> */}
           <Text style={styles.optionFeeAmount}>${formatPrice(
-            transaction.onHoldBalance === 0 ?
-              transaction.paymentAmount * taxRate : transaction.onHoldBalance * taxRate
+            property.price
           )}</Text>
         </View>
         <View style={styles.invoiceButtonContainer}>
@@ -137,22 +134,14 @@ const PropertyCardRectangle = ({ property, onPress, seller, transaction }) => {
           <TouchableOpacity
             style={styles.chatButton}
             onPress={() => {
-              navigation.navigate('Transaction Screen', { transaction });
+              navigation.navigate('Property Listing', { propertyListingId: property.propertyListingId });
             }}
           >
-            <Text style={styles.chatButtonText}>View Invoice</Text>
+            <Text style={styles.chatButtonText}>View Property</Text>
           </TouchableOpacity>
         </View>
+
       </View>
-      {showReimbusement ? (
-          <>
-            <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(transaction.reimbursed) }]}>
-              <Text style={[styles.statusText, { color: getStatusTextColor(transaction.reimbursed) }]}>{getStatusText(transaction.reimbursed)}</Text>
-            </View>
-          </>
-        ) : (
-          <></>
-        )}
       {/* Conditional rendering of favorite button */}
     </TouchableOpacity>
   );
@@ -166,7 +155,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     margin: 10,
     padding: 10,
-    width: '94%', // Adjust the width as needed
+    width: '100%', // Adjust the width as needed
     aspectRatio: 2.5, // Adjust the aspect ratio to control the height
     shadowColor: '#000',
     shadowOffset: {
@@ -237,7 +226,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   optionFeeAmount: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'dodgerblue',
   },
@@ -267,7 +256,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 130,
+    width: 150,
     marginTop: 8,
   },
   chatButtonText: {
@@ -287,9 +276,8 @@ const styles = StyleSheet.create({
   },
   statusIndicator: {
     position: 'absolute',
-    // marginTop: 100,
-    bottom: 11,
-    left: 5,
+    bottom: -30,
+    left: -125,
     borderWidth: 0.18,
     paddingVertical: 1,
     paddingHorizontal: 8,

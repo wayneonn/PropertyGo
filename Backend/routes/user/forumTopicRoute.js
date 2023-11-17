@@ -15,11 +15,15 @@ const {
     getAllUserDownvotedForumTopic,
     getAllUserFlaggedForumTopic,
     getAllForumTopicUnrestricted,
+    getForumTopicById
 } = require('../../controllers/user/forumTopicController');
 
 
 router.route('/forumTopic/Unrestricted')
     .get(getAllForumTopicUnrestricted)
+
+router.route('/forumTopic/getTopicById/:forumTopicId')
+    .get(getForumTopicById)
 
 router.route('/:userId/forumTopic')
     .post(createForumTopic)

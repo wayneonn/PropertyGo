@@ -26,6 +26,7 @@ const RegionPropertyList = ({ region, onPropertyPress, handleTitlePress }) => {
         .sort((a, b) => b.favoriteCount - a.favoriteCount)
         .slice(0, 10);
         setProperties(top10Properties);
+        console.log(`Properties in ${region}:`, top10Properties)
       } else {
         console.error(`Error loading properties in ${region}:`, data.message);
       }

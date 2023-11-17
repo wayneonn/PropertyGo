@@ -371,7 +371,17 @@ export default function SellerUploadOTP({ route }) {
             <View style={styles.propertyDetailsTopLeft}>
               <Text style={styles.forSaleText}>For Sales</Text>
               <Text style={styles.title}>{propertyListing.title}</Text>
-              <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
+              <Text style={styles.priceLabel}>
+                {propertyListing.offeredPrice ? (
+                  <>
+                    ${formatPriceWithCommas(propertyListing.offeredPrice)}
+                  </>
+                ) : (
+                  <>
+                    ${formatPriceWithCommas(propertyListing.price)}
+                  </>
+                )}
+              </Text>
               <Text style={styles.pricePerSqm}>
                 ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
               </Text>
@@ -681,7 +691,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#3498db',
     borderRadius: 8,
     padding: 10,
-    paddingHorizontal: 17,
+    paddingHorizontal: 15,
     alignItems: 'center',
     marginTop: 10,
     marginRight: 10,
@@ -708,7 +718,7 @@ const styles = StyleSheet.create({
   removeDocumentButtonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 12,
   },
   selectedDocumentContainer: {
     borderWidth: 1,

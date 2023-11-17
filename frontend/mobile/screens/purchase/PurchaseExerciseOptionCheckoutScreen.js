@@ -95,7 +95,7 @@ const PurchaseExerciseOptionCheckoutScreen = ({ route }) => {
                 });
 
                 await createTransaction({
-                    onHoldBalance: propertyListing.price * 0.005,
+                    onHoldBalance: propertyListing.offeredPrice ? propertyListing.offeredPrice * 0.005 : propertyListing.price * 0.005,
                     transactionItem: "Commision Fee",
                     paymentAmount: 0,
                     quantity: 1,

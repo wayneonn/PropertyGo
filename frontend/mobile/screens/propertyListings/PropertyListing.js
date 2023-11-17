@@ -25,6 +25,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import FullScreenImage from './FullScreenImage';
 import { createChat } from '../../utils/chatApi';
 import PredictionPriceCard from './PredictionPriceCard';
+import { getForumIdByRegion } from '../../services/GetAreaAndRegion';
 
 const PropertyListingScreen = ({ route }) => {
   const { propertyListingId } = route.params;
@@ -260,7 +261,7 @@ const PropertyListingScreen = ({ route }) => {
   };
 
   if (!propertyListing) {
-    return <ActivityIndicator style={styles.loadingIndicator} />;
+    return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5" />;
   }
 
   let profileImageBase64;
@@ -286,6 +287,7 @@ const PropertyListingScreen = ({ route }) => {
       return match.toUpperCase();
     });
   }
+
   const handleChatWithSeller = async () => {
 
     chatData = {
@@ -343,7 +345,17 @@ const PropertyListingScreen = ({ route }) => {
           <View style={styles.propertyDetailsTopLeft}>
             <Text style={styles.forSaleText}>For Sales</Text>
             <Text style={styles.title}>{propertyListing.title}</Text>
-            <Text style={styles.priceLabel}>${formatPriceWithCommas(propertyListing.price)}</Text>
+            <Text style={styles.priceLabel}>
+              {propertyListing.offeredPrice ? (
+                <>
+                  ${formatPriceWithCommas(propertyListing.offeredPrice)}
+                </>
+              ) : (
+                <>
+                  ${formatPriceWithCommas(propertyListing.price)}
+                </>
+              )}
+            </Text>
             <Text style={styles.pricePerSqm}>
               ${formatPricePerSqm(propertyListing.price, propertyListing.size)} psm{' '}
             </Text>
@@ -366,7 +378,7 @@ const PropertyListingScreen = ({ route }) => {
                 <TouchableOpacity
                   onPress={() => {
                     if (userDetails) {
-                      navigation.navigate('View Profile', { userId: userDetails.userId }); // Pass the userId parameter
+                      navigation.navigate('View Profile', { userId: userDetails.userId, property: propertyListing }); // Pass the userId parameter
                     }
                   }}
                 >
@@ -419,15 +431,38 @@ const PropertyListingScreen = ({ route }) => {
         <Text style={styles.locationTitle}>Description</Text>
         <Text style={styles.description}>{propertyListing.description}</Text>
         {/* <Text style={styles.description}>{"\n"}</Text> */}
-        
+
         <PredictionPriceCard
-          flatType = {propertyListing.flatType} 
-          town = {propertyListing.area}
-          floorArea = {propertyListing.size} 
+          flatType={propertyListing.flatType}
+          town={propertyListing.area}
+          floorArea={propertyListing.size}
           // leaseCommenceDate = {propertyListing.lease_commence_date}
-          leaseCommenceDate = {propertyListing.lease_commence_date}
+          leaseCommenceDate={propertyListing.lease_commence_date}
           property={propertyListing}
         />
+
+        <Text style={styles.propertyToolsText}>
+          <Text style={styles.locationTitle}>
+            PropertyTools
+          </Text>
+          <Text style={styles.byPropertyGoText}>
+            {"  "}by PropertyGo
+          </Text>
+        </Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={[styles.button, styles.leftButton]} onPress={() => {
+            navigation.navigate('Forum Topic', { topicId: getForumIdByRegion(propertyListing.area) });
+          }}>
+            <Ionicons name="chatbubble-ellipses-outline" size={20} color="white" />
+            <Text style={styles.buttonTextTools}>{"  "}View Forum</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.rightButton]} onPress={() => {
+            navigation.navigate('Mortgage Calculator', { property: propertyListing });
+          }}>
+            <Ionicons name="calculator-outline" size={20} color="white" />
+            <Text style={styles.buttonTextTools}>{"  "}Mortgage Calculator</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Location Details */}
         <Text style={styles.locationTitle}>Location</Text>
@@ -531,9 +566,12 @@ const PropertyListingScreen = ({ route }) => {
             }}>
               <Text style={styles.buttonTextUser}>View Schedule</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buyButton} onPress={() => {
-              navigation.navigate('Purchase Option Fee Info', { propertyListing });
-            }}>
+            <TouchableOpacity style={[styles.buyButton, propertyListing.propertyStatus === "ON_HOLD" || propertyListing.propertyStatus === "COMPLETED" ? { backgroundColor: "#ccc" } : null]}
+              onPress={() => {
+                navigation.navigate('Purchase Option Fee Info', { propertyListing, isOfferedPrice: false });
+              }}
+              disabled={propertyListing.propertyStatus === "ON_HOLD" || propertyListing.propertyStatus === "COMPLETED"}
+            >
               <Text style={styles.buttonTextUser}>Buy</Text>
             </TouchableOpacity>
           </>
@@ -632,11 +670,21 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignContent: 'center',
   },
+  propertyToolsText: {
+    fontSize: 24,
+    marginBottom: 16,
+    paddingLeft: 16, // Add left padding for better alignment
+  },
   locationTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
     paddingLeft: 16, // Add left padding for better alignment
+  },
+  byPropertyGoText: {
+    fontSize: 12,
+    letterSpacing: 1,
+    fontWeight: '300',
   },
   descriptionHeader: {
     fontSize: 18,
@@ -727,9 +775,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#000',           // Black text color for all buttons
   },
-  buttonTextUser: {
-    fontSize: 12,
-    color: '#000',           // Black text color for all buttons
+  buttonTextTools: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#FFF',           // Black text color for all buttons
     marginTop: 4,         // Remove bottom margin for all buttons
   },
 
@@ -835,6 +884,32 @@ const styles = StyleSheet.create({
     borderColor: '#000',  // Border color
     borderRadius: 10,     // Make it rounded
     margin: 2,  // Margin for spacing between buttons
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    paddingHorizontal: 5,
+  },
+  button: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    // paddingHorizontal: 20,
+    marginHorizontal: 10,
+    borderRadius: 20,
+    margin: 5,
+    elevation: 3, // This adds a drop shadow on Android
+    shadowOpacity: 0.3, // These lines add a shadow on iOS
+    shadowRadius: 5,
+    shadowOffset: { height: 2, width: 0 },
+  },
+  leftButton: {
+    backgroundColor: '#007AFF', 
+  },
+  rightButton: {
+    backgroundColor: '#006400', 
   },
 });
 
