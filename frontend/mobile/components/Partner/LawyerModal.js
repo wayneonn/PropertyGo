@@ -1,7 +1,7 @@
 import React from 'react';
 import {Modal, View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import ImageSwiper from '../../components/ImageSwiper'; // Assuming you have an ImageSwiper component
-import {dateFormatter} from "../../services/commonFunctions";
+import {convertImage, dateFormatter} from "../../services/commonFunctions";
 import { MaterialIcons } from '@expo/vector-icons';
 
 
@@ -29,7 +29,7 @@ const ContractorModal = ({ modalVisible, setModalVisible, selectedLawyer, handle
                         {
                             (selectedLawyer?.profileImage !== null && selectedLawyer !== null) ? (
                                 <Image
-                                    source={{uri: `data:image/jpeg;base64,${selectedLawyer.profileImage.data}`}}
+                                    source={{uri: `data:image/jpeg;base64,${convertImage(selectedLawyer?.profileImage.data)}`}}
                                     style={styles.profileImage}
                                 />
                             ) : (
@@ -43,6 +43,7 @@ const ContractorModal = ({ modalVisible, setModalVisible, selectedLawyer, handle
                     <Text style={styles.propertyPrice}>{selectedLawyer?.userName}</Text>
                     <Text style={styles.propertyDetails}>Project Completed: {selectedLawyer?.projectsCompleted}</Text>
                     <Text style={styles.propertyDetails}>{dateFormatter(selectedLawyer?.createdAt)}</Text>
+                    <Text>&nbsp;</Text>
                     <ImageSwiper images_new={modalImage}/>
                     <Text>&nbsp;</Text>
                     <TouchableOpacity

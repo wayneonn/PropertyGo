@@ -1,10 +1,11 @@
-import React, {useContext} from 'react';
-import {View, Text, Button, StyleSheet, Image} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {View, Text, Button, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import {AuthContext} from "../../AuthContext";
 import {Ionicons} from "@expo/vector-icons";
 import {getTimeAgo} from "../../services/CalculateTimeAgo";
+import FullScreenImage from "../../screens/propertyListings/FullScreenImage";
 
-const MessageImages = ({item}) => {
+const MessageImages = ({item, fullscrenImage, setFullScreenImage}) => {
     const { user } = useContext(AuthContext);
     const isSent = item.userId === user.user.userId;
     const imageId = item.messageText.split(':')[1].trim();
@@ -14,11 +15,19 @@ const MessageImages = ({item}) => {
     let modifiedText = lines.slice(1).join('\n').trim();
     const uri_link = `http://localhost:3000/image/${imageId}`
     return (
-        <View style={isSent ? styles.sentMessage : styles.receivedMessage}>
-            <Text>{modifiedText}</Text>
-            <Image source={{ uri: uri_link }} style={styles.image} resizeMode={"cover"}/>
-            <Text style={styles.time}>{getTimeAgo(item.createdAt)}</Text>
-        </View>
+        <>
+            <View style={isSent ? styles.sentMessage : styles.receivedMessage}>
+                <TouchableOpacity onPress={() => setFullScreenImage(uri_link)}>
+                    <Image source={{ uri: uri_link }} style={styles.image} resizeMode={"cover"}/>
+                </TouchableOpacity>
+                <Text>{modifiedText}</Text>
+                <Text style={styles.time}>{getTimeAgo(item.createdAt)}</Text>
+            </View>
+            <FullScreenImage
+                imageUrl={fullscrenImage}
+                onClose={() => setFullScreenImage(null)} // Close the full-screen image view
+            />
+        </>
     );
 };
 

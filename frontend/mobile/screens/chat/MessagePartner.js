@@ -51,6 +51,7 @@ const Message = ({route, navigation}) => {
     const [isUploadModalVisible, setIsUploadModalVisible] = useState(false)
     const [isImageModalVisible, setIsImageModalVisible] = useState(false)
     const [searchQuery, setSearchQuery] = useState('');
+    const [fullScreenImage, setFullScreenImage] = useState(null)
 
     const fetchData = async () => {
         try {
@@ -363,7 +364,6 @@ const Message = ({route, navigation}) => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity>
                 <View style={styles.PropertyItemContainer}>
                     <View style={styles.contentContainer}>
                         <View style={styles.detailContainer}>
@@ -426,11 +426,11 @@ const Message = ({route, navigation}) => {
                         <View style={styles.propertyImageContainer}>
                             {chat && chat.receiver.profileImage ? (
                                 <Image
-                                    source={{uri: `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.propertyListing.propertyImages[0].image.data)}`}}
+                                    source={{uri: `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.receiver.profileImage.data)}`}}
                                     style={styles.propertyImage}/>
                             ) : (
                                 <View style={styles.propertyImagePlaceholder}>
-                                    <Ionicons name="profile" size={24} color="white"/>
+                                    <Ionicons name="people" size={24} color="white"/>
                                 </View>
                             )}
                         </View>
@@ -439,7 +439,6 @@ const Message = ({route, navigation}) => {
                         <SearchBar handleSearch={handleSearch} searchQuery={searchQuery}/>
                     </View>
                 </View>
-            </TouchableOpacity>
             <ScrollView refreshControl={
                 <RefreshControl
                     refreshing={refreshing}
@@ -485,7 +484,7 @@ const Message = ({route, navigation}) => {
                                     <MessageDownloadDocuments item={item} handleDownload={downloadPDF}/>
                                     : isImage ?
                                     // Render logic for messages that are images
-                                    <MessageImages item={item} />
+                                    <MessageImages item={item} fullscrenImage={fullScreenImage} setFullScreenImage={setFullScreenImage} />
                                     :
                                     // Regular message rendering
                                     <MessagePlain item={item}/>

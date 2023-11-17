@@ -1,4 +1,4 @@
-import {Alert, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import FullScreenImage from "../../screens/propertyListings/FullScreenImage";
 import React, {useContext, useState} from "react";
@@ -13,6 +13,7 @@ const MAX_HORIZONTAL_IMAGES = 10;
 const ChatUploadImages = ({isVisible, onClose, chatId, sendMessage}) => {
     const [images, setImages] = useState([])
     const [fullScreenImage, setFullScreenImage] = useState(null);
+    const [description, setDescription] = useState("")
     const {user} = useContext(AuthContext);
     const handleChoosePhoto = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -156,8 +157,12 @@ const ChatUploadImages = ({isVisible, onClose, chatId, sendMessage}) => {
                     'Upload Succeeded',
                     'The photos has been created successfully.'
                 );
-                res.data.successImages.forEach((index) => {
-                    sendMessage(`Image ID: ${index} sent.`)
+                res.data.successImages.forEach((item, index, array) => {
+                    if (Object.is(array.length - 1, index)) {
+                        sendMessage(`Image ID: ${item} sent. \nImage Description: \n${description}`)
+                    } else {
+                        sendMessage(`Image ID: ${item} sent.`)
+                    }
                 })
                 onClose();
             } else {
@@ -171,6 +176,10 @@ const ChatUploadImages = ({isVisible, onClose, chatId, sendMessage}) => {
         }
 
     }
+
+    const handleDescriptionChange = (text) => {
+        setDescription(text);
+    };
 
     return (
         <>
@@ -200,6 +209,12 @@ const ChatUploadImages = ({isVisible, onClose, chatId, sendMessage}) => {
                                         <Image source={{uri: image.uri}} style={styles.image}/>
                                     </TouchableOpacity>
                                 ))}
+                                {images && images.length > 0 ? <TextInput
+                                    style={styles.input}
+                                    placeholder="Enter Image Description"
+                                    value={description}
+                                    onChangeText={handleDescriptionChange}
+                                />: null}
                             </View>
                         </ScrollView>
 
@@ -272,6 +287,18 @@ const styles = StyleSheet.create({
     image: {
         width: 100,
         height: 100,
+    },
+    input: {
+        height: 50,
+        marginTop: 10,
+        textAlignVertical: 'top',
+        borderRadius: 5,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        // marginBottom: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 12,
+        width: '100%', // Make the input take full width
     },
     // Submit button with enhanced styling
     saveChangesButton: {

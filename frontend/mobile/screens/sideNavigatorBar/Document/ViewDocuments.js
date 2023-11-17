@@ -279,7 +279,7 @@ function UploadScreen({navigation}) {
                             <View style={styles.documentListContainer}>
                                 <TextInput
                                     style={styles.searchBar}
-                                    placeholder="Search documents..."
+                                    placeholder=" Search documents..."
                                     value={searchQuery}
                                     onChangeText={setSearchQuery}
                                 />
@@ -347,13 +347,6 @@ function UploadScreen({navigation}) {
                     )}
                     keyExtractor={(item, index) =>
                         item.id ? item.id.toString() : index.toString()
-                    }
-                    ListFooterComponent={
-                        <>
-                            <Text style={styles.graytext}>
-                                Welcome, {user.user.name}, you are the #{USER_ID} user!
-                            </Text>
-                        </>
                     }
                 />
             </View>

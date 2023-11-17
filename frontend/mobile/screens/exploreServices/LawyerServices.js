@@ -1,4 +1,5 @@
 import {
+    Alert,
     Dimensions,
     Image,
     RefreshControl,
@@ -83,6 +84,10 @@ const LawyerServices = ({navigation}) => {
         const chatData = {
             propertyId: 1,
             receiverId: selectedLawyer?.userId
+        }
+        if (selectedLawyer?.userId === USER_ID) {
+            Alert.alert("You cannot chat with yourself.")
+            return null
         }
         const data = await createChat(user.user.userId, chatData);
         console.log(data.chatId)

@@ -60,6 +60,8 @@ const ChatDocumentUpload = ({ chatId, userId, isVisible, onClose, sendMessage })
             const fileData = new FormData();
             let fileNameStored;
 
+
+
             selectedDocuments.forEach((document) => {
                 const fileUri = document.uri;
                 const fileType = document.mimeType;
@@ -111,7 +113,7 @@ const ChatDocumentUpload = ({ chatId, userId, isVisible, onClose, sendMessage })
         >
         <View style={styles.container}>
             <Text style={styles.label}>Select Document</Text>
-            {selectedDocuments.length > 0 ? (
+            {selectedDocuments && selectedDocuments.length > 0 ? (
                 <View style={styles.documentContainer}>
                     <TouchableOpacity
                         style={styles.selectedDocumentContainer}
@@ -146,69 +148,73 @@ const ChatDocumentUpload = ({ chatId, userId, isVisible, onClose, sendMessage })
                         </View>
 
                     </TouchableOpacity>
-                    <View style={{ flexDirection: 'column' }}>
-                        <TouchableOpacity
-                            style={styles.replaceDocumentButton}
-                            onPress={handleSelectDocument}
-                        >
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Ionicons name="repeat-outline" size={24} color="white" />
-                                <Text style={styles.buttonText}> Replace</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.removeDocumentButton}
-                            onPress={() => {
-                                // Handle removing the selected document
-                                setSelectedDocuments([]);
-                                setIsDocumentUploaded(false);
-                            }}
-                        >
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Ionicons name="trash-bin-outline" size={24} color="white" />
-                                <Text style={styles.buttonText}> Remove</Text>
-                            </View>
-                        </TouchableOpacity>
+                    <View style={{ flexDirection: 'row' }}>
+                        <View>
+                            <TouchableOpacity
+                                style={styles.replaceDocumentButton}
+                                onPress={handleSelectDocument}
+                            >
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Ionicons name="repeat-outline" size={24} color="white" />
+                                    <Text style={styles.buttonText}> Replace</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.removeDocumentButton}
+                                onPress={() => {
+                                    // Handle removing the selected document
+                                    setSelectedDocuments([]);
+                                    setIsDocumentUploaded(false);
+                                }}
+                            >
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Ionicons name="trash-bin-outline" size={24} color="white" />
+                                    <Text style={styles.buttonText}> Remove</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <Text>&nbsp;&nbsp;</Text>
+                        <View>
+                            <TouchableOpacity
+                                style={styles.viewDocumentButton}
+                                onPress={async () => {
+                                    if (selectedDocuments && selectedDocuments[0].uri) {
 
-                        <TouchableOpacity
-                            style={styles.viewDocumentButton}
-                            onPress={async () => {
-                                if (selectedDocuments && selectedDocuments[0].uri) {
+                                        const filePath = selectedDocuments[0].uri;
+                                        console.log('Opening document:', filePath);
 
-                                    const filePath = selectedDocuments[0].uri;
-                                    console.log('Opening document:', filePath);
-
-                                    // Check if the file exists
-                                    const fileInfo = await FileSystem.getInfoAsync(filePath);
-                                    // console.log('File exists:', fileInfo)
-                                    if (fileInfo.exists) {
-                                        // Request permission to access the file
-                                        console.log('File exists:', filePath)
-                                        const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-                                        openPdf(filePath);
+                                        // Check if the file exists
+                                        const fileInfo = await FileSystem.getInfoAsync(filePath);
+                                        // console.log('File exists:', fileInfo)
+                                        if (fileInfo.exists) {
+                                            // Request permission to access the file
+                                            console.log('File exists:', filePath)
+                                            const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+                                            openPdf(filePath);
+                                        } else {
+                                            console.warn('Selected document file does not exist.');
+                                        }
                                     } else {
-                                        console.warn('Selected document file does not exist.');
+                                        console.warn('Selected document URI is not valid.');
                                     }
-                                } else {
-                                    console.warn('Selected document URI is not valid.');
-                                }
-                            }}
-                        >
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Ionicons name="eye-outline" size={24} color="white" />
-                                <Text style={styles.buttonText}> View</Text>
-                            </View>
-                        </TouchableOpacity>
+                                }}
+                            >
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Ionicons name="eye-outline" size={24} color="white" />
+                                    <Text style={styles.buttonText}> View</Text>
+                                </View>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.viewDocumentButton}
-                            onPress={createDocument}
-                        >
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Ionicons name="arrow-up" size={24} color="white" />
-                                <Text style={styles.buttonText}> Upload</Text>
-                            </View>
-                        </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.viewDocumentButton}
+                                onPress={createDocument}
+                            >
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Ionicons name="arrow-up" size={24} color="white" />
+                                    <Text style={styles.buttonText}> Upload</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
 
                     </View>
                 </View>
@@ -223,17 +229,16 @@ const ChatDocumentUpload = ({ chatId, userId, isVisible, onClose, sendMessage })
                     </View>
                 </TouchableOpacity>
             )}
-        </View>
-
             <TouchableOpacity
                 style={[styles.selectDocumentButton, {marginBottom: 10, marginHorizontal: 5}]}
                 onPress={onClose}
-                >
+            >
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Ionicons name="close-circle" size={24} color="white" />
                     <Text style={styles.buttonText}>Hide</Text>
                 </View>
             </TouchableOpacity>
+        </View>
         </Modal>
 
     );
@@ -244,6 +249,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f2f2f2',
         padding: 20,
+        flexDirection: "column",
+        justifyContent: "center"
     },
     label: {
         marginTop: 10,
@@ -273,6 +280,8 @@ const styles = StyleSheet.create({
         padding: 15,
         marginTop: 20,
         backgroundColor: '#fff',
+        alignItems: "center",
+        justifyContent: "center"
     },
     selectedDocumentContainer: {
         flexDirection: 'row',
