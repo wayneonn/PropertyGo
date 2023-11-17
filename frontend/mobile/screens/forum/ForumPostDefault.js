@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    // maxWidth: '100%',
     // backgroundColor: 'transparent'
   },
   header: {
@@ -169,6 +170,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 30,
     // borderWidth:1,
+    // maxWidth: '100%',
     paddingEnd: 10,
     marginVertical: 10,
   },
@@ -176,6 +178,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginHorizontal: 17,
     fontWeight: 'bold', // Add fontWeight to make the title bold
+    maxWidth: "80%",
+    // flexWrap: 'wrap',
   },
   filterButton: {
     paddingHorizontal: 10,
