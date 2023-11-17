@@ -54,7 +54,7 @@ const Message = ({ route, navigation }) => {
         // console.log("RESPONDEDEDEDE")
         useMessageCallback();
     });
-})
+  })
 
 
   const handleSubmit = async () => {

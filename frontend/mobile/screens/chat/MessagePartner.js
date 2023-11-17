@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
     Alert,
     FlatList,
@@ -36,6 +36,7 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import ChatUploadImages from "../../components/Chat/ChatUploadImages";
 import SearchBar from "../../components/Forum/SearchBar"
+import {socket} from "../../navigations/LoginNavigator";
 
 // Add unique message.
 const Message = ({route, navigation}) => {
@@ -84,6 +85,13 @@ const Message = ({route, navigation}) => {
     const useMessageCallback = useCallback(() => {
         fetchData();
     }, [])
+
+    useEffect(() => {
+        socket.on("userChatNotification", (data) => {
+            // console.log("RESPONDEDEDEDE")
+            useMessageCallback();
+        });
+    })
 
     useFocusEffect(useMessageCallback);
 
@@ -253,7 +261,7 @@ const Message = ({route, navigation}) => {
             // Send a message to the chat that the transaction is created
             // Implement this based on your chat system
             let transactionMessage = `Transaction with ID ${createdTransaction.transactionId} is created and pending payment in cheque.`;
-            let updatedRequest = `Request: ${lines[2]} has already been accepted.`
+            let updatedRequest = `${lines[2]} ${lines[3]} has been accepted.`
             const send = await sendMessage(transactionMessage)
             const update = await updateMessage(updatedRequest, item.messageId)
         } catch (error) {

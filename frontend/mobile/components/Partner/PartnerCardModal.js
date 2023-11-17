@@ -18,7 +18,8 @@ export const PartnerCardModal = ({modalVisible, setModalVisible, selectedItem, n
     // Also maybe the notification module?
     const handleRequestPaid = async() => {
         try {
-            const updatedTransactionData = { status: 'PAID' }; // New status
+            // Removing the onHoldBalance is to make the thing make sense.
+            const updatedTransactionData = { status: 'PAID', paymentAmount: selectedItem?.transaction.onHoldBalance }; // New status
             const response = await axios.put(`${BASE_URL}/user/transactions/${selectedItem?.transaction.transactionId}`, updatedTransactionData);
             console.log('Transaction updated:', response.data);
             Alert.alert("Transaction changed from pending to paid.")
