@@ -7,7 +7,7 @@ const ForumItemHeader = ({ topicName, updatedAt, onMoreOptionsPress, postId, edi
   return (
     <View style={styles.forumItem}>
       <View style={styles.headerContainer}>
-        <Text style={postId ? styles.topicName : styles.topicNameBig}>{topicName}</Text>
+        <Text style={postId ? styles.topicName : styles.topicNameBig}>{topicName} </Text>
         <Text style={styles.updatedAt}>{getTimeAgo(updatedAt)}</Text>
       </View>
       <View style={styles.rightHeaderContainer}>
@@ -39,6 +39,9 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    // flex: 0.97,
+    // borderWidth:1,
+    maxWidth: '70%'
   },
   rightHeaderContainer: {
     flexDirection: 'row',
@@ -53,11 +56,16 @@ const styles = StyleSheet.create({
   topicNameBig: {
     fontSize: 16,
     fontWeight: 'bold',
+    // borderWidth: 1,
+    // flex: 0.97, // Set to 70% of the parent container width
+    // maxWidth: '70%', // Set maximum width to 70%
   },
   updatedAt: {
     fontSize: 10,
     color: 'gray',
     marginLeft: 5,
+    alignSelf:'flex-start',
+    marginTop:5
   },
 })
 

@@ -40,6 +40,7 @@ const AddForumTopicModal = ({ isVisible, onCancel, onSubmit, forumTopics }) => {
                             placeholder="Enter topic name"
                             value={topicName}
                             onChangeText={handleTopicNameChange}
+                            multiline
                         />
                         {forumTopics && forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase()) ? <Text style={styles.warningLabel}>Topic Name Exist!</Text> : null }
                     </View>

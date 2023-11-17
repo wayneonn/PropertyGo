@@ -1,6 +1,6 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
 import { AuthContext } from '../../AuthContext';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, TextInput, RefreshControl, Image, TouchableHighlight, Button } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, TextInput, RefreshControl, Image, TouchableHighlight, KeyboardAvoidingView } from 'react-native';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import ForumPostItem from '../../components/Forum/ForumPostItem';
 import { updateForumCommentFlaggedStatus, deleteForumComment, getAllForumComment, createForumComment } from '../../utils/forumCommentApi';
@@ -209,21 +209,27 @@ const ForumComment = ({ navigation }) => {
                     ))}
                 </ScrollView>
 
-                <View style={styles.horizontalContainer}>
-                    <TextInput
-                        placeholder="Type your message here"
-                        value={message}
-                        onChangeText={text => setMessage(text)}
-                        style={styles.textInput}
-                        multiline // Allow multiline text input
-                    />
-                    <TouchableHighlight style={styles.iconButton} onPress={handleImageUpload} underlayColor="rgba(0, 0, 0, 0.1)">
-                        <Ionicons name="image-outline" size={30} color="black" />
-                    </TouchableHighlight>
-                    <TouchableHighlight style={styles.iconButton} onPress={handleSubmit} disabled={!message && imageUris.length === 0} underlayColor="rgba(0, 0, 0, 0.1)">
-                        <Ionicons name="send-outline" size={24} color="black" />
-                    </TouchableHighlight>
-                </View>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : null}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+                // style={styles.keyboardContainer}
+                >
+                    <View style={styles.horizontalContainer}>
+                        <TextInput
+                            placeholder="Type your message here"
+                            value={message}
+                            onChangeText={text => setMessage(text)}
+                            style={styles.textInput}
+                            multiline // Allow multiline text input
+                        />
+                        <TouchableHighlight style={styles.iconButton} onPress={handleImageUpload} underlayColor="rgba(0, 0, 0, 0.1)">
+                            <Ionicons name="image-outline" size={30} color="black" />
+                        </TouchableHighlight>
+                        <TouchableHighlight style={styles.iconButton} onPress={handleSubmit} disabled={!message && imageUris.length === 0} underlayColor="rgba(0, 0, 0, 0.1)">
+                            <Ionicons name="send-outline" size={24} color="black" />
+                        </TouchableHighlight>
+                    </View>
+                </KeyboardAvoidingView>
             </View>
 
         </SafeAreaView >

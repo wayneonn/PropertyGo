@@ -117,6 +117,7 @@ const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
                             placeholder="Enter Title"
                             value={title}
                             onChangeText={handleTitleChange}
+                            multiline
                         />
                         <Text style={styles.label}>Message:</Text>
                         <TextInput
@@ -124,6 +125,7 @@ const AddForumPostModal = ({ forumTopicId, isVisible, onCancel, onSubmit }) => {
                             placeholder="Enter Message"
                             value={message}
                             onChangeText={handleMessageChange}
+                            multiline
                         />
 
                         {imageUris.length !== 0 ? <Text style={styles.warningLabel}>Upload Maximum of 5 Images!</Text> : null}
