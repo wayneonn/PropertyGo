@@ -107,6 +107,7 @@ const EditForumPostModal = ({ isVisible, onCancel, onSubmit, post }) => {
                             placeholder="Enter Title"
                             value={title}
                             onChangeText={handleTitleChange}
+                            multiline
                         />
                         <Text style={styles.label}>Message:</Text>
                         <TextInput
@@ -114,6 +115,7 @@ const EditForumPostModal = ({ isVisible, onCancel, onSubmit, post }) => {
                             placeholder="Enter Message"
                             value={message}
                             onChangeText={handleMessageChange}
+                            multiline
                         />
 
                         <ImageGallery images={post.images} />
