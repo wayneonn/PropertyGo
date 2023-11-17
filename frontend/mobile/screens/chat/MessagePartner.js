@@ -574,7 +574,7 @@ const styles = StyleSheet.create({
     propertyImage: {
         width: 60, // Make the property image take up the full width of its container
         height: 60,
-        borderRadius: 5,
+        borderRadius: 10,
     },
     propertyImagePlaceholder: {
         width: 60, // Make the placeholder take up the full width of its container

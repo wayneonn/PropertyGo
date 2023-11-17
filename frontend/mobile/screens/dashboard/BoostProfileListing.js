@@ -45,7 +45,7 @@ const BoostListingScreen = ({route, navigation}) => {
         if (user && user.user) {
             fetchUserData(user.user.userId);
         }
-        console.log('Property Listing Data:', propertyListing);
+        console.log('User Data:', propertyListing);
     }, [user]);
 
     const [currentColor, setCurrentColor] = useState('blue'); // Initial color

@@ -11,7 +11,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import {searchProperties} from '../../utils/api';
+import {getUserById, searchProperties} from '../../utils/api';
 import {AuthContext} from '../../AuthContext';
 import {useFocusEffect} from '@react-navigation/native';
 import {Ionicons} from '@expo/vector-icons';
@@ -35,6 +35,7 @@ import {LoadingIndicator} from "../../components/LoadingIndicator";
 import {PartnerCardModal} from "../../components/Partner/PartnerCardModal";
 import {fetchImages} from "../../utils/partnerApi";
 import {CardDivider} from "@rneui/base/dist/Card/Card.Divider";
+import { human } from 'react-native-typography'
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -61,6 +62,7 @@ const HomePagePartner = ({navigation}) => {
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [modalImage, setModalImage] = useState([])
     const [refreshing, setRefreshing] = useState(false);
+    const [userData, setUserData] = useState(null)
 
     // const handlePropertyPress = (propertyListingId) => {
     //     // Navigate to the Property Listing screen with the given propertyListingId
@@ -76,6 +78,7 @@ const HomePagePartner = ({navigation}) => {
         loadAverageTransactionValue()
         loadAverageTransactionCount()
         loadProfileImages(userId)
+        fetchUserData()
     }, []);
 
     const useParentCallback = useCallback(() => {
@@ -87,6 +90,7 @@ const HomePagePartner = ({navigation}) => {
         loadAverageTransactionValue()
         loadAverageTransactionCount()
         loadProfileImages(userId)
+        fetchUserData()
         setSearchQuery('');
     }, []);
 
@@ -179,6 +183,21 @@ const HomePagePartner = ({navigation}) => {
         }
     }
 
+    // Fetch user data by userId
+    const fetchUserData = async () => {
+        try {
+            const {success, data, message} = await getUserById(user.user.userId);
+            console.log("This is the user data.", data)
+            if (success) {
+                setUserData(data);
+            } else {
+                console.error('Error fetching user:', message);
+            }
+        } catch (error) {
+            console.error('Error fetching user:', error);
+        }
+    };
+
     const handleSearch = async () => {
         if (searchQuery.trim() === '') {
             return;
@@ -232,40 +251,50 @@ const HomePagePartner = ({navigation}) => {
                     tintColor={'#FFD700'}
                 />
             }>
-                <View style={{
-                    paddingHorizontal: 10,
-                    paddingTop: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center"
-                }}>
-                    <Text style={styles.sectionTitle}> {companyName} </Text>
-                    {new Date(user.user.boostListingEndDate) >= new Date() && (
-                        <>
-                            <BoostingAnimation/>
-                        </>
-                    )}
-                    <Divider/>
-                </View>
-                {/* Search bar */}
-                <View style={styles.searchBar}>
-                    <TextInput
-                        placeholder="Enter search query here...."
-                        style={styles.searchInput}
-                        value={searchQuery}
-                        onChangeText={handleSearchInputChange}
-                        onSubmitEditing={handleSearch} // Add this line to trigger search on Enter key press
-                    />
-                    <TouchableOpacity
-                        style={styles.searchIconContainer}
-                        onPress={handleSearch}
-                    >
-                        <Image
-                            source={require('../../assets/Top-Navbar-Icons/search-icon.png')}
-                            style={styles.searchIcon}
-                        />
-                    </TouchableOpacity>
-                </View>
+                {/*<View style={{*/}
+                {/*    paddingHorizontal: 20,*/}
+                {/*    paddingTop: 20,*/}
+                {/*    flexDirection: "row",*/}
+                {/*    alignItems: "center",*/}
+                {/*    justifyContent: "center",*/}
+                {/*    backgroundColor: "#888888" // Example background color*/}
+                {/*}}>*/}
+                {/*    /!* Optional Icon or Logo *!/*/}
+                {/*    /!* <YourIconComponent style={{ marginRight: 10 }} /> *!/*/}
+                {/*    <Text style={{*/}
+                {/*        ...human.title2,*/}
+                {/*        fontSize: 24,*/}
+                {/*        fontWeight: "bold",*/}
+                {/*        color: "#333333" // Example text color*/}
+                {/*    }}>*/}
+                {/*        {companyName}*/}
+                {/*    </Text>*/}
+                {/*    {new Date(user.user.boostListingEndDate) >= new Date() && (*/}
+                {/*        <>*/}
+                {/*            <BoostingAnimation />*/}
+                {/*        </>*/}
+                {/*    )}*/}
+                {/*    <Divider style={{ backgroundColor: "#888888", height: 2 }}/>*/}
+                {/*</View>*/}
+                {/*/!* Search bar *!/*/}
+                {/*<View style={styles.searchBar}>*/}
+                {/*    <TextInput*/}
+                {/*        placeholder="Enter search query here...."*/}
+                {/*        style={styles.searchInput}*/}
+                {/*        value={searchQuery}*/}
+                {/*        onChangeText={handleSearchInputChange}*/}
+                {/*        onSubmitEditing={handleSearch} // Add this line to trigger search on Enter key press*/}
+                {/*    />*/}
+                {/*    <TouchableOpacity*/}
+                {/*        style={styles.searchIconContainer}*/}
+                {/*        onPress={handleSearch}*/}
+                {/*    >*/}
+                {/*        <Image*/}
+                {/*            source={require('../../assets/Top-Navbar-Icons/search-icon.png')}*/}
+                {/*            style={styles.searchIcon}*/}
+                {/*        />*/}
+                {/*    </TouchableOpacity>*/}
+                {/*</View>*/}
 
                 {/* Suggestions */}
                 {searchQuery.trim() !== '' ? (
@@ -298,6 +327,27 @@ const HomePagePartner = ({navigation}) => {
                 </TouchableOpacity>
                 <Text>&nbsp;</Text>
                 <CardDivider/>
+
+                <View style={styles.sectionContainer}>
+                    <View style={{
+                        paddingHorizontal: 5,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                    }}>
+                        {/* Optional Icon or Logo */}
+                        {/* <YourIconComponent style={{ marginRight: 10 }} /> */}
+                        <Text style={{
+                            ...human.title2,
+                        }}>
+                            Welcome, {companyName}
+                        </Text>
+                        {userData && new Date(userData.boostListingEndDate) >= new Date() ? (
+                                <BoostingAnimation />
+                        ): null}
+                    </View>
+                </View>
+
 
                 {isLoading ? (
                     <LoadingIndicator/>

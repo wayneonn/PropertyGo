@@ -94,7 +94,7 @@ export const TransactionChart = ({monthTransactions, averageCount, navigation}) 
                         },
                             {
                                 data: countPoints,
-                                color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Optional customization for the average line color
+                                color: (opacity = 1) => `rgba(74, 120, 86, ${opacity})`, // Optional customization for the average line color
                                 strokeWidth: 2 // Optional customization for the average line width
                             }]
                     }}
