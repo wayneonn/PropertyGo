@@ -24,7 +24,7 @@
 .status-box-lawyer {
   background-color: #FFD700;
   height: 300px;
-  width: 480px;
+  width: 1000px;
   margin-left: 30px;
   border-radius: 8px;
 }
@@ -32,7 +32,7 @@
 .deactivated-box-lawyer {
   background-color: #FF6666;
   height: 300px;
-  width: 480px;
+  width: 1000px;
   margin-left: 30px;
   border-radius: 8px;
 }
@@ -94,47 +94,8 @@
   display: flex;
 }
 
-.reviews-lawyer {
-  background-color: #FFD700;
-  width: 650px;
-  height: 350px;
-  margin-left: 85px;
-  padding: 15px;
-  border-radius: 8px;
-  max-height: 350px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.review-username-lawyer {
-  display: flex;
-  padding: 10px;
-  align-items: center;
-}
-
-.individual-review-lawyer {
-  background-color: #FFFDCE;
-  height: 120px;
-  width: 620px;
-  margin-top: 10px;
-  border-radius: 8px;
-}
-
-.review-description-lawyer {
-  background-color: #FFFDCE;
-  width: 600px;
-  margin-left: 10px;
-  margin-right: 10px;
-  margin-bottom: 8px;
-  max-height: 68px;
-  height: 68px;
-  border-radius: 8px;
-  overflow-y: auto;
-  flex-wrap: wrap;
-  display: flex;
-}
-
-.review-rating-lawyer {
-  font-weight: 600;
-}
+/* .bank-account-lawyer {
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+} */
