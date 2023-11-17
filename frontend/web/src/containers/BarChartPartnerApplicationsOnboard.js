@@ -175,7 +175,7 @@ const BarChartPartnerApplicationsOnboard = () => {
                   />
                 </div>
               ) : (
-                <p>No data to show...</p>
+                <p style={{textAlign: "center", marginTop: "3em"}}>No data to show...</p>
               )}
             </div>
           </div>
