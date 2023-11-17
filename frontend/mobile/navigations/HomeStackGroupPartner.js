@@ -15,6 +15,7 @@ import Map from "../screens/propertyListings/map";
 import HomePagePartner from "../screens/userBottomNavBar/HomePagePartner";
 import { PhotoGalleryUpload } from "../screens/dashboard/PhotoGalleryUpload";
 import { AuthContext } from '../AuthContext';
+import ChatTabNavigatorPartner from "./ChatTabNavigatorPartner";
 
 const HomeListingsStack = createNativeStackNavigator();
 
@@ -58,6 +59,7 @@ const HomeListingsStackGroup = () => {
             <HomeListingsStack.Screen name="Boost Listing" component={BoostProfileListing} />
             <HomeListingsStack.Screen name="Search Results" component={SearchResults} />
             <HomeListingsStack.Screen name={"Upload Photos"} component={PhotoGalleryUpload} />
+            <HomeListingsStack.Screen name="Chat" component={ChatTabNavigatorPartner}/>
         </HomeListingsStack.Navigator>
     );
 };

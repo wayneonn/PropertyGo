@@ -3,7 +3,7 @@ import {ImageDisplayComponent} from "../../components/Partner/ImageDisplay"
 import React, {useState} from "react";
 import {ScrollView, Text, Image, StyleSheet, View, TouchableOpacity} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
-
+import {CardDivider} from "@rneui/base/dist/Card/Card.Divider";
 
 
 export const PhotoGalleryUpload = ({navigation}) => {
@@ -15,7 +15,8 @@ export const PhotoGalleryUpload = ({navigation}) => {
             </TouchableOpacity>
             <View style={styles.headerContainer}>
                 {/* Back button */}
-                <Text style={styles.header}>Previously Uploaded Photos: </Text>
+                <Text>&nbsp;</Text>
+                <Text style={styles.header}>     Previously Uploaded Photos: </Text>
             </View>
             <View style={styles.calendarContainer}>
                 <View style={styles.calendar}>
@@ -29,6 +30,7 @@ export const PhotoGalleryUpload = ({navigation}) => {
             {/*        height: '100%',*/}
             {/*        borderRadius: 10}} source={{ uri: `http://localhost:3000/image/4` }} />*/}
             {/*</View>*/}
+            <CardDivider/>
             <View style={styles.headerContainer}>
                 <Text style={styles.header}>Upload Photos:</Text>
             </View>
@@ -42,108 +44,51 @@ export const PhotoGalleryUpload = ({navigation}) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'white',
-        padding: 16,
-    },
-    scrollView: {
-        flex: 1,
-    },
     backButton: {
         position: 'absolute',
-        top: 5, // Adjust the top position as needed
-        left: 16, // Adjust the left position as needed
-        zIndex: 1, // Place it above the swiper
+        top: 20,
+        left: 20,
+        zIndex: 1,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 30,
+        padding: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     headerContainer: {
         marginBottom: 20,
+        alignItems: 'center',
+        paddingTop: 15, // Adjusted for spacing
     },
     header: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
-        marginTop: 5,
-        textAlign: 'center',
+        color: '#333',
     },
     calendarContainer: {
-        borderRadius: 8,
-        marginBottom: 10,
+        borderRadius: 10,
+        marginBottom: 20,
+        marginHorizontal: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+        elevation: 3,
     },
     calendar: {
-        borderWidth: 0.5,
-        borderColor: 'gray',
-        borderRadius: 8,
-        marginBottom: 10,
-        backgroundColor: 'white',
-        padding: 10
-    },
-    dateCard: {
-        // backgroundColor: '#f5f5f5',
-        padding: 8,
-        borderRadius: 8,
-        marginVertical: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 0.1,
-    },
-    dateText: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        marginLeft: 10,
-        textAlign: 'center',
-        alignItems: 'center',
-    },
-    sectionHeader: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    noAvailabilityText: {
-        fontSize: 16,
-        textAlign: 'center',
-        marginTop: 10,
-    },
-    bookingContainer: {
-        marginTop: 10,
-        backgroundColor: 'white',
-        borderRadius: 8,
-        padding: 16,
-        borderWidth: 0.2,
-        borderColor: 'gray',
-        marginBottom: 10,
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        paddingBottom: 20, // Add padding to make the button visible
-    },
-    picker: {
-        backgroundColor: 'white',
-    },
-    okButtonContainer: {
-        backgroundColor: 'white',
-    },
-    propertyTypePickerButton: {
         borderWidth: 1,
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        borderColor: 'gray',
-        fontSize: 14,
-        padding: 8,
-        width: '40%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        borderColor: '#ddd',
+        borderRadius: 10,
+        backgroundColor: 'white',
+        padding: 15,
     },
-    propertyTypePickerText: {
-        fontSize: 14,
-    },
-    sectionHeaderContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 10,
-    },
-
 });

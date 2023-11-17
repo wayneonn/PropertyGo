@@ -4,7 +4,8 @@ import {createDrawerNavigator, DrawerContentScrollView, DrawerItemList} from '@r
 // import { Ionicons } from '@expo/vector-icons';
 import LogoutButton from '../components/LogoutButton';
 import Appointments from '../screens/sideNavigatorBar/Appointment/Appointments'
-import Documents from '../screens/sideNavigatorBar/Documents'
+import Documents from '../screens/sideNavigatorBar/Document/ViewDocuments'
+import DocumentTabNavigator from "../screens/sideNavigatorBar/Document/DocumentTabNavigator";
 import ExploreServicesStackGroup from './ExploreServicesStackGroup';
 import FAQ from '../screens/sideNavigatorBar/FAQs'
 import TransactionStackGroup from './Transaction/TransactionStackGroup'
@@ -17,6 +18,7 @@ import UserBottomNavigator from './UserBottomNavigator';
 import {createDrawerScreen} from '../components/DrawerScreen';
 import {AuthContext} from '../AuthContext'; // Import your AuthContext
 import base64 from 'react-native-base64';
+import AppointmentStackGroup from "./Appointment/AppointmentStackGroup";
 
 // Time to do surgery on this.
 const CustomDrawerContent = (props) => {
@@ -87,8 +89,8 @@ const drawerScreens = [
     createDrawerScreen('User Profile', UserProfileStackGroup, 'person', 'User Profile'),
     createDrawerScreen('User Listings', UserListingStackGroup, 'list', 'User Listings'),
     createDrawerScreen('Subscription', SubscriptionStackGroup, 'card', 'Subscription'),
-    createDrawerScreen('Appointments', Appointments, 'calendar', 'Appointments'),
-    createDrawerScreen('Documents', Documents, 'document', 'Documents'),
+    createDrawerScreen('Appointments', AppointmentStackGroup, 'calendar', 'Appointments'),
+    createDrawerScreen('Documents', DocumentTabNavigator, 'document', 'Documents'),
     createDrawerScreen('Transactions', TransactionStackGroup, 'swap-horizontal', 'Transactions'),
     createDrawerScreen('FAQ', FAQ, 'help-circle', 'FAQ'),
     createDrawerScreen('Contact Us Group', ContactUsStackGroup, 'mail', 'Contact Us'),

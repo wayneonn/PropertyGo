@@ -15,3 +15,16 @@ export const addMessage = async (messageData) => {
         throw error;
     }
 }
+
+export const changeMessage = async(messageData) => {
+    try {
+        const response = await axios.put(
+            `${BASE_URL}/user/message/update`,
+            messageData
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

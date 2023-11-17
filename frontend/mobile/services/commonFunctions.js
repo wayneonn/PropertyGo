@@ -16,3 +16,11 @@ export function convertImage(profileImage) {
     console.log("This is the data array sent in for photos: ", profileImage)
     return base64.encodeFromByteArray(profileImage);
 }
+
+export function truncateString(str, num) {
+    if (str.length > num) {
+        return str.slice(0, num) + '...';
+    } else {
+        return str;
+    }
+}

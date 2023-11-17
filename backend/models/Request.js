@@ -20,6 +20,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "PENDING"
       },
+      // Adding two additional columns for Partners.
+      jobTitle: {
+        type: DataTypes.STRING,
+        allowNull: true, // Can be null
+      },
+      jobDescription: {
+        type: DataTypes.TEXT, // Use TEXT for potentially long descriptions
+        allowNull: true, // Can be null
+      },
       // createdAt: {
       //   type: DataTypes.DATE,
       //   allowNull: false,

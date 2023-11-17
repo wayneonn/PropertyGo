@@ -5,6 +5,7 @@ import { View, Text } from 'react-native'; // Import Text and View from react-na
 import { useRoute } from '@react-navigation/native';
 import ReceiverChat from '../screens/chat/ReceiverChat';
 import SenderChat from '../screens/chat/SenderChat';
+import PartnerSenderChat from "../screens/chat/PartnerSenderChat";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -50,6 +51,15 @@ const ChatTabNavigator = () => {
                 options={{
                     tabBarLabel: ({ color, focused }) => (
                         <CustomTabLabel label="Selling" color={color} icon="inbox-arrow-down-outline" />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name={"Partner Chat"}
+                component={PartnerSenderChat}
+                options={{
+                    tabBarLabel: ({ color, focused }) => (
+                        <CustomTabLabel label="Partner" color={color} icon="doctor" />
                     ),
                 }}
             />
