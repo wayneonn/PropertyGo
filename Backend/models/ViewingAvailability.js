@@ -26,11 +26,23 @@ module.exports = (sequelize, DataTypes) => {
         ViewingAvailability.belongsTo(models.Property, {
             foreignKey: {
                 name: 'propertyListingId',
-                allowNull: false,
+                allowNull: true,
             },
             as: 'propertyListing',
         });
 
+        ViewingAvailability.belongsTo(models.Chat, {
+            foreignKey: {
+                name: "chatId", allowNull: true,
+            },
+            as: "chat"
+        })
+
+        ViewingAvailability.addHook('beforeValidate', (viewingAvailability, options) => {
+            if (viewingAvailability.propertyListingId === null && viewingAvailability.chatId === null) {
+                throw new Error('Either propertyListingId or chatId must be set.');
+            }
+        });
     };
 
     return ViewingAvailability;

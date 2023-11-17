@@ -37,6 +37,13 @@ module.exports = (sequelize, DataTypes) => {
             },
             as: 'companyPhoto'
         })
+
+        Image.belongsTo(models.Chat, {
+            foreignKey: {
+                name: "chatId",
+                allowNull: true,
+            }, as: "Chat"
+        })
     };
 
 

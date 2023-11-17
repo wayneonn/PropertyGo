@@ -23,6 +23,9 @@ import {ImageSwiper} from "../../components/ImageSwiper";
 import {BoostingAnimation} from "../../components/BoostingAnimation"
 import {RadioCheckBox} from "../../components/Partner/RadioCheckBox";
 import { CheckBox } from 'react-native-elements';
+import {createChat} from "../../utils/chatApi";
+import ContractorModal from "../../components/Partner/ContractorModal";
+import LawyerModal from "../../components/Partner/LawyerModal";
 
 
 
@@ -112,6 +115,28 @@ const ExploreServices = ({navigation, route}) => {
         }
     }
 
+    const handleChatWithLawyer = async () => {
+        const chatData = {
+            propertyId: 1,
+            receiverId: selectedLawyer?.userId
+        }
+        const data = await createChat(user.user.userId, chatData);
+        console.log(data.chatId)
+        setModalVisible(!modalVisible);
+        navigation.navigate("Message Partner", { chatId: data.chatId });
+    }
+
+    const handleChatWithContractor = async () => {
+        const chatData = {
+            propertyId: 1,
+            receiverId: selectedContractor?.userId
+        }
+        const data = await createChat(user.user.userId, chatData);
+        console.log(data.chatId)
+        setModalVisible(!modalVisible);
+        navigation.navigate("Message Partner", { chatId: data.chatId });
+    }
+
     // Needs to have a more detailed and intricate sorting function.
     const filteredLawyers = lawyers.filter(lawyer => {
         switch(filterByLaw) {
@@ -169,6 +194,15 @@ const ExploreServices = ({navigation, route}) => {
         return 0;
     });
 
+    function truncateString(str, num) {
+        if (str.length > num) {
+            return str.slice(0, num) + '...';
+        } else {
+            return str;
+        }
+    }
+
+
     const LawyerRoute = () => {
         return (
             <ScrollView>
@@ -201,20 +235,22 @@ const ExploreServices = ({navigation, route}) => {
                                     <Image
                                         source={{uri: `data:image/jpeg;base64,${convertImage(item.profileImage.data)}`}}
                                         style={styles.profileImage}
+                                        resizeMode="contain"
                                     />
                                 ) : (
                                     <Image
                                         source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
                                         style={styles.profileImage}
+                                        resizeMode="contain"
                                     />
                                 )}
                             </View>
                             <View style={styles.propertyDetails}>
                                 <Text style={styles.propertyTitle}>{item.name}</Text>
-                                <Text style={styles.propertyPrice}>Ratings: <RatingComponent rating={item.rating}/>
-                                </Text>
+                                {/*<Text style={styles.propertyPrice}>Ratings: <RatingComponent rating={item.rating}/>*/}
+                                {/*</Text>*/}
                                 <Text style={styles.propertyPrice}>Experience: {item.experience}</Text>
-                                <Text style={styles.propertyPrice}>E-Mail: {item.email}</Text>
+                                <Text style={styles.propertyPrice}>E-Mail: {truncateString(item.email, 17)}</Text>
                                 <Text style={styles.propertyDetails}>{dateFormatter(item.createdAt)}</Text>
                             </View>
                             {new Date(item.boostListingEndDate) >= new Date() ? (
@@ -223,60 +259,7 @@ const ExploreServices = ({navigation, route}) => {
                         </TouchableOpacity>
                     )) : <LoadingIndicator/>}
                 </View>
-                <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        setModalVisible(!modalVisible);
-                    }}
-                >
-                    <View style={styles.centeredView}>
-                        <View style={styles.modalView}>
-                            {/* Render more details about the selectedTransaction */}
-                            <Text style={styles.propertyTitle}>{selectedLawyer?.name}</Text>
-                            <Text style={styles.propertyTitle}>{selectedLawyer?.companyName}</Text>
-                            <Text style={styles.propertyPrice}><RatingComponent rating={selectedLawyer?.rating}/></Text>
-                            <TouchableOpacity onPress={() => {
-                                navigation.navigate('View Profile', { userId: selectedLawyer?.userId })
-                                setModalVisible(!modalVisible)
-                            }}>
-                                {
-                                    (selectedLawyer?.profileImage !== null && selectedLawyer !== null) ? (
-                                        <Image
-                                            source={{uri: `data:image/jpeg;base64,${convertImage(selectedLawyer.profileImage.data)}`}}
-                                            style={styles.profileImage}
-                                        />
-                                    ) : (
-                                        <Image
-                                            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                            style={styles.profileImage}
-                                        />
-                                    )
-                                }
-                        </TouchableOpacity>
-                            <Text style={styles.propertyPrice}>{selectedLawyer?.userName}</Text>
-                            <Text style={styles.propertyDetails}>Project
-                                Completed: {selectedLawyer?.projectsCompleted}</Text>
-                            <Text style={styles.propertyDetails}>{dateFormatter(selectedLawyer?.createdAt)}</Text>
-                            <ImageSwiper images_new={modalImage}/>
-                            <Text>&nbsp;</Text>
-                            <TouchableOpacity
-                                style={[styles.button, styles.buttonClose]}
-                                onPress={() => navigation.navigate("Chats")}
-                            >
-                                <Text style={styles.textStyle}>Chat With Lawyer</Text>
-                            </TouchableOpacity>
-                            <Text>&nbsp;</Text>
-                            <TouchableOpacity
-                                style={[styles.button, styles.buttonClose]}
-                                onPress={() => setModalVisible(!modalVisible)}
-                            >
-                                <Text style={styles.textStyle}>Hide</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </Modal>
+                <LawyerModal modalImage={modalImage} modalVisible={modalVisible} setModalVisible={setModalVisible} handleChatWithLawyer={handleChatWithLawyer} selectedLawyer={selectedLawyer}/>
             </ScrollView>
         );
     }
@@ -318,10 +301,10 @@ const ExploreServices = ({navigation, route}) => {
                             </View>
                             <View style={styles.propertyDetails}>
                                 <Text style={styles.propertyTitle}>{item.name}</Text>
-                                <Text style={styles.propertyPrice}>Ratings: <RatingComponent
-                                    rating={item.rating}/></Text>
+                                {/*<Text style={styles.propertyPrice}>Ratings: <RatingComponent*/}
+                                {/*    rating={item.rating}/></Text>*/}
                                 <Text style={styles.propertyPrice}>Experience: {item.experience}</Text>
-                                <Text style={styles.propertyPrice}>E-Mail: {item.email}</Text>
+                                <Text style={styles.propertyPrice}>E-Mail: {truncateString(item.email, 17)}</Text>
                                 <Text style={styles.propertyDetails}>{dateFormatter(item.createdAt)}</Text>
                             </View>
                             {new Date(item.boostListingEndDate) >= new Date() ? (
@@ -330,62 +313,7 @@ const ExploreServices = ({navigation, route}) => {
                         </TouchableOpacity>
                     )) : <LoadingIndicator/>}
                 </View>
-                <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        setModalVisible(!modalVisible);
-                        fetchImages(selectedContractor?.userId)
-                    }}
-                >
-                    <View style={styles.centeredView}>
-                        <View style={styles.modalView}>
-                            {/* Render more details about the selectedTransaction */}
-                            <Text style={styles.propertyTitle}>{selectedContractor?.name}</Text>
-                            <Text style={styles.propertyTitle}>{selectedContractor?.companyName}</Text>
-                            <Text style={styles.propertyPrice}><RatingComponent
-                                rating={selectedContractor?.rating}/></Text>
-                            <TouchableOpacity onPress={() => {
-                                navigation.navigate('View Profile', { userId: selectedContractor?.userDetails.userId })
-                                setModalVisible(!modalVisible)
-                            }}>
-                                {
-                                    (selectedContractor?.profileImage !== null && selectedContractor !== null) ? (
-                                        <Image
-                                            source={{uri: `data:image/jpeg;base64,${convertImage(selectedContractor.profileImage.data)}`}}
-                                            style={styles.profileImage}
-                                        />
-                                    ) : (
-                                        <Image
-                                            source={require('../../assets/Default-Profile-Picture-Icon.png')} // Provide a default image source
-                                            style={styles.profileImage}
-                                        />
-                                    )
-                                }
-                            </TouchableOpacity>
-                            <Text style={styles.propertyPrice}>{selectedContractor?.userName}</Text>
-                            <Text style={styles.propertyDetails}>Project
-                                Completed: {selectedContractor?.projectsCompleted}</Text>
-                            <Text style={styles.propertyDetails}>{dateFormatter(selectedContractor?.createdAt)}</Text>
-                            <ImageSwiper images_new={modalImage}/>
-                            <Text>&nbsp;</Text>
-                            <TouchableOpacity
-                                style={[styles.button, styles.buttonClose]}
-                                onPress={() => setModalVisible(false)}
-                            >
-                                <Text style={styles.textStyle}>Chat With Contractor</Text>
-                            </TouchableOpacity>
-                            <Text>&nbsp;</Text>
-                            <TouchableOpacity
-                                style={[styles.button, styles.buttonClose]}
-                                onPress={() => setModalVisible(!modalVisible)}
-                            >
-                                <Text style={styles.textStyle}>Hide</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </Modal>
+                <ContractorModal handleChatWithContractor={handleChatWithContractor} modalImage={modalImage} modalVisible={modalVisible} setModalVisible={setModalVisible} selectedContractor={selectedContractor}/>
             </ScrollView>
         );
     }
@@ -419,169 +347,90 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'space-between',
+        backgroundColor: '#F8F8F8', // Light background
     },
     profileImage: {
         width: 50,
         height: 50,
-        borderRadius: 120,
-        alignSelf: "center"
+        borderRadius: 30, // Circular images
+        alignSelf: "center",
+        borderWidth: 1,
+        borderColor: '#DDD', // Subtle border for images,
     },
     card: {
-        backgroundColor: '#fff',
-        alignSelf: 'center', // Center the card
+        backgroundColor: '#FFFFFF', // White card background
+        alignSelf: 'center',
         justifyContent: 'center',
         alignItems: "center",
         alignContent: "center",
         flexDirection: "row",
-        marginVertical: 5, // A little margin top and bottom for spacing between cards
-        paddingTop: 10,
-        borderRadius: 10,
-        borderWidth: 0.5, // Light border
-        borderColor: '#ddd', // Light gray color
+        marginVertical: 10, // Increased spacing
+        padding: 15, // Inner spacing
+        borderRadius: 15, // Rounded corners
+        borderWidth: 1,
+        borderColor: '#E8E8E8', // Soft border color
         shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 5,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 7,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
     },
-
     profileHeader: {
         paddingHorizontal: 10,
     },
-
     propertyTitle: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
-    },
-    propertyListing: {
-        flexDirection: 'row',
-        marginBottom: 10,
-        padding: 10,
-        borderRadius: 10,
-        backgroundColor: '#fff',
-    },
-    propertyImage: {
-        width: 100,
-        height: 100,
-        marginRight: 10,
+        color: '#333', // Dark text for readability
     },
     propertyDetails: {
         fontStyle: "italic",
-    },
-    propertyDescription: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        color: '#666', // Soften the color for details
     },
     propertyPrice: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#888',
     },
     searchIcon: {
-        marginRight: 10, // Adjust the margin as needed
-        color: "#ccc",
-    },
-    propertyArea: {
-        fontSize: 14,
-        color: '#888',
-    },
-    propertyRoomFeatures: {
-        fontSize: 14,
-        color: '#888',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    titleIcon: {
-        marginRight: 10, // Add right margin for the icon
-    },
-    swiperImage: {
-        width: '100%',
-        height: '100%', // Adjust the height as needed
-    },
-    swiperContainer: {
-        height: 130, // Set the desired height
-        marginLeft: 15, // Add left padding
-        marginRight: 15, // Add right padding
-        alignSelf: 'center', // Center horizontally
-    },
-    suggestionsContainer: {
-        width: '80%', // Take up 80% width
-        backgroundColor: 'white',
-        borderRadius: 10,
-        marginTop: 5,
-        marginBottom: 10,
-        alignSelf: 'center',
-        elevation: 5, // Add elevation for shadow effect (Android)
-        shadowColor: 'rgba(0, 0, 0, 0.2)', // Add shadow (iOS)
-        shadowOffset: {width: 0, height: 2}, // Add shadow (iOS)
-        shadowOpacity: 0.8, // Add shadow (iOS)
-        shadowRadius: 2, // Add shadow (iOS)
-    },
-    checkBox: {
-        backgroundColor: 'transparent',
-        borderWidth: 0,
-        padding: 0,
-        margin: 0,
-        width: cardSize * 0.25 // adjust this value as needed
-    },
-    suggestionBorder: {
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        backgroundColor: 'white', // Match background color
-        height: 10,
-    },
-    suggestionItem: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
-    },
-    suggestionItemLast: {
-        borderBottomWidth: 0, // Remove border for the last item
-    },
-    suggestionText: {
-        fontSize: 14, // Make text smaller
+        marginRight: 10,
+        color: "#666", // Consistent icon color
     },
     suggestionsOverlay: {
         position: 'absolute',
-        top: 50, // Adjust the top position as needed
+        top: 50,
         left: 8,
         right: 0,
         zIndex: 1,
-        width: '95%', // Take up 80% width
+        width: '95%',
         backgroundColor: 'white',
         borderRadius: 10,
         marginTop: 5,
         marginBottom: 10,
         alignSelf: 'center',
-        elevation: 5, // Add elevation for shadow effect (Android)
-        shadowColor: 'rgba(0, 0, 0, 0.2)', // Add shadow (iOS)
-        shadowOffset: {width: 0, height: 2}, // Add shadow (iOS)
-        shadowOpacity: 0.8, // Add shadow (iOS)
-        shadowRadius: 2, // Add shadow (iOS)
+        elevation: 5,
+        shadowColor: 'rgba(0, 0, 0, 0.2)',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
     },
     noResultsContainer: {
         alignItems: 'center',
         position: 'absolute',
-        top: 50, // Adjust the top position as needed
+        top: 50,
         left: 8,
         right: 0,
         zIndex: 1,
-        width: '95%', // Take up 80% width
+        width: '95%',
         backgroundColor: 'white',
         borderRadius: 10,
         marginTop: 5,
         marginBottom: 10,
         alignSelf: 'center',
-        elevation: 5, // Add elevation for shadow effect (Android)
-        shadowColor: 'rgba(0, 0, 0, 0.2)', // Add shadow (iOS)
-        shadowOffset: {width: 0, height: 2}, // Add shadow (iOS)
-        shadowOpacity: 0.8, // Add shadow (iOS)
-        shadowRadius: 2, // Add shadow (iOS)
+        elevation: 5,
+        shadowColor: 'rgba(0, 0, 0, 0.2)',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
     },
     noResultsText: {
         marginTop: 10,
@@ -611,19 +460,22 @@ const styles = StyleSheet.create({
         elevation: 5
     },
     button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2
+        borderRadius: 25,
+        padding: 12,
+        elevation: 3,
+        backgroundColor: "#007BFF", // Bright color for buttons
     },
     buttonClose: {
-        backgroundColor: "#2196F3",
+        backgroundColor: "#28A745", // Different color for close or secondary action
     },
     textStyle: {
         color: "white",
         fontWeight: "bold",
-        textAlign: "center"
+        textAlign: "center",
+        fontSize: 16,
     }
 });
+
 
 export default ExploreServices;
 

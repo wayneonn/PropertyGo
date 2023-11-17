@@ -22,13 +22,10 @@ export const ImageDisplayComponent = () => {
 
     useEffect(() => {
         loadImages();
-
         const socket = socketIOClient("http://localhost:3000");
-
         socket.on("newImageLoaded", () => {
             loadImages();
         });
-
         socket.on("newImageRemoved", () => {
             loadImages();
         });
@@ -124,7 +121,7 @@ export const ImageDisplayComponent = () => {
             onPress={() => handleImagePress(index)}
             style={styles.imageContainer}
         >
-            <Image source={{ uri: item }} style={styles.image} />
+            <Image source={{ uri: item }} style={styles.image} resizeMode={"cover"}/>
         </TouchableOpacity>
     );
 
@@ -201,9 +198,18 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     imageContainer: {
-        marginTop: 10,
         position: 'relative',
         marginRight: 10,
+        borderRadius: 10, // Rounded corners for images
+        overflow: 'hidden', // Ensures the rounded corners effect
+        shadowColor: "#000", // Shadow for depth
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     image: {
         width: 100,

@@ -207,6 +207,16 @@ const styles = StyleSheet.create({
     imageContainer: {
         position: 'relative',
         marginRight: 10,
+        borderRadius: 10, // Rounded corners for images
+        overflow: 'hidden', // Ensures the rounded corners effect
+        shadowColor: "#000", // Shadow for depth
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     image: {
         width: 100,
