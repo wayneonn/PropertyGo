@@ -78,7 +78,7 @@ const Otp = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [selectedFile]);
 
   const handleDownload = async (documentId) => {
     try {
@@ -136,63 +136,11 @@ const Otp = () => {
 
     console.log("document: " + document[0].userId);
 
-    // console.log(documentResponse.data.data[0]);
-    // let document = "";
-
-    // for (let i = 0; i < documentResponse.data.data.length; i++) {
-    //   const dId = documentResponse.data.data[i].documentId;
-    // }
-
-    // documentResponse.data.data.map((d) => {
-    //   console.log("id ", d.documentId);
-    //   console.log("description ", d.description);
-    // });
-
     console.log("document: " + document);
 
     if (selectedFile) {
       try {
         const fileData = new FormData();
-
-        // console.log(selectedFiles);
-
-        // Array.from(selectedFiles).forEach((file) => {
-        //   // console.log("file" + file);
-        //   const fileUri = URL.createObjectURL(file);
-        //   const fileType = file.mimeType;
-        //   const fileName = file.name;
-        //   // const folderId = propertyFolderId;
-
-        //   fileData.append("documents", {
-        //     uri: fileUri,
-        //     name: fileName,
-        //     type: fileType,
-        //   });
-
-        //   console.log("File URI: ", fileUri);
-
-        //   // Append other required data to the FormData object
-        //   fileData.append("userId", 1);
-        //   fileData.append("transactionId", 7);
-        //   fileData.append("folderId", 1);
-        //   fileData.append("description", "otp document");
-        // });
-
-        // const fileUri = URL.createObjectURL(selectedFile);
-        // const fileType = selectedFile.mimeType;
-        // const fileName = selectedFile.name;
-        // const folderId = propertyFolderId;
-
-        // fileData.append("documents", {
-        //   uri: fileUri,
-        //   name: fileName,
-        //   type: fileType,
-        // });
-        // fileData.append("documentUri", fileUri);
-        // fileData.append("documentFileType", fileType);
-        // fileData.append("documentFileName", fileName);
-
-        // console.log("File URI: ", fileUri);
 
         // Append other required data to the FormData object
         fileData.append("documents", selectedFile);
@@ -200,28 +148,6 @@ const Otp = () => {
         fileData.append("transactionId", document[0].transactionId);
         fileData.append("folderId", document[0].folderId);
         fileData.append("description", document[0].description);
-
-        // const response = await fetch(
-        //   `http://localhost:3000/user/documents/${documentId}/update`,
-        //   {
-        //     method: "put",
-        //     body: bodyData,
-        //     files: fileData,
-        //     // headers: {
-        //     //   "Content-type": "multipart/form-data",
-        //     // },
-        //   }
-        // );
-
-        // const response = await API.put(
-        //   `http://localhost:3000/admin/documents/${documentId}/update`,
-        //   fileData,
-        //   {
-        //     headers: {
-        //       "Content-Type": "multipart/form-data",
-        //     },
-        //   }
-        // );
 
         const response = await axios.put(
           `http://localhost:3000/admin/documents/${documentId}/update`,
@@ -233,22 +159,7 @@ const Otp = () => {
           }
         );
 
-        // Check the response status and log the result
-        // if (response.ok) {
-        //   const data = await response.json();
-        //   const firstDocumentId = data.documentId;
-        //   console.log(
-        //     "Upload response:",
-        //     data,
-        //     "documentId: ",
-        //     firstDocumentId
-        //   );
-        //   return firstDocumentId;
-        //   // await documentFetch();
-        // } else {
-        //   console.log("File upload failed ", response);
-        //   return null;
-        // }
+        setSelectedFile({});
       } catch (error) {
         console.log("Error upload:", error);
         return null;
@@ -325,31 +236,15 @@ const Otp = () => {
                         )}
                       </td>
                       <td>
-                        <div>
-                          <input
-                            type="file"
-                            // ref={fileInputRef}
-                            // // style={{ display: "none" }}
-                            // multiple
-                            onChange={handleFileChange}
-                          />
-                          {transaction.reimbursed == 1 ? (
-                            <Button
-                              style={{
-                                backgroundColor: "#FFD700",
-                                color: "black",
-                                border: 0,
-                              }}
-                              disabled
-                              onClick={() =>
-                                handleUpload(
-                                  transaction.optionToPurchaseDocumentId
-                                )
-                              }
-                            >
-                              <FiUpload />
-                            </Button>
-                          ) : (
+                        {transaction.reimbursed == 0 ? (
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <input type="file" onChange={handleFileChange} />
                             <Button
                               style={{
                                 backgroundColor: "#FFD700",
@@ -364,8 +259,10 @@ const Otp = () => {
                             >
                               <FiUpload />
                             </Button>
-                          )}
-                        </div>
+                          </div>
+                        ) : (
+                          <span>Document uploaded successfully!</span>
+                        )}
                       </td>
                       <td>
                         <div>

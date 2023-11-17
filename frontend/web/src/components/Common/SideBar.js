@@ -30,6 +30,7 @@ const SideBar = () => {
               height: "60px",
               marginBottom: "2em",
               marginLeft: "3em",
+              marginTop: "1.5em",
             }}
           />
         </Nav.Item>

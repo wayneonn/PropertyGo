@@ -7,8 +7,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import base64 from "react-native-base64";
 
 import { BsRocketTakeoff, BsRocketTakeoffFill } from "react-icons/bs";
-import { FaStar } from "react-icons/fa";
 import { FcFolder, FcOpenedFolder } from "react-icons/fc";
+import { VscEyeClosed, VscEye } from "react-icons/vsc";
 
 const UserDetail = () => {
   const [user, setUser] = useState({});
@@ -25,6 +25,8 @@ const UserDetail = () => {
   const [fetching, setFetching] = useState();
   const [hoverStates, setHoverStates] = useState([]);
   const [isActive, setIsActive] = useState();
+  const [showBankAccount, setShowBankAccount] = useState(false);
+  const [openEye, setOpenEye] = useState(false);
   // const [reviewers, setReviewers] = useState([]);
 
   const navigate = useNavigate();
@@ -51,28 +53,6 @@ const UserDetail = () => {
 
       setProperties(properties);
 
-      // const responseReview = await API.get(
-      //   `http://localhost:3000/admin/reviews`
-      // );
-
-      // const reviews = responseReview.data.reviews.filter(
-      //   (review) => review.revieweeId == userId
-      // );
-
-      // let rating = 0.0;
-
-      // if (Array.isArray(reviews) && reviews.length > 0) {
-      //   reviews.map((review) => {
-      //     rating = rating + review.rating;
-      //   });
-
-      //   setAveRating(parseFloat(rating / reviews.length).toFixed(2));
-      // }
-
-      // setReviews(reviews);
-
-      // console.log(reviews.length);
-
       const responseFolder = await API.get(
         `http://localhost:3000/admin/folders`
       );
@@ -95,26 +75,6 @@ const UserDetail = () => {
     fetchData();
   }, [fetching, isActive]);
 
-  // useEffect(() => {
-  //   const fetchReviewers = async () => {
-  //     const reviewersData = await Promise.all(
-  //       reviews.map(async (review) => {
-  //         try {
-  //           const response = await API.get(
-  //             `http://localhost:3000/admin/users/getUser/${review.reviewerId}`
-  //           );
-  //           return response.data;
-  //         } catch (error) {
-  //           console.error(error);
-  //         }
-  //       })
-  //     );
-  //     setReviewers(reviewersData);
-  //   };
-
-  //   fetchReviewers();
-  // }, [reviews]);
-
   const toggleDeactivateModal = async () => {
     setShowDeactivateModal(!showDeactivateModal);
   };
@@ -125,6 +85,42 @@ const UserDetail = () => {
 
   const toggleActivateModal = async () => {
     setShowActivateModal(!showActivateModal);
+  };
+
+  const openBankAccountDetails = () => {
+    setOpenEye(!openEye);
+    setShowBankAccount(!showBankAccount);
+    // alert("Bank account details clicked!");
+  };
+
+  const replaceBankAccount = (bankAccount) => {
+    let mask = "";
+    if (bankAccount !== null && bankAccount !== undefined) {
+      const bankAccountString = bankAccount.toFixed(0);
+      for (const digit of bankAccountString) {
+        mask += "x";
+      }
+    } else {
+      mask = "-";
+    }
+    return mask;
+  };
+
+  const formatBankAccount = (bankAccount) => {
+    if (bankAccount !== null && bankAccount !== undefined) {
+      const bankAccountString = bankAccount.toFixed(0);
+      return bankAccountString;
+    } else {
+      return "-";
+    }
+  };
+
+  const formatBankName = (bankName) => {
+    if (bankName !== null) {
+      return bankName;
+    } else {
+      return "-";
+    }
   };
 
   const handleCloseActivateModal = () => {
@@ -303,7 +299,13 @@ const UserDetail = () => {
                 }}
               >
                 <div>
-                  <span style={{ padding: "10px 0px 10px 10px" }}>
+                  <span
+                    style={{
+                      padding: "10px 0px 10px 10px",
+                      fontSize: "15px",
+                      fontWeight: "500",
+                    }}
+                  >
                     CURRENT USER STATUS
                   </span>
                   <div
@@ -317,13 +319,13 @@ const UserDetail = () => {
                     {isActive === true ? (
                       <>
                         <BsRocketTakeoff
-                          style={{ height: "35px", width: "35px" }}
+                          style={{ height: "40px", width: "40px" }}
                         />
                         <span
                           style={{
                             fontWeight: "bold",
                             marginLeft: "10px",
-                            fontSize: "30px",
+                            fontSize: "40px",
                           }}
                         >
                           Active
@@ -332,13 +334,13 @@ const UserDetail = () => {
                     ) : (
                       <>
                         <BsRocketTakeoffFill
-                          style={{ height: "35px", width: "35px" }}
+                          style={{ height: "40px", width: "40px" }}
                         />
                         <span
                           style={{
                             fontWeight: "bold",
                             marginLeft: "10px",
-                            fontSize: "30px",
+                            fontSize: "40px",
                           }}
                         >
                           Deactivated
@@ -347,30 +349,6 @@ const UserDetail = () => {
                     )}
                   </div>
                 </div>
-                {/* <div className="rating">
-                  <span
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "600",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {aveRating} /
-                  </span>
-                  <span
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "600",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    5 <FaStar style={{ marginLeft: "3px", color: "red" }} />
-                  </span>
-                </div> */}
               </div>
               <div
                 style={{
@@ -380,20 +358,81 @@ const UserDetail = () => {
                 }}
               >
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                  <span>Account holder since:</span>
-                  <span>{formatUserCreatedAt(user.createdAt)}</span>
+                  <span style={{ marginBottom: "20px" }}>
+                    Account holder since: {formatUserCreatedAt(user.createdAt)}
+                  </span>
+                  <span>Listed property: {properties.length}</span>
                 </div>
-                <span style={{ marginLeft: "60px" }}>
-                  Listed property: {properties.length}
-                </span>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <span style={{ marginBottom: "20px", marginLeft: "60px" }}>
+                    Bank name: {formatBankName(user.bankName)}
+                  </span>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginLeft: "35px",
+                      // backgroundColor: "pink",
+                    }}
+                  >
+                    <Button
+                      id="eyeIcon"
+                      onClick={openBankAccountDetails}
+                      style={{
+                        border: "0",
+                        background: "none",
+                        color: "black",
+                        padding: "0",
+                        display: "flex",
+                        alignItems: "center",
+                        textAlign: "center",
+                        marginRight: "6px",
+                      }}
+                    >
+                      {openEye ? (
+                        <VscEye
+                          style={{
+                            width: "1.2em",
+                            height: "1.2em",
+                          }}
+                        ></VscEye>
+                      ) : (
+                        <VscEyeClosed
+                          style={{
+                            width: "1.2em",
+                            height: "1.2em",
+                          }}
+                        ></VscEyeClosed>
+                      )}
+                    </Button>
+                    {showBankAccount ? (
+                      <div>
+                        <span>
+                          Bank account: {formatBankAccount(user.bankAccount)}
+                        </span>
+                      </div>
+                    ) : (
+                      <div>
+                        <span>
+                          Bank account: {replaceBankAccount(user.bankAccount)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
               <div
                 style={{
                   display: "flex",
-                  marginTop: "20px",
+                  marginTop: "80px",
                   marginLeft: "5px",
                   alignItems: "center",
-                  justifyContent: "space-between",
+                  // justifyContent: "space-between",
                 }}
               >
                 {isActive === true ? (
@@ -438,98 +477,6 @@ const UserDetail = () => {
               </div>
             </div>
           </div>
-          {/* <div className="reviews">
-            <span
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                fontSize: "18px",
-                fontWeight: "600",
-              }}
-            >
-              REVIEWS
-            </span>
-            {Array.isArray(reviews) && reviews.length > 0 ? (
-              reviews.map((review, index) => {
-                return (
-                  <div key={review.reviewId} className="individual-review">
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <div className="review-username">
-                        <td>
-                          {reviewers[index] &&
-                            (reviewers[index].profileImage ? (
-                              <>
-                                <img
-                                  src={`data:image/jpeg;base64,${reviewers[
-                                    index
-                                  ].profileImage.toString("base64")}`}
-                                  style={{ height: "20px", width: "20px" }}
-                                  alt="user"
-                                />
-                              </>
-                            ) : (
-                              <>
-                                <>
-                                  <img
-                                    src={imageBasePath + "user.png"}
-                                    style={{ height: "20px", width: "20px" }}
-                                    alt="default user"
-                                  />
-                                </>
-                              </>
-                            ))}
-                        </td>
-                        {reviewers[index] && (
-                          <span
-                            style={{
-                              marginLeft: "12px",
-                              fontWeight: "600",
-                              fontSize: "15px",
-                            }}
-                          >
-                            {reviewers[index].userName}
-                          </span>
-                        )}
-                      </div>
-                      <div className="review-rating">
-                        <span
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          {review.rating} / 5{" "}
-                          <FaStar
-                            style={{ color: "#FFFDCE", marginLeft: "5px" }}
-                          />
-                        </span>
-                      </div>
-                    </div>
-                    <div className="review-description">
-                      <span>{review.description}</span>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <span
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "500",
-                  marginTop: "110px",
-                  marginLeft: "170px",
-                }}
-              >
-                There are currently no reviews...
-              </span>
-            )}
-          </div> */}
         </div>
         <div className="document-area">
           <span style={{ fontSize: "18px", fontWeight: "500" }}>Folders</span>
@@ -612,7 +559,7 @@ const UserDetail = () => {
           <Modal.Title style={{ fontSize: "20px" }}>Deactivate</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Are you sure you want to deactivate this lawyer?</p>
+          <p>Are you sure you want to deactivate this user?</p>
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -659,7 +606,7 @@ const UserDetail = () => {
           <Modal.Title style={{ fontSize: "20px" }}>Activate</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Are you sure you want to activate this lawyer?</p>
+          <p>Are you sure you want to activate this user?</p>
         </Modal.Body>
         <Modal.Footer>
           <Button
