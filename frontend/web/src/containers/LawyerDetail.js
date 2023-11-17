@@ -7,8 +7,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import base64 from "react-native-base64";
 
 import { BsRocketTakeoff, BsRocketTakeoffFill } from "react-icons/bs";
-import { FaStar } from "react-icons/fa";
 import { FcFolder, FcOpenedFolder } from "react-icons/fc";
+import { VscEyeClosed, VscEye } from "react-icons/vsc";
 
 const LawyerDetail = () => {
   const [lawyer, setLawyer] = useState({});
@@ -24,6 +24,8 @@ const LawyerDetail = () => {
   const [fetching, setFetching] = useState();
   const [hoverStates, setHoverStates] = useState([]);
   const [isActive, setIsActive] = useState();
+  const [showBankAccount, setShowBankAccount] = useState(false);
+  const [openEye, setOpenEye] = useState(false);
   // const [reviewers, setReviewers] = useState([]);
 
   const navigate = useNavigate();
@@ -39,28 +41,6 @@ const LawyerDetail = () => {
       setLawyer(response.data);
 
       setIsActive(response.data.isActive);
-
-      // const responseReview = await API.get(
-      //   `http://localhost:3000/admin/reviews`
-      // );
-
-      // const reviews = responseReview.data.reviews.filter(
-      //   (review) => review.revieweeId == lawyerId
-      // );
-
-      // let rating = 0.0;
-
-      // if (Array.isArray(reviews) && reviews.length > 0) {
-      //   reviews.map((review) => {
-      //     rating = rating + review.rating;
-      //   });
-
-      //   setAveRating(parseFloat(rating / reviews.length).toFixed(2));
-      // }
-
-      // setReviews(reviews);
-
-      // console.log(reviews.length);
 
       const responseFolder = await API.get(
         `http://localhost:3000/admin/folders`
@@ -79,26 +59,6 @@ const LawyerDetail = () => {
       console.error(error);
     }
   };
-
-  // useEffect(() => {
-  //   const fetchReviewers = async () => {
-  //     const reviewersData = await Promise.all(
-  //       reviews.map(async (review) => {
-  //         try {
-  //           const response = await API.get(
-  //             `http://localhost:3000/admin/users/getUser/${review.reviewerId}`
-  //           );
-  //           return response.data;
-  //         } catch (error) {
-  //           console.error(error);
-  //         }
-  //       })
-  //     );
-  //     setReviewers(reviewersData);
-  //   };
-
-  //   fetchReviewers();
-  // }, [reviews]);
 
   useEffect(() => {
     fetchData();
@@ -198,6 +158,42 @@ const LawyerDetail = () => {
     setDocuments([]);
   };
 
+  const openBankAccountDetails = () => {
+    setOpenEye(!openEye);
+    setShowBankAccount(!showBankAccount);
+    // alert("Bank account details clicked!");
+  };
+
+  const replaceBankAccount = (bankAccount) => {
+    let mask = "";
+    if (bankAccount !== null && bankAccount !== undefined) {
+      const bankAccountString = bankAccount.toFixed(0);
+      for (const digit of bankAccountString) {
+        mask += "x";
+      }
+    } else {
+      mask = "-";
+    }
+    return mask;
+  };
+
+  const formatBankAccount = (bankAccount) => {
+    if (bankAccount !== null && bankAccount !== undefined) {
+      const bankAccountString = bankAccount.toFixed(0);
+      return bankAccountString;
+    } else {
+      return "-";
+    }
+  };
+
+  const formatBankName = (bankName) => {
+    if (bankName !== null) {
+      return bankName;
+    } else {
+      return "-";
+    }
+  };
+
   const handleDownload = async (documentId) => {
     try {
       const response = await API.get(
@@ -294,7 +290,13 @@ const LawyerDetail = () => {
                 }}
               >
                 <div>
-                  <span style={{ padding: "10px 0px 10px 10px" }}>
+                  <span
+                    style={{
+                      padding: "10px 0px 10px 10px",
+                      fontSize: "15px",
+                      fontWeight: "500",
+                    }}
+                  >
                     CURRENT LAWYER STATUS
                   </span>
                   <div
@@ -308,13 +310,13 @@ const LawyerDetail = () => {
                     {isActive === true ? (
                       <>
                         <BsRocketTakeoff
-                          style={{ height: "35px", width: "35px" }}
+                          style={{ height: "40px", width: "40px" }}
                         />
                         <span
                           style={{
                             fontWeight: "bold",
                             marginLeft: "10px",
-                            fontSize: "30px",
+                            fontSize: "40px",
                           }}
                         >
                           Active
@@ -323,13 +325,13 @@ const LawyerDetail = () => {
                     ) : (
                       <>
                         <BsRocketTakeoffFill
-                          style={{ height: "35px", width: "35px" }}
+                          style={{ height: "40px", width: "40px" }}
                         />
                         <span
                           style={{
                             fontWeight: "bold",
                             marginLeft: "10px",
-                            fontSize: "30px",
+                            fontSize: "40px",
                           }}
                         >
                           Deactivated
@@ -338,30 +340,6 @@ const LawyerDetail = () => {
                     )}
                   </div>
                 </div>
-                {/* <div className="rating-lawyer">
-                  <span
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "600",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {aveRating} /
-                  </span>
-                  <span
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "600",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    5 <FaStar style={{ marginLeft: "3px", color: "red" }} />
-                  </span>
-                </div> */}
               </div>
               <div
                 style={{
@@ -377,8 +355,11 @@ const LawyerDetail = () => {
                       flexDirection: "column",
                     }}
                   >
-                    <span>Account holder since:</span>
-                    <span>{formatUserCreatedAt(lawyer.createdAt)}</span>
+                    <span>
+                      Account holder since:{" "}
+                      {formatUserCreatedAt(lawyer.createdAt)}
+                    </span>
+                    {/* <span>{formatUserCreatedAt(lawyer.createdAt)}</span> */}
                   </div>
                   <div
                     style={{
@@ -387,35 +368,88 @@ const LawyerDetail = () => {
                       flexDirection: "column",
                     }}
                   >
-                    <span>Company:</span>
-                    <span>{lawyer.companyName}</span>
+                    <span>Company: {lawyer.companyName}</span>
+                    {/* <span>{lawyer.companyName}</span> */}
                   </div>
                 </div>
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    marginLeft: "120px",
                   }}
                 >
                   <div
                     style={{
                       display: "flex",
-                      flexDirection: "column",
+                      marginLeft: "80px",
                     }}
                   >
-                    <span>Experience:</span>
-                    <span>{lawyer.experience}</span>
+                    <span>Experience: {lawyer.experience} Years</span>
                   </div>
                   <div
                     style={{
                       marginTop: "10px",
                       display: "flex",
-                      flexDirection: "column",
+                      marginLeft: "80px",
+                      marginBottom: "10px",
                     }}
                   >
-                    <span>Projects Completed:</span>
-                    <span>{lawyer.projectsCompleted}</span>
+                    <span>Projects Completed: {lawyer.projectsCompleted}</span>
+                  </div>
+                  <span style={{ marginBottom: "10px", marginLeft: "80px" }}>
+                    Bank name: {formatBankName(lawyer.bankName)}
+                  </span>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginLeft: "55px",
+                      // backgroundColor: "pink",
+                    }}
+                  >
+                    <Button
+                      id="eyeIcon"
+                      onClick={openBankAccountDetails}
+                      style={{
+                        border: "0",
+                        background: "none",
+                        color: "black",
+                        padding: "0",
+                        display: "flex",
+                        alignItems: "center",
+                        textAlign: "center",
+                        marginRight: "6px",
+                      }}
+                    >
+                      {openEye ? (
+                        <VscEye
+                          style={{
+                            width: "1.2em",
+                            height: "1.2em",
+                          }}
+                        ></VscEye>
+                      ) : (
+                        <VscEyeClosed
+                          style={{
+                            width: "1.2em",
+                            height: "1.2em",
+                          }}
+                        ></VscEyeClosed>
+                      )}
+                    </Button>
+                    {showBankAccount ? (
+                      <div>
+                        <span>
+                          Bank account: {formatBankAccount(lawyer.bankAccount)}
+                        </span>
+                      </div>
+                    ) : (
+                      <div>
+                        <span>
+                          Bank account: {replaceBankAccount(lawyer.bankAccount)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -456,96 +490,6 @@ const LawyerDetail = () => {
               </div>
             </div>
           </div>
-          {/* <div className="reviews-lawyer">
-            <span
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                fontSize: "18px",
-                fontWeight: "600",
-              }}
-            >
-              REVIEWS
-            </span>
-            {Array.isArray(reviews) && reviews.length > 0 ? (
-              reviews.map((review, index) => {
-                return (
-                  <div
-                    key={review.reviewId}
-                    className="individual-review-lawyer"
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <div className="review-username-lawyer">
-                        <td>
-                          {reviewers[index] &&
-                            (reviewers[index].profileImage ? (
-                              <>
-                                <img
-                                  src={`data:image/jpeg;base64,${reviewers[
-                                    index
-                                  ].profileImage.toString("base64")}`}
-                                  style={{ height: "20px", width: "20px" }}
-                                  alt="user"
-                                />
-                              </>
-                            ) : (
-                              <>
-                                <>
-                                  <img
-                                    src={imageBasePath + "user.png"}
-                                    style={{ height: "20px", width: "20px" }}
-                                    alt="default user"
-                                  />
-                                </>
-                              </>
-                            ))}
-                        </td>
-                        {reviewers[index] && (
-                          <span
-                            style={{
-                              marginLeft: "12px",
-                              fontWeight: "600",
-                              fontSize: "15px",
-                            }}
-                          >
-                            {reviewers[index].userName}
-                          </span>
-                        )}
-                      </div>
-                      <div className="review-rating-lawyer">
-                        <span style={{ display: "flex", alignItems: "center" }}>
-                          {review.rating} / 5{" "}
-                          <FaStar
-                            style={{ color: "#FFFDCE", marginLeft: "5px" }}
-                          />
-                        </span>
-                      </div>
-                    </div>
-                    <div className="review-description-lawyer">
-                      <span>{review.description}</span>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <span
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "500",
-                  marginTop: "110px",
-                  marginLeft: "170px",
-                }}
-              >
-                There are currently no reviews...
-              </span>
-            )}
-          </div> */}
         </div>
         <div className="document-area-lawyer">
           <span style={{ fontSize: "18px", fontWeight: "500" }}>Folders</span>

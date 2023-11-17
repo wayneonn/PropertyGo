@@ -9,7 +9,6 @@ import PieChartToken from "./PieChartToken";
 import Chart from "chart.js/auto";
 import { CategoryScale, ArcElement, Tooltip, Legend } from "chart.js";
 
-import API from "../services/API";
 import LineGraphCommissionFee from "./LineGraphCommissionFee";
 import LineGraphCumulativeCommissionFee from "./LineGraphCumulativeCommissionFee";
 import LineGraphCommissionFeeBreakdown from "./LineGraphCommissionFeeBreakdown";

@@ -55,6 +55,7 @@ const EditForumCommentModal = ({ isVisible, onCancel, onSubmit, comment }) => {
                             placeholder="Enter Message"
                             value={message}
                             onChangeText={handleMessageChange}
+                            multiline
                         />
 
                         <ImageGallery images={comment.images} />

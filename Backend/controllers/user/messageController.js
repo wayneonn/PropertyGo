@@ -1,4 +1,5 @@
-const { Message, Chat } = require("../../models");
+const { Message, Chat, User, Property } = require("../../models");
+const { loggedInUsers } = require('../../shared');
 
 const addMessage = async (req, res) => {
     try {
@@ -11,19 +12,36 @@ const addMessage = async (req, res) => {
         // Create a new message associated with the chat
         const message = await Message.create(req.body);
 
-        const chat = await Chat.findByPk(chatId)
+        const chat = await Chat.findByPk(chatId, {
+            include: [{
+                model: Property,
+                as:"propertyListing"
+            }]
+        })
         
         if (!chat) {
             return res.status(404).json({ message: 'Chat Not Found' });
         }
 
+        let user; 
+
         if (chat.senderId === userId) {
             chat.senderReplied = true;
+            user = await User.findByPk(chat.receiverId);
         } else {
             chat.senderReplied = false;
+            user = await User.findByPk(chat.senderId);
         }
 
         chat.save()
+
+        const messageUser = await User.findByPk(userId);
+        const content = `${messageUser.userName.charAt(0).toUpperCase() + messageUser.userName.slice(1)} has replied: "${messageText}" `;
+
+        if (user && loggedInUsers.has(user.userId) && user.userId !== userId){
+            req.io.emit("userChatNotification", {"pushToken": user.pushToken, "title": chat.propertyListing.title, "body": content, "chatNotificationBoolean" : true});
+            // console.log("Emitted userNewForumCommentNotification");
+        }
         
         res.status(201).json({ message });
     } catch (error) {

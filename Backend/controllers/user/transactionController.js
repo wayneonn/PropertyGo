@@ -1242,4 +1242,7 @@ exports.updateTransaction = async (req, res) => {
     }
 }
 
-
+exports.getTransactionAdmin = async (req, res) => {
+    const transactions = await Transaction.findAll({ transactionType: "TOKEN_PURCHASE" });
+    res.status(200).json(transactions);
+};

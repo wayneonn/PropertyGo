@@ -49,12 +49,12 @@ const Message = ({ route, navigation }) => {
 
   useFocusEffect(useMessageCallback);
 
-  // useEffect(() => {
-  //     socket.on("userNotification", (data) => {
-  //         // console.log("RESPONDEDEDEDE")
-  //         useMessageCallback();
-  //     });
-  // })
+  useEffect(() => {
+    socket.on("userChatNotification", (data) => {
+        // console.log("RESPONDEDEDEDE")
+        useMessageCallback();
+    });
+})
 
 
   const handleSubmit = async () => {

@@ -29,16 +29,16 @@
 .status-box {
   background-color: #FFD700;
   /* background-color: pink; */
-  height: 240px;
-  width: 460px;
+  height: 330px;
+  width: 800px;
   margin-left: 30px;
   border-radius: 8px;
 }
 
 .deactivated-box {
   background-color: #FF6666;
-  height: 240px;
-  width: 460px;
+  height: 330px;
+  width: 800px;
   margin-left: 30px;
   border-radius: 8px;
 }
@@ -97,47 +97,8 @@
   /* background-color: pink; */
 }
 
-.reviews {
-  background-color: #FFD700;
-  width: 650px;
-  height: 350px;
-  margin-left: 85px;
-  padding: 15px;
-  border-radius: 8px;
-  max-height: 350px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.individual-review {
-  background-color: #FFFDCE;
-  height: 120px;
-  width: 620px;
-  margin-top: 10px;
-  border-radius: 8px;
-}
-
-.review-description {
-  background-color: #FFFDCE;
-  width: 600px;
-  margin-left: 10px;
-  margin-right: 10px;
-  margin-bottom: 8px;
-  max-height: 68px;
-  height: 68px;
-  border-radius: 8px;
-  overflow-y: auto;
-  flex-wrap: wrap;
-  display: flex;
-}
-
-.review-rating {
-  font-weight: 600;
-}
-
-.review-username {
-  display: flex;
-  padding: 10px;
-  align-items: center;
-}
+/* .bank-account {
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: black;
+} */

@@ -36,6 +36,7 @@ const EditForumTopicModal = ({ isVisible, onCancel, onSubmit, oldTopicName, foru
                             placeholder="Enter topic name"
                             value={topicName}
                             onChangeText={handleTopicNameChange}
+                            multiline
                         />
                         {forumTopics && forumTopics.find((topic) => topic.topicName.trim().toUpperCase() === topicName.trim().toUpperCase()) && topicName.trim().toUpperCase() !== oldTopicName.trim().toUpperCase() ? <Text style={styles.warningLabel}>Topic Name Exist!</Text> : null}
                     </View>

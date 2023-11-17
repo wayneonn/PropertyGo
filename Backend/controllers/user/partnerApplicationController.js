@@ -324,3 +324,8 @@ exports.rejectPartnerApplicationByID = async (req, res) => {
     }
 }
 
+exports.getPartnerApplications = async (req, res) => {
+    const partnerApps = await PartnerApplication.findAll({where: {approved: 1}});
+
+    res.status(200).json(partnerApps);
+};
