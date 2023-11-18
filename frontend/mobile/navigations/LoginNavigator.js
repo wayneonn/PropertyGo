@@ -113,6 +113,7 @@ const LoginNavigator = () => {
     const navigation = useNavigation();
     const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState(false);
+    const [userId, setUserId] = useState(null);
     const notificationListener = useRef();
     const responseListener = useRef();
     // console.log("rendered", user.user.userId);
@@ -163,25 +164,28 @@ const LoginNavigator = () => {
         });
 
         socket.on('login', (userId) => {
-            socket.on(`userChatNotification${userId}`, (data) => {
-                // console.log("Received userNewForumCommentNotification");
-                // Handle user logout event
-                const pushToken = data.pushToken;
-                const title = data.title;
-                const body = data.body;
-                const chatNotificationBoolean = data.chatNotificationBoolean;
-                // console.log("userNewForumCommentNotification")
+            // console.log("login UserId:" , userId);
+            setUserId(userId)
 
-                // console.log({pushToken,title,body})
-                sendPushNotification({ pushToken, title, body, chatNotificationBoolean });
-            });
         });
 
+        socket.on(`userChatNotification${user ? user.user.userId : ""}`, (data) => {
+            // console.log("Received userNewForumCommentNotification");
+            // Handle user logout event
+            const pushToken = data.pushToken;
+            const title = data.title;
+            const body = data.body;
+            const chatNotificationBoolean = data.chatNotificationBoolean;
+            // console.log("userNewForumCommentNotification")
+
+            // console.log({pushToken,title,body})
+            sendPushNotification({ pushToken, title, body, chatNotificationBoolean });
+        });
         return () => {
             socket.disconnect();
             console.log("socket deleted")
         };
-    }, []);
+    }, [user, userId]);
 
     useEffect(() => {
         const updateUserPushToken = async () => {
