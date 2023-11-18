@@ -118,7 +118,7 @@ const PartnerSenderChat = ({ navigation }) => {
                         onPress={() => handleChatPress(chat.chatId)}
                         updatedAt={chat.updatedAt}
                         name={chat.sender.name}
-                        title={chat.receiver.companyName}
+                        title={chat.receiver.name}
                         messageText={chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].messageText : ''}
                         replied={chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].userId === chat.senderId : false}
                         profileImage={chat.sender.profileImage ? `data:image/jpeg;base64,${base64.encodeFromByteArray(chat.sender.profileImage.data)}` : null}
