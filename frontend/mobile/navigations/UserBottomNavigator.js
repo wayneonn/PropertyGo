@@ -88,14 +88,14 @@ const UserBottomNavigator = () => {
                         iconName = focused ? "forum" : "forum-outline";
                     } else if (route.name === "Activity") {
                         iconName = focused ? "md-notifications-sharp" : "md-notifications-outline";
-                    } else if (route.name === "Dashboard") {
-                        iconName = "dashboard";
+                    } else if (route.name === "Request") {
+                        iconName = "request-page";
                     } else if (route.name === "Boost") {
                         iconName = focused ? "rocket" : "rocket-outline";
                     }
 
                     const iconComponent =
-                        route.name === "Favourite" || route.name === "Dashboard" ? (
+                        route.name === "Favourite" || route.name === "Request" ? (
                             <MaterialIcons name={iconName} size={size} color={"#FFD700"} />
                         ) : route.name === "Forum" ? (
                             <MaterialCommunityIcons name={iconName} size={size} color={"#FFD700"} />
@@ -138,7 +138,7 @@ const UserBottomNavigator = () => {
 
             }
             {["LAWYER", "CONTRACTOR", "PROPERTY AGENT"].includes(user.user.userType) ?
-                <Tab.Screen name={"Dashboard"} component={DashboardStackGroup} /> :
+                <Tab.Screen name={"Request"} component={DashboardStackGroup} /> :
                 <Tab.Screen name="Sell" component={PropertyListingsStackGroup} />
             }
             <Tab.Screen name="Forum" component={Forum} />

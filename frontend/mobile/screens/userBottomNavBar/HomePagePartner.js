@@ -355,14 +355,12 @@ const HomePagePartner = ({navigation}) => {
                     <>
                         {/* Total Earnings Section */}
                         <View style={styles.sectionContainer}>
-                            <TouchableOpacity onPress={() => null}>
                                 <View style={[styles.titleContainer, {marginTop: 10}]}>
                                     <Text style={styles.sectionTitle}> {' '}<Ionicons name="trending-up-outline"
                                                                                       size={24}
                                                                                       style={styles.titleIcon}/>
                                         {' '}Total Earnings </Text>
                                 </View>
-                            </TouchableOpacity>
                             <MyLineChart averageTransactions={averageTransactions} monthTransactions={monthTransactions}
                                          screenHeight={screenHeight} screenWidth={screenWidth} navigation={navigation}/>
                         </View>
@@ -370,28 +368,22 @@ const HomePagePartner = ({navigation}) => {
 
                         {/* Customer/Request Section */}
                         <View style={styles.sectionContainer}>
-                            <TouchableOpacity
-                                onPress={() => handleTitlePress('Recently Added Properties', recentlyAddedProperties)}>
                                 <View style={styles.titleContainer}>
                                     <Text style={styles.sectionTitle}> {' '}<Ionicons name="time-outline" size={24}
                                                                                       style={styles.titleIcon}/>
                                         {' '}Customers (Recent) </Text>
                                 </View>
-                            </TouchableOpacity>
                             <MyPieChart transactionCountryCount={transactionCountryCount}/>
                         </View>
                         <CardDivider/>
 
                         {/* Recently Added Properties Section */}
                         <View style={styles.sectionContainer}>
-                            <TouchableOpacity
-                                onPress={() => handleTitlePress('Recently Added Properties', recentlyAddedProperties)}>
                                 <View style={styles.titleContainer}>
                                     <Text style={styles.sectionTitle}> {' '}<Ionicons name="time-outline" size={24}
                                                                                       style={styles.titleIcon}/>
                                         {' '}Total Request </Text>
                                 </View>
-                            </TouchableOpacity>
                             <TransactionChart monthTransactions={monthTransactions} averageCount={countTransactions}
                                               navigation={navigation}/>
                         </View>
@@ -399,13 +391,10 @@ const HomePagePartner = ({navigation}) => {
 
                         {/*Recent Transactions Section */}
                         <View style={styles.sectionContainer}>
-                            <TouchableOpacity
-                                onPress={() => handleTitlePress('Top Transactions', topTransactions)}>
                                 <Text style={styles.sectionTitle}> {' '}<Ionicons name="navigate-circle-outline"
                                                                                   size={24}
                                                                                   style={styles.titleIcon}/>
                                     {' '}Recent Request </Text>
-                            </TouchableOpacity>
                             {topTenUserProfile.length !== 0 ? topTenUserProfile.map((item) => (
                                 <TransactionItemSmall onPress={() => {
                                     setSelectedTransaction(item);

@@ -296,7 +296,7 @@ const Message = ({route, navigation}) => {
             // Send a message to the chat that the transaction is created
             // Implement this based on your chat system
             let transactionMessage = `Transaction with ID ${createdTransaction.transactionId} is created and pending payment in cheque.`;
-            let updatedRequest = `${lines[2]} ${lines[3]} has been accepted.`
+            let updatedRequest = `${lines[1]}\n${lines[2]}\n${lines[3]}\nRequest has been accepted.`
             const send = await sendMessage(transactionMessage)
             const update = await updateMessage(updatedRequest, item.messageId)
         } catch (error) {
@@ -321,8 +321,8 @@ const Message = ({route, navigation}) => {
             if (response.status === 200) { // or the appropriate success status code
                 Alert.alert("The request has been rejected.");
                 // Update UI or state to reflect the deletion
-                const send = await sendMessage(`Buyer has rejected Request: ${lines[2]}. Please create a new request.`)
-                const update = await updateMessage(`Rejected Request: ${lines[2]}.`, item.messageId)
+                const send = await sendMessage(`Buyer has rejected : \n${lines[1]}\n${lines[2]}\n${lines[3]}\nPlease create a new request.`)
+                const update = await updateMessage(`Rejected: \n${lines[1]}\n${lines[2]}\n${lines[3]}.`, item.messageId)
             } else {
                 // Handle unsuccessful deletion
                 console.error("Deletion was not successful:", response.status);
@@ -412,7 +412,7 @@ const Message = ({route, navigation}) => {
                         <View style={styles.detailContainer}>
                             <View style={styles.titleContainer}>
                                 <Text
-                                    style={styles.title}>Partner: {chat ? chat.receiver.name : "Loading"}</Text>
+                                    style={styles.title}>{chat ? chat.receiver.companyName : "Loading..."}: {chat ? chat.receiver.name : "Loading..."}</Text>
                             </View>
                             <Text style={styles.message}>
                                 {chat ? chat.receiver.email : "No email address available."}

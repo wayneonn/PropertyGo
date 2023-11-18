@@ -10,9 +10,9 @@ function MessagePlain({item}) {
 
     return (<View
         style={item.userId === user.user.userId ? styles.sentMessage : styles.receivedMessage}>
-        <Text style={styles.messageText}><HTML
-            source={{html: item.messageText.replace(/<\/?p>/g, '').replace(/<html>|<\/html>/g, '')}}
-            contentWidth={windowWidth}/></Text>
+        <Text style={styles.messageText}>
+            {item.messageText.replace(/<\/?p>|<html>|<\/html>/g, '')}
+            </Text>
         <Text style={styles.time}>{getTimeAgo(item.createdAt)}</Text>
     </View>)
 }
