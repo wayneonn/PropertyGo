@@ -165,27 +165,25 @@ const LoginNavigator = () => {
 
         socket.on('login', (userId) => {
             // console.log("login UserId:" , userId);
-            setUserId(userId)
+            socket.on(`userChatNotification${user.user.userId}`, (data) => {
+                // console.log("Received userNewForumCommentNotification");
+                // Handle user logout event
+                const pushToken = data.pushToken;
+                const title = data.title;
+                const body = data.body;
+                const chatNotificationBoolean = data.chatNotificationBoolean;
+                // console.log("userNewForumCommentNotification")
 
+                // console.log({pushToken,title,body})
+                sendPushNotification({ pushToken, title, body, chatNotificationBoolean });
+            });
         });
 
-        socket.on(`userChatNotification${user ? user.user.userId : ""}`, (data) => {
-            // console.log("Received userNewForumCommentNotification");
-            // Handle user logout event
-            const pushToken = data.pushToken;
-            const title = data.title;
-            const body = data.body;
-            const chatNotificationBoolean = data.chatNotificationBoolean;
-            // console.log("userNewForumCommentNotification")
-
-            // console.log({pushToken,title,body})
-            sendPushNotification({ pushToken, title, body, chatNotificationBoolean });
-        });
         return () => {
             socket.disconnect();
             console.log("socket deleted")
         };
-    }, [user, userId]);
+    }, [userId]);
 
     useEffect(() => {
         const updateUserPushToken = async () => {
