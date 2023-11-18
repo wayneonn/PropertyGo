@@ -38,8 +38,10 @@ const addMessage = async (req, res) => {
         const messageUser = await User.findByPk(userId);
         const content = `${messageUser.userName.charAt(0).toUpperCase() + messageUser.userName.slice(1)} has replied: "${messageText}" `;
 
+
+        // Maybe slight feature update here so it corresponds to userId?
         if (user && loggedInUsers.has(user.userId) && user.userId !== userId){
-            req.io.emit("userChatNotification", {"pushToken": user.pushToken, "title": chat.propertyListing.title, "body": content, "chatNotificationBoolean" : true});
+            req.io.emit(`userChatNotification${user.userId}`, {"pushToken": user.pushToken, "title": chat.propertyListing.title, "body": content, "chatNotificationBoolean" : true});
             // console.log("Emitted userNewForumCommentNotification");
         }
         

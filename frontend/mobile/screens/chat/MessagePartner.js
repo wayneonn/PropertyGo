@@ -86,12 +86,47 @@ const Message = ({route, navigation}) => {
         fetchData();
     }, [])
 
+    const debounce = (func, delay) => {
+        let debounceTimer;
+        return function() {
+            const context = this;
+            const args = arguments;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => func.apply(context, args), delay);
+        };
+    };
+
+    function throttle(func, limit) {
+        let lastFunc;
+        let lastRan;
+        return function() {
+            const context = this;
+            const args = arguments;
+            if (!lastRan) {
+                func.apply(context, args);
+                lastRan = Date.now();
+            } else {
+                clearTimeout(lastFunc);
+                lastFunc = setTimeout(function() {
+                    if ((Date.now() - lastRan) >= limit) {
+                        func.apply(context, args);
+                        lastRan = Date.now();
+                    }
+                }, limit - (Date.now() - lastRan));
+            }
+        }
+    }
+
     useEffect(() => {
-        socket.on("userChatNotification", (data) => {
-            // console.log("RESPONDEDEDEDE")
-            useMessageCallback();
+        const throttledHandleNotification = throttle(() => {
+            fetchData()
+        }, 50); // Adjust the 1000ms limit as needed // Not sure if this fully works?
+
+        socket.on(`userChatNotification${user.user.userId}`, (data) => {
+            useMessageCallback()
         });
-    })
+
+    }, []);
 
     useFocusEffect(useMessageCallback);
 

@@ -49,8 +49,10 @@ const Message = ({ route, navigation }) => {
 
   useFocusEffect(useMessageCallback);
 
+  // Literally just append the userId to the end of the socket.io so it doesn't spam both.
+  // The loop is createMessage spams the same user notificat
   useEffect(() => {
-    socket.on("userChatNotification", (data) => {
+    socket.on(`userChatNotification${user.user.userId}`, (data) => {
         // console.log("RESPONDEDEDEDE")
         useMessageCallback();
     });
