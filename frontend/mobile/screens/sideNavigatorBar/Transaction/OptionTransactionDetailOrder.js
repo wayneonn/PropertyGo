@@ -310,7 +310,7 @@ const OrderDetailScreen = ({ route }) => {
                         </TouchableOpacity>
                     ) : (
                         <>
-                            <Text>{transaction.optionFeeStatusEnum}</Text>
+
                         </>
                     )}
                 </>

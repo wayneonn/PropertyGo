@@ -85,7 +85,7 @@ const Drawer = createDrawerNavigator();
 
 const drawerScreens = [
     createDrawerScreen('User Bottom Navigator', UserBottomNavigator, 'home', 'Home'),
-    createDrawerScreen('Explore Services Stack Group', ExploreServicesStackGroup, 'search', 'Explore Services'),
+    // createDrawerScreen('Explore Services Stack Group', ExploreServicesStackGroup, 'search', 'Explore Services'),
     createDrawerScreen('User Profile', UserProfileStackGroup, 'person', 'User Profile'),
     createDrawerScreen('User Listings', UserListingStackGroup, 'list', 'User Listings'),
     createDrawerScreen('Subscription', SubscriptionStackGroup, 'card', 'Subscription'),
