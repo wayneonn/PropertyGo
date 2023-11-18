@@ -191,29 +191,29 @@ const ForumComment = ({ navigation }) => {
                 ))}
 
             </ScrollView>
-            <View>
-                {imageUris.length !== 0 ? <Text style={styles.warningLabel}>Upload Maximum of 5 Images!</Text> : null}
-                <ScrollView horizontal>
-                    {imageUris.map((uri, index) => (
-                        <View key={index} style={{ margin: 5, position: 'relative' }}>
-                            <Image source={{ uri }} style={styles.selectedImage} />
-                            <TouchableHighlight
-                                style={styles.removeImageButton}
-                                onPress={() => handleImageRemove(index)}
-                                underlayColor="#EAEAEA"
-                            >
-                                <AntDesign name="delete" size={24} color="black" />
-                            </TouchableHighlight>
-                        </View>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : null}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 105 : 0}
+            // style={styles.keyboardContainer}
+            >
+                <View>
+                    {imageUris.length !== 0 ? <Text style={styles.warningLabel}>Upload Maximum of 5 Images!</Text> : null}
+                    <ScrollView horizontal>
+                        {imageUris.map((uri, index) => (
+                            <View key={index} style={{ margin: 5, position: 'relative' }}>
+                                <Image source={{ uri }} style={styles.selectedImage} />
+                                <TouchableHighlight
+                                    style={styles.removeImageButton}
+                                    onPress={() => handleImageRemove(index)}
+                                    underlayColor="#EAEAEA"
+                                >
+                                    <AntDesign name="delete" size={24} color="black" />
+                                </TouchableHighlight>
+                            </View>
 
-                    ))}
-                </ScrollView>
+                        ))}
+                    </ScrollView>
 
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : null}
-                    keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
-                // style={styles.keyboardContainer}
-                >
                     <View style={styles.horizontalContainer}>
                         <TextInput
                             placeholder="Type your message here"
@@ -229,8 +229,8 @@ const ForumComment = ({ navigation }) => {
                             <Ionicons name="send-outline" size={24} color="black" />
                         </TouchableHighlight>
                     </View>
-                </KeyboardAvoidingView>
-            </View>
+                </View>
+            </KeyboardAvoidingView>
 
         </SafeAreaView >
 
@@ -250,6 +250,7 @@ const styles = StyleSheet.create({
         borderRadius: 10, // Add border radius for rounded corners
         marginHorizontal: 10,
         borderWidth: 1,
+        // marginBottom: 15,
     },
     textInput: {
         flex: 1,

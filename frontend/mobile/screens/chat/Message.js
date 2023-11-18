@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, // Add border radius for rounded corners
     marginHorizontal: 10,
     borderWidth: 1,
-    marginBottom: 15,
+    marginBottom: 20,
   },
   textInput: {
     flex: 1,

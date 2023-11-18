@@ -167,6 +167,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginHorizontal: 17,
     fontWeight: 'bold', // Add fontWeight to make the title bold
+    maxWidth: "80%",
+    // flexWrap: 'wrap',
   },
   filterButton: {
     paddingHorizontal: 10,

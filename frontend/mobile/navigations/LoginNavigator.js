@@ -162,7 +162,7 @@ const LoginNavigator = () => {
             sendPushNotification({ pushToken, title, body});
         });
 
-        socket.on("userChatNotification", (data) => {
+        socket.on(`userChatNotification${user.user.userId}`, (data) => {
             // console.log("Received userNewForumCommentNotification");
             // Handle user logout event
             const pushToken = data.pushToken;
