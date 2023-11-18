@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, 
-    TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import {
+    View, Text, Image, StyleSheet, ScrollView,
+    TouchableOpacity, Alert, ActivityIndicator
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import CustomerCard from './CardComponents/CustomerCard';
 import PropertyCardRectangle from './CardComponents/PropertyCardRectangle';
 import TrackOrderCard from './CardComponents/TrackOrderCard';
+import {
+    BASE_URL,
+} from "../../../utils/documentApi";
 import {
     getPropertyListing, getUserById
 } from '../../../utils/api';
@@ -21,6 +26,8 @@ import {
 import {
     editProperty
 } from '../../../utils/api';
+import * as FileSystem from "expo-file-system"; 
+import * as Sharing from "expo-sharing";
 
 const OrderDetailScreen = ({ route }) => {
     const navigation = useNavigation();
@@ -116,6 +123,65 @@ const OrderDetailScreen = ({ route }) => {
         // navigation.navigate('Option Transaction Order Screen', { transactionId: transaction.transactionId});
     }
 
+    const downloadPDF = async () => {
+        const response = await fetch(
+            `${BASE_URL}/user/documents/${transaction.optionToPurchaseDocumentId}/data`
+        );
+        console.log(response);
+        const result = await response.json();
+        console.log(result);
+        // The web version is kinda not needed.
+        if (Platform.OS === "web") {
+            const byteCharacters = atob(result.document); // Decode the Base64 string
+            const byteArrays = [];
+            for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                const slice = byteCharacters.slice(offset, offset + 512);
+                const byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+            const blob = new Blob(byteArrays, { type: "application/pdf" });
+            const url = URL.createObjectURL(blob);
+            await openBrowserAsync(url); // Assuming this opens the URL in a new browser tab/window
+            FileSaver.saveAs(blob, document.name); // Assuming document.name is the desired name of the downloaded file
+            URL.revokeObjectURL(url);
+        } else {
+            try {
+                // Slight issue opening certain PDF files.
+                // Native FileSystem logic
+
+                const fileName = (FileSystem.documentDirectory + result.title).replace(
+                    /\s/g,
+                    "_"
+                );
+                console.log("Filename:", fileName);
+
+                await FileSystem.writeAsStringAsync(fileName, result.document, {
+                    encoding: FileSystem.EncodingType.Base64,
+                });
+
+                const isAvailable = await Sharing.isAvailableAsync();
+                if (!isAvailable) {
+                    alert(`Uh oh, sharing isn't available on your platform`);
+                    return;
+                }
+
+                if (fileName) {
+                    // alert("Downloaded to " + fileName);
+                    await Sharing.shareAsync(fileName);
+                } else {
+                    alert("Failed to download PDF");
+                }
+            } catch (error) {
+                console.error("Error opening the file", error);
+                alert("Failed to open PDF");
+            }
+        }
+    };
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.headerContainer}>
@@ -185,9 +251,25 @@ const OrderDetailScreen = ({ route }) => {
                     ) : (
                         <></>
                     )}
+
+                    {transaction && (transaction.optionFeeStatusEnum == "ADMIN_SIGNED" || transaction.optionFeeStatusEnum == "COMPLETED" || transaction.optionFeeStatusEnum == "PAID_OPTION_EXERCISE_FEE" || transaction.optionFeeStatusEnum == "PENDING_COMMISSION" || transaction.optionFeeStatusEnum == "COMMISSION_PAID") ? (
+                        <TouchableOpacity
+                            style={styles.uploadButton}
+                            onPress={downloadPDF}
+                        >
+                           
+                                <Text style={styles.cancelButtonText}>
+                                    {"  "}View OTP Document
+                                </Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <>
+                            {/* <Text>{transaction.optionFeeStatusEnum}</Text> */}
+                        </>
+                    )}
                 </>
             ) : (
-                <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5"/>
+                <ActivityIndicator style={styles.loadingIndicator} size="large" color="#00adf5" />
             )}
 
             <Text></Text>

@@ -70,7 +70,9 @@ const Otp = () => {
       // setPendingTransactions(unreimbursed);
       setTransactions(otpTransactions);
 
-      console.log("fetch data " + transactions);
+      // console.log("fetch data " + transactions);
+
+      console.log(otpTransactions);
 
       setTotalPagePending(Math.ceil(otpTransactions.length / itemsPerPage));
     } catch (error) {
