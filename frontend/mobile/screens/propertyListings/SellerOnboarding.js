@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, Button, TextInput, ScrollView, Alert, } from 'react-native';
+import React, { useState, useEffect, useContext,  } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, Button, TextInput, ScrollView, Alert, KeyboardAvoidingView} from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { AuthContext } from "../../AuthContext";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -169,26 +169,31 @@ const SellerOnboarding = ({ }) => {
                         </View>
                     </View>
                 </Modal>
-
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Bank Account Number</Text>
-                    <TextInput
-                        placeholder="123-456-789"
-                        placeholderTextColor="gray"
-                        maxLength={9}
-                        keyboardType="numeric"
-                        value={bankAccount}
-                        onChangeText={(text) => setBankAccount(text)} // Fixed the onChangeText function
-                        style={styles.input}
-                    />
-                </View>
-
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : null}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 180 : 0}
+                // style={styles.keyboardContainer}
+                >
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Bank Account Number</Text>
+                        <TextInput
+                            placeholder="123-456-789"
+                            placeholderTextColor="gray"
+                            maxLength={9}
+                            keyboardType="numeric"
+                            value={bankAccount}
+                            onChangeText={(text) => setBankAccount(text)} // Fixed the onChangeText function
+                            style={styles.input}
+                        />
+                    </View>
+                    </KeyboardAvoidingView>
                 <TouchableOpacity
                     style={styles.button}
                     onPress={handleSubmit}
                 >
                     <Text style={styles.buttonText}>Submit</Text>
                 </TouchableOpacity>
+
             </ScrollView>
         </View>
     );
@@ -286,7 +291,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
     },
     inputContainer: {
-        marginBottom: 10,
+        marginBottom: 20,
     },
     label: {
         marginBottom: 5,
