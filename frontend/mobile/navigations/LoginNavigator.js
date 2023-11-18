@@ -159,20 +159,22 @@ const LoginNavigator = () => {
             // console.log("userNewForumCommentNotification")
 
             // console.log({pushToken,title,body})
-            sendPushNotification({ pushToken, title, body});
+            sendPushNotification({ pushToken, title, body });
         });
 
-        socket.on(`userChatNotification${user.user.userId}`, (data) => {
-            // console.log("Received userNewForumCommentNotification");
-            // Handle user logout event
-            const pushToken = data.pushToken;
-            const title = data.title;
-            const body = data.body;
-            const chatNotificationBoolean = data.chatNotificationBoolean;
-            // console.log("userNewForumCommentNotification")
+        socket.on('login', (userId) => {
+            socket.on(`userChatNotification${userId}`, (data) => {
+                // console.log("Received userNewForumCommentNotification");
+                // Handle user logout event
+                const pushToken = data.pushToken;
+                const title = data.title;
+                const body = data.body;
+                const chatNotificationBoolean = data.chatNotificationBoolean;
+                // console.log("userNewForumCommentNotification")
 
-            // console.log({pushToken,title,body})
-            sendPushNotification({ pushToken, title, body, chatNotificationBoolean });
+                // console.log({pushToken,title,body})
+                sendPushNotification({ pushToken, title, body, chatNotificationBoolean });
+            });
         });
 
         return () => {
@@ -251,7 +253,7 @@ const LoginNavigator = () => {
                     component={Message}
                     options={{ header: () => <MessageTopNavBar /> }}
                 />
-                <Stack.Screen name={"Message Partner"} component={MessagePartner} options={{header: () => <MessageTopNavBar/>}} />
+                <Stack.Screen name={"Message Partner"} component={MessagePartner} options={{ header: () => <MessageTopNavBar /> }} />
             </Stack.Navigator>
         </FormDataProvider>
     );
