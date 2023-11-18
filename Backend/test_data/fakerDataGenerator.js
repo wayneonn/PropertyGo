@@ -80,7 +80,7 @@ exports.createFakeTransactions = async (numOfRecords) => {
         const fakeTransaction = {
             onHoldBalance: faker.finance.amount(300, 1000, 2),
             status: faker.helpers.arrayElement(['PENDING', 'PAID']),
-            buyerId: faker.number.int({min: 3, max:6}),
+            buyerId: faker.number.int({min: 3, max:5}),
             propertyId: faker.number.int({min:1, max:29}),
             transactionItem: transactionItem,
             invoiceId: faker.number.int({min:1, max:6}),
@@ -89,6 +89,43 @@ exports.createFakeTransactions = async (numOfRecords) => {
         };
         transactions.push(fakeTransaction);
     }
+
+  try {
+    await Transaction.bulkCreate(transactions);
+    console.log("Fake transactions created successfully.");
+  } catch (error) {
+    console.error("Error creating fake transactions:", error);
+  }
+};
+
+exports.createFakeAdminTransactions = async (numOfRecords) => {
+  const transactions = [];
+  for (let i = 0; i < numOfRecords; i++) {
+    // const requestId = await getRandomRequestId()
+    // const invoiceId = await getRandomInvoiceId()
+    // const propertyId = await getRandomPropertyId()
+    const transactionItem = faker.helpers.arrayElement([
+      "Token Purchase",
+      "Option Fee",
+    ]);
+    const fakeTransaction = {
+      onHoldBalance: faker.finance.amount(300, 1000, 2),
+      status: faker.helpers.arrayElement(["PENDING", "PAID"]),
+      buyerId: faker.number.int({ min: 3, max: 5 }),
+      propertyId: faker.number.int({ min: 1, max: 29 }),
+      transactionItem: transactionItem,
+      invoiceId: faker.number.int({ min: 1, max: 6 }),
+      createdAt: faker.date.between({ from: "2023-01-01", to: "2023-11-18" }),
+      quantity:
+        transactionItem === "Token Purchase"
+          ? faker.helpers.arrayElement([10, 20, 50])
+          : 1,
+      transactionType:
+      Math.floor(Math.random() * 2) == 0 ? "COMMISSION_FEE" : (transactionItem === "Option Fee" ? "OPTION_FEE" : "TOKEN_PURCHASE"),
+      userId: Math.floor(Math.random() * (6 - 2) + 2)
+    };
+    transactions.push(fakeTransaction);
+  }
 
   try {
     await Transaction.bulkCreate(transactions);

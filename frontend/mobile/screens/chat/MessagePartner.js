@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
     Alert,
     FlatList,
@@ -36,6 +36,7 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import ChatUploadImages from "../../components/Chat/ChatUploadImages";
 import SearchBar from "../../components/Forum/SearchBar"
+import {socket} from "../../navigations/LoginNavigator";
 
 // Add unique message.
 const Message = ({route, navigation}) => {
@@ -84,6 +85,48 @@ const Message = ({route, navigation}) => {
     const useMessageCallback = useCallback(() => {
         fetchData();
     }, [])
+
+    const debounce = (func, delay) => {
+        let debounceTimer;
+        return function() {
+            const context = this;
+            const args = arguments;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => func.apply(context, args), delay);
+        };
+    };
+
+    function throttle(func, limit) {
+        let lastFunc;
+        let lastRan;
+        return function() {
+            const context = this;
+            const args = arguments;
+            if (!lastRan) {
+                func.apply(context, args);
+                lastRan = Date.now();
+            } else {
+                clearTimeout(lastFunc);
+                lastFunc = setTimeout(function() {
+                    if ((Date.now() - lastRan) >= limit) {
+                        func.apply(context, args);
+                        lastRan = Date.now();
+                    }
+                }, limit - (Date.now() - lastRan));
+            }
+        }
+    }
+
+    useEffect(() => {
+        const throttledHandleNotification = throttle(() => {
+            fetchData()
+        }, 50); // Adjust the 1000ms limit as needed // Not sure if this fully works?
+
+        socket.on(`userChatNotification${user.user.userId}`, (data) => {
+            useMessageCallback()
+        });
+
+    }, []);
 
     useFocusEffect(useMessageCallback);
 
@@ -253,7 +296,7 @@ const Message = ({route, navigation}) => {
             // Send a message to the chat that the transaction is created
             // Implement this based on your chat system
             let transactionMessage = `Transaction with ID ${createdTransaction.transactionId} is created and pending payment in cheque.`;
-            let updatedRequest = `Request: ${lines[2]} has already been accepted.`
+            let updatedRequest = `${lines[2]} ${lines[3]} has been accepted.`
             const send = await sendMessage(transactionMessage)
             const update = await updateMessage(updatedRequest, item.messageId)
         } catch (error) {
@@ -574,7 +617,7 @@ const styles = StyleSheet.create({
     propertyImage: {
         width: 60, // Make the property image take up the full width of its container
         height: 60,
-        borderRadius: 5,
+        borderRadius: 10,
     },
     propertyImagePlaceholder: {
         width: 60, // Make the placeholder take up the full width of its container

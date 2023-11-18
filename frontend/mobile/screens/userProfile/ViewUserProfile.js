@@ -1,35 +1,35 @@
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View, ScrollView} from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, } from 'react-native';
+import { AuthContext } from '../../AuthContext';
 import base64 from 'react-native-base64';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icon library
-import {getRatingByUser, getUserById} from '../../utils/api';
+import { getUserById, getRatingByUser } from '../../utils/api';
 import StarRating from 'react-native-star-rating';
 import { Ionicons } from '@expo/vector-icons';
-import { createChat } from '../../utils/chatApi';
 
 function ViewUserProfile({ route, navigation }) { // Add navigation parameter
-  const { userId, property } = route.params;
+  const { userId } = route.params;
   // const { user, logout } = useContext(AuthContext);
   // console.log('loggedInUser:', user);
   const [userDetails, setUser] = useState(null);
   const [rating, setRating] = useState(null);
 
-    const fetchUser = async (userId) => {
-        try {
-            console.log("userId: ", userId)
-            const {success, data, message} = await getUserById(userId);
+  const fetchUser = async (userId) => {
+    try {
+      console.log("userId: ", userId)
+      const { success, data, message } = await getUserById(userId);
 
-            if (success) {
-                // Handle the user data here
-                return data;
-            } else {
-                // Handle the error here
-                console.error('Error fetching user:', message);
-            }
-        } catch (error) {
-            console.error('Error fetching user:', error);
-        }
-    };
+      if (success) {
+        // Handle the user data here
+        return data;
+      } else {
+        // Handle the error here
+        console.error('Error fetching user:', message);
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
+  };
 
   // const fetchRating = async (userId) => {
   //   try {
@@ -47,16 +47,6 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
   //   }
   // };
 
-    useEffect(() => {
-        // Fetch user details based on the provided userId
-        fetchUser(userId).then((userData) => {
-            setUser(userData);
-        });
-        fetchRating(userId).then((rating) => {
-            setRating(rating);
-            console.log("rating: ", rating.userRating);
-        });
-    }, [userId]);
 
   useEffect(() => {
     // Fetch user details based on the provided userId
@@ -70,31 +60,20 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
   }, [userId]);
 
 
-    let profileImageBase64;
-    if (userDetails && userDetails.profileImage && userDetails.profileImage.data) {
-        profileImageBase64 = base64.encodeFromByteArray(userDetails.profileImage.data);
-    }
+  let profileImageBase64;
+  if (userDetails && userDetails.profileImage && userDetails.profileImage.data) {
+    profileImageBase64 = base64.encodeFromByteArray(userDetails.profileImage.data);
+  }
 
-    if (!userDetails) {
-        return (
-            <View style={styles.container}>
-                <Text>Please log in to view your profile.</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
-                    <Text style={styles.loginLink}>Login</Text>
-                </TouchableOpacity>
-            </View>
-        );
-    }
-
-  const handleChatWithSeller = async () => {
-    const chatData = {
-      propertyId: property.propertyListingId,
-      receiverId: property.sellerId
-    }
-
-    const data = await createChat(userId, chatData);
-    // console.log(data.chatId)
-    navigation.navigate("Message", { chatId: data.chatId });
+  if (!userDetails) {
+    return (
+      <View style={styles.container}>
+        <Text>Please log in to view your profile.</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+          <Text style={styles.loginLink}>Login</Text>
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   return (
@@ -158,7 +137,9 @@ function ViewUserProfile({ route, navigation }) { // Add navigation parameter
       )}
       <TouchableOpacity
         style={styles.editProfileButton}
-        onPress={handleChatWithSeller}
+        onPress={() => {
+          // navigation.navigate('EditProfile'); // Change this to the correct screen name
+        }}
       >
         <Icon
           name="edit"
@@ -234,7 +215,7 @@ const styles = StyleSheet.create({
   editProfileButton: {
     backgroundColor: 'dodgerblue',
     padding: 10,
-    borderRadius: 20,
+    borderRadius: 5,
     marginTop: 20,
     alignItems: 'center', // Center horizontally
     flexDirection: 'row',
@@ -246,7 +227,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   editProfileButtonText: {
-    fontWeight  : '600',
     color: 'white',
     textAlign: 'center',
   },

@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 50,
         right: 20,
-        zIndex: 1, // Place it above the image
+        zIndex: 10, // Place it above the image
     },
     image: {
         flex: 1,

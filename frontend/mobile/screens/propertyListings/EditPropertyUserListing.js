@@ -108,7 +108,7 @@ const EditPropertyListing = ({ route }) => {
     { label: '4 Room', value: '4_ROOM' },
     { label: '5 Room', value: '5_ROOM' },
     { label: 'Executive', value: 'EXECUTIVE' },
-    { label: 'Multi-Generation', value: 'MULTI_GENERATION' },
+    { label: 'Multi-Generation', value: 'MULTI-GENERATION' },
   ]
 
   // Function to remove dollar sign and commas and save raw price

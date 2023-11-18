@@ -63,7 +63,17 @@ const LawyerServices = ({navigation}) => {
         try {
             const lawyers = await fetchPartnerByRangeAndType(USER_TYPE[0], start, end)
             setLawyers(lawyers.partnerInfo)
-            setFilteredLawyer(lawyers.partnerInfo)
+            setFilteredLawyer(lawyers.partnerInfo.sort((a, b) => {
+                if (a.boostListingEndDate === null && b.boostListingEndDate === null) {
+                    return 0; // Both are null, order doesn't matter
+                } else if (a.boostListingEndDate === null) {
+                    return 1; // a should come after b
+                } else if (b.boostListingEndDate === null) {
+                    return -1; // a should come before b
+                } else {
+                    return a.boostListingEndDate - b.boostListingEndDate; // Both are non-null, sort normally
+                }
+            }))
             console.log("Found lawyers: ", lawyers)
         } catch (error) {
             console.error("Error fetching lawyers: ", error)
