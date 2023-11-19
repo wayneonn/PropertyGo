@@ -42,6 +42,7 @@ const addMessage = async (req, res) => {
         // Maybe slight feature update here so it corresponds to userId?
         if (user && loggedInUsers.has(user.userId) && user.userId !== userId){
             req.io.emit(`userChatNotification${user.userId}`, {"pushToken": user.pushToken, "title": chat.propertyListing.title, "body": content, "chatNotificationBoolean" : true});
+            req.io.emit(`userChatNotification`, {"pushToken": user.pushToken, "title": chat.propertyListing.title, "body": content, "chatNotificationBoolean" : true});
             // console.log("Emitted userNewForumCommentNotification");
         }
         

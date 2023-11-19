@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, StyleSheet, TouchableHighlight } from 'react-native';
+import {
+    Modal,
+    View,
+    Text,
+    TextInput,
+    StyleSheet,
+    TouchableHighlight,
+    KeyboardAvoidingView,
+    Platform
+} from 'react-native';
 
 const MakeRequestModal = ({ isVisible, onCancel, onSubmit }) => {
     const [jobTitle, setJobTitle] = useState('');
@@ -43,7 +52,12 @@ const MakeRequestModal = ({ isVisible, onCancel, onSubmit }) => {
 
     return (
         <Modal transparent={true} animationType="slide" visible={isVisible}>
-            <View style={styles.modalContainer}>
+            <KeyboardAvoidingView
+                style={styles.modalContainer}
+                behavior={Platform.OS === "ios" ? "padding" : null} // Adjust behavior based on platform
+                enabled
+            >
+            <View>
                 <View style={styles.modalContent}>
                     <Text style={styles.modalTitle}>Make A Request</Text>
 
@@ -101,8 +115,10 @@ const MakeRequestModal = ({ isVisible, onCancel, onSubmit }) => {
                         </TouchableHighlight>
                     </View>
                 </View>
-            </View>
+        </View>
+                </KeyboardAvoidingView>
         </Modal>
+
     );
 };
 
@@ -117,6 +133,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 10,
         padding: 20,
+        paddingBottom: 30,
         alignItems: 'center',
         width: '80%', // Adjust the width of the modal content
     },
@@ -134,7 +151,7 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start', // Align text to the left
     },
     inputContainer: {
-        width: '100%', // Make the input container take full width
+        width: 200, // Make the input container take full width
     },
     input: {
         height: 50,

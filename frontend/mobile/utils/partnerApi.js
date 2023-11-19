@@ -81,6 +81,7 @@ export const fetchImages = async (USER_ID) => {
     try {
         const response = await fetch(`${BASE_URL}/image/getImagesByPartnerId/${USER_ID}`);
         const data = await response.json();
+        console.log(data.images)
         return data.images;
     } catch (error) {
         console.error('Error fetching images:', error);

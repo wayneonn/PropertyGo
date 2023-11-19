@@ -42,7 +42,7 @@ const ReceiverChat = ({ navigation }) => {
     useFocusEffect(useParentCallback);
 
     useEffect(() => {
-        socket.on("userChatNotification", (data) => {
+        socket.on(`userChatNotification${user.user.userId}`, (data) => {
             // console.log("RESPONDEDEDEDE")
             useParentCallback();
         });

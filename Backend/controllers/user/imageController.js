@@ -178,7 +178,7 @@ async function getImagesByPartner(req, res) {
             return res.status(404).json({ error: 'No images found.' });
         }
 
-        const uri_image = images.map((image) => `http://localhost:3000/image/${image.imageId}`)
+        const uri_image = images.map((image) => `http://192.168.8.232:3000/image/${image.imageId}`)
         res.json({ images: uri_image });
     } catch (error) {
         console.error('Error fetching images:', error);

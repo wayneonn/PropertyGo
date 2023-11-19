@@ -555,9 +555,9 @@ const Message = ({route, navigation}) => {
                         <Ionicons name="send-outline" size={24} color="black"/>
                     </TouchableHighlight>
                 </View>
+                <MakeRequestModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleMakeRequest}/>
             </KeyboardAvoidingView>
 
-            <MakeRequestModal isVisible={isModalVisible} onCancel={toggleModal} onSubmit={handleMakeRequest}/>
             <ChatUploadImages isVisible={isImageModalVisible} onClose={toggleImageModal} chatId={chatId} sendMessage={sendMessage}/>
             <ChatDocumentUpload chatId={chatId} userId={user.user.userId} isVisible={isUploadModalVisible} onClose={toggleUploadModal} sendMessage={sendMessage}/>
         </View>

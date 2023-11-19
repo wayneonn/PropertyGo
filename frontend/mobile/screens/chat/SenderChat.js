@@ -25,7 +25,7 @@ const SenderChat = ({ navigation }) => {
             try {
 
                 const chatDatas = await getUserSenderChat(user.user.userId);
-                // console.log(chatDatas);
+                console.log("SENDER DATA -------------------------", chatDatas.propertyListing);
                 const filtered = chatDatas.filter((chat) =>
                     !["LAWYER", "CONTRACTOR"].includes(chat.receiver.userType)
                 );
@@ -45,7 +45,7 @@ const SenderChat = ({ navigation }) => {
     useFocusEffect(useParentCallback);
 
     useEffect(() => {
-        socket.on("userChatNotification", (data) => {
+        socket.on(`userChatNotification${user.user.userId}`, (data) => {
             // console.log("RESPONDEDEDEDE")
             useParentCallback();
         });

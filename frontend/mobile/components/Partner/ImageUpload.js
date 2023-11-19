@@ -107,6 +107,7 @@ export const ImageUpload = ({images, setImages}) => {
 
         try {
             const res = await uploadCompanyPhotos(user.user.userId, images)
+            console.log("This is the result:", res)
             const result = res.json()
             if (res.success) {
                 Alert.alert(
@@ -116,7 +117,7 @@ export const ImageUpload = ({images, setImages}) => {
             } else {
                 Alert.alert(
                     "Some error occurred",
-                    `Please try again. ${result}`
+                    `Please try again. ${res.data}`
                 )
             }
         } catch (error) {
@@ -143,7 +144,7 @@ export const ImageUpload = ({images, setImages}) => {
                     onPress={() => handleImagePress(index)}
                     style={styles.imageContainer}
                 >
-                    <Image source={{ uri: image.uri }} style={styles.image} />
+                    <Image source={{ uri: image.uri }} style={[styles.image, {width: 100, height: 100}]} />
                 </TouchableOpacity>
             ))}
         </ScrollView>

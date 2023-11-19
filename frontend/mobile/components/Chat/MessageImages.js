@@ -13,7 +13,7 @@ const MessageImages = ({item, fullscrenImage, setFullScreenImage}) => {
     let lines = item.messageText.split('\n');
     // Remove the first line and join the remaining lines
     let modifiedText = lines.slice(1).join('\n').trim();
-    const uri_link = `http://localhost:3000/image/${imageId}`
+    const uri_link = `http://192.168.8.232:3000/image/${imageId}`
     return (
         <>
             <View style={isSent ? styles.sentMessage : styles.receivedMessage}>

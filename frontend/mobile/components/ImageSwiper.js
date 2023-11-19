@@ -17,11 +17,11 @@ export const ImageSwiper = ({images_new}) => {
             >
                 {images_new === undefined ? images.map((image, index) => (
                     <View key={index}>
-                        <Image source={image} style={styles.swiperImage} resizeMode={"cover"}/>
+                        <Image source={image} style={styles.swiperImage} resizeMode={"center"}/>
                     </View>
                 )) : images_new.map((image, index) => (
                     <View key={index}>
-                        <Image source={typeof image === "string" ? {uri : image} : image} style={styles.swiperImage} resizeMode={"cover"}/>
+                        <Image source={typeof image === "string" ? {uri : image} : image} style={styles.swiperImage} resizeMode={"center"}/>
                     </View>
                 ))}
             </Swiper>
@@ -146,15 +146,18 @@ const styles = StyleSheet.create({
         marginRight: 10, // Add right margin for the icon
     },
     swiperImage: {
-        width: '100%',
-        height: '100%', // Adjust the height as needed
+        width: "100%",
+        height: "100%", // Adjust the height as needed
+        resizeMode:"cover",
     },
     swiperContainer: {
         height: 130, // Set the desired height
         marginLeft: 15, // Add left padding
         marginRight: 15, // Add right padding
         alignSelf: 'center', // Center horizontally
-        width: "100%"
+        width: 300,
+        flex: 1,
+        resizeMode: "contain"
     },
     suggestionsContainer: {
         width: '80%', // Take up 80% width

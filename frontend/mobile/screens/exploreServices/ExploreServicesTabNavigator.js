@@ -27,7 +27,7 @@ const CustomTabLabel = ({ label, color, icon }) => (
 const ExploreServicesTabTabNavigator = () => {
     return (
         <>
-        <ImageSwiper images_new={images}></ImageSwiper>
+        {/*<ImageSwiper images_new={images}></ImageSwiper>*/}
         <Tab.Navigator
             screenOptions={{
                 tabBarActiveTintColor: '#FFD700',

@@ -8,6 +8,7 @@ import {AuthContext} from "../../AuthContext";
 import {useFocusEffect} from "@react-navigation/native";
 import {removeImageById} from "../../utils/api";
 import socketIOClient from 'socket.io-client';
+import {BASE_URL} from "../../utils/documentApi";
 
 
 export const ImageDisplayComponent = () => {
@@ -22,7 +23,7 @@ export const ImageDisplayComponent = () => {
 
     useEffect(() => {
         loadImages();
-        const socket = socketIOClient("http://localhost:3000");
+        const socket = socketIOClient(`${BASE_URL}`);
         socket.on("newImageLoaded", () => {
             loadImages();
         });
@@ -121,7 +122,7 @@ export const ImageDisplayComponent = () => {
             onPress={() => handleImagePress(index)}
             style={styles.imageContainer}
         >
-            <Image source={{ uri: item }} style={styles.image} resizeMode={"cover"}/>
+            <Image source={{ uri: item }} style={styles.image}  resizeMode={"contain"}/>
         </TouchableOpacity>
     );
 
@@ -214,6 +215,7 @@ const styles = StyleSheet.create({
     image: {
         width: 100,
         height: 100,
+        resizeMode: "cover"
     },
     propertyTypePickerButton: {
         borderWidth: 1,
